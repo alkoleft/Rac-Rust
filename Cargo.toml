@@ -1,0 +1,9 @@
+[package]
+name = "v8_protocols"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+[workspace]
+members = [".", "apps/rac_protocol"]

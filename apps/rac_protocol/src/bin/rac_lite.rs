@@ -1,239 +1,456 @@
-use std::io::{self, Read, Write};
-use std::net::TcpStream;
-use std::time::Duration;
+use clap::{Parser, Subcommand};
+use serde::Serialize;
 
-const INIT_PACKET: &[u8] = &[
-    0x1c, 0x53, 0x57, 0x50, 0x01, 0x00, 0x01, 0x00, 0x01, 0x16, 0x01, 0x0f, 0x63, 0x6f, 0x6e, 0x6e,
-    0x65, 0x63, 0x74, 0x2e, 0x74, 0x69, 0x6d, 0x65, 0x6f, 0x75, 0x74, 0x04, 0x00, 0x00, 0x07, 0xd0,
-];
+use rac_protocol::client::{ClientConfig, RacClient};
+use rac_protocol::commands::{
+    agent_version, cluster_info, cluster_list, connection_info, connection_list, counter_list,
+    infobase_info, infobase_summary_info, infobase_summary_list, limit_list, lock_list, manager_info,
+    manager_list, process_info, process_list, profile_list, server_info, server_list, session_info,
+    session_list, AgentVersionResp, ClusterInfoResp, ClusterListResp,
+};
+use rac_protocol::error::Result;
+use rac_protocol::rac_wire::{format_uuid, parse_uuid};
+use rac_protocol::Uuid16;
 
-const SERVICE_NEGOTIATION: &[u8] = &[
-    0x18, 0x76, 0x38, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x41, 0x64, 0x6d, 0x69,
-    0x6e, 0x2e, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x04, 0x31, 0x36, 0x2e, 0x30, 0x80,
-];
-
-#[derive(Debug)]
-struct Frame {
-    opcode: u8,
-    payload: Vec<u8>,
+#[derive(Parser, Debug)]
+#[command(name = "rac_lite", version, about = "Minimal RAC client")]
+struct Cli {
+    #[arg(long)]
+    json: bool,
+    #[arg(long)]
+    debug_raw: bool,
+    #[command(subcommand)]
+    command: TopCommand,
 }
 
-fn encode_varuint(mut value: usize) -> Vec<u8> {
-    let mut out = Vec::new();
-    loop {
-        let mut b = (value & 0x7f) as u8;
-        value >>= 7;
-        if value != 0 {
-            b |= 0x80;
-        }
-        out.push(b);
-        if value == 0 {
-            break;
-        }
-    }
-    out
+#[derive(Subcommand, Debug)]
+enum TopCommand {
+    Agent { #[command(subcommand)] command: AgentCmd },
+    Cluster { #[command(subcommand)] command: ClusterCmd },
+    Manager { #[command(subcommand)] command: ManagerCmd },
+    Server { #[command(subcommand)] command: ServerCmd },
+    Process { #[command(subcommand)] command: ProcessCmd },
+    Infobase { #[command(subcommand)] command: InfobaseCmd },
+    Connection { #[command(subcommand)] command: ConnectionCmd },
+    Session { #[command(subcommand)] command: SessionCmd },
+    Lock { #[command(subcommand)] command: LockCmd },
+    Profile { #[command(subcommand)] command: ProfileCmd },
+    Counter { #[command(subcommand)] command: CounterCmd },
+    Limit { #[command(subcommand)] command: LimitCmd },
 }
 
-fn decode_varuint(stream: &mut TcpStream) -> io::Result<usize> {
-    let mut shift = 0usize;
-    let mut value = 0usize;
-    loop {
-        let mut b = [0u8; 1];
-        stream.read_exact(&mut b)?;
-        value |= ((b[0] & 0x7f) as usize) << shift;
-        if b[0] & 0x80 == 0 {
-            return Ok(value);
-        }
-        shift += 7;
-        if shift > 63 {
-            return Err(io::Error::new(
-                io::ErrorKind::InvalidData,
-                "varuint length is too large",
-            ));
-        }
-    }
+#[derive(Subcommand, Debug)]
+enum AgentCmd {
+    Version { addr: String },
 }
 
-fn send_frame(stream: &mut TcpStream, opcode: u8, payload: &[u8]) -> io::Result<()> {
-    stream.write_all(&[opcode])?;
-    stream.write_all(&encode_varuint(payload.len()))?;
-    stream.write_all(payload)?;
-    stream.flush()
+#[derive(Subcommand, Debug)]
+enum ClusterCmd {
+    List { addr: String },
+    Info { addr: String, #[arg(long)] cluster: String },
 }
 
-fn recv_frame(stream: &mut TcpStream) -> io::Result<Frame> {
-    let mut opcode = [0u8; 1];
-    stream.read_exact(&mut opcode)?;
-    let len = decode_varuint(stream)?;
-    let mut payload = vec![0u8; len];
-    stream.read_exact(&mut payload)?;
-    Ok(Frame {
-        opcode: opcode[0],
-        payload,
-    })
+#[derive(Subcommand, Debug)]
+enum ManagerCmd {
+    List { addr: String, #[arg(long)] cluster: String },
+    Info {
+        addr: String,
+        #[arg(long)] cluster: String,
+        #[arg(long)] manager: String,
+    },
 }
 
-fn payload_method(payload: &[u8]) -> Option<u8> {
-    if payload.len() >= 5 && payload[0..4] == [0x01, 0x00, 0x00, 0x01] {
-        Some(payload[4])
-    } else {
-        None
-    }
+#[derive(Subcommand, Debug)]
+enum ServerCmd {
+    List { addr: String, #[arg(long)] cluster: String },
+    Info {
+        addr: String,
+        #[arg(long)] cluster: String,
+        #[arg(long)] server: String,
+    },
 }
 
-fn format_uuid(bytes: &[u8]) -> String {
-    format!(
-        "{:02x}{:02x}{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}",
-        bytes[0],
-        bytes[1],
-        bytes[2],
-        bytes[3],
-        bytes[4],
-        bytes[5],
-        bytes[6],
-        bytes[7],
-        bytes[8],
-        bytes[9],
-        bytes[10],
-        bytes[11],
-        bytes[12],
-        bytes[13],
-        bytes[14],
-        bytes[15]
-    )
+#[derive(Subcommand, Debug)]
+enum ProcessCmd {
+    List { addr: String, #[arg(long)] cluster: String },
+    Info {
+        addr: String,
+        #[arg(long)] cluster: String,
+        #[arg(long)] process: String,
+    },
 }
 
-fn extract_strings(payload: &[u8]) -> Vec<String> {
-    let mut out = Vec::new();
-    let mut i = 0usize;
-    while i < payload.len() {
-        let len = payload[i] as usize;
-        let start = i + 1;
-        let end = start + len;
-        if len >= 3 && end <= payload.len() {
-            if let Ok(s) = std::str::from_utf8(&payload[start..end]) {
-                if s.chars().all(|c| !c.is_control()) {
-                    out.push(s.to_string());
-                }
-            }
-        }
-        i += 1;
-    }
-    out
+#[derive(Subcommand, Debug)]
+enum InfobaseCmd {
+    SummaryList { addr: String, #[arg(long)] cluster: String },
+    SummaryInfo {
+        addr: String,
+        #[arg(long)] cluster: String,
+        #[arg(long)] infobase: String,
+    },
+    Info {
+        addr: String,
+        #[arg(long)] cluster: String,
+        #[arg(long)] infobase: String,
+    },
 }
 
-fn negotiate(stream: &mut TcpStream) -> io::Result<()> {
-    stream.write_all(INIT_PACKET)?;
-    let ack = recv_frame(stream)?;
-    if ack.opcode != 0x02 {
-        return Err(io::Error::new(
-            io::ErrorKind::InvalidData,
-            format!("unexpected init ack opcode 0x{:02x}", ack.opcode),
-        ));
-    }
-
-    send_frame(stream, 0x0b, SERVICE_NEGOTIATION)?;
-    let svc = recv_frame(stream)?;
-    if svc.opcode != 0x0c {
-        return Err(io::Error::new(
-            io::ErrorKind::InvalidData,
-            format!("unexpected service reply opcode 0x{:02x}", svc.opcode),
-        ));
-    }
-    Ok(())
+#[derive(Subcommand, Debug)]
+enum ConnectionCmd {
+    List { addr: String, #[arg(long)] cluster: String },
+    Info {
+        addr: String,
+        #[arg(long)] cluster: String,
+        #[arg(long)] connection: String,
+    },
 }
 
-fn close_session(stream: &mut TcpStream) -> io::Result<()> {
-    send_frame(stream, 0x0d, &[0x01])
+#[derive(Subcommand, Debug)]
+enum SessionCmd {
+    List { addr: String, #[arg(long)] cluster: String },
+    Info {
+        addr: String,
+        #[arg(long)] cluster: String,
+        #[arg(long)] session: String,
+    },
 }
 
-fn cmd_agent_version(stream: &mut TcpStream) -> io::Result<()> {
-    send_frame(stream, 0x0e, &[0x01, 0x00, 0x00, 0x01, 0x87])?;
-    let reply = recv_frame(stream)?;
-    if reply.opcode != 0x0e || payload_method(&reply.payload) != Some(0x88) {
-        return Err(io::Error::new(
-            io::ErrorKind::InvalidData,
-            "unexpected agent version reply",
-        ));
-    }
-
-    let strings = extract_strings(&reply.payload);
-    if let Some(version) = strings.first() {
-        println!("version: {version}");
-    } else {
-        println!("version payload: {}", hex(&reply.payload));
-    }
-    Ok(())
+#[derive(Subcommand, Debug)]
+enum LockCmd {
+    List { addr: String, #[arg(long)] cluster: String },
 }
 
-fn cmd_cluster_list(stream: &mut TcpStream) -> io::Result<()> {
-    send_frame(stream, 0x0e, &[0x01, 0x00, 0x00, 0x01, 0x0b])?;
-    let reply = recv_frame(stream)?;
-    if reply.opcode != 0x0e || payload_method(&reply.payload) != Some(0x0c) {
-        return Err(io::Error::new(
-            io::ErrorKind::InvalidData,
-            "unexpected cluster list reply",
-        ));
-    }
-
-    if reply.payload.len() >= 22 {
-        let uuid = format_uuid(&reply.payload[6..22]);
-        println!("cluster: {uuid}");
-    } else {
-        println!("cluster payload: {}", hex(&reply.payload));
-    }
-
-    for s in extract_strings(&reply.payload) {
-        if s != "v8.service.Admin.Cluster" && s != "16.0" {
-            println!("text: {s}");
-        }
-    }
-    Ok(())
+#[derive(Subcommand, Debug)]
+enum ProfileCmd {
+    List { addr: String, #[arg(long)] cluster: String },
 }
 
-fn hex(data: &[u8]) -> String {
-    let mut out = String::with_capacity(data.len() * 2);
-    for b in data {
-        out.push_str(&format!("{b:02x}"));
-    }
-    out
+#[derive(Subcommand, Debug)]
+enum CounterCmd {
+    List { addr: String, #[arg(long)] cluster: String },
 }
 
-fn usage() {
-    eprintln!("Usage:");
-    eprintln!("  rac_lite cluster-list <host:port>");
-    eprintln!("  rac_lite agent-version <host:port>");
-}
-
-fn run() -> io::Result<()> {
-    let args: Vec<String> = std::env::args().collect();
-    if args.len() != 3 {
-        usage();
-        std::process::exit(2);
-    }
-
-    let cmd = &args[1];
-    let addr = &args[2];
-    let mut stream = TcpStream::connect(addr)?;
-    stream.set_read_timeout(Some(Duration::from_secs(5)))?;
-    stream.set_write_timeout(Some(Duration::from_secs(5)))?;
-
-    negotiate(&mut stream)?;
-    match cmd.as_str() {
-        "cluster-list" => cmd_cluster_list(&mut stream)?,
-        "agent-version" => cmd_agent_version(&mut stream)?,
-        _ => {
-            usage();
-            std::process::exit(2);
-        }
-    }
-    close_session(&mut stream)?;
-    Ok(())
+#[derive(Subcommand, Debug)]
+enum LimitCmd {
+    List { addr: String, #[arg(long)] cluster: String },
 }
 
 fn main() {
-    if let Err(e) = run() {
+    let cli = Cli::parse();
+    if let Err(e) = run(cli) {
         eprintln!("Error: {e}");
         std::process::exit(1);
     }
+}
+
+fn run(cli: Cli) -> Result<()> {
+    let cfg = client_cfg(&cli);
+    match cli.command {
+        TopCommand::Agent { command } => match command {
+            AgentCmd::Version { addr } => {
+                let mut client = RacClient::connect(&addr, cfg.clone())?;
+                let resp = agent_version(&mut client)?;
+                output(cli.json, &resp, format_agent_version(&resp));
+                client.close()?;
+            }
+        },
+        TopCommand::Cluster { command } => match command {
+            ClusterCmd::List { addr } => {
+                let mut client = RacClient::connect(&addr, cfg.clone())?;
+                let resp = cluster_list(&mut client)?;
+                output(cli.json, &resp, format_cluster_list(&resp));
+                client.close()?;
+            }
+            ClusterCmd::Info { addr, cluster } => {
+                let cluster = parse_uuid_arg(&cluster)?;
+                let mut client = RacClient::connect(&addr, cfg.clone())?;
+                let resp = cluster_info(&mut client, cluster)?;
+                output(cli.json, &resp, format_cluster_info(&resp));
+                client.close()?;
+            }
+        },
+        TopCommand::Manager { command } => match command {
+            ManagerCmd::List { addr, cluster } => {
+                let cluster = parse_uuid_arg(&cluster)?;
+                let mut client = RacClient::connect(&addr, cfg.clone())?;
+                let resp = manager_list(&mut client, cluster)?;
+                output(cli.json, &resp, format_uuid_list("managers", &resp.managers));
+                client.close()?;
+            }
+            ManagerCmd::Info {
+                addr,
+                cluster,
+                manager,
+            } => {
+                let cluster = parse_uuid_arg(&cluster)?;
+                let manager = parse_uuid_arg(&manager)?;
+                let mut client = RacClient::connect(&addr, cfg.clone())?;
+                let resp = manager_info(&mut client, cluster, manager)?;
+                output(cli.json, &resp, format_info("manager", resp.manager, &resp.fields));
+                client.close()?;
+            }
+        },
+        TopCommand::Server { command } => match command {
+            ServerCmd::List { addr, cluster } => {
+                let cluster = parse_uuid_arg(&cluster)?;
+                let mut client = RacClient::connect(&addr, cfg.clone())?;
+                let resp = server_list(&mut client, cluster)?;
+                output(cli.json, &resp, format_uuid_list("servers", &resp.servers));
+                client.close()?;
+            }
+            ServerCmd::Info {
+                addr,
+                cluster,
+                server,
+            } => {
+                let cluster = parse_uuid_arg(&cluster)?;
+                let server = parse_uuid_arg(&server)?;
+                let mut client = RacClient::connect(&addr, cfg.clone())?;
+                let resp = server_info(&mut client, cluster, server)?;
+                output(cli.json, &resp, format_info("server", resp.server, &resp.fields));
+                client.close()?;
+            }
+        },
+        TopCommand::Process { command } => match command {
+            ProcessCmd::List { addr, cluster } => {
+                let cluster = parse_uuid_arg(&cluster)?;
+                let mut client = RacClient::connect(&addr, cfg.clone())?;
+                let resp = process_list(&mut client, cluster)?;
+                output(cli.json, &resp, format_uuid_list("processes", &resp.processes));
+                client.close()?;
+            }
+            ProcessCmd::Info {
+                addr,
+                cluster,
+                process,
+            } => {
+                let cluster = parse_uuid_arg(&cluster)?;
+                let process = parse_uuid_arg(&process)?;
+                let mut client = RacClient::connect(&addr, cfg.clone())?;
+                let resp = process_info(&mut client, cluster, process)?;
+                output(cli.json, &resp, format_info("process", resp.process, &resp.fields));
+                client.close()?;
+            }
+        },
+        TopCommand::Infobase { command } => match command {
+            InfobaseCmd::SummaryList { addr, cluster } => {
+                let cluster = parse_uuid_arg(&cluster)?;
+                let mut client = RacClient::connect(&addr, cfg.clone())?;
+                let resp = infobase_summary_list(&mut client, cluster)?;
+                output(cli.json, &resp, format_infobase_summary_list(&resp.summaries));
+                client.close()?;
+            }
+            InfobaseCmd::SummaryInfo {
+                addr,
+                cluster,
+                infobase,
+            } => {
+                let cluster = parse_uuid_arg(&cluster)?;
+                let infobase = parse_uuid_arg(&infobase)?;
+                let mut client = RacClient::connect(&addr, cfg.clone())?;
+                let resp = infobase_summary_info(&mut client, cluster, infobase)?;
+                output(cli.json, &resp, format_info("infobase", resp.infobase, &resp.fields));
+                client.close()?;
+            }
+            InfobaseCmd::Info {
+                addr,
+                cluster,
+                infobase,
+            } => {
+                let cluster = parse_uuid_arg(&cluster)?;
+                let infobase = parse_uuid_arg(&infobase)?;
+                let mut client = RacClient::connect(&addr, cfg.clone())?;
+                let resp = infobase_info(&mut client, cluster, infobase)?;
+                output(cli.json, &resp, format_info("infobase", resp.infobase, &resp.fields));
+                client.close()?;
+            }
+        },
+        TopCommand::Connection { command } => match command {
+            ConnectionCmd::List { addr, cluster } => {
+                let cluster = parse_uuid_arg(&cluster)?;
+                let mut client = RacClient::connect(&addr, cfg.clone())?;
+                let resp = connection_list(&mut client, cluster)?;
+                output(cli.json, &resp, format_uuid_list("connections", &resp.connections));
+                client.close()?;
+            }
+            ConnectionCmd::Info {
+                addr,
+                cluster,
+                connection,
+            } => {
+                let cluster = parse_uuid_arg(&cluster)?;
+                let connection = parse_uuid_arg(&connection)?;
+                let mut client = RacClient::connect(&addr, cfg.clone())?;
+                let resp = connection_info(&mut client, cluster, connection)?;
+                output(cli.json, &resp, format_info("connection", resp.connection, &resp.fields));
+                client.close()?;
+            }
+        },
+        TopCommand::Session { command } => match command {
+            SessionCmd::List { addr, cluster } => {
+                let cluster = parse_uuid_arg(&cluster)?;
+                let mut client = RacClient::connect(&addr, cfg.clone())?;
+                let resp = session_list(&mut client, cluster)?;
+                output(cli.json, &resp, format_uuid_list("sessions", &resp.sessions));
+                client.close()?;
+            }
+            SessionCmd::Info {
+                addr,
+                cluster,
+                session,
+            } => {
+                let cluster = parse_uuid_arg(&cluster)?;
+                let session = parse_uuid_arg(&session)?;
+                let mut client = RacClient::connect(&addr, cfg.clone())?;
+                let resp = session_info(&mut client, cluster, session)?;
+                output(cli.json, &resp, format_info("session", resp.session, &resp.fields));
+                client.close()?;
+            }
+        },
+        TopCommand::Lock { command } => match command {
+            LockCmd::List { addr, cluster } => {
+                let cluster = parse_uuid_arg(&cluster)?;
+                let mut client = RacClient::connect(&addr, cfg.clone())?;
+                let resp = lock_list(&mut client, cluster)?;
+                output(cli.json, &resp, format_uuid_list("locks", &resp.locks));
+                client.close()?;
+            }
+        },
+        TopCommand::Profile { command } => match command {
+            ProfileCmd::List { addr, cluster } => {
+                let cluster = parse_uuid_arg(&cluster)?;
+                let mut client = RacClient::connect(&addr, cfg.clone())?;
+                let resp = profile_list(&mut client, cluster)?;
+                output(cli.json, &resp, format_uuid_list("profiles", &resp.profiles));
+                client.close()?;
+            }
+        },
+        TopCommand::Counter { command } => match command {
+            CounterCmd::List { addr, cluster } => {
+                let cluster = parse_uuid_arg(&cluster)?;
+                let mut client = RacClient::connect(&addr, cfg.clone())?;
+                let resp = counter_list(&mut client, cluster)?;
+                output(cli.json, &resp, format_uuid_list("counters", &resp.counters));
+                client.close()?;
+            }
+        },
+        TopCommand::Limit { command } => match command {
+            LimitCmd::List { addr, cluster } => {
+                let cluster = parse_uuid_arg(&cluster)?;
+                let mut client = RacClient::connect(&addr, cfg.clone())?;
+                let resp = limit_list(&mut client, cluster)?;
+                output(cli.json, &resp, format_uuid_list("limits", &resp.limits));
+                client.close()?;
+            }
+        },
+    }
+    Ok(())
+}
+
+fn output<T: Serialize>(json: bool, resp: &T, text: String) {
+    if json {
+        match serde_json::to_string_pretty(&resp) {
+            Ok(payload) => println!("{payload}"),
+            Err(err) => eprintln!("json error: {err}"),
+        }
+    } else {
+        println!("{text}");
+    }
+}
+
+fn parse_uuid_arg(input: &str) -> Result<Uuid16> {
+    Ok(parse_uuid(input)?)
+}
+
+fn client_cfg(cli: &Cli) -> ClientConfig {
+    let mut cfg = ClientConfig::default();
+    cfg.debug_raw = cli.debug_raw;
+    cfg
+}
+
+fn format_uuid_list(label: &str, items: &[Uuid16]) -> String {
+    let mut out = String::new();
+    out.push_str(&format!("{label}: {}\n", items.len()));
+    for (idx, uuid) in items.iter().enumerate().take(5) {
+        out.push_str(&format!("{label}[{idx}]: {}\n", format_uuid(uuid)));
+    }
+    if items.len() > 5 {
+        out.push_str(&format!("{label}_more: {}\n", items.len() - 5));
+    }
+    out.trim_end().to_string()
+}
+
+fn format_infobase_summary_list(items: &[rac_protocol::commands::InfobaseSummary]) -> String {
+    let mut out = String::new();
+    out.push_str(&format!("infobases: {}\n", items.len()));
+    for (idx, item) in items.iter().enumerate().take(5) {
+        out.push_str(&format!("infobase[{idx}]: {}\n", format_uuid(&item.infobase)));
+        out.push_str(&format!("name[{idx}]: {}\n", item.name));
+        out.push_str(&format!("descr[{idx}]: \"{}\"\n", item.descr));
+    }
+    if items.len() > 5 {
+        out.push_str(&format!("infobase_more: {}\n", items.len() - 5));
+    }
+    out.trim_end().to_string()
+}
+
+fn format_info(label: &str, uuid: Uuid16, fields: &[String]) -> String {
+    let mut out = String::new();
+    out.push_str(&format!("{label}_uuid: {}\n", format_uuid(&uuid)));
+    for (idx, value) in fields.iter().enumerate().take(6) {
+        out.push_str(&format!("text[{idx}]: {value}\n"));
+    }
+    if fields.len() > 6 {
+        out.push_str(&format!("text_more: {}\n", fields.len() - 6));
+    }
+    out.trim_end().to_string()
+}
+
+fn format_agent_version(resp: &AgentVersionResp) -> String {
+    resp.version
+        .as_ref()
+        .map(|v| format!("version: {v}"))
+        .unwrap_or_else(|| "version: <not found>".to_string())
+}
+
+fn format_cluster_list(resp: &ClusterListResp) -> String {
+    let mut out = String::new();
+    out.push_str(&format!("clusters: {}\n", resp.clusters.len()));
+    for (idx, cluster) in resp.clusters.iter().enumerate().take(5) {
+        out.push_str(&format!("cluster_uuid[{idx}]: {}\n", format_uuid(&cluster.uuid)));
+        if let Some(host) = &cluster.host {
+            out.push_str(&format!("cluster_host[{idx}]: {host}\n"));
+        }
+        if let Some(port) = cluster.port {
+            out.push_str(&format!("cluster_port[{idx}]: {port}\n"));
+        }
+        if let Some(name) = &cluster.display_name {
+            out.push_str(&format!("cluster_name[{idx}]: {name}\n"));
+        }
+        if let Some(timeout) = cluster.expiration_timeout {
+            out.push_str(&format!("cluster_expiration_timeout[{idx}]: {timeout}\n"));
+        }
+    }
+    if resp.clusters.len() > 5 {
+        out.push_str(&format!("cluster_more: {}\n", resp.clusters.len() - 5));
+    }
+    out.trim_end().to_string()
+}
+
+fn format_cluster_info(resp: &ClusterInfoResp) -> String {
+    let mut out = String::new();
+    out.push_str(&format!("cluster_uuid: {}\n", format_uuid(&resp.cluster.uuid)));
+    if let Some(host) = &resp.cluster.host {
+        out.push_str(&format!("host: {host}\n"));
+    }
+    if let Some(port) = resp.cluster.port {
+        out.push_str(&format!("port: {port}\n"));
+    }
+    if let Some(name) = &resp.cluster.display_name {
+        out.push_str(&format!("display_name: {name}\n"));
+    }
+    if let Some(timeout) = resp.cluster.expiration_timeout {
+        out.push_str(&format!("expiration_timeout: {timeout}\n"));
+    }
+    out.trim_end().to_string()
 }

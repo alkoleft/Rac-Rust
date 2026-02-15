@@ -78,6 +78,13 @@ Artifacts:
 - `/tmp/rac_<name>.err`
 - `/tmp/v8_capture_<name>.log`
 - `logs/session_<...>/...`
+- `artifacts/<label>.hex` (extracted response payload examples)
+
+Example extraction:
+
+```bash
+scripts/extract_rac_response_example.sh logs/session_1771098941_320377_127_0_0_1_42586 0x42 session_list_response
+```
 
 ## Next reference
 

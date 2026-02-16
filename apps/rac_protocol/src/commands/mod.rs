@@ -1,25 +1,16 @@
 use serde::Serialize;
 
-use crate::client::RacClient;
+use crate::client::{RacClient, RacRequest};
 use crate::error::{RacError, Result};
-use crate::rac_wire::{
-    decode_rpc_method, encode_agent_version, encode_cluster_scoped, encode_cluster_scoped_object,
-    encode_rpc, scan_len_prefixed_strings, take_str8, take_u16_be, take_u32_be, take_u64_be,
-    take_uuid16, METHOD_AGENT_VERSION_RESP,
-    METHOD_CLUSTER_INFO_REQ, METHOD_CLUSTER_INFO_RESP, METHOD_CLUSTER_LIST_REQ, METHOD_CLUSTER_LIST_RESP,
-    METHOD_CONNECTION_INFO_REQ, METHOD_CONNECTION_INFO_RESP, METHOD_CONNECTION_LIST_REQ,
-    METHOD_CONNECTION_LIST_RESP, METHOD_COUNTER_LIST_REQ, METHOD_COUNTER_LIST_RESP,
-    METHOD_LIMIT_LIST_REQ, METHOD_LIMIT_LIST_RESP, METHOD_LOCK_LIST_REQ, METHOD_LOCK_LIST_RESP,
-    METHOD_MANAGER_INFO_REQ, METHOD_MANAGER_INFO_RESP, METHOD_MANAGER_LIST_REQ, METHOD_MANAGER_LIST_RESP,
-    METHOD_PROCESS_INFO_REQ, METHOD_PROCESS_INFO_RESP, METHOD_PROCESS_LIST_REQ, METHOD_PROCESS_LIST_RESP,
-    METHOD_PROFILE_LIST_REQ, METHOD_PROFILE_LIST_RESP, METHOD_SERVER_INFO_REQ, METHOD_SERVER_INFO_RESP,
-    METHOD_SERVER_LIST_REQ, METHOD_SERVER_LIST_RESP, METHOD_SESSION_INFO_REQ, METHOD_SESSION_INFO_RESP,
-    METHOD_SESSION_LIST_REQ, METHOD_SESSION_LIST_RESP,
-};
 use crate::rac_wire::uuid_from_slice;
+use crate::rac_wire::{
+    decode_rpc_method, scan_len_prefixed_strings, take_str8, take_u16_be, take_u32_be, take_u64_be,
+    take_uuid16,
+};
 use crate::Uuid16;
 
 pub mod infobase;
+pub mod session;
 
 #[derive(Debug, Serialize)]
 pub struct AgentVersionResp {
@@ -91,6 +82,10 @@ pub use self::infobase::{
     infobase_info, infobase_summary_info, infobase_summary_list, InfobaseInfoResp, InfobaseSummary,
     InfobaseSummaryInfoResp, InfobaseSummaryListResp,
 };
+pub use self::session::{
+    session_info, session_list, SessionCounters, SessionInfoResp, SessionLicense, SessionListResp,
+    SessionRecord,
+};
 
 #[derive(Debug, Serialize)]
 pub struct ConnectionListResp {
@@ -101,19 +96,6 @@ pub struct ConnectionListResp {
 #[derive(Debug, Serialize)]
 pub struct ConnectionInfoResp {
     pub connection: Uuid16,
-    pub fields: Vec<String>,
-    pub raw_payload: Option<Vec<u8>>,
-}
-
-#[derive(Debug, Serialize)]
-pub struct SessionListResp {
-    pub sessions: Vec<Uuid16>,
-    pub raw_payload: Option<Vec<u8>>,
-}
-
-#[derive(Debug, Serialize)]
-pub struct SessionInfoResp {
-    pub session: Uuid16,
     pub fields: Vec<String>,
     pub raw_payload: Option<Vec<u8>>,
 }
@@ -143,7 +125,7 @@ pub struct LimitListResp {
 }
 
 pub fn agent_version(client: &mut RacClient) -> Result<AgentVersionResp> {
-    let reply = client.send_rpc(&encode_agent_version(), Some(METHOD_AGENT_VERSION_RESP))?;
+    let reply = client.call(RacRequest::AgentVersion)?;
     let body = rpc_body(&reply)?;
     let strings = scan_len_prefixed_strings(body);
     let version = strings.first().map(|(_, s)| s.clone());
@@ -154,7 +136,7 @@ pub fn agent_version(client: &mut RacClient) -> Result<AgentVersionResp> {
 }
 
 pub fn cluster_list(client: &mut RacClient) -> Result<ClusterListResp> {
-    let reply = client.send_rpc(&encode_rpc(METHOD_CLUSTER_LIST_REQ, &[]), Some(METHOD_CLUSTER_LIST_RESP))?;
+    let reply = client.call(RacRequest::ClusterList)?;
     let body = rpc_body(&reply)?;
     let mut clusters = parse_cluster_list_body(body).unwrap_or_default();
     if clusters.is_empty() {
@@ -182,17 +164,16 @@ pub fn cluster_list(client: &mut RacClient) -> Result<ClusterListResp> {
 }
 
 pub fn cluster_info(client: &mut RacClient, cluster: Uuid16) -> Result<ClusterInfoResp> {
-    let reply = client.send_rpc(
-        &encode_cluster_scoped(METHOD_CLUSTER_INFO_REQ, cluster),
-        Some(METHOD_CLUSTER_INFO_RESP),
-    )?;
+    let reply = client.call(RacRequest::ClusterInfo { cluster })?;
     let body = rpc_body(&reply)?;
     let summary = if let Some(summary) = parse_cluster_info_body(body) {
         summary
     } else {
         let uuids = scan_uuid_bytes(body)?;
         let strings = scan_len_prefixed_strings(body);
-        let uuid = *uuids.first().ok_or(RacError::Decode("missing cluster uuid"))?;
+        let uuid = *uuids
+            .first()
+            .ok_or(RacError::Decode("missing cluster uuid"))?;
         ClusterSummary {
             uuid,
             host: strings.get(0).map(|(_, s)| s.clone()),
@@ -208,89 +189,82 @@ pub fn cluster_info(client: &mut RacClient, cluster: Uuid16) -> Result<ClusterIn
 }
 
 pub fn manager_list(client: &mut RacClient, cluster: Uuid16) -> Result<ManagerListResp> {
-    client.set_cluster_context(cluster)?;
-    let reply = client.send_rpc(
-        &encode_cluster_scoped(METHOD_MANAGER_LIST_REQ, cluster),
-        Some(METHOD_MANAGER_LIST_RESP),
-    )?;
+    let reply = client.call(RacRequest::ManagerList { cluster })?;
     Ok(ManagerListResp {
         managers: scan_uuid_bytes(rpc_body(&reply)?)?,
         raw_payload: Some(reply),
     })
 }
 
-pub fn manager_info(client: &mut RacClient, cluster: Uuid16, manager: Uuid16) -> Result<ManagerInfoResp> {
-    client.set_cluster_context(cluster)?;
-    let reply = client.send_rpc(
-        &encode_cluster_scoped_object(METHOD_MANAGER_INFO_REQ, cluster, manager),
-        Some(METHOD_MANAGER_INFO_RESP),
-    )?;
+pub fn manager_info(
+    client: &mut RacClient,
+    cluster: Uuid16,
+    manager: Uuid16,
+) -> Result<ManagerInfoResp> {
+    let reply = client.call(RacRequest::ManagerInfo { cluster, manager })?;
     let body = rpc_body(&reply)?;
     Ok(ManagerInfoResp {
         manager: first_uuid(body)?,
-        fields: scan_len_prefixed_strings(body).into_iter().map(|(_, s)| s).collect(),
+        fields: scan_len_prefixed_strings(body)
+            .into_iter()
+            .map(|(_, s)| s)
+            .collect(),
         raw_payload: Some(reply),
     })
 }
 
 pub fn server_list(client: &mut RacClient, cluster: Uuid16) -> Result<ServerListResp> {
-    client.set_cluster_context(cluster)?;
-    let reply = client.send_rpc(
-        &encode_cluster_scoped(METHOD_SERVER_LIST_REQ, cluster),
-        Some(METHOD_SERVER_LIST_RESP),
-    )?;
+    let reply = client.call(RacRequest::ServerList { cluster })?;
     Ok(ServerListResp {
         servers: scan_uuid_bytes(rpc_body(&reply)?)?,
         raw_payload: Some(reply),
     })
 }
 
-pub fn server_info(client: &mut RacClient, cluster: Uuid16, server: Uuid16) -> Result<ServerInfoResp> {
-    client.set_cluster_context(cluster)?;
-    let reply = client.send_rpc(
-        &encode_cluster_scoped_object(METHOD_SERVER_INFO_REQ, cluster, server),
-        Some(METHOD_SERVER_INFO_RESP),
-    )?;
+pub fn server_info(
+    client: &mut RacClient,
+    cluster: Uuid16,
+    server: Uuid16,
+) -> Result<ServerInfoResp> {
+    let reply = client.call(RacRequest::ServerInfo { cluster, server })?;
     let body = rpc_body(&reply)?;
     Ok(ServerInfoResp {
         server: first_uuid(body)?,
-        fields: scan_len_prefixed_strings(body).into_iter().map(|(_, s)| s).collect(),
+        fields: scan_len_prefixed_strings(body)
+            .into_iter()
+            .map(|(_, s)| s)
+            .collect(),
         raw_payload: Some(reply),
     })
 }
 
 pub fn process_list(client: &mut RacClient, cluster: Uuid16) -> Result<ProcessListResp> {
-    client.set_cluster_context(cluster)?;
-    let reply = client.send_rpc(
-        &encode_cluster_scoped(METHOD_PROCESS_LIST_REQ, cluster),
-        Some(METHOD_PROCESS_LIST_RESP),
-    )?;
+    let reply = client.call(RacRequest::ProcessList { cluster })?;
     Ok(ProcessListResp {
         processes: scan_uuid_bytes(rpc_body(&reply)?)?,
         raw_payload: Some(reply),
     })
 }
 
-pub fn process_info(client: &mut RacClient, cluster: Uuid16, process: Uuid16) -> Result<ProcessInfoResp> {
-    client.set_cluster_context(cluster)?;
-    let reply = client.send_rpc(
-        &encode_cluster_scoped_object(METHOD_PROCESS_INFO_REQ, cluster, process),
-        Some(METHOD_PROCESS_INFO_RESP),
-    )?;
+pub fn process_info(
+    client: &mut RacClient,
+    cluster: Uuid16,
+    process: Uuid16,
+) -> Result<ProcessInfoResp> {
+    let reply = client.call(RacRequest::ProcessInfo { cluster, process })?;
     let body = rpc_body(&reply)?;
     Ok(ProcessInfoResp {
         process: first_uuid(body)?,
-        fields: scan_len_prefixed_strings(body).into_iter().map(|(_, s)| s).collect(),
+        fields: scan_len_prefixed_strings(body)
+            .into_iter()
+            .map(|(_, s)| s)
+            .collect(),
         raw_payload: Some(reply),
     })
 }
 
 pub fn connection_list(client: &mut RacClient, cluster: Uuid16) -> Result<ConnectionListResp> {
-    client.set_cluster_context(cluster)?;
-    let reply = client.send_rpc(
-        &encode_cluster_scoped(METHOD_CONNECTION_LIST_REQ, cluster),
-        Some(METHOD_CONNECTION_LIST_RESP),
-    )?;
+    let reply = client.call(RacRequest::ConnectionList { cluster })?;
     Ok(ConnectionListResp {
         connections: scan_uuid_bytes(rpc_body(&reply)?)?,
         raw_payload: Some(reply),
@@ -302,51 +276,23 @@ pub fn connection_info(
     cluster: Uuid16,
     connection: Uuid16,
 ) -> Result<ConnectionInfoResp> {
-    client.set_cluster_context(cluster)?;
-    let reply = client.send_rpc(
-        &encode_cluster_scoped_object(METHOD_CONNECTION_INFO_REQ, cluster, connection),
-        Some(METHOD_CONNECTION_INFO_RESP),
-    )?;
+    let reply = client.call(RacRequest::ConnectionInfo {
+        cluster,
+        connection,
+    })?;
     let body = rpc_body(&reply)?;
     Ok(ConnectionInfoResp {
         connection: first_uuid(body)?,
-        fields: scan_len_prefixed_strings(body).into_iter().map(|(_, s)| s).collect(),
-        raw_payload: Some(reply),
-    })
-}
-
-pub fn session_list(client: &mut RacClient, cluster: Uuid16) -> Result<SessionListResp> {
-    client.set_cluster_context(cluster)?;
-    let reply = client.send_rpc(
-        &encode_cluster_scoped(METHOD_SESSION_LIST_REQ, cluster),
-        Some(METHOD_SESSION_LIST_RESP),
-    )?;
-    Ok(SessionListResp {
-        sessions: scan_uuid_bytes(rpc_body(&reply)?)?,
-        raw_payload: Some(reply),
-    })
-}
-
-pub fn session_info(client: &mut RacClient, cluster: Uuid16, session: Uuid16) -> Result<SessionInfoResp> {
-    client.set_cluster_context(cluster)?;
-    let reply = client.send_rpc(
-        &encode_cluster_scoped_object(METHOD_SESSION_INFO_REQ, cluster, session),
-        Some(METHOD_SESSION_INFO_RESP),
-    )?;
-    let body = rpc_body(&reply)?;
-    Ok(SessionInfoResp {
-        session: first_uuid(body)?,
-        fields: scan_len_prefixed_strings(body).into_iter().map(|(_, s)| s).collect(),
+        fields: scan_len_prefixed_strings(body)
+            .into_iter()
+            .map(|(_, s)| s)
+            .collect(),
         raw_payload: Some(reply),
     })
 }
 
 pub fn lock_list(client: &mut RacClient, cluster: Uuid16) -> Result<LockListResp> {
-    client.set_cluster_context(cluster)?;
-    let reply = client.send_rpc(
-        &encode_cluster_scoped(METHOD_LOCK_LIST_REQ, cluster),
-        Some(METHOD_LOCK_LIST_RESP),
-    )?;
+    let reply = client.call(RacRequest::LockList { cluster })?;
     Ok(LockListResp {
         locks: scan_uuid_bytes(rpc_body(&reply)?)?,
         raw_payload: Some(reply),
@@ -354,11 +300,7 @@ pub fn lock_list(client: &mut RacClient, cluster: Uuid16) -> Result<LockListResp
 }
 
 pub fn profile_list(client: &mut RacClient, cluster: Uuid16) -> Result<ProfileListResp> {
-    client.set_cluster_context(cluster)?;
-    let reply = client.send_rpc(
-        &encode_cluster_scoped(METHOD_PROFILE_LIST_REQ, cluster),
-        Some(METHOD_PROFILE_LIST_RESP),
-    )?;
+    let reply = client.call(RacRequest::ProfileList { cluster })?;
     Ok(ProfileListResp {
         profiles: scan_uuid_bytes(rpc_body(&reply)?)?,
         raw_payload: Some(reply),
@@ -366,11 +308,7 @@ pub fn profile_list(client: &mut RacClient, cluster: Uuid16) -> Result<ProfileLi
 }
 
 pub fn counter_list(client: &mut RacClient, cluster: Uuid16) -> Result<CounterListResp> {
-    client.set_cluster_context(cluster)?;
-    let reply = client.send_rpc(
-        &encode_cluster_scoped(METHOD_COUNTER_LIST_REQ, cluster),
-        Some(METHOD_COUNTER_LIST_RESP),
-    )?;
+    let reply = client.call(RacRequest::CounterList { cluster })?;
     Ok(CounterListResp {
         counters: scan_uuid_bytes(rpc_body(&reply)?)?,
         raw_payload: Some(reply),
@@ -378,11 +316,7 @@ pub fn counter_list(client: &mut RacClient, cluster: Uuid16) -> Result<CounterLi
 }
 
 pub fn limit_list(client: &mut RacClient, cluster: Uuid16) -> Result<LimitListResp> {
-    client.set_cluster_context(cluster)?;
-    let reply = client.send_rpc(
-        &encode_cluster_scoped(METHOD_LIMIT_LIST_REQ, cluster),
-        Some(METHOD_LIMIT_LIST_RESP),
-    )?;
+    let reply = client.call(RacRequest::LimitList { cluster })?;
     Ok(LimitListResp {
         limits: scan_uuid_bytes(rpc_body(&reply)?)?,
         raw_payload: Some(reply),
@@ -443,7 +377,9 @@ fn parse_cluster_list_body(body: &[u8]) -> Option<Vec<ClusterSummary>> {
             return Some(clusters);
         }
     }
-    parse_cluster_records_at(body, 0, None).ok().map(|(clusters, _)| clusters)
+    parse_cluster_records_at(body, 0, None)
+        .ok()
+        .map(|(clusters, _)| clusters)
 }
 
 fn parse_cluster_info_body(body: &[u8]) -> Option<ClusterSummary> {
@@ -515,12 +451,15 @@ fn parse_cluster_record(data: &[u8], offset: usize) -> Result<(ClusterSummary, u
 
 pub(crate) fn first_uuid(data: &[u8]) -> Result<Uuid16> {
     let list = scan_uuid_bytes(data)?;
-    list.first().copied().ok_or(RacError::Decode("missing uuid"))
+    list.first()
+        .copied()
+        .ok_or(RacError::Decode("missing uuid"))
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::rac_wire::METHOD_AGENT_VERSION_RESP;
 
     fn make_uuid(byte: u8) -> Uuid16 {
         [byte; 16]

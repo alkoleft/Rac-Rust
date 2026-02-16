@@ -169,7 +169,6 @@ Record[2] sequence line with gaps (relative offsets):
 - `record[2] +0xe4..+0xeb` `user-name` (`DefUser`) `str8`.
 - `gap +0xec..+0x15f` (0x74 bytes): `memory-current` = `658205` at `+0xef` (u32_be); `duration-all-dbms` = `2` at `+0x159` (u32_be) (repeat).
 
-
 ### Session Info
 
 - **Request**: `0x09` (context), then method `0x45`.
@@ -180,6 +179,82 @@ Record[2] sequence line with gaps (relative offsets):
 - **Response example (load)**: `artifacts/session_info_response_load.hex`.
 - **Response example (load 1CV8C)**: `artifacts/session_info_response_1cv8c.hex`.
 - **Evidence**: `logs/session_1771168783_1186511_127_0_0_1_54594`.
+
+Unified session record field map (full superset, sorted by relative offset; parser source: `apps/rac_protocol/src/commands/session.rs`):
+
+Offset conventions:
+
+- `record_start` = session record start (`session` UUID).
+- `shift` = `len(db-proc-info)` when `db-proc-info` exists and `1..=16`, else `0`.
+- Absolute offset = `record_start + relative_offset`.
+
+| Relative offset | Field | Type | Size (bytes) | Gap before field | Notes |
+| --- | --- | --- | ---: | --- | --- |
+| `+0x00` | `session` | `uuid` | 16 | no | |
+| `+0x10` | `app-id` | `str8` | `1 + N` | no (anchor) | |
+| `+0x16` | `blocked-by-dbms` | `u32_be` | 4 | depends on `app-id` length | |
+| `+0x1a` | `blocked-by-ls` | `u64_be` | 8 | no | |
+| `+0x22` | `bytes-all` | `u64_be` | 8 | no | |
+| `+0x2a` | `bytes-last-5min` | `u32_be` | 4 | no | |
+| `+0x2e` | `calls-all` | `u64_be` | 8 | no | |
+| `+0x36` | `calls-last-5min` | `u32_be` | 4 | no | |
+| `+0x3a` | `connection` | `uuid` | 16 | no | |
+| `+0x4e` | `dbms-bytes-all` | `u32_be` | 4 | `+0x4a..+0x4d` (4) | |
+| `+0x56` | `dbms-bytes-last-5min` | `u32_be` | 4 | `+0x52..+0x55` (4) | |
+| `+0x5a` | `db-proc-info` | `str8` | `1 + N` | no (optional field) | optional |
+| `+0x5f` | `db-proc-took` | `u32_be` | 4 | depends on `db-proc-info` length | |
+| `unknown` | `db-proc-took-at` | `unknown` | `unknown` | unknown | not decoded yet (present in `rac`) |
+| `+0x67 + shift` | `duration-all` | `u32_be` | 4 | `+0x63..+0x66` (4) | |
+| `+0x6b + shift` | `duration-all-dbms` | `u32_be` | 4 | no | |
+| `+0x6f + shift` | `duration-current` | `u32_be` | 4 | no | |
+| `+0x73 + shift` | `duration-current-dbms` | `u32_be` | 4 | no | |
+| `+0x7b + shift` | `duration-last-5min` | `u32_be` | 4 | `+0x77..+0x7a` (4) | |
+| `+0x83 + shift` | `duration-last-5min-dbms` | `u32_be` | 4 | `+0x7f..+0x82` (4) | |
+| `+0x87 + shift` | `host` | `str8` | `1 + N` | no (anchor) | |
+| `+0x95` | `infobase` | `uuid` | 16 | depends on `host` length and `shift` | parser anchor |
+| `+0xa1 + shift` | `last-active-at` | `u64_be` | 8 | depends on prior variable fields | 1C datetime |
+| `+0xaa + shift` | `passive-session-hibernate-time` | `u32_be` | 4 | `+0xa9..+0xa9` (1) | |
+| `+0xae + shift` | `hibernate-session-terminate-time` | `u32_be` | 4 | no | |
+| `unknown` | `hibernate` | `unknown` | `unknown` | unknown | not decoded yet (present in `rac`) |
+| `+0xb2 + shift` | `software-license` | `u8` | 1 | no | `bool` |
+| `+0xb3 + shift` | `license.file-name` | `str8` | `1 + N` | no | |
+| `+0xec + shift` | `license.detailed-presentation` | `str8` | `1 + N` | depends on `license.file-name` length | |
+| `+0x168 + shift` | `network-key` | `u8` | 1 | depends on `license.detailed-presentation` length | `bool` |
+| `+0x169 + shift` | `retrieved-by-server` | `u8` | 1 | no | `bool` |
+| `+0x16e + shift` | `license.max-users` | `u16_le` | 2 | `+0x16a..+0x16d` (4) | |
+| `+0x172 + shift` | `license.max-software-license-users` | `u16_le` | 2 | `+0x170..+0x171` (2) | |
+| `+0x175 + shift` | `license.process-id` | `str8` | `1 + N` | `+0x173..+0x174` (2) | |
+| `unknown` | `license.rmngr-address` | `unknown` | `unknown` | unknown | not decoded yet (shown by `rac --licenses`) |
+| `unknown` | `license.rmngr-port` | `unknown` | `unknown` | unknown | not decoded yet (shown by `rac --licenses`) |
+| `+0x180 + shift` | `license.key-series` | `str8` | `1 + N` | depends on `license.process-id` length | |
+| `+0x18d + shift` | `license.brief-presentation` | `str8` | `1 + N` | depends on `license.key-series` length | |
+| `+0x1ac + shift` | `locale` | `str8` | `1 + N` | depends on `license.brief-presentation` length | |
+| `+0x1af + shift` | `process` | `uuid` | 16 | depends on `locale` length | |
+| `+0x1bf + shift` | `session-id` | `u32_be` | 4 | no | |
+| `+0x1c3 + shift` | `started-at` | `u64_be` | 8 | no | 1C datetime |
+| `+0x1cb + shift` | `user-name` | `str8` | `1 + N` | no (anchor) | |
+| `+0x1d7 + shift` | `memory-current` | `i32_be` | 4 | depends on `user-name` length | can be negative |
+| `+0x1df + shift` | `memory-last-5min` | `u32_be` | 4 | `+0x1db..+0x1de` (4) | |
+| `+0x1e7 + shift` | `memory-total` | `u32_be` | 4 | `+0x1e3..+0x1e6` (4) | |
+| `+0x1ef + shift` | `read-current` | `u32_be` | 4 | `+0x1eb..+0x1ee` (4) | |
+| `+0x1f7 + shift` | `read-last-5min` | `u32_be` | 4 | `+0x1f3..+0x1f6` (4) | |
+| `+0x1ff + shift` | `read-total` | `u32_be` | 4 | `+0x1fb..+0x1fe` (4) | |
+| `+0x207 + shift` | `write-current` | `u32_be` | 4 | `+0x203..+0x206` (4) | |
+| `+0x20f + shift` | `write-last-5min` | `u32_be` | 4 | `+0x20b..+0x20e` (4) | |
+| `+0x217 + shift` | `write-total` | `u32_be` | 4 | `+0x213..+0x216` (4) | |
+| `+0x21f + shift` | `duration-current-service` | `u32_be` | 4 | `+0x21b..+0x21e` (4) | |
+| `+0x223 + shift` | `duration-last-5min-service` | `u32_be` | 4 | no | |
+| `+0x227 + shift` | `duration-all-service` | `u32_be` | 4 | no | |
+| `unknown` | `current-service-name` | `unknown` | `unknown` | unknown | not decoded yet (present in `rac`) |
+| `+0x230 + shift` | `cpu-time-current` | `u32_be` | 4 | `+0x22b..+0x22f` (5) | |
+| `+0x238 + shift` | `cpu-time-last-5min` | `u32_be` | 4 | `+0x234..+0x237` (4) | |
+| `+0x240 + shift` | `cpu-time-total` | `u32_be` | 4 | `+0x23c..+0x23f` (4) | |
+| `+0x244 + shift` | `data-separation` | `str8` | `1 + N` | no | |
+| `+0x247 + shift` | `client-ip` | `str8` | `1 + N` | depends on `data-separation` length | |
+
+Summary for this baseline layout:
+
+- Baseline summary below applies only to `session_info` Designer record (`artifacts/session_info_response.hex`), not to the full superset table above.
 
 Confirmed from `artifacts/session_info_response.hex` (relative to record start at `0x05`):
 
@@ -269,3 +344,57 @@ Load capture for `app-id=1CV8C` (same layout, different activity):
 - `duration-all-service` `+0x227`: `5563`.
 - `cpu-time-last-5min` `+0x238`: `68587`.
 - `cpu-time-total` `+0x240`: `71702`.
+
+New load evidence with active DB procedure (`artifacts/session_info_response_1cv8c_dbproc.hex`, sample 08):
+
+- Two close 1CV8C layouts are observed:
+  - base layout (`len=593`): `shift=0`
+  - DB-proc layout (`len=597`, `db-proc-info="5719"`): `shift=4`
+- Stable fields:
+  - `connection` UUID at `+0x3a` (non-zero under load)
+  - `process` UUID at `+0x1af + shift`
+  - `db-proc-info` as `str8` at `+0x5a`
+  - `db-proc-took` (`u32_be`) at `+0x5f`
+  - `blocked-by-ls` (`u32_be`) at `+0x1a`
+  - `session-id` (`u32_be`) at `+0x1bf + shift`
+  - `data-separation` (`str8`) at `+0x244 + shift` (`''`)
+  - `client-ip` (`str8`) at `+0x247 + shift`
+- Current counters (`u32_be`, all with `+shift`):
+  - `duration-current` at `+0x6f + shift`
+  - `duration-current-dbms` at `+0x73 + shift`
+  - `memory-current` at `+0x1d7 + shift` (`i32_be`, can be negative)
+  - `read-current` at `+0x1ef + shift`
+  - `write-current` at `+0x207 + shift`
+  - `duration-current-service` at `+0x21f + shift`
+  - `cpu-time-current` at `+0x230 + shift`
+
+Datetime fields (1CV8C):
+
+- `last-active-at` raw value at `+0xa1 + shift` (`u64_be`).
+- `started-at` raw value at `+0x1c3 + shift` (`u64_be`).
+- Conversion confirmed from captures:
+  - unit = `1/10000` second
+  - epoch offset = `621355968000000`
+  - `unix_seconds = (raw - 621355968000000) / 10000`
+  - format in output: `YYYY-MM-DDTHH:MM:SS`
+
+License sub-structure (inside `session info` response for 1CV8C):
+
+- `software-license` (`bool`) at `+0xb2 + shift` (`u8 != 0`).
+- `network-key` (`bool`) at `+0x168 + shift` (`u8 != 0`).
+- `retrieved-by-server` (`bool`) at `+0x169 + shift` (`u8 != 0`).
+- `file-name` (`str8`) at `+0xb3 + shift`.
+- `detailed-presentation` (`str8`) at `+0xec + shift`.
+- `process-id` (`str8`) at `+0x175 + shift`.
+- `key-series` (`str8`) at `+0x180 + shift`.
+- `brief-presentation` (`str8`) at `+0x18d + shift`.
+- `max-users` (`u16_le`) at `+0x16e + shift`.
+- `max-software-license-users` (`u16_le`) at `+0x172 + shift`.
+
+Observed behavior from captures:
+
+- `rac session info` and `rac session info --licenses` produced identical binary response payload on tested server/build; `--licenses` affects CLI rendering, not wire payload content.
+- On current dataset:
+  - `software-license = true`
+  - `network-key = false`
+  - `retrieved-by-server = false`

@@ -17,8 +17,7 @@ fn load_cluster_uuid() -> Option<[u8; 16]> {
 }
 
 fn load_params() -> TestParams {
-    let manifest_dir = std::env::var("CARGO_MANIFEST_DIR")
-        .expect("CARGO_MANIFEST_DIR not set");
+    let manifest_dir = std::env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR not set");
     let path = format!("{}/tests/params.toml", manifest_dir);
     let data = fs::read_to_string(&path).expect("read tests/params.toml");
     toml::from_str(&data).expect("parse tests/params.toml")
@@ -34,6 +33,7 @@ fn live_infobase_info() {
         read_timeout: Duration::from_secs(30),
         write_timeout: Duration::from_secs(15),
         debug_raw: false,
+        protocol: Default::default(),
     };
     let mut client = RacClient::connect(&addr, cfg).expect("connect");
 

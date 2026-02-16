@@ -39,4 +39,3 @@ pub fn encode_rpc(method_id: u8, body: &[u8]) -> Vec<u8> {
     out.extend_from_slice(body);
     out
 }
-

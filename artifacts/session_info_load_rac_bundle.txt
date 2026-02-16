@@ -1,0 +1,2200 @@
+===== sample 01 =====
+rac_out=/tmp/rac_session_info_load_01.out
+session_dir=logs/session_1771190867_1495108_127_0_0_1_33934
+timestamp_unix=1771190867
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : 00000000-0000-0000-0000-000000000000
+process                          : 00000000-0000-0000-0000-000000000000
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:27:02
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 25082260
+bytes-last-5min                  : 4374335
+calls-all                        : 20511
+calls-last-5min                  : 3512
+dbms-bytes-all                   : 35181150
+dbms-bytes-last-5min             : 5495813
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 487496
+duration-all-dbms                : 20314
+duration-current                 : 0
+duration-current-dbms            : 0
+duration-last-5min               : 67477
+duration-last-5min-dbms          : 2971
+memory-current                   : 0
+memory-last-5min                 : 18810053
+memory-total                     : 571737962
+read-current                     : 0
+read-last-5min                   : 859090
+read-total                       : 27825358
+write-current                    : 0
+write-last-5min                  : 120856
+write-total                      : 15271155
+duration-current-service         : 0
+duration-last-5min-service       : 2250
+duration-all-service             : 16018
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 26992
+cpu-time-total                   : 192408
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+
+===== sample 02 =====
+rac_out=/tmp/rac_session_info_load_02.out
+session_dir=logs/session_1771190878_1495286_127_0_0_1_60166
+timestamp_unix=1771190878
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : 00000000-0000-0000-0000-000000000000
+process                          : 00000000-0000-0000-0000-000000000000
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:27:58
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 25518579
+bytes-last-5min                  : 3986869
+calls-all                        : 20837
+calls-last-5min                  : 3176
+dbms-bytes-all                   : 35660531
+dbms-bytes-last-5min             : 5333374
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 491786
+duration-all-dbms                : 20566
+duration-current                 : 0
+duration-current-dbms            : 0
+duration-last-5min               : 66726
+duration-last-5min-dbms          : 2905
+memory-current                   : 0
+memory-last-5min                 : 39457106
+memory-total                     : 592145407
+read-current                     : 0
+read-last-5min                   : 1068960
+read-total                       : 28117454
+write-current                    : 0
+write-last-5min                  : 202023
+write-total                      : 15352322
+duration-current-service         : 0
+duration-last-5min-service       : 2273
+duration-all-service             : 16273
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 26581
+cpu-time-total                   : 195998
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+
+===== sample 03 =====
+rac_out=/tmp/rac_session_info_load_03.out
+session_dir=logs/session_1771190888_1495499_127_0_0_1_54904
+timestamp_unix=1771190889
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : 00000000-0000-0000-0000-000000000000
+process                          : 00000000-0000-0000-0000-000000000000
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:28:08
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 26066043
+bytes-last-5min                  : 4516786
+calls-all                        : 21280
+calls-last-5min                  : 3613
+dbms-bytes-all                   : 36874644
+dbms-bytes-last-5min             : 6544359
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 497437
+duration-all-dbms                : 21460
+duration-current                 : 0
+duration-current-dbms            : 0
+duration-last-5min               : 72351
+duration-last-5min-dbms          : 3797
+memory-current                   : 0
+memory-last-5min                 : 39353066
+memory-total                     : 592039639
+read-current                     : 0
+read-last-5min                   : 1254920
+read-total                       : 28303414
+write-current                    : 0
+write-last-5min                  : 225160
+write-total                      : 15375459
+duration-current-service         : 0
+duration-last-5min-service       : 2910
+duration-all-service             : 16910
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 30466
+cpu-time-total                   : 199902
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+
+===== sample 04 =====
+rac_out=/tmp/rac_session_info_load_04.out
+session_dir=logs/session_1771190899_1495682_127_0_0_1_51492
+timestamp_unix=1771190899
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : e41e750e-56d7-40fb-b2e0-5e71b8e8f508
+process                          : f77f2c1d-1e5b-4855-a0b9-94390ccd4ce5
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:28:19
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 26423906
+bytes-last-5min                  : 4874649
+calls-all                        : 21579
+calls-last-5min                  : 3912
+dbms-bytes-all                   : 37506321
+dbms-bytes-last-5min             : 7176036
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 501903
+duration-all-dbms                : 21912
+duration-current                 : 5
+duration-current-dbms            : 0
+duration-last-5min               : 76817
+duration-last-5min-dbms          : 4249
+memory-current                   : 174352
+memory-last-5min                 : 39359969
+memory-total                     : 592046542
+read-current                     : 0
+read-last-5min                   : 1362556
+read-total                       : 28411050
+write-current                    : 0
+write-last-5min                  : 227737
+write-total                      : 15378036
+duration-current-service         : 0
+duration-last-5min-service       : 3313
+duration-all-service             : 17313
+current-service-name             : 
+cpu-time-current                 : 4
+cpu-time-last-5min               : 33899
+cpu-time-total                   : 203335
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+
+===== sample 05 =====
+rac_out=/tmp/rac_session_info_load_05.out
+session_dir=logs/session_1771190909_1495861_127_0_0_1_52456
+timestamp_unix=1771190910
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : 00000000-0000-0000-0000-000000000000
+process                          : 00000000-0000-0000-0000-000000000000
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:28:30
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 26699838
+bytes-last-5min                  : 5150581
+calls-all                        : 21811
+calls-last-5min                  : 4144
+dbms-bytes-all                   : 37606684
+dbms-bytes-last-5min             : 7276399
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 507059
+duration-all-dbms                : 21953
+duration-current                 : 0
+duration-current-dbms            : 0
+duration-last-5min               : 81973
+duration-last-5min-dbms          : 4290
+memory-current                   : 0
+memory-last-5min                 : 39362926
+memory-total                     : 592049499
+read-current                     : 0
+read-last-5min                   : 1370674
+read-total                       : 28419168
+write-current                    : 0
+write-last-5min                  : 228901
+write-total                      : 15379200
+duration-current-service         : 0
+duration-last-5min-service       : 3352
+duration-all-service             : 17352
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 35751
+cpu-time-total                   : 205187
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+
+===== sample 06 =====
+rac_out=/tmp/rac_session_info_load_06.out
+session_dir=logs/session_1771190920_1496088_127_0_0_1_57590
+timestamp_unix=1771190920
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : 00000000-0000-0000-0000-000000000000
+process                          : 00000000-0000-0000-0000-000000000000
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:28:40
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 27321514
+bytes-last-5min                  : 5772257
+calls-all                        : 22322
+calls-last-5min                  : 4655
+dbms-bytes-all                   : 38290574
+dbms-bytes-last-5min             : 7960289
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 511718
+duration-all-dbms                : 22347
+duration-current                 : 0
+duration-current-dbms            : 0
+duration-last-5min               : 86632
+duration-last-5min-dbms          : 4684
+memory-current                   : 0
+memory-last-5min                 : 39734126
+memory-total                     : 592420699
+read-current                     : 0
+read-last-5min                   : 1396983
+read-total                       : 28445477
+write-current                    : 0
+write-last-5min                  : 228901
+write-total                      : 15379200
+duration-current-service         : 0
+duration-last-5min-service       : 3631
+duration-all-service             : 17631
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 39317
+cpu-time-total                   : 208753
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+
+===== sample 07 =====
+rac_out=/tmp/rac_session_info_load_07.out
+session_dir=logs/session_1771190931_1496259_127_0_0_1_36822
+timestamp_unix=1771190931
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : e41e750e-56d7-40fb-b2e0-5e71b8e8f508
+process                          : f77f2c1d-1e5b-4855-a0b9-94390ccd4ce5
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:28:41
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 6
+bytes-all                        : 27380042
+bytes-last-5min                  : 5830785
+calls-all                        : 22367
+calls-last-5min                  : 4700
+dbms-bytes-all                   : 38620496
+dbms-bytes-last-5min             : 8290211
+db-proc-info                     : "5719"
+db-proc-took                     : 8387
+db-proc-took-at                  : 2026-02-16T00:28:42
+duration-all                     : 512380
+duration-all-dbms                : 22586
+duration-current                 : 9577
+duration-current-dbms            : 0
+duration-last-5min               : 87294
+duration-last-5min-dbms          : 4923
+memory-current                   : -47080
+memory-last-5min                 : 39698798
+memory-total                     : 592385371
+read-current                     : 16176
+read-last-5min                   : 1404449
+read-total                       : 28452943
+write-current                    : 0
+write-last-5min                  : 228901
+write-total                      : 15379200
+duration-current-service         : 0
+duration-last-5min-service       : 3828
+duration-all-service             : 17828
+current-service-name             : 
+cpu-time-current                 : 1051
+cpu-time-last-5min               : 39720
+cpu-time-total                   : 209156
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+
+===== sample 08 =====
+rac_out=/tmp/rac_session_info_load_08.out
+session_dir=logs/session_1771190941_1496450_127_0_0_1_52474
+timestamp_unix=1771190941
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : e41e750e-56d7-40fb-b2e0-5e71b8e8f508
+process                          : f77f2c1d-1e5b-4855-a0b9-94390ccd4ce5
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:28:41
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 6
+bytes-all                        : 27380042
+bytes-last-5min                  : 5830785
+calls-all                        : 22367
+calls-last-5min                  : 4700
+dbms-bytes-all                   : 38620496
+dbms-bytes-last-5min             : 8290211
+db-proc-info                     : "5719"
+db-proc-took                     : 18982
+db-proc-took-at                  : 2026-02-16T00:28:42
+duration-all                     : 512380
+duration-all-dbms                : 22586
+duration-current                 : 20172
+duration-current-dbms            : 0
+duration-last-5min               : 87294
+duration-last-5min-dbms          : 4923
+memory-current                   : -47080
+memory-last-5min                 : 39698798
+memory-total                     : 592385371
+read-current                     : 16176
+read-last-5min                   : 1404449
+read-total                       : 28452943
+write-current                    : 0
+write-last-5min                  : 228901
+write-total                      : 15379200
+duration-current-service         : 0
+duration-last-5min-service       : 3828
+duration-all-service             : 17828
+current-service-name             : 
+cpu-time-current                 : 1051
+cpu-time-last-5min               : 39720
+cpu-time-total                   : 209156
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+
+===== sample 09 =====
+rac_out=/tmp/rac_session_info_load_09.out
+session_dir=logs/session_1771190952_1496691_127_0_0_1_43474
+timestamp_unix=1771190952
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : e41e750e-56d7-40fb-b2e0-5e71b8e8f508
+process                          : f77f2c1d-1e5b-4855-a0b9-94390ccd4ce5
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:28:41
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 6
+bytes-all                        : 27380042
+bytes-last-5min                  : 5830785
+calls-all                        : 22367
+calls-last-5min                  : 4700
+dbms-bytes-all                   : 38691789
+dbms-bytes-last-5min             : 8361504
+db-proc-info                     : "5719"
+db-proc-took                     : 8280
+db-proc-took-at                  : 2026-02-16T00:29:04
+duration-all                     : 512380
+duration-all-dbms                : 22625
+duration-current                 : 30764
+duration-current-dbms            : 0
+duration-last-5min               : 87294
+duration-last-5min-dbms          : 4962
+memory-current                   : -58800
+memory-last-5min                 : 39698798
+memory-total                     : 592385371
+read-current                     : 20220
+read-last-5min                   : 1404449
+read-total                       : 28452943
+write-current                    : 0
+write-last-5min                  : 228901
+write-total                      : 15379200
+duration-current-service         : 0
+duration-last-5min-service       : 3858
+duration-all-service             : 17858
+current-service-name             : 
+cpu-time-current                 : 1283
+cpu-time-last-5min               : 39720
+cpu-time-total                   : 209156
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+
+===== sample 10 =====
+rac_out=/tmp/rac_session_info_load_10.out
+session_dir=logs/session_1771190962_1496861_127_0_0_1_34092
+timestamp_unix=1771190963
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : 00000000-0000-0000-0000-000000000000
+process                          : 00000000-0000-0000-0000-000000000000
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:29:23
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 27923994
+bytes-last-5min                  : 6374737
+calls-all                        : 22824
+calls-last-5min                  : 5157
+dbms-bytes-all                   : 39205906
+dbms-bytes-last-5min             : 8875621
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 548393
+duration-all-dbms                : 23050
+duration-current                 : 0
+duration-current-dbms            : 0
+duration-last-5min               : 123307
+duration-last-5min-dbms          : 5387
+memory-current                   : 0
+memory-last-5min                 : 39069270
+memory-total                     : 591755843
+read-current                     : 0
+read-last-5min                   : 1474909
+read-total                       : 28523403
+write-current                    : 0
+write-last-5min                  : 228901
+write-total                      : 15379200
+duration-current-service         : 0
+duration-last-5min-service       : 4157
+duration-all-service             : 18157
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 44622
+cpu-time-total                   : 214058
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+
+===== sample 11 =====
+rac_out=/tmp/rac_session_info_load_11.out
+session_dir=logs/session_1771190973_1497043_127_0_0_1_40034
+timestamp_unix=1771190973
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : 00000000-0000-0000-0000-000000000000
+process                          : 00000000-0000-0000-0000-000000000000
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:29:33
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 28547475
+bytes-last-5min                  : 6606109
+calls-all                        : 23321
+calls-last-5min                  : 5367
+dbms-bytes-all                   : 39797688
+dbms-bytes-last-5min             : 8832009
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 553655
+duration-all-dbms                : 23434
+duration-current                 : 0
+duration-current-dbms            : 0
+duration-last-5min               : 125306
+duration-last-5min-dbms          : 5480
+memory-current                   : 0
+memory-last-5min                 : 25989402
+memory-total                     : 591853107
+read-current                     : 0
+read-last-5min                   : 1401051
+read-total                       : 28599086
+write-current                    : 0
+write-last-5min                  : 189652
+write-total                      : 15379200
+duration-current-service         : 0
+duration-last-5min-service       : 4301
+duration-all-service             : 18506
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 46062
+cpu-time-total                   : 218137
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+
+===== sample 12 =====
+rac_out=/tmp/rac_session_info_load_12.out
+session_dir=logs/session_1771190984_1497260_127_0_0_1_40148
+timestamp_unix=1771190984
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : 00000000-0000-0000-0000-000000000000
+process                          : 00000000-0000-0000-0000-000000000000
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:29:34
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 28598081
+bytes-last-5min                  : 6656715
+calls-all                        : 23353
+calls-last-5min                  : 5399
+dbms-bytes-all                   : 39802649
+dbms-bytes-last-5min             : 8836970
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 553792
+duration-all-dbms                : 23442
+duration-current                 : 0
+duration-current-dbms            : 0
+duration-last-5min               : 125443
+duration-last-5min-dbms          : 5488
+memory-current                   : 0
+memory-last-5min                 : 25432130
+memory-total                     : 591295835
+read-current                     : 0
+read-last-5min                   : 1404695
+read-total                       : 28602730
+write-current                    : 0
+write-last-5min                  : 189652
+write-total                      : 15379200
+duration-current-service         : 0
+duration-last-5min-service       : 4301
+duration-all-service             : 18506
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 46161
+cpu-time-total                   : 218236
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+
+===== sample 13 =====
+rac_out=/tmp/rac_session_info_load_13.out
+session_dir=logs/session_1771190994_1497436_127_0_0_1_41790
+timestamp_unix=1771190994
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : 00000000-0000-0000-0000-000000000000
+process                          : 00000000-0000-0000-0000-000000000000
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:29:34
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 28598081
+bytes-last-5min                  : 6656715
+calls-all                        : 23353
+calls-last-5min                  : 5399
+dbms-bytes-all                   : 39802649
+dbms-bytes-last-5min             : 8836970
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 553792
+duration-all-dbms                : 23442
+duration-current                 : 0
+duration-current-dbms            : 0
+duration-last-5min               : 125443
+duration-last-5min-dbms          : 5488
+memory-current                   : 0
+memory-last-5min                 : 25432130
+memory-total                     : 591295835
+read-current                     : 0
+read-last-5min                   : 1404695
+read-total                       : 28602730
+write-current                    : 0
+write-last-5min                  : 189652
+write-total                      : 15379200
+duration-current-service         : 0
+duration-last-5min-service       : 4301
+duration-all-service             : 18506
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 46161
+cpu-time-total                   : 218236
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+
+===== sample 14 =====
+rac_out=/tmp/rac_session_info_load_14.out
+session_dir=logs/session_1771191005_1497640_127_0_0_1_42022
+timestamp_unix=1771191005
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : 00000000-0000-0000-0000-000000000000
+process                          : 00000000-0000-0000-0000-000000000000
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:29:34
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 28598081
+bytes-last-5min                  : 5537770
+calls-all                        : 23353
+calls-last-5min                  : 4478
+dbms-bytes-all                   : 39802649
+dbms-bytes-last-5min             : 6830406
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 553792
+duration-all-dbms                : 23442
+duration-current                 : 0
+duration-current-dbms            : 0
+duration-last-5min               : 114803
+duration-last-5min-dbms          : 4338
+memory-current                   : 0
+memory-last-5min                 : 18670033
+memory-total                     : 591295835
+read-current                     : 0
+read-last-5min                   : 964382
+read-total                       : 28602730
+write-current                    : 0
+write-last-5min                  : 118631
+write-total                      : 15379200
+duration-current-service         : 0
+duration-last-5min-service       : 3434
+duration-all-service             : 18506
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 38077
+cpu-time-total                   : 218236
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+
+===== sample 15 =====
+rac_out=/tmp/rac_session_info_load_15.out
+session_dir=logs/session_1771191015_1497843_127_0_0_1_33266
+timestamp_unix=1771191016
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : 00000000-0000-0000-0000-000000000000
+process                          : 00000000-0000-0000-0000-000000000000
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:29:34
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 28598081
+bytes-last-5min                  : 4748706
+calls-all                        : 23353
+calls-last-5min                  : 3831
+dbms-bytes-all                   : 39802649
+dbms-bytes-last-5min             : 5824413
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 553792
+duration-all-dbms                : 23442
+duration-current                 : 0
+duration-current-dbms            : 0
+duration-last-5min               : 106050
+duration-last-5min-dbms          : 3849
+memory-current                   : 0
+memory-last-5min                 : 18538377
+memory-total                     : 591295835
+read-current                     : 0
+read-last-5min                   : 930775
+read-total                       : 28602730
+write-current                    : 0
+write-last-5min                  : 109901
+write-total                      : 15379200
+duration-current-service         : 0
+duration-last-5min-service       : 3047
+duration-all-service             : 18506
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 33712
+cpu-time-total                   : 218236
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+
+===== sample 16 =====
+rac_out=/tmp/rac_session_info_load_16.out
+session_dir=logs/session_1771191026_1498011_127_0_0_1_58434
+timestamp_unix=1771191026
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : 00000000-0000-0000-0000-000000000000
+process                          : 00000000-0000-0000-0000-000000000000
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:29:34
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 28598081
+bytes-last-5min                  : 4748706
+calls-all                        : 23353
+calls-last-5min                  : 3831
+dbms-bytes-all                   : 39802649
+dbms-bytes-last-5min             : 5824413
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 553792
+duration-all-dbms                : 23442
+duration-current                 : 0
+duration-current-dbms            : 0
+duration-last-5min               : 106050
+duration-last-5min-dbms          : 3729
+memory-current                   : 0
+memory-last-5min                 : 18538377
+memory-total                     : 591295835
+read-current                     : 0
+read-last-5min                   : 930775
+read-total                       : 28602730
+write-current                    : 0
+write-last-5min                  : 109901
+write-total                      : 15379200
+duration-current-service         : 0
+duration-last-5min-service       : 2969
+duration-all-service             : 18506
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 33712
+cpu-time-total                   : 218236
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+
+===== sample 17 =====
+rac_out=/tmp/rac_session_info_load_17.out
+session_dir=logs/session_1771191037_1498199_127_0_0_1_39068
+timestamp_unix=1771191037
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : 00000000-0000-0000-0000-000000000000
+process                          : 00000000-0000-0000-0000-000000000000
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:29:34
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 28598081
+bytes-last-5min                  : 4748706
+calls-all                        : 23353
+calls-last-5min                  : 3831
+dbms-bytes-all                   : 39802649
+dbms-bytes-last-5min             : 5824413
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 553792
+duration-all-dbms                : 23442
+duration-current                 : 0
+duration-current-dbms            : 0
+duration-last-5min               : 106050
+duration-last-5min-dbms          : 3729
+memory-current                   : 0
+memory-last-5min                 : 18538377
+memory-total                     : 591295835
+read-current                     : 0
+read-last-5min                   : 930775
+read-total                       : 28602730
+write-current                    : 0
+write-last-5min                  : 109901
+write-total                      : 15379200
+duration-current-service         : 0
+duration-last-5min-service       : 2969
+duration-all-service             : 18506
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 33712
+cpu-time-total                   : 218236
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+
+===== sample 18 =====
+rac_out=/tmp/rac_session_info_load_18.out
+session_dir=logs/session_1771191047_1498425_127_0_0_1_46050
+timestamp_unix=1771191047
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : 00000000-0000-0000-0000-000000000000
+process                          : 00000000-0000-0000-0000-000000000000
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:29:34
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 28598081
+bytes-last-5min                  : 4748706
+calls-all                        : 23353
+calls-last-5min                  : 3831
+dbms-bytes-all                   : 39802649
+dbms-bytes-last-5min             : 5753064
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 553792
+duration-all-dbms                : 23442
+duration-current                 : 0
+duration-current-dbms            : 0
+duration-last-5min               : 106050
+duration-last-5min-dbms          : 3710
+memory-current                   : 0
+memory-last-5min                 : 18538377
+memory-total                     : 591295835
+read-current                     : 0
+read-last-5min                   : 930775
+read-total                       : 28602730
+write-current                    : 0
+write-last-5min                  : 109901
+write-total                      : 15379200
+duration-current-service         : 0
+duration-last-5min-service       : 2947
+duration-all-service             : 18506
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 33712
+cpu-time-total                   : 218236
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+
+===== sample 19 =====
+rac_out=/tmp/rac_session_info_load_19.out
+session_dir=logs/session_1771191058_1498779_127_0_0_1_51750
+timestamp_unix=1771191058
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : 00000000-0000-0000-0000-000000000000
+process                          : 00000000-0000-0000-0000-000000000000
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:29:34
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 28598081
+bytes-last-5min                  : 3997515
+calls-all                        : 23353
+calls-last-5min                  : 3199
+dbms-bytes-all                   : 39802649
+dbms-bytes-last-5min             : 5087794
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 553792
+duration-all-dbms                : 23442
+duration-current                 : 0
+duration-current-dbms            : 0
+duration-last-5min               : 70310
+duration-last-5min-dbms          : 3391
+memory-current                   : 0
+memory-last-5min                 : 18968833
+memory-total                     : 591295835
+read-current                     : 0
+read-last-5min                   : 858232
+read-total                       : 28602730
+write-current                    : 0
+write-last-5min                  : 108045
+write-total                      : 15379200
+duration-current-service         : 0
+duration-last-5min-service       : 2672
+duration-all-service             : 18506
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 28987
+cpu-time-total                   : 218236
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+
+===== sample 20 =====
+rac_out=/tmp/rac_session_info_load_20.out
+session_dir=logs/session_1771191068_1499078_127_0_0_1_38144
+timestamp_unix=1771191069
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : 00000000-0000-0000-0000-000000000000
+process                          : 00000000-0000-0000-0000-000000000000
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:31:03
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 28598655
+bytes-last-5min                  : 3563878
+calls-all                        : 23354
+calls-last-5min                  : 2868
+dbms-bytes-all                   : 39802649
+dbms-bytes-last-5min             : 4675866
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 553795
+duration-all-dbms                : 23442
+duration-current                 : 0
+duration-current-dbms            : 0
+duration-last-5min               : 66437
+duration-last-5min-dbms          : 3136
+memory-current                   : 0
+memory-last-5min                 : 19005577
+memory-total                     : 591295547
+read-current                     : 0
+read-last-5min                   : 784660
+read-total                       : 28602730
+write-current                    : 0
+write-last-5min                  : 108045
+write-total                      : 15379200
+duration-current-service         : 0
+duration-last-5min-service       : 2489
+duration-all-service             : 18506
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 25933
+cpu-time-total                   : 218238
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+
+===== sample 21 =====
+rac_out=/tmp/rac_session_info_load_21.out
+session_dir=logs/session_1771191079_1499268_127_0_0_1_35620
+timestamp_unix=1771191079
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : 00000000-0000-0000-0000-000000000000
+process                          : 00000000-0000-0000-0000-000000000000
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:31:03
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 28598655
+bytes-last-5min                  : 3563878
+calls-all                        : 23354
+calls-last-5min                  : 2868
+dbms-bytes-all                   : 39802649
+dbms-bytes-last-5min             : 4675866
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 553795
+duration-all-dbms                : 23442
+duration-current                 : 0
+duration-current-dbms            : 0
+duration-last-5min               : 66437
+duration-last-5min-dbms          : 3136
+memory-current                   : 0
+memory-last-5min                 : 19005577
+memory-total                     : 591295547
+read-current                     : 0
+read-last-5min                   : 784660
+read-total                       : 28602730
+write-current                    : 0
+write-last-5min                  : 108045
+write-total                      : 15379200
+duration-current-service         : 0
+duration-last-5min-service       : 2489
+duration-all-service             : 18506
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 25933
+cpu-time-total                   : 218238
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+
+===== sample 22 =====
+rac_out=/tmp/rac_session_info_load_22.out
+session_dir=logs/session_1771191089_1499428_127_0_0_1_36710
+timestamp_unix=1771191090
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : 00000000-0000-0000-0000-000000000000
+process                          : 00000000-0000-0000-0000-000000000000
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:31:03
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 28598655
+bytes-last-5min                  : 3520520
+calls-all                        : 23354
+calls-last-5min                  : 2843
+dbms-bytes-all                   : 39802649
+dbms-bytes-last-5min             : 4670905
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 553795
+duration-all-dbms                : 23442
+duration-current                 : 0
+duration-current-dbms            : 0
+duration-last-5min               : 66299
+duration-last-5min-dbms          : 3129
+memory-current                   : 0
+memory-last-5min                 : 19557585
+memory-total                     : 591295547
+read-current                     : 0
+read-last-5min                   : 777372
+read-total                       : 28602730
+write-current                    : 0
+write-last-5min                  : 108045
+write-total                      : 15379200
+duration-current-service         : 0
+duration-last-5min-service       : 2488
+duration-all-service             : 18506
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 25829
+cpu-time-total                   : 218238
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+
+===== sample 23 =====
+rac_out=/tmp/rac_session_info_load_23.out
+session_dir=logs/session_1771191100_1499666_127_0_0_1_38348
+timestamp_unix=1771191100
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : 00000000-0000-0000-0000-000000000000
+process                          : 00000000-0000-0000-0000-000000000000
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:31:03
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 28598655
+bytes-last-5min                  : 3520520
+calls-all                        : 23354
+calls-last-5min                  : 2843
+dbms-bytes-all                   : 39802649
+dbms-bytes-last-5min             : 4670905
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 553795
+duration-all-dbms                : 23442
+duration-current                 : 0
+duration-current-dbms            : 0
+duration-last-5min               : 66299
+duration-last-5min-dbms          : 3129
+memory-current                   : 0
+memory-last-5min                 : 19557585
+memory-total                     : 591295547
+read-current                     : 0
+read-last-5min                   : 777372
+read-total                       : 28602730
+write-current                    : 0
+write-last-5min                  : 108045
+write-total                      : 15379200
+duration-current-service         : 0
+duration-last-5min-service       : 2488
+duration-all-service             : 18506
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 25829
+cpu-time-total                   : 218238
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+
+===== sample 24 =====
+rac_out=/tmp/rac_session_info_load_24.out
+session_dir=logs/session_1771191111_1499880_127_0_0_1_33948
+timestamp_unix=1771191111
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : 00000000-0000-0000-0000-000000000000
+process                          : 00000000-0000-0000-0000-000000000000
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:31:03
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 28598655
+bytes-last-5min                  : 3520520
+calls-all                        : 23354
+calls-last-5min                  : 2843
+dbms-bytes-all                   : 39802649
+dbms-bytes-last-5min             : 4670905
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 553795
+duration-all-dbms                : 23442
+duration-current                 : 0
+duration-current-dbms            : 0
+duration-last-5min               : 66299
+duration-last-5min-dbms          : 3129
+memory-current                   : 0
+memory-last-5min                 : 19557585
+memory-total                     : 591295547
+read-current                     : 0
+read-last-5min                   : 777372
+read-total                       : 28602730
+write-current                    : 0
+write-last-5min                  : 108045
+write-total                      : 15379200
+duration-current-service         : 0
+duration-last-5min-service       : 2488
+duration-all-service             : 18506
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 25829
+cpu-time-total                   : 218238
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+
+===== sample 25 =====
+rac_out=/tmp/rac_session_info_load_25.out
+session_dir=logs/session_1771191121_1500063_127_0_0_1_58120
+timestamp_unix=1771191122
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : 00000000-0000-0000-0000-000000000000
+process                          : 00000000-0000-0000-0000-000000000000
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:31:03
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 28598655
+bytes-last-5min                  : 3520520
+calls-all                        : 23354
+calls-last-5min                  : 2843
+dbms-bytes-all                   : 39802649
+dbms-bytes-last-5min             : 4670905
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 553795
+duration-all-dbms                : 23442
+duration-current                 : 0
+duration-current-dbms            : 0
+duration-last-5min               : 66299
+duration-last-5min-dbms          : 3129
+memory-current                   : 0
+memory-last-5min                 : 19557585
+memory-total                     : 591295547
+read-current                     : 0
+read-last-5min                   : 777372
+read-total                       : 28602730
+write-current                    : 0
+write-last-5min                  : 108045
+write-total                      : 15379200
+duration-current-service         : 0
+duration-last-5min-service       : 2488
+duration-all-service             : 18506
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 25829
+cpu-time-total                   : 218238
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+
+===== sample 26 =====
+rac_out=/tmp/rac_session_info_load_26.out
+session_dir=logs/session_1771191132_1500277_127_0_0_1_38354
+timestamp_unix=1771191132
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : 00000000-0000-0000-0000-000000000000
+process                          : 00000000-0000-0000-0000-000000000000
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:31:03
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 28598655
+bytes-last-5min                  : 3516395
+calls-all                        : 23354
+calls-last-5min                  : 2842
+dbms-bytes-all                   : 39802649
+dbms-bytes-last-5min             : 4621499
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 553795
+duration-all-dbms                : 23442
+duration-current                 : 0
+duration-current-dbms            : 0
+duration-last-5min               : 66277
+duration-last-5min-dbms          : 3128
+memory-current                   : 0
+memory-last-5min                 : 12754512
+memory-total                     : 591295547
+read-current                     : 0
+read-last-5min                   : 775456
+read-total                       : 28602730
+write-current                    : 0
+write-last-5min                  : 108045
+write-total                      : 15379200
+duration-current-service         : 0
+duration-last-5min-service       : 2488
+duration-all-service             : 18506
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 25812
+cpu-time-total                   : 218238
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+
+===== sample 27 =====
+rac_out=/tmp/rac_session_info_load_27.out
+session_dir=logs/session_1771191142_1500445_127_0_0_1_58172
+timestamp_unix=1771191143
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : 00000000-0000-0000-0000-000000000000
+process                          : 00000000-0000-0000-0000-000000000000
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:31:03
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 28598655
+bytes-last-5min                  : 3516395
+calls-all                        : 23354
+calls-last-5min                  : 2842
+dbms-bytes-all                   : 39802649
+dbms-bytes-last-5min             : 4621499
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 553795
+duration-all-dbms                : 23442
+duration-current                 : 0
+duration-current-dbms            : 0
+duration-last-5min               : 66277
+duration-last-5min-dbms          : 3128
+memory-current                   : 0
+memory-last-5min                 : 12754512
+memory-total                     : 591295547
+read-current                     : 0
+read-last-5min                   : 775456
+read-total                       : 28602730
+write-current                    : 0
+write-last-5min                  : 108045
+write-total                      : 15379200
+duration-current-service         : 0
+duration-last-5min-service       : 2488
+duration-all-service             : 18506
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 25812
+cpu-time-total                   : 218238
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+
+===== sample 28 =====
+rac_out=/tmp/rac_session_info_load_28.out
+session_dir=logs/session_1771191153_1500663_127_0_0_1_46326
+timestamp_unix=1771191153
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : 00000000-0000-0000-0000-000000000000
+process                          : 00000000-0000-0000-0000-000000000000
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:31:03
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 28598655
+bytes-last-5min                  : 3516395
+calls-all                        : 23354
+calls-last-5min                  : 2842
+dbms-bytes-all                   : 39802649
+dbms-bytes-last-5min             : 4621499
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 553795
+duration-all-dbms                : 23442
+duration-current                 : 0
+duration-current-dbms            : 0
+duration-last-5min               : 66277
+duration-last-5min-dbms          : 3128
+memory-current                   : 0
+memory-last-5min                 : 12754512
+memory-total                     : 591295547
+read-current                     : 0
+read-last-5min                   : 775456
+read-total                       : 28602730
+write-current                    : 0
+write-last-5min                  : 108045
+write-total                      : 15379200
+duration-current-service         : 0
+duration-last-5min-service       : 2488
+duration-all-service             : 18506
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 25812
+cpu-time-total                   : 218238
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+
+===== sample 29 =====
+rac_out=/tmp/rac_session_info_load_29.out
+session_dir=logs/session_1771191164_1500892_127_0_0_1_59266
+timestamp_unix=1771191164
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : 00000000-0000-0000-0000-000000000000
+process                          : 00000000-0000-0000-0000-000000000000
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:31:03
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 28598655
+bytes-last-5min                  : 3516395
+calls-all                        : 23354
+calls-last-5min                  : 2842
+dbms-bytes-all                   : 39802649
+dbms-bytes-last-5min             : 4621499
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 553795
+duration-all-dbms                : 23442
+duration-current                 : 0
+duration-current-dbms            : 0
+duration-last-5min               : 66277
+duration-last-5min-dbms          : 3128
+memory-current                   : 0
+memory-last-5min                 : 12754512
+memory-total                     : 591295547
+read-current                     : 0
+read-last-5min                   : 775456
+read-total                       : 28602730
+write-current                    : 0
+write-last-5min                  : 108045
+write-total                      : 15379200
+duration-current-service         : 0
+duration-last-5min-service       : 2488
+duration-all-service             : 18506
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 25812
+cpu-time-total                   : 218238
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+
+===== sample 30 =====
+rac_out=/tmp/rac_session_info_load_30.out
+session_dir=logs/session_1771191174_1501063_127_0_0_1_53092
+timestamp_unix=1771191175
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : 00000000-0000-0000-0000-000000000000
+process                          : 00000000-0000-0000-0000-000000000000
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:31:03
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 28598655
+bytes-last-5min                  : 3145955
+calls-all                        : 23354
+calls-last-5min                  : 2569
+dbms-bytes-all                   : 39802649
+dbms-bytes-last-5min             : 4196906
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 553795
+duration-all-dbms                : 23442
+duration-current                 : 0
+duration-current-dbms            : 0
+duration-last-5min               : 62874
+duration-last-5min-dbms          : 2910
+memory-current                   : 0
+memory-last-5min                 : -660004
+memory-total                     : 591295547
+read-current                     : 0
+read-last-5min                   : 626006
+read-total                       : 28602730
+write-current                    : 0
+write-last-5min                  : 68792
+write-total                      : 15379200
+duration-current-service         : 0
+duration-last-5min-service       : 2258
+duration-all-service             : 18506
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 23011
+cpu-time-total                   : 218238
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+
+===== sample 31 =====
+rac_out=/tmp/rac_session_info_load_31.out
+session_dir=logs/session_1771191185_1501249_127_0_0_1_43100
+timestamp_unix=1771191185
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : 00000000-0000-0000-0000-000000000000
+process                          : 00000000-0000-0000-0000-000000000000
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:31:03
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 28598655
+bytes-last-5min                  : 2779571
+calls-all                        : 23354
+calls-last-5min                  : 2272
+dbms-bytes-all                   : 39802649
+dbms-bytes-last-5min             : 3458845
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 553795
+duration-all-dbms                : 23442
+duration-current                 : 0
+duration-current-dbms            : 0
+duration-last-5min               : 59246
+duration-last-5min-dbms          : 2380
+memory-current                   : 0
+memory-last-5min                 : -1121252
+memory-total                     : 591295547
+read-current                     : 0
+read-last-5min                   : 412465
+read-total                       : 28602730
+write-current                    : 0
+write-last-5min                  : 26878
+write-total                      : 15379200
+duration-current-service         : 0
+duration-last-5min-service       : 1859
+duration-all-service             : 18506
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 20417
+cpu-time-total                   : 218238
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+
+===== sample 32 =====
+rac_out=/tmp/rac_session_info_load_32.out
+session_dir=logs/session_1771191195_1501460_127_0_0_1_51884
+timestamp_unix=1771191196
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : 00000000-0000-0000-0000-000000000000
+process                          : 00000000-0000-0000-0000-000000000000
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:31:03
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 28598655
+bytes-last-5min                  : 2390277
+calls-all                        : 23354
+calls-last-5min                  : 1956
+dbms-bytes-all                   : 39802649
+dbms-bytes-last-5min             : 2648234
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 553795
+duration-all-dbms                : 23442
+duration-current                 : 0
+duration-current-dbms            : 0
+duration-last-5min               : 54333
+duration-last-5min-dbms          : 1806
+memory-current                   : 0
+memory-last-5min                 : -774395
+memory-total                     : 591295547
+read-current                     : 0
+read-last-5min                   : 299316
+read-total                       : 28602730
+write-current                    : 0
+write-last-5min                  : 3741
+write-total                      : 15379200
+duration-current-service         : 0
+duration-last-5min-service       : 1193
+duration-all-service             : 18506
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 16696
+cpu-time-total                   : 218238
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+
+===== sample 33 =====
+rac_out=/tmp/rac_session_info_load_33.out
+session_dir=logs/session_1771191206_1501640_127_0_0_1_42404
+timestamp_unix=1771191206
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : 00000000-0000-0000-0000-000000000000
+process                          : 00000000-0000-0000-0000-000000000000
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:31:03
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 28598655
+bytes-last-5min                  : 2007673
+calls-all                        : 23354
+calls-last-5min                  : 1634
+dbms-bytes-all                   : 39802649
+dbms-bytes-last-5min             : 2223224
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 553795
+duration-all-dbms                : 23442
+duration-current                 : 0
+duration-current-dbms            : 0
+duration-last-5min               : 50683
+duration-last-5min-dbms          : 1504
+memory-current                   : 0
+memory-last-5min                 : -952648
+memory-total                     : 591295547
+read-current                     : 0
+read-last-5min                   : 185614
+read-total                       : 28602730
+write-current                    : 0
+write-last-5min                  : 1164
+write-total                      : 15379200
+duration-current-service         : 0
+duration-last-5min-service       : 1164
+duration-all-service             : 18506
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 13860
+cpu-time-total                   : 218238
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+
+===== sample 34 =====
+rac_out=/tmp/rac_session_info_load_34.out
+session_dir=logs/session_1771191217_1501822_127_0_0_1_32988
+timestamp_unix=1771191217
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : 00000000-0000-0000-0000-000000000000
+process                          : 00000000-0000-0000-0000-000000000000
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:31:03
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 28598655
+bytes-last-5min                  : 1277141
+calls-all                        : 23354
+calls-last-5min                  : 1034
+dbms-bytes-all                   : 39802649
+dbms-bytes-last-5min             : 1534171
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 553795
+duration-all-dbms                : 23442
+duration-current                 : 0
+duration-current-dbms            : 0
+duration-last-5min               : 42085
+duration-last-5min-dbms          : 1115
+memory-current                   : 0
+memory-last-5min                 : -1125728
+memory-total                     : 591295547
+read-current                     : 0
+read-last-5min                   : 149787
+read-total                       : 28602730
+write-current                    : 0
+write-last-5min                  : 0
+write-total                      : 15379200
+duration-current-service         : 0
+duration-last-5min-service       : 867
+duration-all-service             : 18506
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 9490
+cpu-time-total                   : 218238
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+
+===== sample 35 =====
+rac_out=/tmp/rac_session_info_load_35.out
+session_dir=logs/session_1771191227_1502031_127_0_0_1_49704
+timestamp_unix=1771191227
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : 00000000-0000-0000-0000-000000000000
+process                          : 00000000-0000-0000-0000-000000000000
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:31:03
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 28598655
+bytes-last-5min                  : 1218613
+calls-all                        : 23354
+calls-last-5min                  : 987
+dbms-bytes-all                   : 39802649
+dbms-bytes-last-5min             : 1182153
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 553795
+duration-all-dbms                : 23442
+duration-current                 : 0
+duration-current-dbms            : 0
+duration-last-5min               : 41415
+duration-last-5min-dbms          : 856
+memory-current                   : 0
+memory-last-5min                 : -1089824
+memory-total                     : 591295547
+read-current                     : 0
+read-last-5min                   : 149787
+read-total                       : 28602730
+write-current                    : 0
+write-last-5min                  : 0
+write-total                      : 15379200
+duration-current-service         : 0
+duration-last-5min-service       : 678
+duration-all-service             : 18506
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 9082
+cpu-time-total                   : 218238
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+
+===== sample 36 =====
+rac_out=/tmp/rac_session_info_load_36.out
+session_dir=logs/session_1771191238_1502203_127_0_0_1_60958
+timestamp_unix=1771191238
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : 00000000-0000-0000-0000-000000000000
+process                          : 00000000-0000-0000-0000-000000000000
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:31:03
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 28598655
+bytes-last-5min                  : 1218613
+calls-all                        : 23354
+calls-last-5min                  : 987
+dbms-bytes-all                   : 39802649
+dbms-bytes-last-5min             : 1182153
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 553795
+duration-all-dbms                : 23442
+duration-current                 : 0
+duration-current-dbms            : 0
+duration-last-5min               : 41415
+duration-last-5min-dbms          : 856
+memory-current                   : 0
+memory-last-5min                 : -1089824
+memory-total                     : 591295547
+read-current                     : 0
+read-last-5min                   : 149787
+read-total                       : 28602730
+write-current                    : 0
+write-last-5min                  : 0
+write-total                      : 15379200
+duration-current-service         : 0
+duration-last-5min-service       : 678
+duration-all-service             : 18506
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 9082
+cpu-time-total                   : 218238
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+
+===== sample 37 =====
+rac_out=/tmp/rac_session_info_load_37.out
+session_dir=logs/session_1771191248_1502410_127_0_0_1_55214
+timestamp_unix=1771191249
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : 00000000-0000-0000-0000-000000000000
+process                          : 00000000-0000-0000-0000-000000000000
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:31:03
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 28598655
+bytes-last-5min                  : 1218613
+calls-all                        : 23354
+calls-last-5min                  : 987
+dbms-bytes-all                   : 39802649
+dbms-bytes-last-5min             : 1110860
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 553795
+duration-all-dbms                : 23442
+duration-current                 : 0
+duration-current-dbms            : 0
+duration-last-5min               : 41415
+duration-last-5min-dbms          : 817
+memory-current                   : 0
+memory-last-5min                 : -1089824
+memory-total                     : 591295547
+read-current                     : 0
+read-last-5min                   : 149787
+read-total                       : 28602730
+write-current                    : 0
+write-last-5min                  : 0
+write-total                      : 15379200
+duration-current-service         : 0
+duration-last-5min-service       : 648
+duration-all-service             : 18506
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 9082
+cpu-time-total                   : 218238
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+
+===== sample 38 =====
+rac_out=/tmp/rac_session_info_load_38.out
+session_dir=logs/session_1771191259_1502633_127_0_0_1_56896
+timestamp_unix=1771191259
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : 00000000-0000-0000-0000-000000000000
+process                          : 00000000-0000-0000-0000-000000000000
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:31:03
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 28598655
+bytes-last-5min                  : 923225
+calls-all                        : 23354
+calls-last-5min                  : 744
+dbms-bytes-all                   : 39802649
+dbms-bytes-last-5min             : 715197
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 553795
+duration-all-dbms                : 23442
+duration-current                 : 0
+duration-current-dbms            : 0
+duration-last-5min               : 6993
+duration-last-5min-dbms          : 431
+memory-current                   : 0
+memory-last-5min                 : -648240
+memory-total                     : 591295547
+read-current                     : 0
+read-last-5min                   : 80338
+read-total                       : 28602730
+write-current                    : 0
+write-last-5min                  : 0
+write-total                      : 15379200
+duration-current-service         : 0
+duration-last-5min-service       : 390
+duration-all-service             : 18506
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 5486
+cpu-time-total                   : 218238
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+
+===== sample 39 =====
+rac_out=/tmp/rac_session_info_load_39.out
+session_dir=logs/session_1771191270_1502799_127_0_0_1_51144
+timestamp_unix=1771191270
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : 00000000-0000-0000-0000-000000000000
+process                          : 00000000-0000-0000-0000-000000000000
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:31:03
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 28598655
+bytes-last-5min                  : 260625
+calls-all                        : 23354
+calls-last-5min                  : 198
+dbms-bytes-all                   : 39802649
+dbms-bytes-last-5min             : 37764
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 553795
+duration-all-dbms                : 23442
+duration-current                 : 0
+duration-current-dbms            : 0
+duration-last-5min               : 1360
+duration-last-5min-dbms          : 17
+memory-current                   : 0
+memory-last-5min                 : -813304
+memory-total                     : 591295547
+read-current                     : 0
+read-last-5min                   : 3644
+read-total                       : 28602730
+write-current                    : 0
+write-last-5min                  : 0
+write-total                      : 15379200
+duration-current-service         : 0
+duration-last-5min-service       : 0
+duration-all-service             : 18506
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 1061
+cpu-time-total                   : 218238
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+
+===== sample 40 =====
+rac_out=/tmp/rac_session_info_load_40.out
+session_dir=logs/session_1771191280_1502995_127_0_0_1_58928
+timestamp_unix=1771191280
+session                          : 25510e27-f24a-4586-9ac9-9f7837c0dea1
+session-id                       : 3
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : 00000000-0000-0000-0000-000000000000
+process                          : 00000000-0000-0000-0000-000000000000
+user-name                        : DefUser
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-15T00:10:57
+last-active-at                   : 2026-02-16T00:31:03
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 28598655
+bytes-last-5min                  : 574
+calls-all                        : 23354
+calls-last-5min                  : 0
+dbms-bytes-all                   : 39802649
+dbms-bytes-last-5min             : 0
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 553795
+duration-all-dbms                : 23442
+duration-current                 : 0
+duration-current-dbms            : 0
+duration-last-5min               : 0
+duration-last-5min-dbms          : 0
+memory-current                   : 0
+memory-last-5min                 : 0
+memory-total                     : 591295547
+read-current                     : 0
+read-last-5min                   : 0
+read-total                       : 28602730
+write-current                    : 0
+write-last-5min                  : 0
+write-total                      : 15379200
+duration-current-service         : 0
+duration-last-5min-service       : 0
+duration-all-service             : 18506
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 0
+cpu-time-total                   : 218238
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+

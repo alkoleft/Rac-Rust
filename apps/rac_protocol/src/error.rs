@@ -9,6 +9,7 @@ pub enum RacError {
     Wire(WireError),
     Protocol(&'static str),
     ProtocolMessage(String),
+    Unsupported(&'static str),
     Decode(&'static str),
     DecodeMessage(String),
     UnexpectedMethod { got: u8, expected: u8 },
@@ -21,10 +22,14 @@ impl fmt::Display for RacError {
             RacError::Wire(err) => write!(f, "wire error: {err}"),
             RacError::Protocol(msg) => write!(f, "protocol error: {msg}"),
             RacError::ProtocolMessage(msg) => write!(f, "protocol error: {msg}"),
+            RacError::Unsupported(msg) => write!(f, "unsupported: {msg}"),
             RacError::Decode(msg) => write!(f, "decode error: {msg}"),
             RacError::DecodeMessage(msg) => write!(f, "decode error: {msg}"),
             RacError::UnexpectedMethod { got, expected } => {
-                write!(f, "unexpected rpc method 0x{got:02x}, expected 0x{expected:02x}")
+                write!(
+                    f,
+                    "unexpected rpc method 0x{got:02x}, expected 0x{expected:02x}"
+                )
             }
         }
     }

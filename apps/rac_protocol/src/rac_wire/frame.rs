@@ -110,4 +110,3 @@ fn decode_varuint_from_reader<R: Read>(reader: &mut R) -> io::Result<(usize, usi
         }
     }
 }
-

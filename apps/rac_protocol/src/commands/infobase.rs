@@ -1,13 +1,8 @@
 use serde::Serialize;
 
-use crate::client::RacClient;
+use crate::client::{RacClient, RacRequest};
 use crate::error::{RacError, Result};
-use crate::rac_wire::{
-    encode_cluster_scoped, encode_cluster_scoped_object, scan_len_prefixed_strings,
-    METHOD_INFOBASE_INFO_REQ, METHOD_INFOBASE_INFO_RESP, METHOD_INFOBASE_SUMMARY_INFO_REQ,
-    METHOD_INFOBASE_SUMMARY_INFO_RESP, METHOD_INFOBASE_SUMMARY_LIST_REQ,
-    METHOD_INFOBASE_SUMMARY_LIST_RESP,
-};
+use crate::rac_wire::scan_len_prefixed_strings;
 use crate::rac_wire::uuid_from_slice;
 use crate::Uuid16;
 
@@ -41,12 +36,11 @@ pub struct InfobaseInfoResp {
     pub raw_payload: Option<Vec<u8>>,
 }
 
-pub fn infobase_summary_list(client: &mut RacClient, cluster: Uuid16) -> Result<InfobaseSummaryListResp> {
-    client.set_cluster_context(cluster)?;
-    let reply = client.send_rpc(
-        &encode_cluster_scoped(METHOD_INFOBASE_SUMMARY_LIST_REQ, cluster),
-        Some(METHOD_INFOBASE_SUMMARY_LIST_RESP),
-    )?;
+pub fn infobase_summary_list(
+    client: &mut RacClient,
+    cluster: Uuid16,
+) -> Result<InfobaseSummaryListResp> {
+    let reply = client.call(RacRequest::InfobaseSummaryList { cluster })?;
     let body = rpc_body(&reply)?;
     let summaries = parse_infobase_summary_list_body(body)?;
     Ok(InfobaseSummaryListResp {
@@ -61,30 +55,31 @@ pub fn infobase_summary_info(
     cluster: Uuid16,
     infobase: Uuid16,
 ) -> Result<InfobaseSummaryInfoResp> {
-    client.set_cluster_context(cluster)?;
-    let reply = client.send_rpc(
-        &encode_cluster_scoped_object(METHOD_INFOBASE_SUMMARY_INFO_REQ, cluster, infobase),
-        Some(METHOD_INFOBASE_SUMMARY_INFO_RESP),
-    )?;
+    let reply = client.call(RacRequest::InfobaseSummaryInfo { cluster, infobase })?;
     let body = rpc_body(&reply)?;
     Ok(InfobaseSummaryInfoResp {
         infobase: first_uuid(body)?,
-        fields: scan_len_prefixed_strings(body).into_iter().map(|(_, s)| s).collect(),
+        fields: scan_len_prefixed_strings(body)
+            .into_iter()
+            .map(|(_, s)| s)
+            .collect(),
         raw_payload: Some(reply),
     })
 }
 
-pub fn infobase_info(client: &mut RacClient, cluster: Uuid16, infobase: Uuid16) -> Result<InfobaseInfoResp> {
-    client.set_cluster_context(cluster)?;
-    client.set_infobase_context(cluster)?;
-    let reply = client.send_rpc(
-        &encode_cluster_scoped_object(METHOD_INFOBASE_INFO_REQ, cluster, infobase),
-        Some(METHOD_INFOBASE_INFO_RESP),
-    )?;
+pub fn infobase_info(
+    client: &mut RacClient,
+    cluster: Uuid16,
+    infobase: Uuid16,
+) -> Result<InfobaseInfoResp> {
+    let reply = client.call(RacRequest::InfobaseInfo { cluster, infobase })?;
     let body = rpc_body(&reply)?;
     Ok(InfobaseInfoResp {
         infobase: first_uuid(body)?,
-        fields: scan_len_prefixed_strings(body).into_iter().map(|(_, s)| s).collect(),
+        fields: scan_len_prefixed_strings(body)
+            .into_iter()
+            .map(|(_, s)| s)
+            .collect(),
         raw_payload: Some(reply),
     })
 }
@@ -120,7 +115,9 @@ fn parse_infobase_summary_list_body(body: &[u8]) -> Result<Vec<InfobaseSummary>>
         if has_tag {
             off += 1;
             if off >= body.len() {
-                return Err(RacError::Decode("infobase summary list: missing descr length"));
+                return Err(RacError::Decode(
+                    "infobase summary list: missing descr length",
+                ));
             }
         }
 
@@ -133,7 +130,9 @@ fn parse_infobase_summary_list_body(body: &[u8]) -> Result<Vec<InfobaseSummary>>
         off += descr_len;
 
         if off >= body.len() {
-            return Err(RacError::Decode("infobase summary list: missing name length"));
+            return Err(RacError::Decode(
+                "infobase summary list: missing name length",
+            ));
         }
         let name_len = body[off] as usize;
         off += 1;

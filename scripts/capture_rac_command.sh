@@ -51,6 +51,14 @@ trap finish EXIT
 
 sleep 0.25
 
+if ! kill -0 "$proxy_pid" 2>/dev/null; then
+  echo "proxy failed to start; see $PROXY_LOG" >&2
+  if [[ -f "$PROXY_LOG" ]]; then
+    tail -n 20 "$PROXY_LOG" >&2 || true
+  fi
+  exit 1
+fi
+
 set +e
 timeout "$RAC_TIMEOUT_SEC" "$RAC_BIN" "$@" "$LISTEN_ADDR" >"$RAC_OUT" 2>"$RAC_ERR"
 rac_exit=$?

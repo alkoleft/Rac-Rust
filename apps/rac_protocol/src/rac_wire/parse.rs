@@ -72,6 +72,9 @@ pub fn take_str8(data: &[u8], offset: usize) -> Result<(String, usize), WireErro
     let s = std::str::from_utf8(&data[start..end])
         .map_err(|_| WireError::InvalidData("invalid utf-8"))?
         .to_string();
+    if s.len() != len {
+        println!("Несовпадение длин {} != {}: {}", s.len(), len, s)
+    }
     Ok((s, end))
 }
 

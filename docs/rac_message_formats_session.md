@@ -256,6 +256,15 @@ Summary for this baseline layout:
 
 - Baseline summary below applies only to `session_info` Designer record (`artifacts/session_info_response.hex`), not to the full superset table above.
 
+Width hypothesis check (`u64` vs `u32` for `*-all/*-total`, by raw bytes):
+
+- Tested captures: `artifacts/session_info_response.hex`, `artifacts/session_info_response_load.hex`, `artifacts/session_info_response_1cv8c.hex`, `artifacts/session_info_response_1cv8c_dbproc.hex`.
+- Result: hypothesis is only partially supported.
+- Consistently `u64`: `blocked-by-ls` (DB-proc capture has value `6` encoded as `00 00 00 00 00 00 00 06` at record-relative `+0x1a`).
+- `u32` interpretation remains more stable for most `*-all/*-total` counters in current captures; switching all of them to `u64` creates conflicts with neighboring non-zero words (notably around `calls-all`, `duration-all-dbms`, `duration-all-service`).
+- For some counters (`bytes-all`, `dbms-bytes-all`, `memory-total`, `read-total`, `write-total`) 8-byte windows with zero-extended patterns exist, but this is not sufficient proof of `u64` width without captures where high 32 bits are non-zero.
+- Working conclusion for further reverse: keep current widths as-is, mark `u64` upgrade for specific counters as `hypothesis` pending high-load evidence.
+
 Confirmed from `artifacts/session_info_response.hex` (relative to record start at `0x05`):
 
 - `session` UUID at `+0x00`.
@@ -355,7 +364,7 @@ New load evidence with active DB procedure (`artifacts/session_info_response_1cv
   - `process` UUID at `+0x1af + shift`
   - `db-proc-info` as `str8` at `+0x5a`
   - `db-proc-took` (`u32_be`) at `+0x5f`
-  - `blocked-by-ls` (`u32_be`) at `+0x1a`
+  - `blocked-by-ls` (`u64_be`) at `+0x1a`
   - `session-id` (`u32_be`) at `+0x1bf + shift`
   - `data-separation` (`str8`) at `+0x244 + shift` (`''`)
   - `client-ip` (`str8`) at `+0x247 + shift`
@@ -398,3 +407,110 @@ Observed behavior from captures:
   - `software-license = true`
   - `network-key = false`
   - `retrieved-by-server = false`
+
+## Session semantics (1C documentation: `AdministrationSession`)
+
+This section maps the reverse-engineered fields above to the *documented* `АдминистрированиеСеанс (AdministrationSession)` object from 1C Syntax Helper (available since `8.3.14`, description updated in `8.3.25`).
+
+High-level notes from the documentation (paraphrased):
+
+- The object provides access to a session’s properties and control methods.
+- Requires the Administration Server to be running (`ras`).
+- Availability: thin client, server, thick client, integration.
+- Related entry point: `AdministrationCluster.GetSessions()`.
+
+### Property mapping (doc -> current decoder fields)
+
+The table below uses documentation property names (English in parentheses) and points to the closest known field in this repo:
+
+| Documentation property | Repo field | Notes |
+| --- | --- | --- |
+| `SessionID` | `session` | UUID of the session (record start anchor). |
+| `ApplicationName` | `app-id` | Examples in captures: `Designer`, `1CV8C`, `SystemBackgroundJob`. |
+| `ConnectionID` | `connection` | UUID (present in list/info records). |
+| `ProcessID` | `process` | UUID (may be all-zero in some cases; decoder filters it). |
+| `InfoBaseID` | `infobase` | UUID of infobase. |
+| `ComputerName` | `host` | Hostname as seen by cluster. |
+| `LanguageCode` | `locale` | Examples: `ru`, `ru_RU`. |
+| `UserName` | `user-name` | |
+| `ClientIPAddress` | `client-ip` | |
+| `BeginTime` | `started-at` | 1C datetime, decoded as ISO-like string. |
+| `LastActivityTime` | `last-active-at` | 1C datetime, decoded as ISO-like string. |
+| `DataSeparation` | `data-separation` | Parsed as `str8` near the record tail. |
+| `SessionNumber` | `session-id` | Numeric session number (`u32_be`). |
+| `PassiveSessionHibernateTime` | `passive-session-hibernate-time` | Seconds (?) before a passive session goes to sleep. |
+| `HibernateSessionTerminateTime` | `hibernate-session-terminate-time` | Seconds (?) before a sleeping session is terminated. |
+| `Licenses` | `license.*` + `software-license`/`network-key`/`retrieved-by-server` | Documented as an array of `AdministrationLicense`; decoder extracts several license presentation fields and boolean flags. |
+
+### Counters mapping (doc -> `SessionCounters`)
+
+Most numeric counters shown by `rac session list/info` match the documented AdministrationSession counters:
+
+| Documentation property | Repo counter field |
+| --- | --- |
+| `ClientSentReceivedDataSize` | `bytes-all` |
+| `ClientSentReceivedDataSizeLast5Min` | `bytes-last-5min` |
+| `CallCountTotal` | `calls-all` |
+| `CallCountLast5Min` | `calls-last-5min` |
+| `DBMSSentAndReceivedDataSizeTotal` | `dbms-bytes-all` |
+| `DBMSSentAndReceivedDataSizeLast5Min` | `dbms-bytes-last-5min` |
+| `CallDurationTotal` | `duration-all` |
+| `CallDurationCurrent` | `duration-current` |
+| `CallDurationLast5Min` | `duration-last-5min` |
+| `DBMSCallDurationTotal` | `duration-all-dbms` |
+| `DBMSCallDurationCurrent` | `duration-current-dbms` |
+| `DBMSCallDurationLast5Min` | `duration-last-5min-dbms` |
+| `ServiceCallDurationTotal` | `duration-all-service` |
+| `ServiceCallDurationCurrent` | `duration-current-service` |
+| `ServiceCallDurationLast5Min` | `duration-last-5min-service` |
+| `ReadDiskDataSizeTotal` | `read-total` |
+| `ReadDiskDataSizeCurrent` | `read-current` |
+| `ReadDiskDataSizeLast5Min` | `read-last-5min` |
+| `WriteDiskDataSizeTotal` | `write-total` |
+| `WriteDiskDataSizeCurrent` | `write-current` |
+| `WriteDiskDataSizeLast5Min` | `write-last-5min` |
+| `MemoryUsageTotal` | `memory-total` |
+| `MemoryUsageCurrent` | `memory-current` |
+| `MemoryUsageLast5Min` | `memory-last-5min` |
+| `CPUTimeTotal` | `cpu-time-total` |
+| `CPUTimeCurrent` | `cpu-time-current` |
+| `CPUTimeLast5Min` | `cpu-time-last-5min` |
+
+### License object semantics (1C documentation: `AdministrationLicense`)
+
+The documentation defines `АдминистрированиеЛицензия (AdministrationLicense)` (available since `8.3.14`) as an object for accessing *server license* properties; it also requires `ras` and is available in thin client, server, thick client, and integration contexts.
+
+In this repo, license fields are currently decoded from the `session info` record and represented as `SessionLicense` (embedded into `SessionRecord` as `license` + several booleans).
+
+| Documentation property | Repo field | Status |
+| --- | --- | --- |
+| `ServerAddress` | `license.server-address` | not decoded yet (`SessionLicense.server_address` is present but always `None` in decoder) |
+| `ServerPort` | `license.server-port` | not decoded yet (`SessionLicense.server_port` is present but always `None` in decoder) |
+| `ProcessID` | `license.process-id` | decoded (`str8`) |
+| `FileName` | `license.file-name` | decoded (`str8`) |
+| `BriefPresentation` | `license.brief-presentation` | decoded (`str8`) |
+| `DetailedPresentation` | `license.detailed-presentation` | decoded (`str8`) |
+| `MaxUsers` | `license.max-users` | decoded (`u16_le` -> `u32`) |
+| `MaxSoftwareLicenseUsers` | `license.max-software-license-users` | decoded (`u16_le` -> `u32`) |
+| `RetrievedByServer` | `retrieved-by-server` + `license.retrieved-by-server` | decoded (`u8 != 0` -> bool) |
+| `SoftwareLicense` | `software-license` + `license.software-license` | decoded (`u8 != 0` -> bool) |
+| `KeySeries` | `license.key-series` | decoded (`str8`) |
+| `NetworkKey` | `network-key` + `license.network-key` | decoded (`u8 != 0` -> bool) |
+
+### Documented fields not yet decoded here
+
+The documentation lists a few session properties that are currently present in `SessionRecord` but not yet located/decoded in the binary layout (or not implemented at all):
+
+- `CurrentServiceName` (documented) -> `current-service-name` (known to exist, still `unknown` in the layout table).
+- `HibernateSession` (documented) -> `hibernate` (flag is mentioned in the layout table as `unknown`).
+- `DBMSConnection`, `LastDBMSCallTime`, `CurrentDBMSCallDuration` (documented) are not mapped yet.
+- `DBMSLockSessionNumber` and `ManagedLockSessionNumber` are likely related to `blocked-by-dbms` / `blocked-by-ls`, but the exact mapping is still a hypothesis.
+
+### Control methods (not mapped to wire yet)
+
+The AdministrationSession documentation also defines control methods:
+
+- `TerminateSession` (ЗавершитьСеанс)
+- `InterruptCurrentServerCall` (ПрерватьТекущийСерверныйВызов)
+
+These are not yet mapped to RAC method IDs / wire payloads in this repo.

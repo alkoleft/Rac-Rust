@@ -11,6 +11,7 @@ use crate::Uuid16;
 
 pub mod infobase;
 pub mod session;
+mod record_cursor;
 
 #[derive(Debug, Serialize)]
 pub struct AgentVersionResp {

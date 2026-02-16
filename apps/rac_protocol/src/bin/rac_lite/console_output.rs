@@ -113,33 +113,7 @@ impl Display for SessionListDisplay<'_> {
         let _ = writeln!(&mut out, "sessions: {}", self.items.len());
         for (idx, item) in self.items.iter().enumerate().take(5) {
             let _ = writeln!(&mut out, "session[{idx}]: {}", format_uuid(&item.session));
-            append_opt_str(&mut out, "  app-id", item.app_id.as_deref());
-            append_opt_uuid(&mut out, "  connection", item.connection.as_ref());
-            append_opt_uuid(&mut out, "  infobase", item.infobase.as_ref());
-            append_opt_uuid(&mut out, "  process", item.process.as_ref());
-            append_opt_str(&mut out, "  host", item.host.as_deref());
-            append_opt_str(&mut out, "  locale", item.locale.as_deref());
-            append_opt_str(&mut out, "  user-name", item.user_name.as_deref());
-            append_opt_str(&mut out, "  started-at", item.started_at.as_deref());
-            append_opt_str(&mut out, "  last-active-at", item.last_active_at.as_deref());
-            append_opt_str(&mut out, "  client-ip", item.client_ip.as_deref());
-            append_opt_bool(&mut out, "  retrieved-by-server", item.retrieved_by_server);
-            append_opt_bool(&mut out, "  software-license", item.software_license);
-            append_opt_bool(&mut out, "  network-key", item.network_key);
-            append_opt_str(&mut out, "  db-proc-info", item.db_proc_info.as_deref());
-            append_opt_str(
-                &mut out,
-                "  current-service-name",
-                item.current_service_name.as_deref(),
-            );
-            append_opt_str(
-                &mut out,
-                "  data-separation",
-                item.data_separation.as_deref(),
-            );
-            append_license_prefixed(&mut out, item.license.as_ref(), "  license.");
-            append_opt_u32(&mut out, "  session-id", item.session_id);
-            append_counters_prefixed(&mut out, &item.counters, "  ");
+            let _ = writeln!(&mut out, "{}", session_info(&item));
         }
         if self.items.len() > 5 {
             let _ = writeln!(&mut out, "... and {} more", self.items.len() - 5);
@@ -166,6 +140,7 @@ impl Display for SessionInfoDisplay<'_> {
         append_opt_uuid(&mut out, "infobase", item.infobase.as_ref());
         append_opt_uuid(&mut out, "process", item.process.as_ref());
         append_opt_str(&mut out, "host", item.host.as_deref());
+        append_opt_bool(&mut out, "hibernate", item.hibernate);
         append_opt_str(&mut out, "locale", item.locale.as_deref());
         append_opt_str(&mut out, "user-name", item.user_name.as_deref());
         append_opt_str(&mut out, "started-at", item.started_at.as_deref());
@@ -175,6 +150,7 @@ impl Display for SessionInfoDisplay<'_> {
         append_opt_bool(&mut out, "software-license", item.software_license);
         append_opt_bool(&mut out, "network-key", item.network_key);
         append_opt_str(&mut out, "db-proc-info", item.db_proc_info.as_deref());
+        append_opt_str(&mut out, "db-proc-took-at", item.db_proc_took_at.as_deref());
         append_opt_str(
             &mut out,
             "current-service-name",
@@ -319,52 +295,73 @@ fn append_license_prefixed(out: &mut String, license: Option<&SessionLicense>, p
     let Some(license) = license else {
         return;
     };
-    append_opt_str(
+    let _ = writeln!(
         out,
-        &format!("{prefix}server-address"),
-        license.server_address.as_deref(),
+        "{prefix}license-type: '{}'",
+        license.license_type.unwrap_or(9999999)
     );
-    append_opt_str(
+    let _ = writeln!(
         out,
-        &format!("{prefix}process-id"),
-        license.process_id.as_deref(),
+        "{prefix}file-name: '{}'",
+        license.file_name.as_deref().unwrap_or("---")
     );
-    append_opt_str(
+    let _ = writeln!(
         out,
-        &format!("{prefix}file-name"),
-        license.file_name.as_deref(),
+        "{prefix}server-address: '{}'",
+        license.server_address.as_deref().unwrap_or("---")
     );
-    append_opt_str(
+    let _ = writeln!(
         out,
-        &format!("{prefix}brief-presentation"),
-        license.brief_presentation.as_deref(),
+        "{prefix}server-port: {}",
+        license.server_port.unwrap_or(0)
     );
-    append_opt_u32(out, &format!("{prefix}max-users"), license.max_users);
-    append_opt_u32(
+
+    let _ = writeln!(
         out,
-        &format!("{prefix}max-software-license-users"),
-        license.max_software_license_users,
+        "{prefix}process-id: {}",
+        license.process_id.as_deref().unwrap_or("---")
     );
-    append_opt_str(
+    let _ = writeln!(
         out,
-        &format!("{prefix}detailed-presentation"),
-        license.detailed_presentation.as_deref(),
+        "{prefix}brief-presentation: '{}'",
+        license.brief_presentation.as_deref().unwrap_or("---")
     );
-    append_opt_bool(
+    let _ = writeln!(
         out,
-        &format!("{prefix}retrieved-by-server"),
-        license.retrieved_by_server,
+        "{prefix}max-users: {}",
+        license.max_users_all.unwrap_or(0)
     );
-    append_opt_u32(out, &format!("{prefix}server-port"), license.server_port);
+    let _ = writeln!(
+        out,
+        "{prefix}max-software-license-users: {}",
+        license.max_users_current.unwrap_or(0)
+    );
+
+    let _ = writeln!(
+        out,
+        "{prefix}brief-presentation: '{}'",
+        license.brief_presentation.as_deref().unwrap_or("---")
+    );
+    let _ = writeln!(
+        out,
+        "{prefix}detailed-presentation: '{}'",
+        license.full_presentation.as_deref().unwrap_or("---")
+    );
+    let _ = writeln!(
+        out,
+        "{prefix}key-series: {}",
+        license.key_series.as_deref().unwrap_or("---")
+    );
+
     append_opt_bool(
         out,
         &format!("{prefix}software-license"),
         license.software_license,
     );
-    append_opt_str(
+    append_opt_bool(
         out,
-        &format!("{prefix}key-series"),
-        license.key_series.as_deref(),
+        &format!("{prefix}retrieved-by-server"),
+        license.issued_by_server,
     );
     append_opt_bool(out, &format!("{prefix}network-key"), license.network_key);
 }
@@ -375,29 +372,29 @@ fn append_counters_prefixed(out: &mut String, counters: &SessionCounters, prefix
         &format!("{prefix}blocked-by-dbms"),
         counters.blocked_by_dbms,
     );
-    append_opt_u64(
+    append_opt_u32(
         out,
         &format!("{prefix}blocked-by-ls"),
         counters.blocked_by_ls,
     );
     append_opt_u64(out, &format!("{prefix}bytes-all"), counters.bytes_all);
-    append_opt_u32(
+    append_opt_u64(
         out,
         &format!("{prefix}bytes-last-5min"),
         counters.bytes_last_5min,
     );
-    append_opt_u64(out, &format!("{prefix}calls-all"), counters.calls_all);
-    append_opt_u32(
+    append_opt_u32(out, &format!("{prefix}calls-all"), counters.calls_all);
+    append_opt_u64(
         out,
         &format!("{prefix}calls-last-5min"),
         counters.calls_last_5min,
     );
-    append_opt_u32(
+    append_opt_u64(
         out,
         &format!("{prefix}dbms-bytes-all"),
         counters.dbms_bytes_all,
     );
-    append_opt_u32(
+    append_opt_u64(
         out,
         &format!("{prefix}dbms-bytes-last-5min"),
         counters.dbms_bytes_last_5min,
@@ -419,12 +416,12 @@ fn append_counters_prefixed(out: &mut String, counters: &SessionCounters, prefix
         &format!("{prefix}duration-current-dbms"),
         counters.duration_current_dbms,
     );
-    append_opt_u32(
+    append_opt_u64(
         out,
         &format!("{prefix}duration-last-5min"),
         counters.duration_last_5min,
     );
-    append_opt_u32(
+    append_opt_u64(
         out,
         &format!("{prefix}duration-last-5min-dbms"),
         counters.duration_last_5min_dbms,
@@ -439,41 +436,41 @@ fn append_counters_prefixed(out: &mut String, counters: &SessionCounters, prefix
         &format!("{prefix}hibernate-session-terminate-time"),
         counters.hibernate_session_terminate_time,
     );
-    append_opt_i32(
+    append_opt_u64(
         out,
         &format!("{prefix}memory-current"),
         counters.memory_current,
     );
-    append_opt_u32(
+    append_opt_u64(
         out,
         &format!("{prefix}memory-last-5min"),
         counters.memory_last_5min,
     );
-    append_opt_u32(out, &format!("{prefix}memory-total"), counters.memory_total);
-    append_opt_u32(out, &format!("{prefix}read-current"), counters.read_current);
-    append_opt_u32(
+    append_opt_u64(out, &format!("{prefix}memory-total"), counters.memory_total);
+    append_opt_u64(out, &format!("{prefix}read-current"), counters.read_current);
+    append_opt_u64(
         out,
         &format!("{prefix}read-last-5min"),
         counters.read_last_5min,
     );
-    append_opt_u32(out, &format!("{prefix}read-total"), counters.read_total);
-    append_opt_u32(
+    append_opt_u64(out, &format!("{prefix}read-total"), counters.read_total);
+    append_opt_u64(
         out,
         &format!("{prefix}write-current"),
         counters.write_current,
     );
-    append_opt_u32(
+    append_opt_u64(
         out,
         &format!("{prefix}write-last-5min"),
         counters.write_last_5min,
     );
-    append_opt_u32(out, &format!("{prefix}write-total"), counters.write_total);
+    append_opt_u64(out, &format!("{prefix}write-total"), counters.write_total);
     append_opt_u32(
         out,
         &format!("{prefix}duration-current-service"),
         counters.duration_current_service,
     );
-    append_opt_u32(
+    append_opt_u64(
         out,
         &format!("{prefix}duration-last-5min-service"),
         counters.duration_last_5min_service,
@@ -483,17 +480,17 @@ fn append_counters_prefixed(out: &mut String, counters: &SessionCounters, prefix
         &format!("{prefix}duration-all-service"),
         counters.duration_all_service,
     );
-    append_opt_u32(
+    append_opt_u64(
         out,
         &format!("{prefix}cpu-time-last-5min"),
         counters.cpu_time_last_5min,
     );
-    append_opt_u32(
+    append_opt_u64(
         out,
         &format!("{prefix}cpu-time-current"),
         counters.cpu_time_current,
     );
-    append_opt_u32(
+    append_opt_u64(
         out,
         &format!("{prefix}cpu-time-total"),
         counters.cpu_time_total,

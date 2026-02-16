@@ -21,6 +21,8 @@ Observed business mapping from live captures:
 | `0x76` | `0x77` | `counter list --cluster <id>` |
 | `0x7c` | `0x7d` | `limit list --cluster <id>` |
 | `0x87` | `0x88` | `agent version` |
+| `0x08` | `01 00 00 00` | `agent auth` (username/password), ack only |
+| `0x00` | `0x01` | `agent admin list` (hypothesis) |
 
 ## Update Rule
 
@@ -32,6 +34,9 @@ When adding new entries:
 
 ## Notes
 
+- `connection list --cluster <id>` confirmed by capture `logs/session_1771281887_2714678_127_0_0_1_59850` (2026-02-17).
 - `rule list --cluster <id>` failed in tested build with:
   - `Error parsing option: server`
   - capture showed only context method `0x09` before failure.
+- `agent admin list --agent-user=admin --agent-pwd=pass` capture:
+  - `logs/session_1771283676_2737297_127_0_0_1_59274` (2026-02-16)

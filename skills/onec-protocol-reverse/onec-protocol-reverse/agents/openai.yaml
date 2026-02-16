@@ -1,0 +1,4 @@
+interface:
+  display_name: "1C Protocol Reverse"
+  short_description: "Analyze and map 1C binary protocols from captures"
+  default_prompt: "Capture traffic, infer framing/method map, and produce validated protocol findings for implementing replacement clients."

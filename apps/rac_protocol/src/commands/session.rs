@@ -2,88 +2,88 @@ use serde::Serialize;
 
 use crate::client::{RacClient, RacRequest};
 use crate::error::{RacError, Result};
+use crate::codec::RecordCursor;
 use crate::rac_wire::{scan_len_prefixed_strings, take_str8, uuid_from_slice};
 use crate::Uuid16;
 
-use super::record_cursor::{v8_datetime_to_iso, RecordCursor};
 use super::{first_uuid, rpc_body};
 
 #[derive(Debug, Serialize, Default, Clone)]
 pub struct SessionCounters {
-    pub blocked_by_dbms: Option<u32>,
-    pub blocked_by_ls: Option<u32>,
-    pub bytes_all: Option<u64>,
-    pub bytes_last_5min: Option<u64>,
-    pub calls_all: Option<u32>,
-    pub calls_last_5min: Option<u64>,
-    pub dbms_bytes_all: Option<u64>,
-    pub dbms_bytes_last_5min: Option<u64>,
-    pub db_proc_took: Option<u32>,
-    pub duration_all: Option<u32>,
-    pub duration_all_dbms: Option<u32>,
-    pub duration_current: Option<u32>,
-    pub duration_current_dbms: Option<u32>,
-    pub duration_last_5min: Option<u64>,
-    pub duration_last_5min_dbms: Option<u64>,
-    pub passive_session_hibernate_time: Option<u32>,
-    pub hibernate_session_terminate_time: Option<u32>,
-    pub memory_current: Option<u64>,
-    pub memory_last_5min: Option<u64>,
-    pub memory_total: Option<u64>,
-    pub read_current: Option<u64>,
-    pub read_last_5min: Option<u64>,
-    pub read_total: Option<u64>,
-    pub write_current: Option<u64>,
-    pub write_last_5min: Option<u64>,
-    pub write_total: Option<u64>,
-    pub duration_current_service: Option<u32>,
-    pub duration_last_5min_service: Option<u64>,
-    pub duration_all_service: Option<u32>,
-    pub cpu_time_current: Option<u64>,
-    pub cpu_time_last_5min: Option<u64>,
-    pub cpu_time_total: Option<u64>,
+    pub blocked_by_dbms: u32,
+    pub blocked_by_ls: u32,
+    pub bytes_all: u64,
+    pub bytes_last_5min: u64,
+    pub calls_all: u32,
+    pub calls_last_5min: u64,
+    pub dbms_bytes_all: u64,
+    pub dbms_bytes_last_5min: u64,
+    pub db_proc_took: u32,
+    pub duration_all: u32,
+    pub duration_all_dbms: u32,
+    pub duration_current: u32,
+    pub duration_current_dbms: u32,
+    pub duration_last_5min: u64,
+    pub duration_last_5min_dbms: u64,
+    pub passive_session_hibernate_time: u32,
+    pub hibernate_session_terminate_time: u32,
+    pub memory_current: u64,
+    pub memory_last_5min: u64,
+    pub memory_total: u64,
+    pub read_current: u64,
+    pub read_last_5min: u64,
+    pub read_total: u64,
+    pub write_current: u64,
+    pub write_last_5min: u64,
+    pub write_total: u64,
+    pub duration_current_service: u32,
+    pub duration_last_5min_service: u64,
+    pub duration_all_service: u32,
+    pub cpu_time_current: u64,
+    pub cpu_time_last_5min: u64,
+    pub cpu_time_total: u64,
 }
 
-#[derive(Debug, Serialize, Clone)]
+#[derive(Debug, Serialize, Default, Clone)]
 pub struct SessionLicense {
-    pub license_type: Option<u32>,
-    pub server_address: Option<String>,
-    pub process_id: Option<String>,
-    pub file_name: Option<String>,
-    pub brief_presentation: Option<String>,
-    pub max_users_all: Option<u32>,
-    pub max_users_current: Option<u32>,
-    pub full_presentation: Option<String>,
-    pub issued_by_server: Option<bool>,
-    pub server_port: Option<u32>,
-    pub software_license: Option<bool>,
-    pub key_series: Option<String>,
-    pub network_key: Option<bool>,
+    pub license_type: u32,
+    pub server_address: String,
+    pub process_id: String,
+    pub file_name: String,
+    pub brief_presentation: String,
+    pub max_users_all: u32,
+    pub max_users_current: u32,
+    pub full_presentation: String,
+    pub issued_by_server: bool,
+    pub server_port: u32,
+    pub software_license: bool,
+    pub key_series: String,
+    pub network_key: bool,
 }
 
 #[derive(Debug, Serialize, Clone)]
 pub struct SessionRecord {
     pub session: Uuid16,
-    pub app_id: Option<String>,
-    pub connection: Option<Uuid16>,
-    pub process: Option<Uuid16>,
-    pub infobase: Option<Uuid16>,
-    pub host: Option<String>,
-    pub hibernate: Option<bool>,
-    pub locale: Option<String>,
-    pub user_name: Option<String>,
-    pub started_at: Option<String>,
-    pub last_active_at: Option<String>,
-    pub client_ip: Option<String>,
-    pub retrieved_by_server: Option<bool>,
-    pub software_license: Option<bool>,
-    pub network_key: Option<bool>,
-    pub license: Option<SessionLicense>,
-    pub db_proc_info: Option<String>,
-    pub db_proc_took_at: Option<String>,
-    pub current_service_name: Option<String>,
-    pub data_separation: Option<String>,
-    pub session_id: Option<u32>,
+    pub app_id: String,
+    pub connection: Uuid16,
+    pub process: Uuid16,
+    pub infobase: Uuid16,
+    pub host: String,
+    pub hibernate: bool,
+    pub locale: String,
+    pub user_name: String,
+    pub started_at: String,
+    pub last_active_at: String,
+    pub client_ip: String,
+    pub retrieved_by_server: bool,
+    pub software_license: bool,
+    pub network_key: bool,
+    pub license: SessionLicense,
+    pub db_proc_info: String,
+    pub db_proc_took_at: String,
+    pub current_service_name: String,
+    pub data_separation: String,
+    pub session_id: u32,
     pub counters: SessionCounters,
 }
 
@@ -124,26 +124,26 @@ pub fn session_info(
         Ok(record) => record,
         Err(_) => SessionRecord {
             session: first_uuid(body)?,
-            app_id: None,
-            connection: None,
-            process: None,
-            infobase: None,
-            host: None,
-            hibernate: None,
-            locale: None,
-            user_name: None,
-            started_at: None,
-            last_active_at: None,
-            client_ip: None,
-            retrieved_by_server: None,
-            software_license: None,
-            network_key: None,
-            license: None,
-            db_proc_info: None,
-            db_proc_took_at: None,
-            current_service_name: None,
-            data_separation: None,
-            session_id: None,
+            app_id: String::new(),
+            connection: Uuid16::default(),
+            process: Uuid16::default(),
+            infobase: Uuid16::default(),
+            host: String::new(),
+            hibernate: false,
+            locale: String::new(),
+            user_name: String::new(),
+            started_at: String::new(),
+            last_active_at: String::new(),
+            client_ip: String::new(),
+            retrieved_by_server: false,
+            software_license: false,
+            network_key: false,
+            license: SessionLicense::default(),
+            db_proc_info: String::new(),
+            db_proc_took_at: String::new(),
+            current_service_name: String::new(),
+            data_separation: String::new(),
+            session_id: 0,
             counters: SessionCounters::default(),
         },
     };
@@ -246,6 +246,7 @@ fn parse_session_record_start(data: &[u8], offset: usize) -> Option<(String, Uui
     }
     let app_off = offset + 16;
     let (app_id, _next) = take_str8(data, app_off).ok()?;
+    let app_id = app_id.to_string();
     if !is_reasonable_app_id(&app_id) {
         return None;
     }
@@ -256,147 +257,151 @@ fn parse_session_record_1cv8c(data: &[u8]) -> Result<SessionRecord> {
     if data.len() < 16 {
         return Err(RacError::Decode("session record: truncated uuid"));
     }
-    println!("Binary data: {:?}", data);
+    #[cfg(feature = "debug-parse")]
+    log::debug!("Binary data: {:?}", data);
     let mut cursor = RecordCursor::new(data, 0);
     let session = cursor.take_uuid()?;
 
     let mut rec = SessionRecord {
         session,
-        app_id: None,
-        connection: None,
-        process: None,
-        infobase: None,
-        host: None,
-        hibernate: None,
-        locale: None,
-        user_name: None,
-        started_at: None,
-        last_active_at: None,
-        client_ip: None,
-        retrieved_by_server: None,
-        software_license: None,
-        network_key: None,
-        license: None,
-        db_proc_info: None,
-        db_proc_took_at: None,
-        current_service_name: None,
-        data_separation: None,
-        session_id: None,
+        app_id: String::new(),
+        connection: Uuid16::default(),
+        process: Uuid16::default(),
+        infobase: Uuid16::default(),
+        host: String::new(),
+        hibernate: false,
+        locale: String::new(),
+        user_name: String::new(),
+        started_at: String::new(),
+        last_active_at: String::new(),
+        client_ip: String::new(),
+        retrieved_by_server: false,
+        software_license: false,
+        network_key: false,
+        license: SessionLicense::default(),
+        db_proc_info: String::new(),
+        db_proc_took_at: String::new(),
+        current_service_name: String::new(),
+        data_separation: String::new(),
+        session_id: 0,
         counters: SessionCounters::default(),
     };
 
-    rec.app_id = Some(cursor.take_str8()?);
-    rec.counters.blocked_by_dbms = cursor.take_u32_be_opt();
-    rec.counters.blocked_by_ls = cursor.take_u32_be_opt();
+    rec.app_id = cursor.take_str8()?;
+    rec.counters.blocked_by_dbms = cursor.take_u32_be_opt()?.unwrap_or_default();
+    rec.counters.blocked_by_ls = cursor.take_u32_be_opt()?.unwrap_or_default();
 
-    rec.counters.bytes_all = cursor.take_u64_be_opt();
-    rec.counters.bytes_last_5min = cursor.take_u64_be_opt();
+    rec.counters.bytes_all = cursor.take_u64_be_opt()?.unwrap_or_default();
+    rec.counters.bytes_last_5min = cursor.take_u64_be_opt()?.unwrap_or_default();
 
-    rec.counters.calls_all = cursor.take_u32_be_opt();
-    rec.counters.calls_last_5min = cursor.take_u64_be_opt();
+    rec.counters.calls_all = cursor.take_u32_be_opt()?.unwrap_or_default();
+    rec.counters.calls_last_5min = cursor.take_u64_be_opt()?.unwrap_or_default();
 
-    rec.connection = Some(cursor.take_uuid()?);
+    rec.connection = cursor.take_uuid_opt()?.unwrap_or_default();
 
-    rec.counters.dbms_bytes_all = cursor.take_u64_be_opt();
-    rec.counters.dbms_bytes_last_5min = cursor.take_u64_be_opt();
+    rec.counters.dbms_bytes_all = cursor.take_u64_be_opt()?.unwrap_or_default();
+    rec.counters.dbms_bytes_last_5min = cursor.take_u64_be_opt()?.unwrap_or_default();
 
-    rec.db_proc_info = cursor.take_str8_opt();
-    rec.counters.db_proc_took = cursor.take_u32_be_opt();
-    rec.db_proc_took_at = cursor.take_datetime_opt();
+    rec.db_proc_info = cursor.take_str8_opt()?.unwrap_or_default();
+    rec.counters.db_proc_took = cursor.take_u32_be_opt()?.unwrap_or_default();
+    rec.db_proc_took_at = cursor.take_datetime_opt()?.unwrap_or_default();
 
-    rec.counters.duration_all = cursor.take_u32_be_opt();
-    rec.counters.duration_all_dbms = cursor.take_u32_be_opt();
-    rec.counters.duration_current = cursor.take_u32_be_opt();
-    rec.counters.duration_current_dbms = cursor.take_u32_be_opt();
-    rec.counters.duration_last_5min = cursor.take_u64_be_opt();
-    rec.counters.duration_last_5min_dbms = cursor.take_u64_be_opt();
+    rec.counters.duration_all = cursor.take_u32_be_opt()?.unwrap_or_default();
+    rec.counters.duration_all_dbms = cursor.take_u32_be_opt()?.unwrap_or_default();
+    rec.counters.duration_current = cursor.take_u32_be_opt()?.unwrap_or_default();
+    rec.counters.duration_current_dbms = cursor.take_u32_be_opt()?.unwrap_or_default();
+    rec.counters.duration_last_5min = cursor.take_u64_be_opt()?.unwrap_or_default();
+    rec.counters.duration_last_5min_dbms = cursor.take_u64_be_opt()?.unwrap_or_default();
 
-    rec.host = cursor.take_str8_opt();
-    rec.infobase = cursor.take_uuid_opt();
+    rec.host = cursor.take_str8_opt()?.unwrap_or_default();
+    rec.infobase = cursor.take_uuid_opt()?.unwrap_or_default();
 
-    rec.last_active_at = cursor.take_datetime_opt();
+    rec.last_active_at = cursor.take_datetime_opt()?.unwrap_or_default();
 
-    rec.hibernate = cursor.take_bool_opt(); // TODO
-    rec.counters.passive_session_hibernate_time = cursor.take_u32_be_opt();
-    rec.counters.hibernate_session_terminate_time = cursor.take_u32_be_opt();
+    rec.hibernate = cursor.take_bool_opt()?.unwrap_or_default(); // TODO
+    rec.counters.passive_session_hibernate_time =
+        cursor.take_u32_be_opt()?.unwrap_or_default();
+    rec.counters.hibernate_session_terminate_time =
+        cursor.take_u32_be_opt()?.unwrap_or_default();
 
-    rec.license = parse_licenses(&mut cursor);
+    rec.license = parse_licenses(&mut cursor)?;
 
-    rec.locale = cursor.take_str8_opt();
-    rec.process = cursor.take_uuid_opt();
-    rec.session_id = cursor.take_u32_be_opt();
-    rec.started_at = cursor.take_datetime_opt();
-    rec.user_name = cursor.take_str8_opt();
+    rec.locale = cursor.take_str8_opt()?.unwrap_or_default();
+    rec.process = cursor.take_uuid_opt()?.unwrap_or_default();
+    rec.session_id = cursor.take_u32_be_opt()?.unwrap_or_default();
+    rec.started_at = cursor.take_datetime_opt()?.unwrap_or_default();
+    rec.user_name = cursor.take_str8_opt()?.unwrap_or_default();
 
-    rec.counters.memory_current = cursor.take_u64_be_opt();
-    rec.counters.memory_last_5min = cursor.take_u64_be_opt();
-    rec.counters.memory_total = cursor.take_u64_be_opt();
+    rec.counters.memory_current = cursor.take_u64_be_opt()?.unwrap_or_default();
+    rec.counters.memory_last_5min = cursor.take_u64_be_opt()?.unwrap_or_default();
+    rec.counters.memory_total = cursor.take_u64_be_opt()?.unwrap_or_default();
     
-    rec.counters.read_current = cursor.take_u64_be_opt();
-    rec.counters.read_last_5min = cursor.take_u64_be_opt();
-    rec.counters.read_total = cursor.take_u64_be_opt();
+    rec.counters.read_current = cursor.take_u64_be_opt()?.unwrap_or_default();
+    rec.counters.read_last_5min = cursor.take_u64_be_opt()?.unwrap_or_default();
+    rec.counters.read_total = cursor.take_u64_be_opt()?.unwrap_or_default();
 
-    rec.counters.write_current = cursor.take_u64_be_opt();
-    rec.counters.write_last_5min = cursor.take_u64_be_opt();
-    rec.counters.write_total = cursor.take_u64_be_opt();
+    rec.counters.write_current = cursor.take_u64_be_opt()?.unwrap_or_default();
+    rec.counters.write_last_5min = cursor.take_u64_be_opt()?.unwrap_or_default();
+    rec.counters.write_total = cursor.take_u64_be_opt()?.unwrap_or_default();
     
-    rec.counters.duration_current_service = cursor.take_u32_be_opt();
-    rec.counters.duration_last_5min_service = cursor.take_u64_be_opt();
-    rec.counters.duration_all_service = cursor.take_u32_be_opt();
+    rec.counters.duration_current_service = cursor.take_u32_be_opt()?.unwrap_or_default();
+    rec.counters.duration_last_5min_service = cursor.take_u64_be_opt()?.unwrap_or_default();
+    rec.counters.duration_all_service = cursor.take_u32_be_opt()?.unwrap_or_default();
     
-    rec.current_service_name = cursor.take_str8_opt();
+    rec.current_service_name = cursor.take_str8_opt()?.unwrap_or_default();
 
-    rec.counters.cpu_time_current = cursor.take_u64_be_opt();
-    rec.counters.cpu_time_last_5min = cursor.take_u64_be_opt();
-    rec.counters.cpu_time_total = cursor.take_u64_be_opt();
+    rec.counters.cpu_time_current = cursor.take_u64_be_opt()?.unwrap_or_default();
+    rec.counters.cpu_time_last_5min = cursor.take_u64_be_opt()?.unwrap_or_default();
+    rec.counters.cpu_time_total = cursor.take_u64_be_opt()?.unwrap_or_default();
     
-    rec.data_separation = cursor.take_str8_opt();
-    rec.client_ip = cursor.take_str8_opt();
+    rec.data_separation = cursor.take_str8_opt()?.unwrap_or_default();
+    rec.client_ip = cursor.take_str8_opt()?.unwrap_or_default();
 
     Ok(rec)
 }
 
-fn parse_licenses(cursor: &mut RecordCursor) -> Option<SessionLicense> {
-    let count = cursor.take_u8();
+fn parse_licenses(cursor: &mut RecordCursor) -> Result<SessionLicense> {
+    let count = cursor.take_u8()?;
     for _ in 0..count {
-        println!("Licenses count: {}", count);
+        #[cfg(feature = "debug-parse")]
+        log::debug!("Licenses count: {}", count);
 
-        let full_name = cursor.take_str8_opt();
-        let full_presentation = cursor.take_str8_opt();
+        let full_name = cursor.take_str8_opt()?.unwrap_or_default();
+        let full_presentation = cursor.take_str8_opt()?.unwrap_or_default();
 
-        let issued_by_server = cursor.take_bool_opt();
-        let license_type = cursor.take_u32_be_opt();
+        let issued_by_server = cursor.take_bool_opt()?.unwrap_or_default();
+        let license_type = cursor.take_u32_be_opt()?.unwrap_or_default();
 
-        let max_users_all = cursor.take_u32_be_opt();
-        let max_users_current = cursor.take_u32_be_opt();
+        let max_users_all = cursor.take_u32_be_opt()?.unwrap_or_default();
+        let max_users_current = cursor.take_u32_be_opt()?.unwrap_or_default();
 
-        let network_key = cursor.take_bool();
+        let network_key = cursor.take_bool()?;
 
-        let server_address = cursor.take_str8_opt();
-        let process_id = cursor.take_str8_opt();
-        let server_port = cursor.take_u32_be_opt();
+        let server_address = cursor.take_str8_opt()?.unwrap_or_default();
+        let process_id = cursor.take_str8_opt()?.unwrap_or_default();
+        let server_port = cursor.take_u32_be_opt()?.unwrap_or_default();
 
-        let key_series = cursor.take_str8_opt();
+        let key_series = cursor.take_str8_opt()?.unwrap_or_default();
         // let software_license = cursor.take_bool_opt();
 
-        let brief_presentation = cursor.take_str8_opt();
-        return Some(SessionLicense {
+        let brief_presentation = cursor.take_str8_opt()?.unwrap_or_default();
+        return Ok(SessionLicense {
             license_type,
             server_address,
-            process_id: process_id.filter(|s| !s.is_empty()),
-            file_name: full_name.filter(|s| !s.is_empty()),
+            process_id,
+            file_name: full_name,
             brief_presentation,
             max_users_all,
             max_users_current,
             full_presentation,
             issued_by_server,
             server_port,
-            software_license: Some(false),
+            software_license: false,
             key_series,
-            network_key: Some(network_key),
+            network_key,
         });
     }
-    None
+    Ok(SessionLicense::default())
 }
 
 fn is_probable_rfc4122_uuid(uuid: &Uuid16) -> bool {
@@ -419,228 +424,6 @@ fn is_reasonable_app_id(value: &str) -> bool {
         .all(|b| matches!(b, b'a'..=b'z' | b'A'..=b'Z' | b'0'..=b'9' | b'_' | b'-' | b'.'))
 }
 
-fn is_locale(value: &str) -> bool {
-    let bytes = value.as_bytes();
-    if bytes.len() == 2 {
-        return bytes[0].is_ascii_lowercase() && bytes[1].is_ascii_lowercase();
-    }
-    if bytes.len() == 5 && bytes[2] == b'_' {
-        return bytes[0].is_ascii_lowercase()
-            && bytes[1].is_ascii_lowercase()
-            && bytes[3].is_ascii_uppercase()
-            && bytes[4].is_ascii_uppercase();
-    }
-    false
-}
-
-fn is_ipv4(value: &str) -> bool {
-    let mut count = 0usize;
-    for part in value.split('.') {
-        count += 1;
-        if part.is_empty() || part.len() > 3 || !part.chars().all(|c| c.is_ascii_digit()) {
-            return false;
-        }
-        if part.parse::<u8>().is_err() {
-            return false;
-        }
-    }
-    count == 4
-}
-
-fn looks_like_path(value: &str) -> bool {
-    value.contains('/') || value.contains('\\') || value.contains("://")
-}
-
-fn looks_like_host(value: &str) -> bool {
-    if value.len() < 2 || value.len() > 128 {
-        return false;
-    }
-    if is_locale(value) || is_ipv4(value) || looks_like_path(value) {
-        return false;
-    }
-    value
-        .bytes()
-        .all(|b| matches!(b, b'a'..=b'z' | b'A'..=b'Z' | b'0'..=b'9' | b'-' | b'_' | b'.'))
-}
-
-fn looks_like_user_name(value: &str) -> bool {
-    if value.len() < 3 || value.len() > 128 {
-        return false;
-    }
-    if !value.chars().any(|c| c.is_ascii_alphabetic()) {
-        return false;
-    }
-    value
-        .bytes()
-        .all(|b| matches!(b, b'a'..=b'z' | b'A'..=b'Z' | b'0'..=b'9' | b'-' | b'_' | b'.'))
-}
-
-fn scan_raw_uuids(data: &[u8]) -> Vec<Uuid16> {
-    if data.len() < 16 {
-        return Vec::new();
-    }
-    let mut out = Vec::new();
-    for off in 0..=data.len() - 16 {
-        if let Ok(uuid) = uuid_from_slice(&data[off..off + 16]) {
-            out.push(uuid);
-        }
-    }
-    out
-}
-
-fn find_process_after_locale(data: &[u8], locale: &str, rec: &SessionRecord) -> Option<Uuid16> {
-    let locale_bytes = locale.as_bytes();
-    let needed = locale_bytes.len() + 1 + 16;
-    if data.len() < needed {
-        return None;
-    }
-    for off in 0..=data.len() - needed {
-        if data[off] as usize != locale_bytes.len() {
-            continue;
-        }
-        if &data[off + 1..off + 1 + locale_bytes.len()] != locale_bytes {
-            continue;
-        }
-        let uuid_off = off + 1 + locale_bytes.len();
-        if uuid_off + 16 + 12 > data.len() {
-            continue;
-        }
-        if let Ok(uuid) = uuid_from_slice(&data[uuid_off..uuid_off + 16]) {
-            if uuid == rec.session
-                || rec.connection.is_some_and(|v| v == uuid)
-                || rec.infobase.is_some_and(|v| v == uuid)
-            {
-                continue;
-            }
-            let sid_off = uuid_off + 16;
-            let session_id = u32::from_be_bytes([
-                data[sid_off],
-                data[sid_off + 1],
-                data[sid_off + 2],
-                data[sid_off + 3],
-            ]);
-            if session_id == 0 {
-                continue;
-            }
-            let started_raw = u64::from_be_bytes([
-                data[sid_off + 4],
-                data[sid_off + 5],
-                data[sid_off + 6],
-                data[sid_off + 7],
-                data[sid_off + 8],
-                data[sid_off + 9],
-                data[sid_off + 10],
-                data[sid_off + 11],
-            ]);
-            if v8_datetime_to_iso(started_raw).is_none() {
-                continue;
-            }
-            if is_probable_rfc4122_uuid(&uuid) {
-                return Some(uuid);
-            }
-        }
-    }
-    None
-}
-
-fn find_session_triplet(data: &[u8]) -> Option<(u32, String, String)> {
-    if data.len() < 13 {
-        return None;
-    }
-    for off in 0..=data.len() - 13 {
-        let session_id =
-            u32::from_be_bytes([data[off], data[off + 1], data[off + 2], data[off + 3]]);
-        if session_id == 0 {
-            continue;
-        }
-        let started_raw = u64::from_be_bytes([
-            data[off + 4],
-            data[off + 5],
-            data[off + 6],
-            data[off + 7],
-            data[off + 8],
-            data[off + 9],
-            data[off + 10],
-            data[off + 11],
-        ]);
-        let started_at = match v8_datetime_to_iso(started_raw) {
-            Some(value) => value,
-            None => continue,
-        };
-        let (user_name, _) = match take_str8(data, off + 12) {
-            Ok(value) => value,
-            Err(_) => continue,
-        };
-        if user_name.len() >= 4
-            && looks_like_user_name(&user_name)
-            && !is_reasonable_app_id(&user_name)
-            && !is_locale(&user_name)
-            && !looks_like_host(&user_name)
-            && !is_ipv4(&user_name)
-        {
-            return Some((session_id, started_at, user_name));
-        }
-    }
-    None
-}
-
-fn apply_user_anchor_backfill(data: &[u8], rec: &mut SessionRecord) {
-    for (off, user_name) in scan_len_prefixed_strings(data) {
-        if !looks_like_user_name(&user_name)
-            || is_reasonable_app_id(&user_name)
-            || is_locale(&user_name)
-            || looks_like_host(&user_name)
-            || is_ipv4(&user_name)
-        {
-            continue;
-        }
-        if off < 12 || off + 1 + user_name.len() > data.len() {
-            continue;
-        }
-        let sid_off = off - 12;
-        let session_id = u32::from_be_bytes([
-            data[sid_off],
-            data[sid_off + 1],
-            data[sid_off + 2],
-            data[sid_off + 3],
-        ]);
-        if session_id == 0 {
-            continue;
-        }
-        let started_raw = u64::from_be_bytes([
-            data[sid_off + 4],
-            data[sid_off + 5],
-            data[sid_off + 6],
-            data[sid_off + 7],
-            data[sid_off + 8],
-            data[sid_off + 9],
-            data[sid_off + 10],
-            data[sid_off + 11],
-        ]);
-        let started_at = match v8_datetime_to_iso(started_raw) {
-            Some(value) => value,
-            None => continue,
-        };
-
-        rec.session_id = Some(session_id);
-        rec.started_at = Some(started_at);
-        rec.user_name = Some(user_name);
-
-        if sid_off >= 16 {
-            let process_off = sid_off - 16;
-            if let Ok(process) = uuid_from_slice(&data[process_off..process_off + 16]) {
-                if is_probable_rfc4122_uuid(&process)
-                    && process != rec.session
-                    && rec.connection.is_none_or(|v| v != process)
-                    && rec.infobase.is_none_or(|v| v != process)
-                {
-                    rec.process = Some(process);
-                }
-            }
-        }
-        break;
-    }
-}
 
 #[cfg(test)]
 mod tests {
@@ -681,13 +464,13 @@ mod tests {
             crate::rac_wire::parse_uuid("eb61231d-7bee-4a06-8869-41f70e2289de").unwrap()
         );
 
-        assert_eq!(records[0].app_id.as_deref(), Some("1CV8C"));
-        assert_eq!(records[1].app_id.as_deref(), Some("Designer"));
-        assert_eq!(records[2].app_id.as_deref(), Some("SystemBackgroundJob"));
-        assert_eq!(records[0].client_ip.as_deref(), Some("127.0.0.1"));
-        assert_eq!(records[1].locale.as_deref(), Some("ru_RU"));
-        assert_eq!(records[2].session_id, Some(5));
-        assert_eq!(records[2].counters.dbms_bytes_all, Some(3088));
+        assert_eq!(records[0].app_id, "1CV8C");
+        assert_eq!(records[1].app_id, "Designer");
+        assert_eq!(records[2].app_id, "SystemBackgroundJob");
+        assert_eq!(records[0].client_ip, "127.0.0.1");
+        assert_eq!(records[1].locale, "ru_RU");
+        assert_eq!(records[2].session_id, 5);
+        assert_eq!(records[2].counters.dbms_bytes_all, 3088);
     }
 
     #[test]
@@ -701,14 +484,14 @@ mod tests {
             record.session,
             crate::rac_wire::parse_uuid("56bde8c0-d008-4d33-a6b9-8db9b6f82de5").unwrap()
         );
-        assert_eq!(record.app_id.as_deref(), Some("Designer"));
-        assert_eq!(record.host.as_deref(), Some("alko-home"));
-        assert_eq!(record.user_name.as_deref(), Some("DefUser"));
-        assert_eq!(record.client_ip.as_deref(), Some("127.0.0.1"));
-        assert_eq!(record.session_id, Some(1));
-        assert_eq!(record.counters.bytes_all, Some(253146));
-        assert_eq!(record.counters.dbms_bytes_all, Some(654414));
-        assert_eq!(record.counters.cpu_time_total, Some(1357));
+        assert_eq!(record.app_id, "Designer");
+        assert_eq!(record.host, "alko-home");
+        assert_eq!(record.user_name, "DefUser");
+        assert_eq!(record.client_ip, "127.0.0.1");
+        assert_eq!(record.session_id, 1);
+        assert_eq!(record.counters.bytes_all, 253146);
+        assert_eq!(record.counters.dbms_bytes_all, 654414);
+        assert_eq!(record.counters.cpu_time_total, 1357);
     }
 
     #[test]
@@ -725,26 +508,26 @@ mod tests {
             record.session,
             crate::rac_wire::parse_uuid("25510e27-f24a-4586-9ac9-9f7837c0dea1").unwrap()
         );
-        assert_eq!(record.app_id.as_deref(), Some("1CV8C"));
-        assert_eq!(record.host.as_deref(), Some("alko-home"));
-        assert_eq!(record.locale.as_deref(), Some("ru"));
-        assert_eq!(record.user_name.as_deref(), Some("DefUser"));
-        assert_eq!(record.started_at.as_deref(), Some("2026-02-15T00:10:57"));
-        assert_eq!(record.client_ip.as_deref(), Some("127.0.0.1"));
-        assert_eq!(record.software_license, Some(true));
-        assert_eq!(record.network_key, Some(false));
-        assert_eq!(record.retrieved_by_server, Some(false));
-        assert_eq!(record.session_id, Some(3));
-        assert_eq!(record.counters.bytes_all, Some(7807077));
-        assert_eq!(record.counters.dbms_bytes_all, Some(10914466));
-        let lic = record.license.as_ref().expect("license");
+        assert_eq!(record.app_id, "1CV8C");
+        assert_eq!(record.host, "alko-home");
+        assert_eq!(record.locale, "ru");
+        assert_eq!(record.user_name, "DefUser");
+        assert_eq!(record.started_at, "2026-02-15T00:10:57");
+        assert_eq!(record.client_ip, "127.0.0.1");
+        assert!(!record.software_license);
+        assert!(!record.network_key);
+        assert!(!record.retrieved_by_server);
+        assert_eq!(record.session_id, 3);
+        assert_eq!(record.counters.bytes_all, 7807077);
+        assert_eq!(record.counters.dbms_bytes_all, 10914466);
+        let lic = &record.license;
         assert_eq!(
-            lic.file_name.as_deref(),
-            Some("file:///home/alko/.1cv8/1C/1cv8/conf/20260213011049.lic")
+            lic.file_name,
+            "file:///home/alko/.1cv8/1C/1cv8/conf/20260213011049.lic"
         );
-        assert_eq!(lic.key_series.as_deref(), Some("500000025347"));
-        assert_eq!(lic.max_users_all, Some(4));
-        assert_eq!(lic.max_users_current, Some(4));
+        assert_eq!(lic.key_series, "500000025347");
+        assert_eq!(lic.max_users_all, 4);
+        assert_eq!(lic.max_users_current, 4);
     }
 
     #[test]
@@ -759,34 +542,28 @@ mod tests {
 
         assert_eq!(
             record.connection,
-            Some(crate::rac_wire::parse_uuid("e41e750e-56d7-40fb-b2e0-5e71b8e8f508").unwrap())
+            crate::rac_wire::parse_uuid("e41e750e-56d7-40fb-b2e0-5e71b8e8f508").unwrap()
         );
         assert_eq!(
             record.process,
-            Some(crate::rac_wire::parse_uuid("f77f2c1d-1e5b-4855-a0b9-94390ccd4ce5").unwrap())
+            crate::rac_wire::parse_uuid("f77f2c1d-1e5b-4855-a0b9-94390ccd4ce5").unwrap()
         );
-        assert_eq!(record.db_proc_info.as_deref(), Some("5719"));
-        assert_eq!(record.counters.blocked_by_ls, Some(6));
-        assert_eq!(record.counters.db_proc_took, Some(18982));
-        assert_eq!(record.counters.duration_current, Some(20172));
-        assert_eq!(record.counters.memory_current, Some(-47080));
-        assert_eq!(record.counters.read_current, Some(16176));
-        assert_eq!(record.counters.duration_current_service, Some(0));
-        assert_eq!(record.counters.cpu_time_current, Some(1051));
-        assert_eq!(record.software_license, Some(true));
-        assert_eq!(record.network_key, Some(false));
-        assert_eq!(record.retrieved_by_server, Some(false));
-        assert_eq!(
-            record.last_active_at.as_deref(),
-            Some("2026-02-16T00:28:41")
-        );
-        assert_eq!(record.data_separation.as_deref(), Some("''"));
-        assert_eq!(record.client_ip.as_deref(), Some("127.0.0.1"));
-        let lic = record.license.as_ref().expect("license");
-        assert_eq!(lic.process_id.as_deref(), Some("381094"));
-        assert_eq!(
-            lic.brief_presentation.as_deref(),
-            Some("Клиент, 500000025347 4 4")
-        );
+        assert_eq!(record.db_proc_info, "5719");
+        assert_eq!(record.counters.blocked_by_ls, 6);
+        assert_eq!(record.counters.db_proc_took, 18982);
+        assert_eq!(record.counters.duration_current, 20172);
+        assert_eq!(record.counters.memory_current, 18446744073709504536);
+        assert_eq!(record.counters.read_current, 16176);
+        assert_eq!(record.counters.duration_current_service, 0);
+        assert_eq!(record.counters.cpu_time_current, 1051);
+        assert!(!record.software_license);
+        assert!(!record.network_key);
+        assert!(!record.retrieved_by_server);
+        assert_eq!(record.last_active_at, "2026-02-16T00:28:41");
+        assert_eq!(record.data_separation, "''");
+        assert_eq!(record.client_ip, "127.0.0.1");
+        let lic = &record.license;
+        assert_eq!(lic.process_id, "381094");
+        assert_eq!(lic.brief_presentation, "Клиент, 500000025347 4 4");
     }
 }

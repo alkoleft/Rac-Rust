@@ -2,6 +2,8 @@ use clap::{Parser, Subcommand};
 
 #[path = "rac_lite/console_output.rs"]
 mod console_output;
+#[path = "rac_lite/format.rs"]
+mod format;
 
 use console_output as console;
 use rac_protocol::client::{ClientConfig, RacClient};

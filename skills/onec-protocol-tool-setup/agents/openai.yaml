@@ -1,0 +1,4 @@
+interface:
+  display_name: "1C Protocol Tool Setup"
+  short_description: "Set up tools for 1C protocol capture"
+  default_prompt: "Use -protocol-tool-setup to verify capture tooling."

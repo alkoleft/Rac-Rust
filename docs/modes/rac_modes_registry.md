@@ -30,12 +30,12 @@ Tracks per-mode documentation coverage. "Processed" means a mode has a dedicated
 |                       |                                              |                                                   | `terminate`                          | -        | -           | -     |
 |                       |                                              |                                                   | `interrupt-current-server-call`      | -        | -           | -     |
 | `lock`                | `docs/modes/rac_mode_lock.md`                | -                                                 | `list`                               |          |             | -     |
-| `rule`                | `docs/modes/rac_mode_rule.md`                | -                                                 | `apply`                              | -        | -           | -     |
-|                       |                                              |                                                   | `list`                               | -        | -           | -     |
-|                       |                                              |                                                   | `info`                               | -        | -           | -     |
-|                       |                                              |                                                   | `insert`                             | -        | -           | -     |
-|                       |                                              |                                                   | `update`                             | -        | -           | -     |
-|                       |                                              |                                                   | `remove`                             | -        | -           | -     |
+| `rule` | `docs/modes/rac_mode_rule.md` | `docs/messages/rac_message_formats_rule.md` | `apply` | yes | - | - |
+|  |  |  | `list` | yes | - | - |
+|  |  |  | `info` | yes | - | - |
+|  |  |  | `insert` | yes | - | - |
+|  |  |  | `update` | yes | - | - |
+|  |  |  | `remove` | yes | - | - |
 | `profile`             | `docs/modes/rac_mode_profile.md`             | -                                                 | `list`                               |          |             | -     |
 |                       |                                              |                                                   | `update`                             | -        | -           | -     |
 |                       |                                              |                                                   | `remove`                             | -        | -           | -     |

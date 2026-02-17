@@ -1,0 +1,18 @@
+name                      : codex_tmp
+collection-time           : 12
+group                     : users
+filter-type               : all
+filter                    : 1
+duration                  : analyze
+cpu-time                  : not-analyze
+memory                    : analyze
+read                      : not-analyze
+write                     : analyze
+duration-dbms             : not-analyze
+dbms-bytes                : analyze
+service                   : not-analyze
+call                      : analyze
+number-of-active-sessions : not-analyze
+number-of-sessions        : analyze
+descr                     : codex_tmp
+

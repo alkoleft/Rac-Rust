@@ -43,12 +43,12 @@ Tracks per-mode documentation coverage. "Processed" means a mode has a dedicated
 |                       |                                              |                                                   | `acl com`                            | -        | -           | -     |
 |                       |                                              |                                                   | `acl addin`                          | -        | -           | -     |
 | `counter`             | `docs/modes/rac_mode_counter.md`             | `docs/messages/rac_message_formats_counter.md`    | `list`                               | yes      |             | -     |
-|                       |                                              |                                                   | `info`                               | -        | -           | -     |
-|                       |                                              |                                                   | `update`                             | -        | -           | -     |
-|                       |                                              |                                                   | `values`                             | -        | -           | -     |
-|                       |                                              |                                                   | `accumulated-values`                 | -        | -           | -     |
-|                       |                                              |                                                   | `clear`                              | -        | -           | -     |
-|                       |                                              |                                                   | `remove`                             | -        | -           | -     |
+|  |  |  | `info` | yes | - | - |
+|  |  |  | `update` | yes | - | - |
+|  |  |  | `values` | yes | - | - |
+|  |  |  | `accumulated-values` | yes | - | - |
+|  |  |  | `clear` | yes | - | - |
+|  |  |  | `remove` | yes | - | - |
 | `limit`               | `docs/modes/rac_mode_limit.md`               | -                                                 | `list`                               |          |             | -     |
 |                       |                                              |                                                   | `info`                               | -        | -           | -     |
 |                       |                                              |                                                   | `update`                             | -        | -           | -     |

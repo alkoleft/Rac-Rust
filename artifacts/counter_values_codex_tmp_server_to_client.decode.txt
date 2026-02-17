@@ -1,0 +1,15 @@
+file=/home/alko/develop/open-source/v8_protocols/logs/session_1771346561_3508283_127_0_0_1_59282/server_to_client.stream.bin
+size=186
+frames=4 start_offset=0x0
+frame=1 offset=0x0 opcode=0x02 len=1 len_field_size=1
+  payload_hex=80
+frame=2 offset=0x3 opcode=0x0c len=32 len_field_size=1
+  payload_hex=1876382e736572766963652e41646d696e2e436c75737465720431362e300180
+  text_at=0x0 value=v8.service.Admin.Cluster
+  text_at=0x19 value=16.0
+frame=3 offset=0x25 opcode=0x0e len=4 len_field_size=1
+  payload_hex=01000000
+frame=4 offset=0x2b opcode=0x0e len=140 len_field_size=2
+  payload_hex=0100000183011d696e666f626173653d796178756e69743b757365723d44656655736572000000000000000c00000000000003ee00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010002453af903b210
+  rpc_method_id=0x83 (131) rpc_head_size=5
+  text_at=0x6 value=infobase=yaxunit;user=DefUser

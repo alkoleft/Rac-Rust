@@ -13,7 +13,7 @@ Key commands:
 
 ## Protocol Notes
 
-Message format notes: not yet captured.
+Message format notes: `docs/messages/rac_message_formats_lock.md`.
 
 Related method mapping:
 - `docs/documentation/rac_method_map.md`
@@ -22,6 +22,6 @@ Related method mapping:
 ## Status
 
 - `description`: done
-- `message_formats`: missing
-- `captures`: pending
-- `rpc_mapping`: partial
+- `message_formats`: yes
+- `captures`: yes
+- `rpc_mapping`: yes

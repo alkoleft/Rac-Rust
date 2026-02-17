@@ -19,9 +19,9 @@ fn load_params() -> TestParams {
     toml::from_str(&data).expect("parse tests/params.toml")
 }
 
-fn load_cluster_uuid() -> Option<[u8; 16]> {
-    let value = std::env::var("RAC_CLUSTER").ok()?;
-    parse_uuid(&value).ok()
+fn require_cluster_uuid() -> [u8; 16] {
+    let value = std::env::var("RAC_CLUSTER").expect("RAC_CLUSTER not set");
+    parse_uuid(&value).expect("RAC_CLUSTER must be a valid uuid")
 }
 
 fn client_cfg() -> ClientConfig {
@@ -35,6 +35,7 @@ fn client_cfg() -> ClientConfig {
 }
 
 #[test]
+#[ignore]
 fn live_agent_version_only() {
     let params = load_params();
     let addr = std::env::var("RAC_ADDR").unwrap_or_else(|_| params.addr.clone());
@@ -50,6 +51,7 @@ fn live_agent_version_only() {
 }
 
 #[test]
+#[ignore]
 fn live_agent_version_and_cluster_list() {
     let params = load_params();
     let addr = std::env::var("RAC_ADDR").unwrap_or_else(|_| params.addr.clone());
@@ -62,57 +64,26 @@ fn live_agent_version_and_cluster_list() {
     );
 
     let clusters = cluster_list(&mut client).expect("cluster list").clusters;
-    if clusters.is_empty() {
-        eprintln!("cluster list empty; skipping manager list");
-        client.close().expect("close");
-        return;
-    }
+    assert!(!clusters.is_empty(), "cluster list empty");
 
     let cluster = clusters[0].uuid;
-    let reply = match manager_list(&mut client, cluster) {
-        Ok(resp) => resp,
-        Err(err) => {
-            if let rac_protocol::error::RacError::Io(io_err) = &err {
-                if io_err.kind() == std::io::ErrorKind::WouldBlock {
-                    eprintln!("manager list: no response (timeout), skipping");
-                    let _ = client.close();
-                    return;
-                }
-            }
-            panic!("manager list: {err:?}");
-        }
-    };
+    let reply = manager_list(&mut client, cluster).expect("manager list");
     let _ = reply.managers;
 
     client.close().expect("close");
 }
 
 #[test]
+#[ignore]
 fn live_infobase_summary_list() {
-    let Some(cluster_uuid) = load_cluster_uuid() else {
-        eprintln!("RAC_CLUSTER is not set; skipping live_infobase_summary_list");
-        return;
-    };
+    let cluster_uuid = require_cluster_uuid();
 
     let params = load_params();
     let addr = std::env::var("RAC_ADDR").unwrap_or_else(|_| params.addr.clone());
     let mut client = RacClient::connect(&addr, client_cfg()).expect("connect");
 
     let _ = agent_version(&mut client);
-
-    let reply = match infobase_summary_list(&mut client, cluster_uuid) {
-        Ok(resp) => resp,
-        Err(err) => {
-            if let rac_protocol::error::RacError::Io(io_err) = &err {
-                if io_err.kind() == std::io::ErrorKind::WouldBlock {
-                    eprintln!("infobase summary list: no response (timeout), skipping");
-                    let _ = client.close();
-                    return;
-                }
-            }
-            panic!("infobase summary list: {err:?}");
-        }
-    };
+    let reply = infobase_summary_list(&mut client, cluster_uuid).expect("infobase summary list");
 
     assert!(
         !reply.summaries.is_empty() || reply.infobases.is_empty(),

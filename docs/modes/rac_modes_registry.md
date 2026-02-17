@@ -4,7 +4,7 @@ Tracks per-mode documentation coverage. "Processed" means a mode has a dedicated
 
 | Mode                  | Description file                             | Message formats file                              | Command                              | Analyzed | Implemented | Notes |
 |-----------------------|----------------------------------------------|---------------------------------------------------|--------------------------------------|----------|-------------|-------|
-| `cluster`             | `docs/modes/rac_mode_cluster.md`             | `docs/messages/rac_message_formats_cluster.md`    | `admin list`                         | yes      | -           | -     |
+| `cluster` | `docs/modes/rac_mode_cluster.md` | `docs/messages/rac_message_formats_cluster.md` | `admin list` | yes | yes | - |
 |  |  |  | `admin register` | yes | yes | - |
 |                       |                                              |                                                   | `admin remove`                       | -        | -           | -     |
 |                       |                                              |                                                   | `list`                               | yes      | yes         | -     |

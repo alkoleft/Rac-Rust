@@ -1,14 +1,5 @@
 [
   {
-    "mode": "cluster",
-    "command": "admin list",
-    "description_file": "`docs/modes/rac_mode_cluster.md`",
-    "message_formats_file": "`docs/messages/rac_message_formats_cluster.md`",
-    "analyzed": "yes",
-    "implemented": "-",
-    "notes": "-"
-  },
-  {
     "mode": "manager",
     "command": "info",
     "description_file": "",

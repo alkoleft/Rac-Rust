@@ -1,0 +1,198 @@
+name                      : Вызовы
+collection-time           : 5
+group                     : users
+filter-type               : all
+filter                    : 2
+duration                  : analyze
+cpu-time                  : not-analyze
+memory                    : not-analyze
+read                      : not-analyze
+write                     : not-analyze
+duration-dbms             : not-analyze
+dbms-bytes                : not-analyze
+service                   : not-analyze
+call                      : not-analyze
+number-of-active-sessions : not-analyze
+number-of-sessions        : not-analyze
+descr                     : 
+
+name                      : cpu
+collection-time           : 6
+group                     : users
+filter-type               : all
+filter                    : 
+duration                  : not-analyze
+cpu-time                  : analyze
+memory                    : not-analyze
+read                      : not-analyze
+write                     : not-analyze
+duration-dbms             : not-analyze
+dbms-bytes                : not-analyze
+service                   : not-analyze
+call                      : not-analyze
+number-of-active-sessions : not-analyze
+number-of-sessions        : not-analyze
+descr                     : cpu desc
+
+name                      : dbms
+collection-time           : 9999
+group                     : data-separation
+filter-type               : all
+filter                    : 
+duration                  : not-analyze
+cpu-time                  : not-analyze
+memory                    : not-analyze
+read                      : not-analyze
+write                     : not-analyze
+duration-dbms             : analyze
+dbms-bytes                : not-analyze
+service                   : not-analyze
+call                      : not-analyze
+number-of-active-sessions : not-analyze
+number-of-sessions        : not-analyze
+descr                     : dbms 2
+
+name                      : service
+collection-time           : 999999999999999
+group                     : users
+filter-type               : all-selected
+filter                    : 1
+duration                  : not-analyze
+cpu-time                  : not-analyze
+memory                    : not-analyze
+read                      : not-analyze
+write                     : not-analyze
+duration-dbms             : not-analyze
+dbms-bytes                : not-analyze
+service                   : analyze
+call                      : not-analyze
+number-of-active-sessions : not-analyze
+number-of-sessions        : not-analyze
+descr                     :  service d
+
+name                      : mem
+collection-time           : 6873995514006732799
+group                     : users
+filter-type               : all
+filter                    : 
+duration                  : not-analyze
+cpu-time                  : not-analyze
+memory                    : analyze
+read                      : not-analyze
+write                     : not-analyze
+duration-dbms             : not-analyze
+dbms-bytes                : not-analyze
+service                   : not-analyze
+call                      : not-analyze
+number-of-active-sessions : not-analyze
+number-of-sessions        : not-analyze
+descr                     : mem ddddddddddddddddddddddddddddddddddddddddddddddddddddd
+
+name                      : disk
+collection-time           : current-call
+group                     : users
+filter-type               : all-but-selected
+filter                    : 22
+duration                  : not-analyze
+cpu-time                  : not-analyze
+memory                    : not-analyze
+read                      : analyze
+write                     : not-analyze
+duration-dbms             : not-analyze
+dbms-bytes                : not-analyze
+service                   : not-analyze
+call                      : not-analyze
+number-of-active-sessions : not-analyze
+number-of-sessions        : not-analyze
+descr                     : 
+
+name                      : disk 2
+collection-time           : current-call
+group                     : data-separation
+filter-type               : all-selected
+filter                    : 
+duration                  : not-analyze
+cpu-time                  : not-analyze
+memory                    : not-analyze
+read                      : not-analyze
+write                     : analyze
+duration-dbms             : not-analyze
+dbms-bytes                : not-analyze
+service                   : not-analyze
+call                      : not-analyze
+number-of-active-sessions : not-analyze
+number-of-sessions        : not-analyze
+descr                     : 
+
+name                      : send dbms
+collection-time           : 1000
+group                     : users
+filter-type               : all-but-selected
+filter                    : 
+duration                  : not-analyze
+cpu-time                  : not-analyze
+memory                    : not-analyze
+read                      : not-analyze
+write                     : not-analyze
+duration-dbms             : not-analyze
+dbms-bytes                : analyze
+service                   : not-analyze
+call                      : not-analyze
+number-of-active-sessions : not-analyze
+number-of-sessions        : not-analyze
+descr                     : 
+
+name                      : sessions
+collection-time           : 2000
+group                     : users
+filter-type               : all-selected
+filter                    : 
+duration                  : not-analyze
+cpu-time                  : not-analyze
+memory                    : not-analyze
+read                      : not-analyze
+write                     : not-analyze
+duration-dbms             : not-analyze
+dbms-bytes                : not-analyze
+service                   : not-analyze
+call                      : not-analyze
+number-of-active-sessions : not-analyze
+number-of-sessions        : analyze
+descr                     : sessions d
+
+name                      : active
+collection-time           : current-call
+group                     : users
+filter-type               : all
+filter                    : 
+duration                  : not-analyze
+cpu-time                  : not-analyze
+memory                    : not-analyze
+read                      : not-analyze
+write                     : not-analyze
+duration-dbms             : not-analyze
+dbms-bytes                : not-analyze
+service                   : not-analyze
+call                      : not-analyze
+number-of-active-sessions : analyze
+number-of-sessions        : not-analyze
+descr                     : 
+
+name                      : serv call
+collection-time           : current-call
+group                     : users
+filter-type               : all
+filter                    : 
+duration                  : not-analyze
+cpu-time                  : not-analyze
+memory                    : not-analyze
+read                      : not-analyze
+write                     : not-analyze
+duration-dbms             : not-analyze
+dbms-bytes                : not-analyze
+service                   : not-analyze
+call                      : analyze
+number-of-active-sessions : not-analyze
+number-of-sessions        : not-analyze
+descr                     : 
+

@@ -19,7 +19,8 @@ Key commands:
 
 ## Protocol Notes
 
-Message format notes: not yet captured.
+Message format notes:
+- `docs/messages/rac_message_formats_counter.md`
 
 Related method mapping:
 - `docs/documentation/rac_method_map.md`
@@ -28,6 +29,6 @@ Related method mapping:
 ## Status
 
 - `description`: done
-- `message_formats`: missing
-- `captures`: pending
+- `message_formats`: done (list)
+- `captures`: list captured
 - `rpc_mapping`: partial

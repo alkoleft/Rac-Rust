@@ -37,3 +37,4 @@ Notes:
 - `docs/messages/rac_message_formats_process.md`
 - `docs/messages/rac_message_formats_infobase.md`
 - `docs/messages/rac_message_formats_session.md`
+- `docs/messages/rac_message_formats_counter.md`

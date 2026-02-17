@@ -42,7 +42,7 @@ Tracks per-mode documentation coverage. "Processed" means a mode has a dedicated
 |                       |                                              |                                                   | `acl directory`                      | -        | -           | -     |
 |                       |                                              |                                                   | `acl com`                            | -        | -           | -     |
 |                       |                                              |                                                   | `acl addin`                          | -        | -           | -     |
-| `counter`             | `docs/modes/rac_mode_counter.md`             | -                                                 | `list`                               |          |             | -     |
+| `counter`             | `docs/modes/rac_mode_counter.md`             | `docs/messages/rac_message_formats_counter.md`    | `list`                               | yes      |             | -     |
 |                       |                                              |                                                   | `info`                               | -        | -           | -     |
 |                       |                                              |                                                   | `update`                             | -        | -           | -     |
 |                       |                                              |                                                   | `values`                             | -        | -           | -     |
@@ -67,7 +67,7 @@ Tracks per-mode documentation coverage. "Processed" means a mode has a dedicated
 |                       |                                              |                                                   | `load-full-backup`                   | -        | -           | -     |
 |                       |                                              |                                                   | `load-diff-backup`                   | -        | -           | -     |
 |                       |                                              |                                                   | `clear-unused-space`                 | -        | -           | -     |
-| `agent`               | `docs/modes/rac_mode_agent.md`               | -                                                 | `admin list`                         | -        | -           | -     |
+| `agent` | `docs/modes/rac_mode_agent.md` | - | `admin list` | yes | - | - |
 |                       |                                              |                                                   | `admin register`                     | -        | -           | -     |
 |                       |                                              |                                                   | `admin remove`                       | -        | -           | -     |
 |                       |                                              |                                                   | `version`                            |          |             | -     |

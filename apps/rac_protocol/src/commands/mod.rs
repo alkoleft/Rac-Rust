@@ -31,7 +31,9 @@ pub use self::limit::{limit_list, LimitListResp, LimitRecord};
 pub use self::manager::{manager_info, manager_list, ManagerInfoResp, ManagerListResp, ManagerRecord};
 pub use self::process::{process_info, process_list, ProcessInfoResp, ProcessListResp};
 pub use self::profile::{profile_list, ProfileListResp};
-pub use self::server::{server_info, server_list, ServerInfoResp, ServerListResp};
+pub use self::server::{
+    server_info, server_list, ServerInfoResp, ServerListResp, ServerRecord,
+};
 pub use self::session::{
     session_info, session_list, SessionCounters, SessionInfoResp, SessionLicense, SessionListResp,
     SessionRecord,

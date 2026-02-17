@@ -386,7 +386,7 @@ fn run(cli: Cli) -> Result<()> {
                 console::output(
                     cli.json,
                     &resp,
-                    console::uuid_list("servers", &resp.servers),
+                    console::server_list(&resp.servers),
                 );
                 client.close()?;
             }
@@ -402,7 +402,7 @@ fn run(cli: Cli) -> Result<()> {
                 console::output(
                     cli.json,
                     &resp,
-                    console::info("server", &resp.server, &resp.fields),
+                    console::server_info(&resp.server),
                 );
                 client.close()?;
             }

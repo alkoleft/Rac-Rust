@@ -4,8 +4,8 @@ use serde::Serialize;
 
 use rac_protocol::commands::{
     AgentVersionResp, ClusterAdminRecord, ClusterAdminRegisterResp, ClusterInfoResp,
-    ClusterListResp, InfobaseSummary, LimitRecord, ManagerRecord, SessionCounters, SessionLicense,
-    SessionRecord,
+    ClusterListResp, InfobaseSummary, LimitRecord, ManagerRecord, ServerRecord, SessionCounters,
+    SessionLicense, SessionRecord,
 };
 use rac_protocol::rac_wire::format_uuid;
 use rac_protocol::Uuid16;
@@ -168,6 +168,22 @@ pub fn manager_info(item: &ManagerRecord) -> ManagerInfoDisplay<'_> {
     ManagerInfoDisplay { item }
 }
 
+pub struct ServerListDisplay<'a> {
+    items: &'a [ServerRecord],
+}
+
+pub fn server_list(items: &[ServerRecord]) -> ServerListDisplay<'_> {
+    ServerListDisplay { items }
+}
+
+pub struct ServerInfoDisplay<'a> {
+    item: &'a ServerRecord,
+}
+
+pub fn server_info(item: &ServerRecord) -> ServerInfoDisplay<'_> {
+    ServerInfoDisplay { item }
+}
+
 pub struct LimitListDisplay<'a> {
     items: &'a [LimitRecord],
 }
@@ -281,6 +297,120 @@ impl Display for ManagerInfoDisplay<'_> {
         outln!(&mut out, "host: {}", display_str(&item.host));
         outln!(&mut out, "port: {}", item.port);
         outln!(&mut out, "descr: \"{}\"", display_str(&item.descr));
+        write_trimmed(f, &out)
+    }
+}
+
+impl Display for ServerListDisplay<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let out = list_to_string("servers", self.items, 5, MoreLabel::Default, |out, idx, item| {
+            outln!(out, "server[{idx}]: {}", format_uuid(&item.server));
+            outln!(out, "agent-host[{idx}]: {}", display_str(&item.agent_host));
+            outln!(out, "agent-port[{idx}]: {}", item.agent_port);
+            outln!(out, "name[{idx}]: \"{}\"", display_str(&item.name));
+            outln!(out, "using[{idx}]: {}", server_using_label(item.using));
+            outln!(
+                out,
+                "dedicate-managers[{idx}]: {}",
+                dedicate_managers_label(item.dedicate_managers)
+            );
+            outln!(out, "infobases-limit[{idx}]: {}", item.infobases_limit);
+            outln!(
+                out,
+                "safe-call-memory-limit[{idx}]: {}",
+                item.safe_call_memory_limit
+            );
+            outln!(out, "connections-limit[{idx}]: {}", item.connections_limit);
+            outln!(out, "cluster-port[{idx}]: {}", item.cluster_port);
+            outln!(
+                out,
+                "port-range[{idx}]: {}:{}",
+                item.port_range_start,
+                item.port_range_end
+            );
+            outln!(
+                out,
+                "critical-total-memory[{idx}]: {}",
+                item.critical_total_memory
+            );
+            outln!(
+                out,
+                "temporary-allowed-total-memory[{idx}]: {}",
+                item.temporary_allowed_total_memory
+            );
+            outln!(
+                out,
+                "temporary-allowed-total-memory-time-limit[{idx}]: {}",
+                item.temporary_allowed_total_memory_time_limit
+            );
+            outln!(
+                out,
+                "service-principal-name[{idx}]: \"{}\"",
+                display_str(&item.service_principal_name)
+            );
+            outln!(
+                out,
+                "restart-schedule[{idx}]: \"{}\"",
+                display_str(&item.restart_schedule)
+            );
+        });
+        write_trimmed(f, &out)
+    }
+}
+
+impl Display for ServerInfoDisplay<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut out = String::new();
+        let item = self.item;
+        outln!(&mut out, "server: {}", format_uuid(&item.server));
+        outln!(&mut out, "agent-host: {}", display_str(&item.agent_host));
+        outln!(&mut out, "agent-port: {}", item.agent_port);
+        outln!(&mut out, "name: \"{}\"", display_str(&item.name));
+        outln!(&mut out, "using: {}", server_using_label(item.using));
+        outln!(
+            &mut out,
+            "dedicate-managers: {}",
+            dedicate_managers_label(item.dedicate_managers)
+        );
+        outln!(&mut out, "infobases-limit: {}", item.infobases_limit);
+        outln!(
+            &mut out,
+            "safe-call-memory-limit: {}",
+            item.safe_call_memory_limit
+        );
+        outln!(&mut out, "connections-limit: {}", item.connections_limit);
+        outln!(&mut out, "cluster-port: {}", item.cluster_port);
+        outln!(
+            &mut out,
+            "port-range: {}:{}",
+            item.port_range_start,
+            item.port_range_end
+        );
+        outln!(
+            &mut out,
+            "critical-total-memory: {}",
+            item.critical_total_memory
+        );
+        outln!(
+            &mut out,
+            "temporary-allowed-total-memory: {}",
+            item.temporary_allowed_total_memory
+        );
+        outln!(
+            &mut out,
+            "temporary-allowed-total-memory-time-limit: {}",
+            item.temporary_allowed_total_memory_time_limit
+        );
+        outln!(
+            &mut out,
+            "service-principal-name: \"{}\"",
+            display_str(&item.service_principal_name)
+        );
+        outln!(
+            &mut out,
+            "restart-schedule: \"{}\"",
+            display_str(&item.restart_schedule)
+        );
         write_trimmed(f, &out)
     }
 }
@@ -495,6 +625,20 @@ fn append_license_prefixed(out: &mut String, license: &SessionLicense, prefix: &
 fn manager_using_label(value: u32) -> String {
     match value {
         1 => "main".to_string(),
+        _ => value.to_string(),
+    }
+}
+
+fn server_using_label(value: u32) -> String {
+    match value {
+        1 => "main".to_string(),
+        _ => value.to_string(),
+    }
+}
+
+fn dedicate_managers_label(value: u32) -> String {
+    match value {
+        0 => "none".to_string(),
         _ => value.to_string(),
     }
 }

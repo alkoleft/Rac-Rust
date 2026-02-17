@@ -1,0 +1,19 @@
+{
+  "command": "limit list --cluster 1619820a-d36f-4d8a-a716-1516b1dea077 --cluster-user cadmin --cluster-pwd cpass",
+  "capture_name": "limit_list",
+  "doc_path": "docs/messages/rac_message_formats_limit.md",
+  "session_dir": "session_1771356894_3630675_127_0_0_1_53570",
+  "artifacts_dir": "artifacts",
+  "rac_out": "/tmp/rac_limit_list.out",
+  "rac_err": "/tmp/rac_limit_list.err",
+  "c2s_stream": "/home/alko/develop/open-source/v8_protocols/logs/session_1771356894_3630675_127_0_0_1_53570/client_to_server.stream.bin",
+  "s2c_stream": "/home/alko/develop/open-source/v8_protocols/logs/session_1771356894_3630675_127_0_0_1_53570/server_to_client.stream.bin",
+  "c2s_decode": "/home/alko/develop/open-source/v8_protocols/artifacts/limit_list_client_to_server.decode.txt",
+  "s2c_decode": "/home/alko/develop/open-source/v8_protocols/artifacts/limit_list_server_to_client.decode.txt",
+  "response_hex": "/home/alko/develop/open-source/v8_protocols/artifacts/limit_list_response.hex",
+  "score": 1.0,
+  "score_reasons": [],
+  "needs_user": false,
+  "user_answers": {},
+  "codex_last_message": "/home/alko/develop/open-source/v8_protocols/artifacts/limit_list_codex_last.md"
+}

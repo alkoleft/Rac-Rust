@@ -29,6 +29,10 @@ Observed special case:
 | `0x1f` | `0x20` | `process info --cluster <id> --process <id>` | process info |
 | `0x2a` | `0x2b` | `infobase summary list --cluster <id>` | returns empty list in this env |
 | `0x32` | `0x33` | `connection list --cluster <id>` | connection list |
+| `0x7c` | `0x7d` | `limit list --cluster <id>` | list limits |
+| `0x7e` | `0x7f` | `limit info --cluster <id> --limit <name>` | limit info |
+| `0x80` | `01 00 00 00` | `limit update --cluster <id> --name <name>` | update/create limit, ACK-only response |
+| `0x81` | `01 00 00 00` | `limit remove --cluster <id> --name <name>` | remove limit, ACK-only response |
 | `0x87` | `0x88` | `agent version` and extra step in process commands | returns platform version string |
 
 ## Parameter patterns

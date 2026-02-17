@@ -12,8 +12,8 @@ Tracks per-mode documentation coverage. "Processed" means a mode has a dedicated
 |                       |                                              |                                                   | `insert`                             | -        | -           | -     |
 |                       |                                              |                                                   | `update`                             | -        | -           | -     |
 |                       |                                              |                                                   | `remove`                             | -        | -           | -     |
-| `manager`             | `docs/modes/rac_mode_manager.md`             | -                                                 | `list`                               |          |             | -     |
-|                       |                                              |                                                   | `info`                               |          |             | -     |
+| `manager`             | `docs/modes/rac_mode_manager.md`             | -                                                 | `list`                               | yes      |             | -     |
+|                       |                                              |                                                   | `info`                               | yes      |             | -     |
 | `server`              | `docs/modes/rac_mode_server.md`              | -                                                 | `list`                               |          |             | -     |
 |                       |                                              |                                                   | `info`                               |          |             | -     |
 |                       |                                              |                                                   | `insert`                             | -        | -           | -     |

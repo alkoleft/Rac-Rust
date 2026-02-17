@@ -11,7 +11,7 @@ Payload example:
 RAC output reference:
 - `artifacts/manager_list_rac.out`
 
-### Fields From `rac` Output
+### Поля ответа (из `rac`)
 
 Observed field names in `rac manager list` output, with capture mapping status.
 
@@ -24,12 +24,12 @@ Observed field names in `rac manager list` output, with capture mapping status.
 | `port` | u16 | yes | 5 |
 | `pid` | string (digits) | yes | 6 |
 
-### RPC Envelope
+### RPC
 
 Request method: `0x12` (`manager list --cluster <id>`)
 Response method: `0x13`
 
-### Fields From `rac` Request
+### Поля запроса (из `rac`)
 
 Observed request parameters for `rac manager list`.
 
@@ -47,15 +47,20 @@ Payload structure (method body):
 
 Offsets are relative to the start of a record.
 
-- `0x00` `manager_uuid[16]`
-- `0x10` `descr_len:u8`
-- `0x11` `descr[descr_len]` (UTF-8, observed `Главный менеджер кластера`)
-- `0x11 + descr_len` `host_len:u8`
-- `0x12 + descr_len` `host[host_len]` (UTF-8, observed `alko-home`)
-- `0x12 + descr_len + host_len` `using:u32_be` (observed `0x00000001` -> `main`)
-- `0x16 + descr_len + host_len` `port:u16_be` (observed `0x0605` -> 1541)
-- `0x18 + descr_len + host_len` `pid_len:u8`
-- `0x19 + descr_len + host_len` `pid[pid_len]` (ASCII digits, observed `314037`)
+| Offset | Size | Field | Type | Notes |
+|---|---|---|---|---|
+| `0x00` | `16` | `manager` | UUID | |
+| `0x10` | `1` | `descr_len` | u8 | |
+| `0x11` | `descr_len` | `descr` | string | UTF-8, observed `Главный менеджер кластера` |
+| `0x11 + descr_len` | `1` | `host_len` | u8 | |
+| `0x12 + descr_len` | `host_len` | `host` | string | UTF-8, observed `alko-home` |
+| `0x12 + descr_len + host_len` | `4` | `using` | u32_be | observed `0x00000001` -> `main` |
+| `0x16 + descr_len + host_len` | `2` | `port` | u16_be | observed `0x0605` -> 1541 |
+| `0x18 + descr_len + host_len` | `1` | `pid_len` | u8 | |
+| `0x19 + descr_len + host_len` | `pid_len` | `pid` | string | ASCII digits, observed `314037` |
+
+Notes:
+- Gaps: none observed in this record layout.
 
 ## Manager Info
 
@@ -68,16 +73,16 @@ Payload example:
 RAC output reference:
 - `artifacts/manager_info_rac.out`
 
-### Fields From `rac` Output
+### Поля ответа (из `rac`)
 
 Same field set as `manager list` (see above).
 
-### RPC Envelope
+### RPC
 
 Request method: `0x14` (`manager info --cluster <id> --manager <id>`)
 Response method: `0x15`
 
-### Fields From `rac` Request
+### Поля запроса (из `rac`)
 
 Observed request parameters for `rac manager info`.
 
@@ -90,6 +95,10 @@ Observed request parameters for `rac manager info`.
 
 Payload structure (method body):
 - single record in the same layout as `manager list` (no leading count byte)
+
+## Hypotheses
+
+- None at this time.
 
 ## Open Questions
 

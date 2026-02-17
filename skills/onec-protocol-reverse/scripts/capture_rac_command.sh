@@ -37,6 +37,7 @@ remove_temp() {
 }
 trap 'stop_proxy; remove_temp' EXIT
 
+mkdir -p "$LOG_DIR"
 ls -1 "$LOG_DIR" 2>/dev/null | sort >"$before_file" || true
 
 "$PROXY_BIN" \

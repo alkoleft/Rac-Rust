@@ -46,7 +46,7 @@ fn parse_frames_single_payload() {
     frame.extend_from_slice(&encode_varuint(payload.len()));
     frame.extend_from_slice(&payload);
 
-    let frames = parse_frames(&frame, 0).expect("parse frames");
+    let frames = parse_frames(&frame).expect("parse frames");
     assert_eq!(frames.len(), 1);
     assert_eq!(frames[0].opcode, 0x0e);
     assert_eq!(frames[0].payload, payload);

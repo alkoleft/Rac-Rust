@@ -5,25 +5,7 @@
     "description_file": "`docs/modes/rac_mode_cluster.md`",
     "message_formats_file": "`docs/messages/rac_message_formats_cluster.md`",
     "analyzed": "yes",
-    "implemented": "yes",
-    "notes": "-"
-  },
-  {
-    "mode": "cluster",
-    "command": "admin register",
-    "description_file": "",
-    "message_formats_file": "",
-    "analyzed": "yes",
     "implemented": "-",
-    "notes": "-"
-  },
-  {
-    "mode": "manager",
-    "command": "list",
-    "description_file": "`docs/modes/rac_mode_manager.md`",
-    "message_formats_file": "-",
-    "analyzed": "yes",
-    "implemented": "yes",
     "notes": "-"
   },
   {
@@ -213,15 +195,6 @@
     "message_formats_file": "",
     "analyzed": "yes",
     "implemented": "-",
-    "notes": "-"
-  },
-  {
-    "mode": "limit",
-    "command": "list",
-    "description_file": "`docs/modes/rac_mode_limit.md`",
-    "message_formats_file": "-",
-    "analyzed": "yes",
-    "implemented": "yes",
     "notes": "-"
   },
   {

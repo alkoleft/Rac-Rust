@@ -18,12 +18,6 @@ pub(crate) fn format_payload_head(payload: &[u8], max_len: usize) -> String {
     out
 }
 
-pub(crate) fn payload_has_service_name(payload: &[u8]) -> bool {
-    payload
-        .windows(b"v8.service.Admin.Cluster".len())
-        .any(|w| w == b"v8.service.Admin.Cluster")
-}
-
 pub(crate) fn log_frame(label: &str, frame: &Frame) {
     let mut hex = String::new();
     for (idx, b) in frame.payload.iter().enumerate() {

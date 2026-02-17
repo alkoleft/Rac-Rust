@@ -116,7 +116,7 @@ mod tests {
     fn parse_limit_list_from_golden_capture() {
         let hex = include_str!("../../../../artifacts/limit_list_nonempty_response.hex");
         let payload = decode_hex_str(hex);
-        let frames = parse_frames(&payload, 0).expect("frames");
+        let frames = parse_frames(&payload).expect("frames");
         assert_eq!(frames.len(), 4);
         assert_eq!(frames[3].opcode, 0x0e);
         let body = rpc_body(&frames[3].payload).expect("rpc body");

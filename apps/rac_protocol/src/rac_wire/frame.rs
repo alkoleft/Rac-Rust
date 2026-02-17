@@ -6,7 +6,6 @@ use crate::rac_wire::types::WireError;
 
 #[derive(Debug, Clone)]
 pub struct Frame {
-    pub offset: usize,
     pub opcode: u8,
     pub len_field_size: usize,
     pub payload: Vec<u8>,
@@ -19,7 +18,6 @@ pub fn read_frame<R: Read>(reader: &mut R) -> io::Result<Frame> {
     let mut payload = vec![0u8; len];
     reader.read_exact(&mut payload)?;
     Ok(Frame {
-        offset: 0,
         opcode: opcode[0],
         len_field_size,
         payload,
@@ -32,14 +30,10 @@ pub fn write_frame<W: Write>(writer: &mut W, opcode: u8, payload: &[u8]) -> io::
     writer.write_all(payload)
 }
 
-pub fn parse_frames(data: &[u8], start_offset: usize) -> Result<Vec<Frame>, WireError> {
+pub fn parse_frames(data: &[u8]) -> Result<Vec<Frame>, WireError> {
     let mut frames = Vec::new();
-    if start_offset > data.len() {
-        return Err(WireError::Truncated("frame payload"));
-    }
-    let mut cursor = RecordCursor::new(data, start_offset);
+    let mut cursor = RecordCursor::new(data, 0);
     while cursor.remaining_len() >= 2 {
-        let frame_start = cursor.off;
         let opcode = cursor.take_u8()?;
         let (len, len_field_size) = decode_varuint_from_cursor(&mut cursor)?;
         if cursor.remaining_len() < len {
@@ -47,49 +41,12 @@ pub fn parse_frames(data: &[u8], start_offset: usize) -> Result<Vec<Frame>, Wire
         }
         let payload = cursor.take_bytes(len)?;
         frames.push(Frame {
-            offset: frame_start,
             opcode,
             len_field_size,
             payload,
         });
     }
     Ok(frames)
-}
-
-pub fn detect_swp_init_len(data: &[u8]) -> Option<usize> {
-    if data.len() < 4 || &data[..4] != b"\x1cSWP" {
-        return None;
-    }
-    let needle = b"connect.timeout";
-    let pos = data.windows(needle.len()).position(|w| w == needle)?;
-    let after_key = pos + needle.len();
-    if after_key + 1 > data.len() {
-        return None;
-    }
-    let value_len = data[after_key] as usize;
-    let init_len = after_key + 1 + value_len;
-    if init_len <= data.len() {
-        Some(init_len)
-    } else {
-        None
-    }
-}
-
-fn decode_varuint(data: &[u8]) -> Result<(usize, usize), WireError> {
-    let mut value: usize = 0;
-    let mut shift = 0usize;
-    for (idx, &b) in data.iter().enumerate() {
-        let part = (b & 0x7f) as usize;
-        value |= part << shift;
-        if b & 0x80 == 0 {
-            return Ok((value, idx + 1));
-        }
-        shift += 7;
-        if shift >= usize::BITS as usize {
-            return Err(WireError::InvalidData("varuint too large"));
-        }
-    }
-    Err(WireError::Truncated("varuint"))
 }
 
 fn decode_varuint_from_cursor(cursor: &mut RecordCursor<'_>) -> Result<(usize, usize), WireError> {

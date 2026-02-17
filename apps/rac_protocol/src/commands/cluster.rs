@@ -236,5 +236,19 @@ mod tests {
         assert_eq!(serialized.payload, expected);
     }
 
+    #[test]
+    fn encode_cluster_admin_list_request() {
+        let expected =
+            decode_hex_str(include_str!("../../../../artifacts/cluster_admin_list_request.hex"));
+        let cluster = [
+            0x16, 0x19, 0x82, 0x0a, 0xd3, 0x6f, 0x4d, 0x8a, 0xa7, 0x16, 0x15, 0x16, 0xb1,
+            0xde, 0xa0, 0x77,
+        ];
+        let req = RacRequest::ClusterAdminList { cluster };
+        let protocol = RacProtocolVersion::V16_0.boxed();
+        let serialized = protocol.serialize(req).expect("serialize");
+        assert_eq!(serialized.payload, expected);
+    }
+
     // Additional cluster list/info capture assertions should be added when artifacts are present.
 }

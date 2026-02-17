@@ -3,8 +3,9 @@ use std::fmt::{self, Display, Write as _};
 use serde::Serialize;
 
 use rac_protocol::commands::{
-    AgentVersionResp, ClusterAdminRecord, ClusterInfoResp, ClusterListResp, InfobaseSummary,
-    LimitRecord, ManagerRecord, SessionCounters, SessionLicense, SessionRecord,
+    AgentVersionResp, ClusterAdminRecord, ClusterAdminRegisterResp, ClusterInfoResp,
+    ClusterListResp, InfobaseSummary, LimitRecord, ManagerRecord, SessionCounters, SessionLicense,
+    SessionRecord,
 };
 use rac_protocol::rac_wire::format_uuid;
 use rac_protocol::Uuid16;
@@ -183,6 +184,14 @@ pub fn cluster_admin_list(items: &[ClusterAdminRecord]) -> ClusterAdminListDispl
     ClusterAdminListDisplay { items }
 }
 
+pub struct ClusterAdminRegisterDisplay<'a> {
+    resp: &'a ClusterAdminRegisterResp,
+}
+
+pub fn cluster_admin_register(resp: &ClusterAdminRegisterResp) -> ClusterAdminRegisterDisplay<'_> {
+    ClusterAdminRegisterDisplay { resp }
+}
+
 impl Display for ClusterAdminListDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let out = list_to_string("cluster-admins", self.items, 5, MoreLabel::Default, |out, idx, item| {
@@ -198,6 +207,17 @@ impl Display for ClusterAdminListDisplay<'_> {
             );
         });
         write_trimmed(f, &out)
+    }
+}
+
+impl Display for ClusterAdminRegisterDisplay<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let rendered = if self.resp.acknowledged {
+            "cluster-admin-register: ok"
+        } else {
+            "cluster-admin-register: failed"
+        };
+        write!(f, "{rendered}")
     }
 }
 

@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use crate::client::{RacClient, RacRequest};
 use crate::codec::RecordCursor;
-use crate::error::Result;
+use crate::error::{RacError, Result};
 use crate::Uuid16;
 
 use super::rpc_body;
@@ -20,6 +20,20 @@ pub struct ClusterAdminRecord {
 #[derive(Debug, Serialize)]
 pub struct ClusterAdminListResp {
     pub admins: Vec<ClusterAdminRecord>,
+    pub raw_payload: Option<Vec<u8>>,
+}
+
+#[derive(Debug, Serialize, Clone)]
+pub struct ClusterAdminRegisterReq {
+    pub name: String,
+    pub descr: String,
+    pub pwd: String,
+    pub auth_flags: u8,
+}
+
+#[derive(Debug, Serialize)]
+pub struct ClusterAdminRegisterResp {
+    pub acknowledged: bool,
     pub raw_payload: Option<Vec<u8>>,
 }
 
@@ -58,6 +72,35 @@ pub fn cluster_admin_list(
     let reply = client.call(RacRequest::ClusterAdminList { cluster })?;
     Ok(ClusterAdminListResp {
         admins: parse_cluster_admin_list_body(rpc_body(&reply)?)?,
+        raw_payload: Some(reply),
+    })
+}
+
+pub fn cluster_admin_register(
+    client: &mut RacClient,
+    cluster: Uuid16,
+    cluster_user: &str,
+    cluster_pwd: &str,
+    req: ClusterAdminRegisterReq,
+) -> Result<ClusterAdminRegisterResp> {
+    client.call(RacRequest::ClusterAuth {
+        cluster,
+        user: cluster_user.to_string(),
+        pwd: cluster_pwd.to_string(),
+    })?;
+    let reply = client.call(RacRequest::ClusterAdminRegister {
+        cluster,
+        name: req.name,
+        descr: req.descr,
+        pwd: req.pwd,
+        auth_flags: req.auth_flags,
+    })?;
+    let acknowledged = is_ack(&reply);
+    if !acknowledged {
+        return Err(RacError::Decode("cluster admin register expected ack"));
+    }
+    Ok(ClusterAdminRegisterResp {
+        acknowledged,
         raw_payload: Some(reply),
     })
 }
@@ -106,6 +149,10 @@ fn parse_cluster_admin_list_body(body: &[u8]) -> Result<Vec<ClusterAdminRecord>>
     Ok(admins)
 }
 
+fn is_ack(payload: &[u8]) -> bool {
+    payload == [0x01, 0x00, 0x00, 0x00]
+}
+
 fn parse_cluster_list_body(body: &[u8]) -> Result<Vec<ClusterSummary>> {
     if body.is_empty() {
         return Ok(Vec::new());
@@ -140,6 +187,7 @@ fn parse_cluster_record(cursor: &mut RecordCursor<'_>) -> Result<ClusterSummary>
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::client::RacProtocolVersion;
 
     fn decode_hex_str(input: &str) -> Vec<u8> {
         let s = input.trim();
@@ -166,6 +214,26 @@ mod tests {
         assert_eq!(admins[0].unknown_tag, 0);
         assert_eq!(admins[0].unknown_flags, 0x03efbfbd);
         assert_eq!(admins[0].unknown_tail, [0x01, 0x00, 0x00]);
+    }
+
+    #[test]
+    fn encode_cluster_admin_register_request() {
+        let expected =
+            decode_hex_str(include_str!("../../../../artifacts/cluster_admin_register_request.hex"));
+        let cluster = [
+            0x16, 0x19, 0x82, 0x0a, 0xd3, 0x6f, 0x4d, 0x8a, 0xa7, 0x16, 0x15, 0x16, 0xb1,
+            0xde, 0xa0, 0x77,
+        ];
+        let req = RacRequest::ClusterAdminRegister {
+            cluster,
+            name: "test_admin1".to_string(),
+            descr: "test admin".to_string(),
+            pwd: "test_pass1".to_string(),
+            auth_flags: 0x01,
+        };
+        let protocol = RacProtocolVersion::V16_0.boxed();
+        let serialized = protocol.serialize(req).expect("serialize");
+        assert_eq!(serialized.payload, expected);
     }
 
     // Additional cluster list/info capture assertions should be added when artifacts are present.

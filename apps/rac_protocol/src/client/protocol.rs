@@ -22,6 +22,13 @@ pub enum RacRequest {
     ClusterAdminList {
         cluster: Uuid16,
     },
+    ClusterAdminRegister {
+        cluster: Uuid16,
+        name: String,
+        descr: String,
+        pwd: String,
+        auth_flags: u8,
+    },
     ClusterList,
     ClusterInfo { cluster: Uuid16 },
     ManagerList { cluster: Uuid16 },
@@ -180,6 +187,7 @@ impl RacProtocol for V16Protocol {
             RacRequest::AgentVersion
             | RacRequest::ClusterAuth { .. }
             | RacRequest::ClusterAdminList { .. }
+            | RacRequest::ClusterAdminRegister { .. }
             | RacRequest::ClusterList
             | RacRequest::ClusterInfo { .. } => {
                 RequiredContext::default()
@@ -243,6 +251,26 @@ impl RacProtocol for V16Protocol {
                 Self::encode_cluster_scoped(METHOD_CLUSTER_ADMIN_LIST_REQ, cluster),
                 Some(METHOD_CLUSTER_ADMIN_LIST_RESP),
             ),
+            RacRequest::ClusterAdminRegister {
+                cluster,
+                name,
+                descr,
+                pwd,
+                auth_flags,
+            } => {
+                let mut body =
+                    Vec::with_capacity(16 + 4 + name.len() + descr.len() + pwd.len());
+                body.extend_from_slice(&cluster);
+                body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(name.as_bytes())?);
+                body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(descr.as_bytes())?);
+                body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(pwd.as_bytes())?);
+                body.push(auth_flags);
+                body.extend_from_slice(&[0x00, 0x00]);
+                (
+                    encode_rpc(METHOD_CLUSTER_ADMIN_REGISTER_REQ, &body),
+                    None,
+                )
+            }
             RacRequest::ClusterList => (
                 encode_rpc(METHOD_CLUSTER_LIST_REQ, &[]),
                 Some(METHOD_CLUSTER_LIST_RESP),

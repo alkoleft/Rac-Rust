@@ -16,8 +16,9 @@ pub mod session;
 
 pub use self::agent::{agent_version, AgentVersionResp};
 pub use self::cluster::{
-    cluster_admin_list, cluster_info, cluster_list, ClusterAdminListResp, ClusterAdminRecord,
-    ClusterInfoResp, ClusterListResp, ClusterSummary,
+    cluster_admin_list, cluster_admin_register, cluster_info, cluster_list, ClusterAdminListResp,
+    ClusterAdminRecord, ClusterAdminRegisterReq, ClusterAdminRegisterResp, ClusterInfoResp,
+    ClusterListResp, ClusterSummary,
 };
 pub use self::connection::{connection_info, connection_list, ConnectionInfoResp, ConnectionListResp};
 pub use self::counter::{counter_list, CounterListResp};

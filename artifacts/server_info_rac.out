@@ -9,11 +9,11 @@ infobases-limit                           : 8
 memory-limit                              : 0
 connections-limit                         : 256
 safe-working-processes-memory-limit       : 0
-safe-call-memory-limit                    : 0
+safe-call-memory-limit                    : 1024
 cluster-port                              : 1541
-critical-total-memory                     : 0
-temporary-allowed-total-memory            : 0
+critical-total-memory                     : 10240000000
+temporary-allowed-total-memory            : 789456123
 temporary-allowed-total-memory-time-limit : 300
-service-principal-name                    : 
+service-principal-name                    : "spn test"
 restart-schedule                          : 
 

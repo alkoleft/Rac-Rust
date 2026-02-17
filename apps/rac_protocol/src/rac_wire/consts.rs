@@ -6,6 +6,8 @@ pub const OPCODE_CLOSE: u8 = 0x0d;
 
 pub const METHOD_AGENT_VERSION_REQ: u8 = 0x87;
 pub const METHOD_AGENT_VERSION_RESP: u8 = 0x88;
+pub const METHOD_CLUSTER_ADMIN_LIST_REQ: u8 = 0x02;
+pub const METHOD_CLUSTER_ADMIN_LIST_RESP: u8 = 0x03;
 pub const METHOD_CLUSTER_LIST_REQ: u8 = 0x0b;
 pub const METHOD_CLUSTER_LIST_RESP: u8 = 0x0c;
 pub const METHOD_CLUSTER_INFO_REQ: u8 = 0x0d;

@@ -85,7 +85,7 @@ impl RacClient {
     }
 
     pub fn call(&mut self, request: RacRequest) -> Result<Vec<u8>> {
-        let required = self.protocol.required_context(request);
+        let required = self.protocol.required_context(&request);
         if let Some(cluster) = required.cluster {
             self.ensure_cluster_context(cluster)?;
         }

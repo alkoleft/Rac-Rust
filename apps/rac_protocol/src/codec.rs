@@ -240,6 +240,19 @@ impl<'a> RecordCursor<'a> {
         Ok(value)
     }
 
+    pub fn take_bytes(&mut self, len: usize) -> Result<Vec<u8>, WireError> {
+        let start = self.off;
+        let end = start
+            .checked_add(len)
+            .ok_or(WireError::Truncated("bytes"))?;
+        if end > self.data.len() {
+            return Err(WireError::Truncated("bytes"));
+        }
+        let out = self.data[start..end].to_vec();
+        self.off = end;
+        Ok(out)
+    }
+
     pub fn take_u8_opt(&mut self) -> Result<Option<u8>, WireError> {
         if self.off >= self.data.len() {
             return Ok(None);

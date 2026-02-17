@@ -15,6 +15,7 @@ These rules apply to all Codex-driven implementation and review work in this rep
 ## Test Rules
 - Tests must have strict, deterministic assertions.
 - No `if` or conditional branches in tests (no “fitting to implementation”).
+- After implementation changes, run relevant tests (at least `cargo test -p rac_protocol`) and report results.
 
 ## Review Expectations
 - Review must enforce all rules above before commit.

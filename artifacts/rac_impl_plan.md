@@ -2,7 +2,7 @@
 
 | # | Mode | Command | Description | Message formats | Analyzed | Implemented | Notes |
 |---|------|---------|-------------|-----------------|----------|-------------|-------|
-| 1 | `cluster` | `admin list` | ``docs/modes/rac_mode_cluster.md`` | ``docs/messages/rac_message_formats_cluster.md`` | yes | - | - |
+| 1 | `cluster` | `admin list` | ``docs/modes/rac_mode_cluster.md`` | ``docs/messages/rac_message_formats_cluster.md`` | yes | yes | - |
 | 2 | `cluster` | `admin register` | `-` | `-` | yes | - | - |
 | 3 | `manager` | `list` | ``docs/modes/rac_mode_manager.md`` | `-` | yes | - | - |
 | 4 | `manager` | `info` | `-` | `-` | yes | - | - |
@@ -26,7 +26,7 @@
 | 22 | `counter` | `accumulated-values` | `-` | `-` | yes | - | - |
 | 23 | `counter` | `clear` | `-` | `-` | yes | - | - |
 | 24 | `counter` | `remove` | `-` | `-` | yes | - | - |
-| 25 | `limit` | `list` | ``docs/modes/rac_mode_limit.md`` | `-` | yes | - | - |
+| 25 | `limit` | `list` | ``docs/modes/rac_mode_limit.md`` | `-` | yes | yes | - |
 | 26 | `limit` | `info` | `-` | `-` | yes | - | - |
 | 27 | `limit` | `update` | `-` | `-` | yes | - | - |
 | 28 | `limit` | `remove` | `-` | `-` | yes | - | - |

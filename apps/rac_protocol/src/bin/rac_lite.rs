@@ -8,10 +8,10 @@ mod format;
 use console_output as console;
 use rac_protocol::client::{ClientConfig, RacClient};
 use rac_protocol::commands::{
-    agent_version, cluster_info, cluster_list, connection_info, connection_list, counter_list,
-    infobase_info, infobase_summary_info, infobase_summary_list, limit_list, lock_list,
-    manager_info, manager_list, process_info, process_list, profile_list, server_info, server_list,
-    session_info, session_list,
+    agent_version, cluster_admin_list, cluster_info, cluster_list, connection_info, connection_list,
+    counter_list, infobase_info, infobase_summary_info, infobase_summary_list, limit_list,
+    lock_list, manager_info, manager_list, process_info, process_list, profile_list, server_info,
+    server_list, session_info, session_list,
 };
 use rac_protocol::error::Result;
 use rac_protocol::rac_wire::parse_uuid;
@@ -94,6 +94,23 @@ enum ClusterCmd {
         addr: String,
         #[arg(long)]
         cluster: String,
+    },
+    Admin {
+        #[command(subcommand)]
+        command: ClusterAdminCmd,
+    },
+}
+
+#[derive(Subcommand, Debug)]
+enum ClusterAdminCmd {
+    List {
+        addr: String,
+        #[arg(long)]
+        cluster: String,
+        #[arg(long)]
+        cluster_user: String,
+        #[arg(long)]
+        cluster_pwd: String,
     },
 }
 
@@ -269,6 +286,21 @@ fn run(cli: Cli) -> Result<()> {
                 console::output(cli.json, &resp, console::cluster_info(&resp));
                 client.close()?;
             }
+            ClusterCmd::Admin { command } => match command {
+                ClusterAdminCmd::List {
+                    addr,
+                    cluster,
+                    cluster_user,
+                    cluster_pwd,
+                } => {
+                    let cluster = parse_uuid_arg(&cluster)?;
+                    let mut client = RacClient::connect(&addr, cfg.clone())?;
+                    let resp =
+                        cluster_admin_list(&mut client, cluster, &cluster_user, &cluster_pwd)?;
+                    console::output(cli.json, &resp, console::cluster_admin_list(&resp.admins));
+                    client.close()?;
+                }
+            },
         },
         TopCommand::Manager { command } => match command {
             ManagerCmd::List { addr, cluster } => {

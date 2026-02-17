@@ -3,8 +3,8 @@ use std::fmt::{self, Display, Write as _};
 use serde::Serialize;
 
 use rac_protocol::commands::{
-    AgentVersionResp, ClusterInfoResp, ClusterListResp, InfobaseSummary, LimitRecord,
-    SessionCounters, SessionLicense, SessionRecord,
+    AgentVersionResp, ClusterAdminRecord, ClusterInfoResp, ClusterListResp, InfobaseSummary,
+    LimitRecord, SessionCounters, SessionLicense, SessionRecord,
 };
 use rac_protocol::rac_wire::format_uuid;
 use rac_protocol::Uuid16;
@@ -139,6 +139,32 @@ pub struct LimitListDisplay<'a> {
 
 pub fn limit_list(items: &[LimitRecord]) -> LimitListDisplay<'_> {
     LimitListDisplay { items }
+}
+
+pub struct ClusterAdminListDisplay<'a> {
+    items: &'a [ClusterAdminRecord],
+}
+
+pub fn cluster_admin_list(items: &[ClusterAdminRecord]) -> ClusterAdminListDisplay<'_> {
+    ClusterAdminListDisplay { items }
+}
+
+impl Display for ClusterAdminListDisplay<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let out = list_to_string("cluster-admins", self.items, 5, MoreLabel::Default, |out, idx, item| {
+            outln!(out, "name[{idx}]: {}", display_str(&item.name));
+            outln!(out, "unknown-tag[{idx}]: {}", item.unknown_tag);
+            outln!(out, "unknown-flags[{idx}]: 0x{:08x}", item.unknown_flags);
+            outln!(
+                out,
+                "unknown-tail[{idx}]: {:02x} {:02x} {:02x}",
+                item.unknown_tail[0],
+                item.unknown_tail[1],
+                item.unknown_tail[2]
+            );
+        });
+        write_trimmed(f, &out)
+    }
 }
 
 impl Display for LimitListDisplay<'_> {

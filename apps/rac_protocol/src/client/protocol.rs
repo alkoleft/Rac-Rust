@@ -11,9 +11,17 @@ pub struct SerializedRpc {
     pub expect_method: Option<u8>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum RacRequest {
     AgentVersion,
+    ClusterAuth {
+        cluster: Uuid16,
+        user: String,
+        pwd: String,
+    },
+    ClusterAdminList {
+        cluster: Uuid16,
+    },
     ClusterList,
     ClusterInfo { cluster: Uuid16 },
     ManagerList { cluster: Uuid16 },
@@ -56,7 +64,7 @@ pub trait RacProtocol: Send + Sync {
 
     fn decode_rpc_method_id(&self, payload: &[u8]) -> Option<u8>;
 
-    fn required_context(&self, request: RacRequest) -> RequiredContext;
+    fn required_context(&self, request: &RacRequest) -> RequiredContext;
     fn serialize_set_cluster_context(&self, cluster: Uuid16) -> Result<SerializedRpc>;
     fn serialize_set_infobase_context(&self, cluster: Uuid16) -> Result<SerializedRpc>;
 
@@ -167,14 +175,18 @@ impl RacProtocol for V16Protocol {
         decode_rpc_method(payload)
     }
 
-    fn required_context(&self, request: RacRequest) -> RequiredContext {
+    fn required_context(&self, request: &RacRequest) -> RequiredContext {
         match request {
-            RacRequest::AgentVersion | RacRequest::ClusterList | RacRequest::ClusterInfo { .. } => {
+            RacRequest::AgentVersion
+            | RacRequest::ClusterAuth { .. }
+            | RacRequest::ClusterAdminList { .. }
+            | RacRequest::ClusterList
+            | RacRequest::ClusterInfo { .. } => {
                 RequiredContext::default()
             }
             RacRequest::InfobaseInfo { cluster, .. } => RequiredContext {
-                cluster: Some(cluster),
-                infobase_cluster: Some(cluster),
+                cluster: Some(*cluster),
+                infobase_cluster: Some(*cluster),
             },
             RacRequest::ManagerList { cluster }
             | RacRequest::ManagerInfo { cluster, .. }
@@ -192,7 +204,7 @@ impl RacProtocol for V16Protocol {
             | RacRequest::ProfileList { cluster }
             | RacRequest::CounterList { cluster }
             | RacRequest::LimitList { cluster } => RequiredContext {
-                cluster: Some(cluster),
+                cluster: Some(*cluster),
                 infobase_cluster: None,
             },
         }
@@ -219,6 +231,17 @@ impl RacProtocol for V16Protocol {
             RacRequest::AgentVersion => (
                 encode_rpc(METHOD_AGENT_VERSION_REQ, &[]),
                 Some(METHOD_AGENT_VERSION_RESP),
+            ),
+            RacRequest::ClusterAuth { cluster, user, pwd } => {
+                let mut body = Vec::with_capacity(16 + 2 + user.len() + pwd.len());
+                body.extend_from_slice(&cluster);
+                body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(user.as_bytes())?);
+                body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(pwd.as_bytes())?);
+                (encode_rpc(METHOD_CLUSTER_CONTEXT, &body), None)
+            }
+            RacRequest::ClusterAdminList { cluster } => (
+                Self::encode_cluster_scoped(METHOD_CLUSTER_ADMIN_LIST_REQ, cluster),
+                Some(METHOD_CLUSTER_ADMIN_LIST_RESP),
             ),
             RacRequest::ClusterList => (
                 encode_rpc(METHOD_CLUSTER_LIST_REQ, &[]),

@@ -12,6 +12,7 @@ use crate::Uuid16;
 pub mod infobase;
 pub mod limit;
 pub mod session;
+pub mod cluster;
 
 #[derive(Debug, Serialize)]
 pub struct AgentVersionResp {
@@ -83,6 +84,7 @@ pub use self::infobase::{
     infobase_info, infobase_summary_info, infobase_summary_list, InfobaseInfoResp, InfobaseSummary,
     InfobaseSummaryInfoResp, InfobaseSummaryListResp,
 };
+pub use self::cluster::{cluster_admin_list, ClusterAdminListResp, ClusterAdminRecord};
 pub use self::limit::{limit_list, LimitListResp, LimitRecord};
 pub use self::session::{
     session_info, session_list, SessionCounters, SessionInfoResp, SessionLicense, SessionListResp,

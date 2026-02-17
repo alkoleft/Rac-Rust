@@ -4,7 +4,7 @@
 |---|------|---------|-------------|-----------------|----------|-------------|-------|
 | 1 | `cluster` | `admin list` | ``docs/modes/rac_mode_cluster.md`` | ``docs/messages/rac_message_formats_cluster.md`` | yes | yes | - |
 | 2 | `cluster` | `admin register` | `-` | `-` | yes | - | - |
-| 3 | `manager` | `list` | ``docs/modes/rac_mode_manager.md`` | `-` | yes | - | - |
+| 3 | `manager` | `list` | ``docs/modes/rac_mode_manager.md`` | `-` | yes | yes | - |
 | 4 | `manager` | `info` | `-` | `-` | yes | - | - |
 | 5 | `server` | `list` | ``docs/modes/rac_mode_server.md`` | ``docs/messages/rac_message_formats_server.md`` | yes | - | - |
 | 6 | `server` | `info` | `-` | `-` | yes | - | - |

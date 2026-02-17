@@ -5,7 +5,7 @@
     "description_file": "`docs/modes/rac_mode_cluster.md`",
     "message_formats_file": "`docs/messages/rac_message_formats_cluster.md`",
     "analyzed": "yes",
-    "implemented": "-",
+    "implemented": "yes",
     "notes": "-"
   },
   {
@@ -23,7 +23,7 @@
     "description_file": "`docs/modes/rac_mode_manager.md`",
     "message_formats_file": "-",
     "analyzed": "yes",
-    "implemented": "",
+    "implemented": "yes",
     "notes": "-"
   },
   {
@@ -221,7 +221,7 @@
     "description_file": "`docs/modes/rac_mode_limit.md`",
     "message_formats_file": "-",
     "analyzed": "yes",
-    "implemented": "",
+    "implemented": "yes",
     "notes": "-"
   },
   {

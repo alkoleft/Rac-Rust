@@ -292,6 +292,27 @@ def update_registry(mode: str, command: str, implemented: str) -> None:
         raise RuntimeError(result.stderr.strip() or result.stdout.strip())
 
 
+def git_is_dirty() -> bool:
+    result = subprocess.run(
+        ["git", "status", "--porcelain"],
+        cwd=str(ROOT),
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(result.stderr.strip() or result.stdout.strip())
+    return bool(result.stdout.strip())
+
+
+def refresh_plan(registry: str = "docs/modes/rac_modes_registry.md") -> None:
+    registry_path = ROOT / registry
+    entries = parse_registry(registry_path)
+    selected = select_entries(entries, include_unanalyzed=False)
+    write_plan_md(selected, ROOT / "artifacts" / "rac_impl_plan.md")
+    write_plan_json(selected, ROOT / "artifacts" / "rac_impl_plan.json")
+
+
 def git_commit(message: str) -> None:
     result = subprocess.run(
         ["git", "commit", "-am", message],
@@ -341,6 +362,13 @@ def main() -> None:
     run.add_argument("--registry", default="docs/modes/rac_modes_registry.md")
     run.add_argument("--label", default=None)
     run.add_argument("--commit-message", default=None)
+
+    run_next = sub.add_parser(
+        "run-next",
+        help="Run pipeline for first not implemented command from artifacts/rac_impl_plan.json.",
+    )
+    run_next.add_argument("--plan", default="artifacts/rac_impl_plan.json")
+    run_next.add_argument("--registry", default="docs/modes/rac_modes_registry.md")
 
     args = parser.parse_args()
 
@@ -437,6 +465,7 @@ def main() -> None:
     if args.cmd == "update-registry":
         log_step(f"registry: update {args.mode} {args.command}")
         update_registry(args.mode, args.command, args.implemented)
+        refresh_plan()
         log_step("registry: updated")
         return
 
@@ -475,6 +504,12 @@ def main() -> None:
         log_step("implement: codex")
         codex_exec(implement_prompt, f"{label}_impl")
         log_step("implement: codex complete")
+
+        if git_is_dirty():
+            commit_message = args.commit_message or f"impl: {args.mode} {args.command}"
+            log_step(f"commit: {commit_message}")
+            git_commit(commit_message)
+            log_step("commit: created")
 
         # Pre-check and Codex review+fix
         paths = git_diff_files()
@@ -518,12 +553,47 @@ def main() -> None:
 
         log_step("registry: update implemented=yes")
         update_registry(args.mode, args.command, "yes")
+        refresh_plan()
         log_step("registry: updated")
 
-        commit_message = args.commit_message or f"impl: {args.mode} {args.command}"
-        log_step(f"commit: {commit_message}")
-        git_commit(commit_message)
-        log_step("commit: created")
+        if git_is_dirty():
+            commit_message = f"review: {args.mode} {args.command}"
+            log_step(f"commit: {commit_message}")
+            git_commit(commit_message)
+            log_step("commit: created")
+        return
+
+    if args.cmd == "run-next":
+        plan_path = ROOT / args.plan
+        if not plan_path.exists():
+            raise RuntimeError(f"Plan not found: {plan_path}")
+        entries = json.loads(plan_path.read_text())
+        next_entry = None
+        for entry in entries:
+            implemented = str(entry.get("implemented", "")).strip().lower()
+            if implemented == "yes":
+                continue
+            next_entry = entry
+            break
+        if not next_entry:
+            print("No not-implemented commands found in plan.")
+            return
+        mode = next_entry["mode"]
+        command = next_entry["command"]
+        cmd = [
+            sys.executable,
+            str(Path(__file__).resolve()),
+            "run",
+            "--mode",
+            mode,
+            "--command",
+            command,
+            "--registry",
+            args.registry,
+        ]
+        result = subprocess.run(cmd, cwd=str(ROOT), check=False)
+        if result.returncode != 0:
+            raise SystemExit(result.returncode)
         return
 
 

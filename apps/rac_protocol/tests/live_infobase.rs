@@ -12,14 +12,10 @@ struct TestParams {
 }
 
 fn cluster_uuid_from_env_or_first(client: &mut RacClient) -> [u8; 16] {
-    let from_env = std::env::var("RAC_CLUSTER")
-        .ok()
-        .map(|value| parse_uuid(&value).expect("RAC_CLUSTER must be a valid uuid"));
-    from_env.unwrap_or_else(|| {
-        let clusters = cluster_list(client).expect("cluster list").clusters;
-        let first = clusters.first().expect("cluster list empty");
-        first.uuid
-    })
+    let value = std::env::var("RAC_CLUSTER").expect("RAC_CLUSTER not set");
+    let parsed = parse_uuid(&value).expect("RAC_CLUSTER must be a valid uuid");
+    let _ = cluster_list(client).expect("cluster list");
+    parsed
 }
 
 fn load_params() -> TestParams {
@@ -33,7 +29,7 @@ fn load_params() -> TestParams {
 #[ignore]
 fn live_infobase_info() {
     let params = load_params();
-    let addr = std::env::var("RAC_ADDR").unwrap_or_else(|_| params.addr.clone());
+    let addr = params.addr.clone();
 
     let cfg = ClientConfig {
         connect_timeout: Duration::from_secs(5),

@@ -1,3 +1,4 @@
+use crate::codec::RecordCursor;
 use crate::error::{RacError, Result};
 use crate::rac_wire::decode_rpc_method;
 
@@ -40,8 +41,13 @@ pub use self::session::{
 };
 
 pub(crate) fn rpc_body(payload: &[u8]) -> Result<&[u8]> {
-    if payload.len() >= 5 && payload[0..4] == [0x01, 0x00, 0x00, 0x01] {
-        return Ok(&payload[5..]);
+    let mut cursor = RecordCursor::new(payload, 0);
+    if cursor.remaining_len() >= 5 {
+        let head = cursor.take_bytes(4)?;
+        if head == [0x01, 0x00, 0x00, 0x01] {
+            let _ = cursor.take_u8()?;
+            return Ok(cursor.remaining_slice());
+        }
     }
     if decode_rpc_method(payload).is_none() {
         return Err(RacError::Decode("missing rpc header"));

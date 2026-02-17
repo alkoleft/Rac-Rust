@@ -15,6 +15,13 @@ impl<'a> RecordCursor<'a> {
         self.data.len().saturating_sub(self.off)
     }
 
+    pub fn remaining_slice(&self) -> &'a [u8] {
+        if self.off >= self.data.len() {
+            return &[];
+        }
+        &self.data[self.off..]
+    }
+
     pub fn take_uuid(&mut self) -> Result<Uuid16, WireError> {
         if self.off + 16 > self.data.len() {
             return Err(WireError::Truncated("uuid"));

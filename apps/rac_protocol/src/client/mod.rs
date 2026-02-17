@@ -10,6 +10,7 @@ use crate::client::debug::{format_payload_head, log_frame};
 use crate::client::handshake::negotiate;
 use crate::client::protocol::RacProtocol;
 use crate::client::transport::RacTransport;
+use crate::codec::RecordCursor;
 use crate::error::{RacError, Result};
 
 pub use protocol::{RacProtocolVersion, RacRequest};
@@ -209,5 +210,13 @@ impl RacClient {
 }
 
 fn is_service_notice(payload: &[u8]) -> bool {
-    payload.len() >= 4 && payload[0..4] == [0x01, 0x00, 0x00, 0xff]
+    let mut cursor = RecordCursor::new(payload, 0);
+    if cursor.remaining_len() < 4 {
+        return false;
+    }
+    let head = match cursor.take_bytes(4) {
+        Ok(bytes) => bytes,
+        Err(_) => return false,
+    };
+    head == [0x01, 0x00, 0x00, 0xff]
 }

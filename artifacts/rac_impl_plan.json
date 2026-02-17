@@ -1,15 +1,6 @@
 [
   {
     "mode": "server",
-    "command": "list",
-    "description_file": "`docs/modes/rac_mode_server.md`",
-    "message_formats_file": "`docs/messages/rac_message_formats_server.md`",
-    "analyzed": "yes",
-    "implemented": "",
-    "notes": "-"
-  },
-  {
-    "mode": "server",
     "command": "info",
     "description_file": "",
     "message_formats_file": "",

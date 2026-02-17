@@ -38,7 +38,7 @@ fn client_cfg() -> ClientConfig {
 #[ignore]
 fn live_agent_version_only() {
     let params = load_params();
-    let addr = std::env::var("RAC_ADDR").unwrap_or_else(|_| params.addr.clone());
+    let addr = params.addr.clone();
     let mut client = RacClient::connect(&addr, client_cfg()).expect("connect");
 
     let resp = agent_version(&mut client).expect("agent version");
@@ -54,7 +54,7 @@ fn live_agent_version_only() {
 #[ignore]
 fn live_agent_version_and_cluster_list() {
     let params = load_params();
-    let addr = std::env::var("RAC_ADDR").unwrap_or_else(|_| params.addr.clone());
+    let addr = params.addr.clone();
     let mut client = RacClient::connect(&addr, client_cfg()).expect("connect");
 
     let resp = agent_version(&mut client).expect("agent version");
@@ -76,19 +76,15 @@ fn live_agent_version_and_cluster_list() {
 #[test]
 #[ignore]
 fn live_infobase_summary_list() {
-    let cluster_uuid = require_cluster_uuid();
-
     let params = load_params();
-    let addr = std::env::var("RAC_ADDR").unwrap_or_else(|_| params.addr.clone());
+    let addr = params.addr.clone();
+    let cluster_uuid = require_cluster_uuid();
     let mut client = RacClient::connect(&addr, client_cfg()).expect("connect");
 
     let _ = agent_version(&mut client);
     let reply = infobase_summary_list(&mut client, cluster_uuid).expect("infobase summary list");
 
-    assert!(
-        !reply.summaries.is_empty() || reply.infobases.is_empty(),
-        "unexpected empty summaries with non-empty infobases"
-    );
+    assert_eq!(reply.summaries.len(), reply.infobases.len());
 
     client.close().expect("close");
 }

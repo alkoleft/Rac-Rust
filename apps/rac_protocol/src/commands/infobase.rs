@@ -1,12 +1,11 @@
 use serde::Serialize;
 
 use crate::client::{RacClient, RacRequest};
-use crate::error::{RacError, Result};
-use crate::rac_wire::scan_len_prefixed_strings;
-use crate::rac_wire::uuid_from_slice;
+use crate::codec::RecordCursor;
+use crate::error::Result;
 use crate::Uuid16;
 
-use super::{first_uuid, rpc_body};
+use super::rpc_body;
 
 #[derive(Debug, Serialize)]
 pub struct InfobaseSummaryListResp {
@@ -57,12 +56,12 @@ pub fn infobase_summary_info(
 ) -> Result<InfobaseSummaryInfoResp> {
     let reply = client.call(RacRequest::InfobaseSummaryInfo { cluster, infobase })?;
     let body = rpc_body(&reply)?;
+    let mut cursor = RecordCursor::new(body, 0);
+    let infobase = cursor.take_uuid()?;
+    let fields = read_str8_fields(&mut cursor)?;
     Ok(InfobaseSummaryInfoResp {
-        infobase: first_uuid(body)?,
-        fields: scan_len_prefixed_strings(body)
-            .into_iter()
-            .map(|(_, s)| s)
-            .collect(),
+        infobase,
+        fields,
         raw_payload: Some(reply),
     })
 }
@@ -74,12 +73,12 @@ pub fn infobase_info(
 ) -> Result<InfobaseInfoResp> {
     let reply = client.call(RacRequest::InfobaseInfo { cluster, infobase })?;
     let body = rpc_body(&reply)?;
+    let mut cursor = RecordCursor::new(body, 0);
+    let infobase = cursor.take_uuid()?;
+    let fields = read_str8_fields(&mut cursor)?;
     Ok(InfobaseInfoResp {
-        infobase: first_uuid(body)?,
-        fields: scan_len_prefixed_strings(body)
-            .into_iter()
-            .map(|(_, s)| s)
-            .collect(),
+        infobase,
+        fields,
         raw_payload: Some(reply),
     })
 }
@@ -88,65 +87,43 @@ fn parse_infobase_summary_list_body(body: &[u8]) -> Result<Vec<InfobaseSummary>>
     if body.is_empty() {
         return Ok(Vec::new());
     }
-    let count = body[0] as usize;
-    let mut off = 1;
+    let mut cursor = RecordCursor::new(body, 0);
+    let count = cursor.take_u8()? as usize;
     let mut out = Vec::with_capacity(count);
     for _ in 0..count {
-        if off + 16 > body.len() {
-            return Err(RacError::Decode("infobase summary list: truncated uuid"));
-        }
-        let uuid = uuid_from_slice(&body[off..off + 16])?;
-        off += 16;
-
-        if off >= body.len() {
-            return Err(RacError::Decode("infobase summary list: missing tag"));
-        }
-        // Some servers include a 0x2c tag byte, others go straight to descr length.
-        let mut has_tag = body[off] == 0x2c;
-        if !has_tag && off + 1 < body.len() {
-            let len_no_tag = body[off] as usize;
-            if off + 1 + len_no_tag > body.len() {
-                let len_with_tag = body[off + 1] as usize;
-                if off + 2 + len_with_tag <= body.len() {
-                    has_tag = true;
-                }
-            }
-        }
-        if has_tag {
-            off += 1;
-            if off >= body.len() {
-                return Err(RacError::Decode(
-                    "infobase summary list: missing descr length",
-                ));
-            }
-        }
-
-        let descr_len = body[off] as usize;
-        off += 1;
-        if off + descr_len > body.len() {
-            return Err(RacError::Decode("infobase summary list: truncated descr"));
-        }
-        let descr = String::from_utf8_lossy(&body[off..off + descr_len]).to_string();
-        off += descr_len;
-
-        if off >= body.len() {
-            return Err(RacError::Decode(
-                "infobase summary list: missing name length",
-            ));
-        }
-        let name_len = body[off] as usize;
-        off += 1;
-        if off + name_len > body.len() {
-            return Err(RacError::Decode("infobase summary list: truncated name"));
-        }
-        let name = String::from_utf8_lossy(&body[off..off + name_len]).to_string();
-        off += name_len;
-
+        let uuid = cursor.take_uuid()?;
+        let first = cursor.take_u8()?;
+        let descr_len = if first == 0x2c {
+            cursor.take_u8()? as usize
+        } else {
+            first as usize
+        };
+        let descr = if descr_len == 0 {
+            String::new()
+        } else {
+            let bytes = cursor.take_bytes(descr_len)?;
+            String::from_utf8_lossy(&bytes).to_string()
+        };
+        let name_len = cursor.take_u8()? as usize;
+        let name = if name_len == 0 {
+            String::new()
+        } else {
+            let bytes = cursor.take_bytes(name_len)?;
+            String::from_utf8_lossy(&bytes).to_string()
+        };
         out.push(InfobaseSummary {
             infobase: uuid,
             name,
             descr,
         });
+    }
+    Ok(out)
+}
+
+fn read_str8_fields(cursor: &mut RecordCursor<'_>) -> Result<Vec<String>> {
+    let mut out = Vec::new();
+    while cursor.remaining_len() > 0 {
+        out.push(cursor.take_str8()?);
     }
     Ok(out)
 }

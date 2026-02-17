@@ -4,7 +4,7 @@ use serde::Serialize;
 
 use rac_protocol::commands::{
     AgentVersionResp, ClusterAdminRecord, ClusterInfoResp, ClusterListResp, InfobaseSummary,
-    LimitRecord, SessionCounters, SessionLicense, SessionRecord,
+    LimitRecord, ManagerRecord, SessionCounters, SessionLicense, SessionRecord,
 };
 use rac_protocol::rac_wire::format_uuid;
 use rac_protocol::Uuid16;
@@ -62,6 +62,24 @@ impl Display for UuidListDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let out = list_to_string(self.label, self.items, 5, MoreLabel::Default, |out, _idx, uuid| {
             let _ = writeln!(out, "- {}", format_uuid(uuid));
+        });
+        write_trimmed(f, &out)
+    }
+}
+
+pub struct StringListDisplay<'a> {
+    label: &'a str,
+    items: &'a [String],
+}
+
+pub fn string_list<'a>(label: &'a str, items: &'a [String]) -> StringListDisplay<'a> {
+    StringListDisplay { label, items }
+}
+
+impl Display for StringListDisplay<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let out = list_to_string(self.label, self.items, 5, MoreLabel::Default, |out, _idx, value| {
+            let _ = writeln!(out, "- {value}");
         });
         write_trimmed(f, &out)
     }
@@ -133,6 +151,22 @@ pub fn session_info(item: &SessionRecord) -> SessionInfoDisplay<'_> {
     SessionInfoDisplay { item }
 }
 
+pub struct ManagerListDisplay<'a> {
+    items: &'a [ManagerRecord],
+}
+
+pub fn manager_list(items: &[ManagerRecord]) -> ManagerListDisplay<'_> {
+    ManagerListDisplay { items }
+}
+
+pub struct ManagerInfoDisplay<'a> {
+    item: &'a ManagerRecord,
+}
+
+pub fn manager_info(item: &ManagerRecord) -> ManagerInfoDisplay<'_> {
+    ManagerInfoDisplay { item }
+}
+
 pub struct LimitListDisplay<'a> {
     items: &'a [LimitRecord],
 }
@@ -199,6 +233,34 @@ impl Display for LimitListDisplay<'_> {
             );
             outln!(out, "descr[{idx}]: {}", display_str(&item.descr));
         });
+        write_trimmed(f, &out)
+    }
+}
+
+impl Display for ManagerListDisplay<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let out = list_to_string("managers", self.items, 5, MoreLabel::Default, |out, idx, item| {
+            outln!(out, "manager[{idx}]: {}", format_uuid(&item.manager));
+            outln!(out, "pid[{idx}]: {}", display_str(&item.pid));
+            outln!(out, "using[{idx}]: {}", manager_using_label(item.using));
+            outln!(out, "host[{idx}]: {}", display_str(&item.host));
+            outln!(out, "port[{idx}]: {}", item.port);
+            outln!(out, "descr[{idx}]: \"{}\"", display_str(&item.descr));
+        });
+        write_trimmed(f, &out)
+    }
+}
+
+impl Display for ManagerInfoDisplay<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut out = String::new();
+        let item = self.item;
+        outln!(&mut out, "manager: {}", format_uuid(&item.manager));
+        outln!(&mut out, "pid: {}", display_str(&item.pid));
+        outln!(&mut out, "using: {}", manager_using_label(item.using));
+        outln!(&mut out, "host: {}", display_str(&item.host));
+        outln!(&mut out, "port: {}", item.port);
+        outln!(&mut out, "descr: \"{}\"", display_str(&item.descr));
         write_trimmed(f, &out)
     }
 }
@@ -408,6 +470,13 @@ fn append_license_prefixed(out: &mut String, license: &SessionLicense, prefix: &
         Some(license.issued_by_server),
     );
     append_opt_yes_no(out, &format!("{prefix}network-key"), Some(license.network_key));
+}
+
+fn manager_using_label(value: u32) -> String {
+    match value {
+        1 => "main".to_string(),
+        _ => value.to_string(),
+    }
 }
 
 fn append_counters_prefixed(out: &mut String, counters: &SessionCounters, prefix: &str) {

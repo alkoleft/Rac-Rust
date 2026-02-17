@@ -7,6 +7,8 @@ use crate::Uuid16;
 
 use super::rpc_body;
 
+const CLUSTER_TAIL_SIZE: usize = 32;
+
 #[derive(Debug, Serialize, Clone)]
 pub struct ClusterAdminRecord {
     pub name: String,
@@ -18,6 +20,27 @@ pub struct ClusterAdminRecord {
 #[derive(Debug, Serialize)]
 pub struct ClusterAdminListResp {
     pub admins: Vec<ClusterAdminRecord>,
+    pub raw_payload: Option<Vec<u8>>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct ClusterSummary {
+    pub uuid: Uuid16,
+    pub host: Option<String>,
+    pub display_name: Option<String>,
+    pub port: Option<u16>,
+    pub expiration_timeout: Option<u32>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct ClusterListResp {
+    pub clusters: Vec<ClusterSummary>,
+    pub raw_payload: Option<Vec<u8>>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct ClusterInfoResp {
+    pub cluster: ClusterSummary,
     pub raw_payload: Option<Vec<u8>>,
 }
 
@@ -35,6 +58,27 @@ pub fn cluster_admin_list(
     let reply = client.call(RacRequest::ClusterAdminList { cluster })?;
     Ok(ClusterAdminListResp {
         admins: parse_cluster_admin_list_body(rpc_body(&reply)?)?,
+        raw_payload: Some(reply),
+    })
+}
+
+pub fn cluster_list(client: &mut RacClient) -> Result<ClusterListResp> {
+    let reply = client.call(RacRequest::ClusterList)?;
+    let body = rpc_body(&reply)?;
+    let clusters = parse_cluster_list_body(body)?;
+    Ok(ClusterListResp {
+        clusters,
+        raw_payload: Some(reply),
+    })
+}
+
+pub fn cluster_info(client: &mut RacClient, cluster: Uuid16) -> Result<ClusterInfoResp> {
+    let reply = client.call(RacRequest::ClusterInfo { cluster })?;
+    let body = rpc_body(&reply)?;
+    let mut cursor = RecordCursor::new(body, 0);
+    let summary = parse_cluster_record(&mut cursor)?;
+    Ok(ClusterInfoResp {
+        cluster: summary,
         raw_payload: Some(reply),
     })
 }
@@ -60,6 +104,37 @@ fn parse_cluster_admin_list_body(body: &[u8]) -> Result<Vec<ClusterAdminRecord>>
         });
     }
     Ok(admins)
+}
+
+fn parse_cluster_list_body(body: &[u8]) -> Result<Vec<ClusterSummary>> {
+    if body.is_empty() {
+        return Ok(Vec::new());
+    }
+    let mut cursor = RecordCursor::new(body, 0);
+    let count = cursor.take_u8()? as usize;
+    let mut clusters = Vec::with_capacity(count);
+    for _ in 0..count {
+        clusters.push(parse_cluster_record(&mut cursor)?);
+    }
+    Ok(clusters)
+}
+
+fn parse_cluster_record(cursor: &mut RecordCursor<'_>) -> Result<ClusterSummary> {
+    let uuid = cursor.take_uuid()?;
+    let expiration_timeout = cursor.take_u32_be()?;
+    let host = cursor.take_str8()?;
+    let _unknown_u32 = cursor.take_u32_be()?;
+    let port = cursor.take_u16_be()?;
+    let _unknown_u64 = cursor.take_u64_be()?;
+    let display_name = cursor.take_str8()?;
+    let _tail = cursor.take_bytes(CLUSTER_TAIL_SIZE)?;
+    Ok(ClusterSummary {
+        uuid,
+        host: Some(host),
+        display_name: Some(display_name),
+        port: Some(port),
+        expiration_timeout: Some(expiration_timeout),
+    })
 }
 
 #[cfg(test)]
@@ -92,4 +167,6 @@ mod tests {
         assert_eq!(admins[0].unknown_flags, 0x03efbfbd);
         assert_eq!(admins[0].unknown_tail, [0x01, 0x00, 0x00]);
     }
+
+    // Additional cluster list/info capture assertions should be added when artifacts are present.
 }

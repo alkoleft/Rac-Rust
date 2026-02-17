@@ -310,7 +310,7 @@ fn run(cli: Cli) -> Result<()> {
                 console::output(
                     cli.json,
                     &resp,
-                    console::uuid_list("managers", &resp.managers),
+                    console::manager_list(&resp.managers),
                 );
                 client.close()?;
             }
@@ -326,7 +326,7 @@ fn run(cli: Cli) -> Result<()> {
                 console::output(
                     cli.json,
                     &resp,
-                    console::info("manager", &resp.manager, &resp.fields),
+                    console::manager_info(&resp.manager),
                 );
                 client.close()?;
             }
@@ -514,7 +514,7 @@ fn run(cli: Cli) -> Result<()> {
                 console::output(
                     cli.json,
                     &resp,
-                    console::uuid_list("counters", &resp.counters),
+                    console::string_list("counters", &resp.counters),
                 );
                 client.close()?;
             }

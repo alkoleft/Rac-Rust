@@ -1,117 +1,5 @@
-use crate::rac_wire::{format_uuid, uuid_from_slice, WireError};
+use crate::rac_wire::{uuid_from_slice, WireError};
 use crate::Uuid16;
-
-pub fn take_u32_le(data: &[u8], offset: usize) -> Result<(u32, usize), WireError> {
-    let end = offset + 4;
-    if end > data.len() {
-        return Err(WireError::Truncated("u32"));
-    }
-    let mut buf = [0u8; 4];
-    buf.copy_from_slice(&data[offset..end]);
-    Ok((u32::from_le_bytes(buf), end))
-}
-
-pub fn take_u16_be(data: &[u8], offset: usize) -> Result<(u16, usize), WireError> {
-    let end = offset + 2;
-    if end > data.len() {
-        return Err(WireError::Truncated("u16"));
-    }
-    let mut buf = [0u8; 2];
-    buf.copy_from_slice(&data[offset..end]);
-    Ok((u16::from_be_bytes(buf), end))
-}
-
-pub fn take_u32_be(data: &[u8], offset: usize) -> Result<(u32, usize), WireError> {
-    let end = offset + 4;
-    if end > data.len() {
-        return Err(WireError::Truncated("u32"));
-    }
-    let mut buf = [0u8; 4];
-    buf.copy_from_slice(&data[offset..end]);
-    Ok((u32::from_be_bytes(buf), end))
-}
-
-pub fn take_u64_le(data: &[u8], offset: usize) -> Result<(u64, usize), WireError> {
-    let end = offset + 8;
-    if end > data.len() {
-        return Err(WireError::Truncated("u64"));
-    }
-    let mut buf = [0u8; 8];
-    buf.copy_from_slice(&data[offset..end]);
-    Ok((u64::from_le_bytes(buf), end))
-}
-
-pub fn take_u64_be(data: &[u8], offset: usize) -> Result<(u64, usize), WireError> {
-    let end = offset + 8;
-    if end > data.len() {
-        return Err(WireError::Truncated("u64"));
-    }
-    let mut buf = [0u8; 8];
-    buf.copy_from_slice(&data[offset..end]);
-    Ok((u64::from_be_bytes(buf), end))
-}
-
-pub fn take_uuid16(data: &[u8], offset: usize) -> Result<([u8; 16], usize), WireError> {
-    let end = offset + 16;
-    if end > data.len() {
-        return Err(WireError::Truncated("uuid"));
-    }
-    let uuid = uuid_from_slice(&data[offset..end])?;
-    Ok((uuid, end))
-}
-
-pub fn take_str8(data: &[u8], offset: usize) -> Result<(String, usize), WireError> {
-    if offset >= data.len() {
-        return Err(WireError::Truncated("str8 len"));
-    }
-    let len = data[offset] as usize;
-    let start = offset + 1;
-    let end = start + len;
-    if end > data.len() {
-        return Err(WireError::Truncated("str8 data"));
-    }
-    let s = std::str::from_utf8(&data[start..end])
-        .map_err(|_| WireError::InvalidData("invalid utf-8"))?
-        .to_string();
-    Ok((s, end))
-}
-
-pub fn scan_len_prefixed_strings(data: &[u8]) -> Vec<(usize, String)> {
-    let mut out = Vec::new();
-    let mut i = 0usize;
-    while i < data.len() {
-        let len = data[i] as usize;
-        let start = i + 1;
-        let end = start + len;
-        if len > 0 && end <= data.len() {
-            if let Ok(s) = std::str::from_utf8(&data[start..end]) {
-                if s.chars().all(|c| !c.is_control()) {
-                    out.push((i, s.to_string()));
-                }
-            }
-        }
-        i += 1;
-    }
-    out
-}
-
-pub fn scan_prefixed_uuids(data: &[u8]) -> Vec<(usize, String)> {
-    let mut out = Vec::new();
-    for i in 0..data.len() {
-        let marker = data[i];
-        if marker != 0x16 && marker != 0x19 {
-            continue;
-        }
-        let start = i + 1;
-        let end = start + 16;
-        if end <= data.len() {
-            if let Ok(uuid) = uuid_from_slice(&data[start..end]) {
-                out.push((i, format_uuid(&uuid)));
-            }
-        }
-    }
-    out
-}
 
 pub struct RecordCursor<'a> {
     data: &'a [u8],
@@ -123,45 +11,46 @@ impl<'a> RecordCursor<'a> {
         Self { data, off }
     }
 
-    pub fn seek(&mut self, target: usize) -> Result<(), WireError> {
-        if target < self.off || target > self.data.len() {
-            return Err(WireError::Truncated("cursor seek out of bounds"));
-        }
-        self.skip(target - self.off)
-    }
-
-    pub fn skip(&mut self, n: usize) -> Result<(), WireError> {
-        let next = self
-            .off
-            .checked_add(n)
-            .ok_or(WireError::Truncated("cursor overflow"))?;
-        if next > self.data.len() {
-            return Err(WireError::Truncated("cursor skip beyond end"));
-        }
-        self.off = next;
-        Ok(())
+    pub fn remaining_len(&self) -> usize {
+        self.data.len().saturating_sub(self.off)
     }
 
     pub fn take_uuid(&mut self) -> Result<Uuid16, WireError> {
-        let (uuid, next) = take_uuid16(self.data, self.off)?;
-        self.off = next;
+        if self.off + 16 > self.data.len() {
+            return Err(WireError::Truncated("uuid"));
+        }
+        let start = self.off;
+        let end = start + 16;
+        let uuid = uuid_from_slice(&self.data[start..end])?;
+        self.off = end;
         Ok(uuid)
     }
 
     pub fn take_uuid_opt(&mut self) -> Result<Option<Uuid16>, WireError> {
-        match take_uuid16(self.data, self.off) {
-            Ok((uuid, next)) => {
-                self.off = next;
-                Ok(Some(uuid))
-            }
-            Err(WireError::Truncated(_)) => Ok(None),
-            Err(err) => Err(err),
+        if self.off + 16 > self.data.len() {
+            return Ok(None);
         }
+        let start = self.off;
+        let end = start + 16;
+        let uuid = uuid_from_slice(&self.data[start..end])?;
+        self.off = end;
+        Ok(Some(uuid))
     }
 
     pub fn take_str8(&mut self) -> Result<String, WireError> {
-        let (value, next) = take_str8(self.data, self.off)?;
-        self.off = next;
+        if self.off >= self.data.len() {
+            return Err(WireError::Truncated("str8 len"));
+        }
+        let len = self.data[self.off] as usize;
+        let start = self.off + 1;
+        let end = start + len;
+        if end > self.data.len() {
+            return Err(WireError::Truncated("str8 data"));
+        }
+        let value = std::str::from_utf8(&self.data[start..end])
+            .map_err(|_| WireError::InvalidData("invalid utf-8"))?
+            .to_string();
+        self.off = end;
         Ok(value)
     }
 
@@ -193,42 +82,71 @@ impl<'a> RecordCursor<'a> {
     }
 
     pub fn take_u32_be(&mut self) -> Result<u32, WireError> {
-        let (value, next) = take_u32_be(self.data, self.off)?;
-        self.off = next;
-        Ok(value)
+        if self.off + 4 > self.data.len() {
+            return Err(WireError::Truncated("u32"));
+        }
+        let bytes = &self.data[self.off..self.off + 4];
+        self.off += 4;
+        Ok(u32::from_be_bytes([bytes[0], bytes[1], bytes[2], bytes[3]]))
+    }
+
+    pub fn take_u16_be(&mut self) -> Result<u16, WireError> {
+        if self.off + 2 > self.data.len() {
+            return Err(WireError::Truncated("u16"));
+        }
+        let bytes = &self.data[self.off..self.off + 2];
+        self.off += 2;
+        Ok(u16::from_be_bytes([bytes[0], bytes[1]]))
+    }
+
+    pub fn take_u32_le(&mut self) -> Result<u32, WireError> {
+        if self.off + 4 > self.data.len() {
+            return Err(WireError::Truncated("u32"));
+        }
+        let bytes = &self.data[self.off..self.off + 4];
+        self.off += 4;
+        Ok(u32::from_le_bytes([bytes[0], bytes[1], bytes[2], bytes[3]]))
     }
 
     pub fn take_u32_be_opt(&mut self) -> Result<Option<u32>, WireError> {
-        match take_u32_be(self.data, self.off) {
-            Ok((value, next)) => {
-                self.off = next;
-                Ok(Some(value))
-            }
-            Err(WireError::Truncated(_)) => Ok(None),
-            Err(err) => Err(err),
+        if self.off + 4 > self.data.len() {
+            return Ok(None);
         }
+        let bytes = &self.data[self.off..self.off + 4];
+        self.off += 4;
+        Ok(Some(u32::from_be_bytes([
+            bytes[0], bytes[1], bytes[2], bytes[3],
+        ])))
     }
 
     pub fn take_u64_be_opt(&mut self) -> Result<Option<u64>, WireError> {
-        match take_u64_be(self.data, self.off) {
-            Ok((value, next)) => {
-                self.off = next;
-                Ok(Some(value))
-            }
-            Err(WireError::Truncated(_)) => Ok(None),
-            Err(err) => Err(err),
+        if self.off + 8 > self.data.len() {
+            return Ok(None);
         }
+        let bytes = &self.data[self.off..self.off + 8];
+        self.off += 8;
+        Ok(Some(u64::from_be_bytes([
+            bytes[0], bytes[1], bytes[2], bytes[3], bytes[4], bytes[5], bytes[6], bytes[7],
+        ])))
+    }
+
+    pub fn take_u64_be(&mut self) -> Result<u64, WireError> {
+        if self.off + 8 > self.data.len() {
+            return Err(WireError::Truncated("u64"));
+        }
+        let bytes = &self.data[self.off..self.off + 8];
+        self.off += 8;
+        Ok(u64::from_be_bytes([
+            bytes[0], bytes[1], bytes[2], bytes[3], bytes[4], bytes[5], bytes[6], bytes[7],
+        ]))
     }
 
     pub fn take_datetime_opt(&mut self) -> Result<Option<String>, WireError> {
-        match take_u64_be(self.data, self.off) {
-            Ok((value, next)) => {
-                self.off = next;
-                Ok(v8_datetime_to_iso(value))
-            }
-            Err(WireError::Truncated(_)) => Ok(None),
-            Err(err) => Err(err),
-        }
+        let value = match self.take_u64_be_opt()? {
+            Some(value) => value,
+            None => return Ok(None),
+        };
+        Ok(v8_datetime_to_iso(value))
     }
 
     pub fn take_u8(&mut self) -> Result<u8, WireError> {
@@ -251,6 +169,13 @@ impl<'a> RecordCursor<'a> {
         let out = self.data[start..end].to_vec();
         self.off = end;
         Ok(out)
+    }
+
+    pub fn take_f64_be(&mut self) -> Result<f64, WireError> {
+        let bytes = self.take_bytes(8)?;
+        Ok(f64::from_be_bytes([
+            bytes[0], bytes[1], bytes[2], bytes[3], bytes[4], bytes[5], bytes[6], bytes[7],
+        ]))
     }
 
     pub fn take_u8_opt(&mut self) -> Result<Option<u8>, WireError> {

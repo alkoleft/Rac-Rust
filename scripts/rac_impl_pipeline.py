@@ -305,6 +305,36 @@ def git_is_dirty() -> bool:
     return bool(result.stdout.strip())
 
 
+def git_has_tracked_changes() -> bool:
+    result = subprocess.run(
+        ["git", "status", "--porcelain"],
+        cwd=str(ROOT),
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(result.stderr.strip() or result.stdout.strip())
+    for line in result.stdout.splitlines():
+        if not line:
+            continue
+        if not line.startswith("??"):
+            return True
+    return False
+
+
+def commit_if_needed(message: str, label: str) -> None:
+    if git_has_tracked_changes():
+        log_step(f"{label}: commit {message}")
+        git_commit(message)
+        log_step(f"{label}: commit created")
+        return
+    if git_is_dirty():
+        log_step(f"{label}: skip commit (only untracked files present)")
+    else:
+        log_step(f"{label}: skip commit (no changes)")
+
+
 def refresh_plan(registry: str = "docs/modes/rac_modes_registry.md") -> None:
     registry_path = ROOT / registry
     entries = parse_registry(registry_path)
@@ -512,11 +542,8 @@ def main() -> None:
         codex_exec(implement_prompt, f"{label}_impl")
         log_step("implement: codex complete")
 
-        if git_is_dirty():
-            commit_message = args.commit_message or f"impl: {args.mode} {args.command}"
-            log_step(f"commit: {commit_message}")
-            git_commit(commit_message)
-            log_step("commit: created")
+        commit_message = args.commit_message or f"impl: {args.mode} {args.command}"
+        commit_if_needed(commit_message, "impl")
 
         # Pre-check and Codex review+fix
         paths = git_diff_files()
@@ -563,11 +590,8 @@ def main() -> None:
         refresh_plan()
         log_step("registry: updated")
 
-        if git_is_dirty():
-            commit_message = f"review: {args.mode} {args.command}"
-            log_step(f"commit: {commit_message}")
-            git_commit(commit_message)
-            log_step("commit: created")
+        commit_message = f"review: {args.mode} {args.command}"
+        commit_if_needed(commit_message, "review")
         return
 
     if args.cmd == "run-next":

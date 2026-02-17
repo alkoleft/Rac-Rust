@@ -370,6 +370,13 @@ def main() -> None:
     run_next.add_argument("--plan", default="artifacts/rac_impl_plan.json")
     run_next.add_argument("--registry", default="docs/modes/rac_modes_registry.md")
 
+    run_all = sub.add_parser(
+        "run-all",
+        help="Run pipeline sequentially for all not implemented commands from artifacts/rac_impl_plan.json.",
+    )
+    run_all.add_argument("--plan", default="artifacts/rac_impl_plan.json")
+    run_all.add_argument("--registry", default="docs/modes/rac_modes_registry.md")
+
     args = parser.parse_args()
 
     if args.cmd == "plan":
@@ -594,6 +601,42 @@ def main() -> None:
         result = subprocess.run(cmd, cwd=str(ROOT), check=False)
         if result.returncode != 0:
             raise SystemExit(result.returncode)
+        return
+
+    if args.cmd == "run-all":
+        plan_path = ROOT / args.plan
+        if not plan_path.exists():
+            raise RuntimeError(f"Plan not found: {plan_path}")
+        entries = json.loads(plan_path.read_text())
+        queue = []
+        for entry in entries:
+            implemented = str(entry.get("implemented", "")).strip().lower()
+            if implemented == "yes":
+                continue
+            queue.append(entry)
+        if not queue:
+            print("No not-implemented commands found in plan.")
+            return
+        total = len(queue)
+        for idx, entry in enumerate(queue, 1):
+            mode = entry["mode"]
+            command = entry["command"]
+            log_step(f"run-all: start {idx}/{total} {mode} {command}")
+            cmd = [
+                sys.executable,
+                str(Path(__file__).resolve()),
+                "run",
+                "--mode",
+                mode,
+                "--command",
+                command,
+                "--registry",
+                args.registry,
+            ]
+            result = subprocess.run(cmd, cwd=str(ROOT), check=False)
+            if result.returncode != 0:
+                raise SystemExit(result.returncode)
+            log_step(f"run-all: done {idx}/{total} {mode} {command}")
         return
 
 

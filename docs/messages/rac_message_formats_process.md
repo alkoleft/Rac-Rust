@@ -19,24 +19,24 @@ Observed field names in `rac process list` output, with capture mapping status.
 |---|---|---|---|
 | `process` | UUID | yes | 1 |
 | `host` | string | yes | 2 |
-| `port` | u16 | yes | - |
-| `pid` | string (digits) | yes | - |
+| `port` | u16 | yes | 10 |
+| `pid` | string (digits) | yes | 13 |
 | `turned-on` | bool | hypothesis | - |
-| `running` | bool | hypothesis | - |
-| `started-at` | datetime | hypothesis | - |
-| `use` | enum | hypothesis | - |
-| `available-perfomance` | u32 | yes | - |
+| `running` | bool | yes | 17 |
+| `started-at` | datetime | yes | 16 |
+| `use` | enum | yes | 14 |
+| `available-perfomance` | u32 | yes | 18 |
 | `capacity` | u32 | yes | 3 |
 | `connections` | u32 | yes | 4 |
-| `memory-size` | u32 | yes | - |
-| `memory-excess-time` | u32 | hypothesis | - |
-| `selection-size` | u32 | yes | - |
+| `memory-size` | u32 | yes | 12 |
+| `memory-excess-time` | u32 | hypothesis | 11 |
+| `selection-size` | u32 | yes | 15 |
 | `avg-call-time` | f64 | yes | 5 |
 | `avg-db-call-time` | f64 | yes | 6 |
 | `avg-lock-call-time` | f64 | yes | 7 |
 | `avg-server-call-time` | f64 | yes | 8 |
 | `avg-threads` | f64 | yes | 9 |
-| `reserve` | bool | no | - |
+| `reserve` | bool | hypothesis | 19 |
 
 ### RPC Envelope
 
@@ -130,12 +130,12 @@ Offsets are relative to the start of a record (recStart = record start, not payl
 
 | Offset | Size | Field | Type | Notes |
 |---|---|---|---|---|
-| `0x53` | `1` | `licenses-count` | `u8` | observed `0x01` |
-| `0x54` | `1` | `gap_license_0` | `u8` | unknown flag before `file-name` |
-| `0x55` | `1` | `file-name-len` | `u8` | observed `0x37` |
-| `0x56` | `file-name-len` | `file-name` | `str8` | UTF-8 path to `.lic` |
-| `0x8d` | `gap` | `gap_license_1` | `bytes` | unknown prefix before `full-presentation` (observed `4a 02`) |
-| `0x8e` | `full-presentation-len` | `full-presentation` | `str?` | length prefix not confirmed; string bytes match `rac` output |
+| `0x52` | `1` | `licenses-count` | `u8` | observed `0x01` |
+| `0x53` | `1` | `gap_license_0` | `u8` | unknown flag before `file-name` |
+| `0x54` | `1` | `file-name-len` | `u8` | observed `0x37` |
+| `0x55` | `file-name-len` | `file-name` | `str8` | UTF-8 path to `.lic` |
+| `0x8c` | `2` | `full-presentation-len` | `u14` | length = `(b0 & 0x3f) + (b1 << 6)` |
+| `0x8e` | `full-presentation` | `str8` | UTF-8, length via `u14` above |
 | `0x118` | `1` | `issued-by-server` | `u8` | observed `0x01` |
 | `0x119` | `4` | `license-type` | `u32_be` | observed `0` (`soft`) |
 | `0x11d` | `4` | `max-users-all` | `u32_be` | observed `4` |
@@ -162,12 +162,12 @@ Define `t0` as the byte immediately after `brief-presentation` (end of string). 
 | `0x06` | `4` | `memory-size` | `u32_be` | observed `682224` |
 | `0x0a` | `1` | `pid_len` | `u8` | observed `0x06` |
 | `0x0b` | `pid_len` | `pid` | `str8` | observed `314150` |
-| `0x0b + pid_len` | `4` | `use?` | `u32_be` | hypothesis, observed `1` when `use=used` |
+| `0x0b + pid_len` | `4` | `use` | `u32_be` | observed `1` when `use=used` |
 | `0x0f + pid_len` | `4` | `selection-size` | `u32_be` | observed `21944` / `3625` |
-| `0x13 + pid_len` | `8` | `u64_unknown_0` | `u64_be` | does not match 1C datetime (`started-at`) in post-load captures |
-| `0x1b + pid_len` | `4` | `running?` | `u32_be` | hypothesis, observed `1` when `running=yes` |
+| `0x13 + pid_len` | `8` | `started-at` | `datetime` | 1C timestamp (u64_be) |
+| `0x1b + pid_len` | `4` | `running` | `u32_be` | observed `1` when `running=yes` |
 | `0x1f + pid_len` | `4` | `available-perfomance` | `u32_be` | observed `153` / `192` |
-| `0x23 + pid_len` | `1` | `reserve?` | `u8` | hypothesis, observed `0` when `reserve=no` |
+| `0x23 + pid_len` | `1` | `reserve` | `u8` | hypothesis, observed `0` when `reserve=no` |
 
 ## Process Info
 
@@ -245,6 +245,5 @@ Same field set as `process list --licenses` (see above).
 ## Open Questions
 
 - `gap_0` is still unknown; does not match 1C datetime ticks in this capture.
-- Confirm the length encoding for `full-presentation` (the bytes before the string do not match a plain `u8` length).
-- Confirm `use` and `running` mappings (`u32_be` values observed as `1` when `use=used` / `running=yes`).
-- Identify encoding for `started-at` (the `u64_be` at `0x13 + pid_len` does not match 1C datetime).
+- Confirm `use` mapping (`u32_be` values observed as `1` when `use=used`).
+- Confirm `reserve` mapping (`u8` values observed as `0` when `reserve=no`).

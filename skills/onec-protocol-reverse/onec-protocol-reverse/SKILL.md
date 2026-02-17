@@ -86,3 +86,4 @@ When reporting protocol analysis:
 3. Include concrete file references to captures.
 4. Record new mappings in `references/` for reuse.
 5. If building replacement behavior, show one verified live command/output.
+6. When updating message format docs, update the `Order In Capture` column for field lists.

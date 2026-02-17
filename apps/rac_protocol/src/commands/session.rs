@@ -234,7 +234,7 @@ fn find_next_session_record_start(data: &[u8], start: usize) -> Option<(usize, U
 }
 
 fn parse_session_record_start(data: &[u8], offset: usize) -> Option<(String, Uuid16)> {
-    // Session record header (docs/rac_message_formats_session.md):
+    // Session record header (docs/messages/rac_message_formats_session.md):
     // - uuid[16] (session) at +0x00
     // - str8 app-id at +0x10 (len byte), bytes start at +0x11
     if offset + 16 + 1 > data.len() {

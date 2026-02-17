@@ -19,6 +19,8 @@ Observed special case:
 | `0x0b` | `0x0c` | `cluster list` | cluster list request/response |
 | `0x0d` | `0x0e` | `cluster info --cluster <id>` | cluster info |
 | `0x09` | `01 00 00 00` | many cluster-scoped commands | set cluster context (includes cluster UUID) |
+| `0x02` | `0x03` | `cluster admin list --cluster <id>` | list cluster administrators (requires cluster auth) |
+| `0x05` | `01 00 00 00` | `cluster admin register --cluster <id> --name <name>` | register cluster administrator; response is ack only |
 | `0x12` | `0x13` | `manager list --cluster <id>` | manager list |
 | `0x14` | `0x15` | `manager info --cluster <id> --manager <id>` | manager info |
 | `0x16` | `0x17` | `server list --cluster <id>` | server list |

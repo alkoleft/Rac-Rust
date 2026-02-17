@@ -1,0 +1,96 @@
+# RAC Manager Message Formats (Observed)
+
+## Manager List
+
+Source capture:
+- `logs/session_1771287345_2785336_127_0_0_1_47884/server_to_client.stream.bin`
+
+Payload example:
+- `artifacts/manager_list_response.hex`
+
+RAC output reference:
+- `artifacts/manager_list_rac.out`
+
+### Fields From `rac` Output
+
+Observed field names in `rac manager list` output, with capture mapping status.
+
+| Field | Type | Found In Capture | Order In Capture |
+|---|---|---|---|
+| `manager` | UUID | yes | 1 |
+| `descr` | string | yes | 2 |
+| `host` | string | yes | 3 |
+| `using` | enum (u32) | yes | 4 |
+| `port` | u16 | yes | 5 |
+| `pid` | string (digits) | yes | 6 |
+
+### RPC Envelope
+
+Request method: `0x12` (`manager list --cluster <id>`)
+Response method: `0x13`
+
+### Fields From `rac` Request
+
+Observed request parameters for `rac manager list`.
+
+| Field | Type | Found In Capture | Order In Capture |
+|---|---|---|---|
+| `cluster` | UUID | yes | 1 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 2 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 |
+
+Payload structure (method body):
+- offset `0x00`: `count:u8` (observed `0x01`)
+- offset `0x01`: first record starts here
+
+### Record Layout (Observed)
+
+Offsets are relative to the start of a record.
+
+- `0x00` `manager_uuid[16]`
+- `0x10` `descr_len:u8`
+- `0x11` `descr[descr_len]` (UTF-8, observed `Главный менеджер кластера`)
+- `0x11 + descr_len` `host_len:u8`
+- `0x12 + descr_len` `host[host_len]` (UTF-8, observed `alko-home`)
+- `0x12 + descr_len + host_len` `using:u32_be` (observed `0x00000001` -> `main`)
+- `0x16 + descr_len + host_len` `port:u16_be` (observed `0x0605` -> 1541)
+- `0x18 + descr_len + host_len` `pid_len:u8`
+- `0x19 + descr_len + host_len` `pid[pid_len]` (ASCII digits, observed `314037`)
+
+## Manager Info
+
+Source capture:
+- `logs/session_1771287351_2785436_127_0_0_1_40168/server_to_client.stream.bin`
+
+Payload example:
+- `artifacts/manager_info_response.hex`
+
+RAC output reference:
+- `artifacts/manager_info_rac.out`
+
+### Fields From `rac` Output
+
+Same field set as `manager list` (see above).
+
+### RPC Envelope
+
+Request method: `0x14` (`manager info --cluster <id> --manager <id>`)
+Response method: `0x15`
+
+### Fields From `rac` Request
+
+Observed request parameters for `rac manager info`.
+
+| Field | Type | Found In Capture | Order In Capture |
+|---|---|---|---|
+| `cluster` | UUID | yes | 1 |
+| `manager` | UUID | yes | 2 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 3 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 4 |
+
+Payload structure (method body):
+- single record in the same layout as `manager list` (no leading count byte)
+
+## Open Questions
+
+- Confirm `using` enum values beyond `main` (observed `0x00000001`).

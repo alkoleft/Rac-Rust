@@ -1,6 +1,6 @@
 # RAC Message Formats: Infobase API
 
-Derived from `docs/rac_message_formats.md`.
+Derived from `docs/messages/rac_message_formats.md`.
 
 ## Commands
 

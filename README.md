@@ -54,5 +54,5 @@ cargo run -p rac_protocol --bin rac_lite -- cluster-list 127.0.0.1:1545
 
 ## Полезные файлы
 
-- `docs/rac_protocol_notes.md`
-- `docs/rac_method_map.md`
+- `docs/documentation/rac_protocol_notes.md`
+- `docs/documentation/rac_method_map.md`

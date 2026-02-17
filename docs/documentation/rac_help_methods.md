@@ -112,4 +112,4 @@ Reference commands derived from `rac help <mode>` output. For each mode below, t
 
 ## Notes
 
-- `docs/rac_cli_method_map.generated.md` links each command to observed RPC method IDs.
+- `docs/documentation/rac_cli_method_map.generated.md` links each command to observed RPC method IDs.

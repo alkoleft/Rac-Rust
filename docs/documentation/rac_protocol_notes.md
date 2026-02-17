@@ -88,7 +88,7 @@ scripts/extract_rac_response_example.sh logs/session_1771098941_320377_127_0_0_1
 
 ## Next reference
 
-Method map extracted from multiple commands is in `docs/rac_method_map.md`.
+Method map extracted from multiple commands is in `docs/documentation/rac_method_map.md`.
 
 For this capture, expected client-side output:
 

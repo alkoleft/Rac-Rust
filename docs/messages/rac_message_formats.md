@@ -1,6 +1,6 @@
 # RAC Message Formats (Read/Info Scope)
 
-Generated from local captures in `logs/` and method map in `docs/rac_cli_method_map.generated.md`. Response byte examples are stored in `artifacts/`.
+Generated from local captures in `logs/` and method map in `docs/documentation/rac_cli_method_map.generated.md`. Response byte examples are stored in `artifacts/`.
 
 ## Transport Framing (Confirmed)
 
@@ -32,6 +32,8 @@ Notes:
 
 ## Command Groups
 
-- `docs/rac_message_formats_cluster.md`
-- `docs/rac_message_formats_infobase.md`
-- `docs/rac_message_formats_session.md`
+- `docs/messages/rac_message_formats_cluster.md`
+- `docs/messages/rac_message_formats_manager.md`
+- `docs/messages/rac_message_formats_process.md`
+- `docs/messages/rac_message_formats_infobase.md`
+- `docs/messages/rac_message_formats_session.md`

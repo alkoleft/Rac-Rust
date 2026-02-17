@@ -123,4 +123,4 @@ Notes:
 
 ## Known Payload Types
 
-See `docs/rac_data_types.md` for data type encodings and sizes used by the session decoder.
+See `docs/documentation/rac_data_types.md` for data type encodings and sizes used by the session decoder.

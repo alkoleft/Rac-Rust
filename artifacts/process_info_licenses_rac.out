@@ -1,0 +1,17 @@
+process            : f77f2c1d-1e5b-4855-a0b9-94390ccd4ce5
+host               : alko-home
+port               : 1560
+pid                : 314150
+full-name          : "file:///home/alko/.1cv8/1C/1cv8/conf/20260213011049.lic"
+series             : "500000025347"
+issued-by-server   : yes
+license-type       : soft
+net                : no
+max-users-all      : 4
+max-users-cur      : 4
+rmngr-address      : "alko-home"
+rmngr-port         : 1560
+rmngr-pid          : 314150
+short-presentation : "Сервер, 500000025347 4 4"
+full-presentation  : "Сервер, 314150, alko-home, 1560, 500000025347 4 4 19.02.2026 22:10:50 (UTC), file:///home/alko/.1cv8/1C/1cv8/conf/20260213011049.lic"
+

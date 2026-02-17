@@ -52,10 +52,10 @@ Use this workflow for unknown 1C protocols and for extending known RAC protocol 
 - `scripts/method_map_from_sessions.sh`
   - Batch extract method IDs from session directories using `rac_decode`.
 - `scripts/map_rac_commands_to_methods.sh`
-  - Run a capture matrix and generate `docs/rac_cli_method_map.generated.md`.
+  - Run a capture matrix and generate `docs/documentation/rac_cli_method_map.generated.md`.
 - `scripts/dump_rac_static_info.sh`
   - Dump static metadata from `rac` binary (ELF profile, debuglink, IDS keys, supported modes).
-- `docs/rac_help_methods.md`
+- `docs/documentation/rac_help_methods.md`
   - Quick reference for `rac help <mode>` commands, parameters, and descriptions.
 
 Run scripts from repository root unless user asks otherwise.

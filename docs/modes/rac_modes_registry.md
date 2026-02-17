@@ -53,13 +53,13 @@ Tracks per-mode documentation coverage. "Processed" means a mode has a dedicated
 |  |  |  | `info` | yes | - | - |
 |  |  |  | `update` | yes | - | - |
 |  |  |  | `remove` | yes | - | - |
-| `service-setting`     | `docs/modes/rac_mode_service-setting.md`     | -                                                 | `list`                               | -        | -           | -     |
-|                       |                                              |                                                   | `info`                               | -        | -           | -     |
-|                       |                                              |                                                   | `insert`                             | -        | -           | -     |
-|                       |                                              |                                                   | `update`                             | -        | -           | -     |
-|                       |                                              |                                                   | `get-service-data-dirs-for-transfer` | -        | -           | -     |
-|                       |                                              |                                                   | `remove`                             | -        | -           | -     |
-|                       |                                              |                                                   | `apply`                              | -        | -           | -     |
+| `service-setting` | `docs/modes/rac_mode_service-setting.md` | `docs/messages/rac_message_formats_service-setting.md` | `list` | yes | - | - |
+|                       |                                              |                                                   | `info`                               | yes      | -           | -     |
+|  |  |  | `insert` | yes | - | - |
+|                       |                                              |                                                   | `update`                             | yes      | -           | -     |
+|                       |                                              |                                                   | `get-service-data-dirs-for-transfer` | yes      | -           | -     |
+|                       |                                              |                                                   | `remove`                             | yes      | -           | -     |
+|                       |                                              |                                                   | `apply`                              | yes      | -           | -     |
 | `binary-data-storage` | `docs/modes/rac_mode_binary-data-storage.md` | -                                                 | `list`                               | -        | -           | -     |
 |                       |                                              |                                                   | `info`                               | -        | -           | -     |
 |                       |                                              |                                                   | `create-full-backup`                 | -        | -           | -     |

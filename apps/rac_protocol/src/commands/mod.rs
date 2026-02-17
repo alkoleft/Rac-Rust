@@ -10,6 +10,7 @@ use crate::rac_wire::{
 use crate::Uuid16;
 
 pub mod infobase;
+pub mod limit;
 pub mod session;
 
 #[derive(Debug, Serialize)]
@@ -82,6 +83,7 @@ pub use self::infobase::{
     infobase_info, infobase_summary_info, infobase_summary_list, InfobaseInfoResp, InfobaseSummary,
     InfobaseSummaryInfoResp, InfobaseSummaryListResp,
 };
+pub use self::limit::{limit_list, LimitListResp, LimitRecord};
 pub use self::session::{
     session_info, session_list, SessionCounters, SessionInfoResp, SessionLicense, SessionListResp,
     SessionRecord,
@@ -118,11 +120,6 @@ pub struct CounterListResp {
     pub raw_payload: Option<Vec<u8>>,
 }
 
-#[derive(Debug, Serialize)]
-pub struct LimitListResp {
-    pub limits: Vec<Uuid16>,
-    pub raw_payload: Option<Vec<u8>>,
-}
 
 pub fn agent_version(client: &mut RacClient) -> Result<AgentVersionResp> {
     let reply = client.call(RacRequest::AgentVersion)?;
@@ -315,14 +312,6 @@ pub fn counter_list(client: &mut RacClient, cluster: Uuid16) -> Result<CounterLi
     })
 }
 
-pub fn limit_list(client: &mut RacClient, cluster: Uuid16) -> Result<LimitListResp> {
-    let reply = client.call(RacRequest::LimitList { cluster })?;
-    Ok(LimitListResp {
-        limits: scan_uuid_bytes(rpc_body(&reply)?)?,
-        raw_payload: Some(reply),
-    })
-}
-
 pub(crate) fn rpc_body(payload: &[u8]) -> Result<&[u8]> {
     if payload.len() >= 5 && payload[0..4] == [0x01, 0x00, 0x00, 0x01] {
         return Ok(&payload[5..]);
@@ -493,4 +482,5 @@ mod tests {
         let strings = scan_len_prefixed_strings(rpc_body(&payload).unwrap());
         assert_eq!(strings[0].1, "1.2.3");
     }
+
 }

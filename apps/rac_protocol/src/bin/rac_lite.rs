@@ -492,7 +492,7 @@ fn run(cli: Cli) -> Result<()> {
                 let cluster = parse_uuid_arg(&cluster)?;
                 let mut client = RacClient::connect(&addr, cfg.clone())?;
                 let resp = limit_list(&mut client, cluster)?;
-                console::output(cli.json, &resp, console::uuid_list("limits", &resp.limits));
+                console::output(cli.json, &resp, console::limit_list(&resp.limits));
                 client.close()?;
             }
         },

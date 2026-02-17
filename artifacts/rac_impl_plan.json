@@ -1,0 +1,326 @@
+[
+  {
+    "mode": "cluster",
+    "command": "admin list",
+    "description_file": "`docs/modes/rac_mode_cluster.md`",
+    "message_formats_file": "`docs/messages/rac_message_formats_cluster.md`",
+    "analyzed": "yes",
+    "implemented": "-",
+    "notes": "-"
+  },
+  {
+    "mode": "cluster",
+    "command": "admin register",
+    "description_file": "",
+    "message_formats_file": "",
+    "analyzed": "yes",
+    "implemented": "-",
+    "notes": "-"
+  },
+  {
+    "mode": "manager",
+    "command": "list",
+    "description_file": "`docs/modes/rac_mode_manager.md`",
+    "message_formats_file": "-",
+    "analyzed": "yes",
+    "implemented": "",
+    "notes": "-"
+  },
+  {
+    "mode": "manager",
+    "command": "info",
+    "description_file": "",
+    "message_formats_file": "",
+    "analyzed": "yes",
+    "implemented": "",
+    "notes": "-"
+  },
+  {
+    "mode": "server",
+    "command": "list",
+    "description_file": "`docs/modes/rac_mode_server.md`",
+    "message_formats_file": "`docs/messages/rac_message_formats_server.md`",
+    "analyzed": "yes",
+    "implemented": "",
+    "notes": "-"
+  },
+  {
+    "mode": "server",
+    "command": "info",
+    "description_file": "",
+    "message_formats_file": "",
+    "analyzed": "yes",
+    "implemented": "",
+    "notes": "-"
+  },
+  {
+    "mode": "process",
+    "command": "list",
+    "description_file": "`docs/modes/rac_mode_process.md`",
+    "message_formats_file": "`docs/messages/rac_message_formats_process.md`",
+    "analyzed": "yes",
+    "implemented": "",
+    "notes": "-"
+  },
+  {
+    "mode": "process",
+    "command": "info",
+    "description_file": "",
+    "message_formats_file": "",
+    "analyzed": "yes",
+    "implemented": "",
+    "notes": "-"
+  },
+  {
+    "mode": "connection",
+    "command": "list",
+    "description_file": "`docs/modes/rac_mode_connection.md`",
+    "message_formats_file": "`docs/messages/rac_message_formats_connection.md`",
+    "analyzed": "yes",
+    "implemented": "",
+    "notes": "-"
+  },
+  {
+    "mode": "connection",
+    "command": "info",
+    "description_file": "",
+    "message_formats_file": "",
+    "analyzed": "yes",
+    "implemented": "",
+    "notes": "-"
+  },
+  {
+    "mode": "lock",
+    "command": "list",
+    "description_file": "`docs/modes/rac_mode_lock.md`",
+    "message_formats_file": "`docs/messages/rac_message_formats_lock.md`",
+    "analyzed": "yes",
+    "implemented": "",
+    "notes": "-"
+  },
+  {
+    "mode": "rule",
+    "command": "apply",
+    "description_file": "`docs/modes/rac_mode_rule.md`",
+    "message_formats_file": "`docs/messages/rac_message_formats_rule.md`",
+    "analyzed": "yes",
+    "implemented": "-",
+    "notes": "-"
+  },
+  {
+    "mode": "rule",
+    "command": "list",
+    "description_file": "",
+    "message_formats_file": "",
+    "analyzed": "yes",
+    "implemented": "-",
+    "notes": "-"
+  },
+  {
+    "mode": "rule",
+    "command": "info",
+    "description_file": "",
+    "message_formats_file": "",
+    "analyzed": "yes",
+    "implemented": "-",
+    "notes": "-"
+  },
+  {
+    "mode": "rule",
+    "command": "insert",
+    "description_file": "",
+    "message_formats_file": "",
+    "analyzed": "yes",
+    "implemented": "-",
+    "notes": "-"
+  },
+  {
+    "mode": "rule",
+    "command": "update",
+    "description_file": "",
+    "message_formats_file": "",
+    "analyzed": "yes",
+    "implemented": "-",
+    "notes": "-"
+  },
+  {
+    "mode": "rule",
+    "command": "remove",
+    "description_file": "",
+    "message_formats_file": "",
+    "analyzed": "yes",
+    "implemented": "-",
+    "notes": "-"
+  },
+  {
+    "mode": "counter",
+    "command": "list",
+    "description_file": "`docs/modes/rac_mode_counter.md`",
+    "message_formats_file": "`docs/messages/rac_message_formats_counter.md`",
+    "analyzed": "yes",
+    "implemented": "",
+    "notes": "-"
+  },
+  {
+    "mode": "counter",
+    "command": "info",
+    "description_file": "",
+    "message_formats_file": "",
+    "analyzed": "yes",
+    "implemented": "-",
+    "notes": "-"
+  },
+  {
+    "mode": "counter",
+    "command": "update",
+    "description_file": "",
+    "message_formats_file": "",
+    "analyzed": "yes",
+    "implemented": "-",
+    "notes": "-"
+  },
+  {
+    "mode": "counter",
+    "command": "values",
+    "description_file": "",
+    "message_formats_file": "",
+    "analyzed": "yes",
+    "implemented": "-",
+    "notes": "-"
+  },
+  {
+    "mode": "counter",
+    "command": "accumulated-values",
+    "description_file": "",
+    "message_formats_file": "",
+    "analyzed": "yes",
+    "implemented": "-",
+    "notes": "-"
+  },
+  {
+    "mode": "counter",
+    "command": "clear",
+    "description_file": "",
+    "message_formats_file": "",
+    "analyzed": "yes",
+    "implemented": "-",
+    "notes": "-"
+  },
+  {
+    "mode": "counter",
+    "command": "remove",
+    "description_file": "",
+    "message_formats_file": "",
+    "analyzed": "yes",
+    "implemented": "-",
+    "notes": "-"
+  },
+  {
+    "mode": "limit",
+    "command": "list",
+    "description_file": "`docs/modes/rac_mode_limit.md`",
+    "message_formats_file": "-",
+    "analyzed": "yes",
+    "implemented": "",
+    "notes": "-"
+  },
+  {
+    "mode": "limit",
+    "command": "info",
+    "description_file": "",
+    "message_formats_file": "",
+    "analyzed": "yes",
+    "implemented": "-",
+    "notes": "-"
+  },
+  {
+    "mode": "limit",
+    "command": "update",
+    "description_file": "",
+    "message_formats_file": "",
+    "analyzed": "yes",
+    "implemented": "-",
+    "notes": "-"
+  },
+  {
+    "mode": "limit",
+    "command": "remove",
+    "description_file": "",
+    "message_formats_file": "",
+    "analyzed": "yes",
+    "implemented": "-",
+    "notes": "-"
+  },
+  {
+    "mode": "service-setting",
+    "command": "list",
+    "description_file": "`docs/modes/rac_mode_service-setting.md`",
+    "message_formats_file": "`docs/messages/rac_message_formats_service-setting.md`",
+    "analyzed": "yes",
+    "implemented": "-",
+    "notes": "-"
+  },
+  {
+    "mode": "service-setting",
+    "command": "info",
+    "description_file": "",
+    "message_formats_file": "",
+    "analyzed": "yes",
+    "implemented": "-",
+    "notes": "-"
+  },
+  {
+    "mode": "service-setting",
+    "command": "insert",
+    "description_file": "",
+    "message_formats_file": "",
+    "analyzed": "yes",
+    "implemented": "-",
+    "notes": "-"
+  },
+  {
+    "mode": "service-setting",
+    "command": "update",
+    "description_file": "",
+    "message_formats_file": "",
+    "analyzed": "yes",
+    "implemented": "-",
+    "notes": "-"
+  },
+  {
+    "mode": "service-setting",
+    "command": "get-service-data-dirs-for-transfer",
+    "description_file": "",
+    "message_formats_file": "",
+    "analyzed": "yes",
+    "implemented": "-",
+    "notes": "-"
+  },
+  {
+    "mode": "service-setting",
+    "command": "remove",
+    "description_file": "",
+    "message_formats_file": "",
+    "analyzed": "yes",
+    "implemented": "-",
+    "notes": "-"
+  },
+  {
+    "mode": "service-setting",
+    "command": "apply",
+    "description_file": "",
+    "message_formats_file": "",
+    "analyzed": "yes",
+    "implemented": "-",
+    "notes": "-"
+  },
+  {
+    "mode": "agent",
+    "command": "admin list",
+    "description_file": "`docs/modes/rac_mode_agent.md`",
+    "message_formats_file": "-",
+    "analyzed": "yes",
+    "implemented": "-",
+    "notes": "-"
+  }
+]

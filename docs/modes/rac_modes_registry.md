@@ -49,7 +49,7 @@ Tracks per-mode documentation coverage. "Processed" means a mode has a dedicated
 |  |  |  | `accumulated-values` | yes | - | - |
 |  |  |  | `clear` | yes | - | - |
 |  |  |  | `remove` | yes | - | - |
-| `limit` | `docs/modes/rac_mode_limit.md` | - | `list` | yes |  | - |
+| `limit` | `docs/modes/rac_mode_limit.md` | - | `list` | yes | yes | - |
 |  |  |  | `info` | yes | - | - |
 |  |  |  | `update` | yes | - | - |
 |  |  |  | `remove` | yes | - | - |

@@ -3,8 +3,8 @@ use std::fmt::{self, Display, Write as _};
 use serde::Serialize;
 
 use rac_protocol::commands::{
-    AgentVersionResp, ClusterInfoResp, ClusterListResp, InfobaseSummary, SessionCounters,
-    SessionLicense, SessionRecord,
+    AgentVersionResp, ClusterInfoResp, ClusterListResp, InfobaseSummary, LimitRecord,
+    SessionCounters, SessionLicense, SessionRecord,
 };
 use rac_protocol::rac_wire::format_uuid;
 use rac_protocol::Uuid16;
@@ -131,6 +131,50 @@ pub struct SessionInfoDisplay<'a> {
 
 pub fn session_info(item: &SessionRecord) -> SessionInfoDisplay<'_> {
     SessionInfoDisplay { item }
+}
+
+pub struct LimitListDisplay<'a> {
+    items: &'a [LimitRecord],
+}
+
+pub fn limit_list(items: &[LimitRecord]) -> LimitListDisplay<'_> {
+    LimitListDisplay { items }
+}
+
+impl Display for LimitListDisplay<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let out = list_to_string("limits", self.items, 5, MoreLabel::Default, |out, idx, item| {
+            outln!(out, "limit[{idx}]: {}", display_str(&item.name));
+            outln!(out, "counter[{idx}]: {}", display_str(&item.counter));
+            outln!(out, "action[{idx}]: {}", item.action);
+            outln!(out, "duration[{idx}]: {}", item.duration);
+            outln!(out, "cpu-time[{idx}]: {}", item.cpu_time);
+            outln!(out, "memory[{idx}]: {}", item.memory);
+            outln!(out, "read[{idx}]: {}", item.read);
+            outln!(out, "write[{idx}]: {}", item.write);
+            outln!(out, "duration-dbms[{idx}]: {}", item.duration_dbms);
+            outln!(out, "dbms-bytes[{idx}]: {}", item.dbms_bytes);
+            outln!(out, "service[{idx}]: {}", item.service);
+            outln!(out, "call[{idx}]: {}", item.call);
+            outln!(
+                out,
+                "number-of-active-sessions[{idx}]: {}",
+                item.number_of_active_sessions
+            );
+            outln!(
+                out,
+                "number-of-sessions[{idx}]: {}",
+                item.number_of_sessions
+            );
+            outln!(
+                out,
+                "error-message[{idx}]: {}",
+                display_str(&item.error_message)
+            );
+            outln!(out, "descr[{idx}]: {}", display_str(&item.descr));
+        });
+        write_trimmed(f, &out)
+    }
 }
 
 impl Display for SessionInfoDisplay<'_> {

@@ -92,16 +92,7 @@ mod tests {
     use super::*;
 
     fn decode_hex_str(input: &str) -> Vec<u8> {
-        let s = input.trim();
-        assert!(s.len() % 2 == 0, "hex length must be even");
-        let mut out = Vec::with_capacity(s.len() / 2);
-        let bytes = s.as_bytes();
-        for i in (0..bytes.len()).step_by(2) {
-            let hi = (bytes[i] as char).to_digit(16).expect("hex hi");
-            let lo = (bytes[i + 1] as char).to_digit(16).expect("hex lo");
-            out.push(((hi << 4) | lo) as u8);
-        }
-        out
+        hex::decode(input.trim()).expect("hex decode")
     }
 
     fn expected_descr() -> String {

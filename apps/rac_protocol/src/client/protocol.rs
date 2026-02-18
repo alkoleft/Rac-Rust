@@ -148,6 +148,14 @@ pub enum RacRequest {
         setting: Uuid16,
     },
     ServiceSettingList { cluster: Uuid16, server: Uuid16 },
+    ServiceSettingInsert {
+        cluster: Uuid16,
+        server: Uuid16,
+        service_name: String,
+        infobase_name: String,
+        service_data_dir: String,
+        active: bool,
+    },
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
@@ -328,7 +336,8 @@ impl RacProtocol for V16Protocol {
             | RacRequest::LimitUpdate { cluster, .. }
             | RacRequest::LimitRemove { cluster, .. }
             | RacRequest::ServiceSettingInfo { cluster, .. }
-            | RacRequest::ServiceSettingList { cluster, .. } => RequiredContext {
+            | RacRequest::ServiceSettingList { cluster, .. }
+            | RacRequest::ServiceSettingInsert { cluster, .. } => RequiredContext {
                 cluster: Some(*cluster),
                 infobase_cluster: None,
             },
@@ -774,6 +783,36 @@ impl RacProtocol for V16Protocol {
                 Self::encode_cluster_scoped_object(METHOD_SERVICE_SETTING_LIST_REQ, cluster, server),
                 Some(METHOD_SERVICE_SETTING_LIST_RESP),
             ),
+            RacRequest::ServiceSettingInsert {
+                cluster,
+                server,
+                service_name,
+                infobase_name,
+                service_data_dir,
+                active,
+            } => {
+                let mut body = Vec::with_capacity(
+                    16 + 16 + 16 + 5 + service_name.len() + infobase_name.len() + service_data_dir.len(),
+                );
+                body.extend_from_slice(&cluster);
+                body.extend_from_slice(&server);
+                body.extend_from_slice(&[0u8; 16]);
+                body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(
+                    service_name.as_bytes(),
+                )?);
+                body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(
+                    infobase_name.as_bytes(),
+                )?);
+                body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(
+                    service_data_dir.as_bytes(),
+                )?);
+                let active = if active { 1u16 } else { 0u16 };
+                body.extend_from_slice(&active.to_be_bytes());
+                (
+                    encode_rpc(METHOD_SERVICE_SETTING_INSERT_REQ, &body),
+                    Some(METHOD_SERVICE_SETTING_INSERT_RESP),
+                )
+            }
         };
 
         if payload.is_empty() {

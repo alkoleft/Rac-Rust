@@ -1,14 +1,5 @@
 [
   {
-    "mode": "limit",
-    "command": "remove",
-    "description_file": "",
-    "message_formats_file": "",
-    "analyzed": "yes",
-    "implemented": "-",
-    "notes": "-"
-  },
-  {
     "mode": "service-setting",
     "command": "list",
     "description_file": "`docs/modes/rac_mode_service-setting.md`",

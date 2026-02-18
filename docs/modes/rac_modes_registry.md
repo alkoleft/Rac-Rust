@@ -67,7 +67,7 @@ Tracks per-mode documentation coverage. "Processed" means a mode has a dedicated
 |                       |                                              |                                                   | `load-full-backup`                   | -        | -           | -     |
 |                       |                                              |                                                   | `load-diff-backup`                   | -        | -           | -     |
 |                       |                                              |                                                   | `clear-unused-space`                 | -        | -           | -     |
-| `agent` | `docs/modes/rac_mode_agent.md` | - | `admin list` | yes | - | - |
+| `agent` | `docs/modes/rac_mode_agent.md` | - | `admin list` | yes | yes | - |
 |                       |                                              |                                                   | `admin register`                     | -        | -           | -     |
 |                       |                                              |                                                   | `admin remove`                       | -        | -           | -     |
 |                       |                                              |                                                   | `version`                            |          |             | -     |

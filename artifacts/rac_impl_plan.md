@@ -2,4 +2,3 @@
 
 | # | Mode | Command | Description | Message formats | Analyzed | Implemented | Notes |
 |---|------|---------|-------------|-----------------|----------|-------------|-------|
-| 1 | `agent` | `admin list` | ``docs/modes/rac_mode_agent.md`` | `-` | yes | - | - |

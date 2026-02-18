@@ -84,6 +84,26 @@ pub enum RacRequest {
     },
     CounterList { cluster: Uuid16 },
     CounterInfo { cluster: Uuid16, counter: String },
+    CounterUpdate {
+        cluster: Uuid16,
+        name: String,
+        collection_time: u64,
+        group: u8,
+        filter_type: u8,
+        filter: String,
+        duration: u8,
+        cpu_time: u8,
+        duration_dbms: u8,
+        service: u8,
+        memory: u8,
+        read: u8,
+        write: u8,
+        dbms_bytes: u8,
+        call: u8,
+        number_of_active_sessions: u8,
+        number_of_sessions: u8,
+        descr: String,
+    },
     LimitList { cluster: Uuid16 },
 }
 
@@ -255,6 +275,7 @@ impl RacProtocol for V16Protocol {
             | RacRequest::RuleUpdate { cluster, .. }
             | RacRequest::CounterList { cluster }
             | RacRequest::CounterInfo { cluster, .. }
+            | RacRequest::CounterUpdate { cluster, .. }
             | RacRequest::LimitList { cluster } => RequiredContext {
                 cluster: Some(*cluster),
                 infobase_cluster: None,
@@ -502,6 +523,55 @@ impl RacProtocol for V16Protocol {
                     encode_rpc(METHOD_COUNTER_INFO_REQ, &body),
                     Some(METHOD_COUNTER_INFO_RESP),
                 )
+            }
+            RacRequest::CounterUpdate {
+                cluster,
+                name,
+                collection_time,
+                group,
+                filter_type,
+                filter,
+                duration,
+                cpu_time,
+                duration_dbms,
+                service,
+                memory,
+                read,
+                write,
+                dbms_bytes,
+                call,
+                number_of_active_sessions,
+                number_of_sessions,
+                descr,
+            } => {
+                let mut body = Vec::with_capacity(
+                    16 + 32 + name.len() + filter.len() + descr.len(),
+                );
+                body.extend_from_slice(&cluster);
+                body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(
+                    name.as_bytes(),
+                )?);
+                body.extend_from_slice(&collection_time.to_be_bytes());
+                body.push(group);
+                body.push(filter_type);
+                body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(
+                    filter.as_bytes(),
+                )?);
+                body.push(duration);
+                body.push(cpu_time);
+                body.push(duration_dbms);
+                body.push(service);
+                body.push(memory);
+                body.push(read);
+                body.push(write);
+                body.push(dbms_bytes);
+                body.push(call);
+                body.push(number_of_active_sessions);
+                body.push(number_of_sessions);
+                body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(
+                    descr.as_bytes(),
+                )?);
+                (encode_rpc(METHOD_COUNTER_UPDATE_REQ, &body), None)
             }
             RacRequest::LimitList { cluster } => (
                 Self::encode_cluster_scoped(METHOD_LIMIT_LIST_REQ, cluster),

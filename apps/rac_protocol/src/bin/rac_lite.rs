@@ -9,11 +9,11 @@ use console_output as console;
 use rac_protocol::client::{ClientConfig, RacClient};
 use rac_protocol::commands::{
     agent_version, cluster_admin_list, cluster_admin_register, cluster_info, cluster_list,
-    connection_info, connection_list, counter_info, counter_list, infobase_info,
+    connection_info, connection_list, counter_info, counter_list, counter_update, infobase_info,
     infobase_summary_info, infobase_summary_list, limit_list, lock_list, manager_info,
     manager_list, process_info, process_list, profile_list, rule_apply, rule_info, rule_insert,
     rule_list, rule_update, rule_remove, server_info, server_list, session_info, session_list,
-    ClusterAdminRegisterReq, RuleApplyMode, RuleInsertReq, RuleUpdateReq,
+    ClusterAdminRegisterReq, CounterUpdateReq, RuleApplyMode, RuleInsertReq, RuleUpdateReq,
 };
 use rac_protocol::error::{RacError, Result};
 use rac_protocol::rac_wire::parse_uuid;
@@ -275,6 +275,49 @@ enum CounterCmd {
         cluster: String,
         #[arg(long)]
         counter: String,
+    },
+    Update {
+        addr: String,
+        #[arg(long)]
+        cluster: String,
+        #[arg(long)]
+        cluster_user: String,
+        #[arg(long)]
+        cluster_pwd: String,
+        #[arg(long)]
+        name: String,
+        #[arg(long)]
+        collection_time: u64,
+        #[arg(long)]
+        group: String,
+        #[arg(long)]
+        filter_type: String,
+        #[arg(long)]
+        filter: String,
+        #[arg(long)]
+        duration: String,
+        #[arg(long)]
+        cpu_time: String,
+        #[arg(long)]
+        duration_dbms: String,
+        #[arg(long)]
+        service: String,
+        #[arg(long)]
+        memory: String,
+        #[arg(long)]
+        read: String,
+        #[arg(long)]
+        write: String,
+        #[arg(long)]
+        dbms_bytes: String,
+        #[arg(long)]
+        call: String,
+        #[arg(long)]
+        number_of_active_sessions: String,
+        #[arg(long)]
+        number_of_sessions: String,
+        #[arg(long, default_value = "")]
+        descr: String,
     },
 }
 
@@ -709,6 +752,66 @@ fn run(cli: Cli) -> Result<()> {
                 console::output(cli.json, &resp, console::counter_info(&resp.record));
                 client.close()?;
             }
+            CounterCmd::Update {
+                addr,
+                cluster,
+                cluster_user,
+                cluster_pwd,
+                name,
+                collection_time,
+                group,
+                filter_type,
+                filter,
+                duration,
+                cpu_time,
+                duration_dbms,
+                service,
+                memory,
+                read,
+                write,
+                dbms_bytes,
+                call,
+                number_of_active_sessions,
+                number_of_sessions,
+                descr,
+            } => {
+                let cluster = parse_uuid_arg(&cluster)?;
+                let req = CounterUpdateReq {
+                    name,
+                    collection_time,
+                    group: parse_counter_group(&group)?,
+                    filter_type: parse_counter_filter_type(&filter_type)?,
+                    filter,
+                    duration: parse_counter_analyze_flag("duration", &duration)?,
+                    cpu_time: parse_counter_analyze_flag("cpu-time", &cpu_time)?,
+                    duration_dbms: parse_counter_analyze_flag("duration-dbms", &duration_dbms)?,
+                    service: parse_counter_analyze_flag("service", &service)?,
+                    memory: parse_counter_analyze_flag("memory", &memory)?,
+                    read: parse_counter_analyze_flag("read", &read)?,
+                    write: parse_counter_analyze_flag("write", &write)?,
+                    dbms_bytes: parse_counter_analyze_flag("dbms-bytes", &dbms_bytes)?,
+                    call: parse_counter_analyze_flag("call", &call)?,
+                    number_of_active_sessions: parse_counter_analyze_flag(
+                        "number-of-active-sessions",
+                        &number_of_active_sessions,
+                    )?,
+                    number_of_sessions: parse_counter_analyze_flag(
+                        "number-of-sessions",
+                        &number_of_sessions,
+                    )?,
+                    descr,
+                };
+                let mut client = RacClient::connect(&addr, cfg.clone())?;
+                let resp = counter_update(
+                    &mut client,
+                    cluster,
+                    &cluster_user,
+                    &cluster_pwd,
+                    req,
+                )?;
+                console::output(cli.json, &resp, console::counter_update(&resp));
+                client.close()?;
+            }
         },
         TopCommand::Limit { command } => match command {
             LimitCmd::List { addr, cluster } => {
@@ -913,5 +1016,30 @@ fn parse_rule_apply_mode(input: &str) -> Result<RuleApplyMode> {
         "full" => Ok(RuleApplyMode::Full),
         "partial" => Ok(RuleApplyMode::Partial),
         _ => Err(RacError::Unsupported("unknown rule apply mode")),
+    }
+}
+
+fn parse_counter_group(input: &str) -> Result<u8> {
+    match input.trim() {
+        "users" | "0" => Ok(0),
+        "data-separation" | "1" => Ok(1),
+        _ => Err(RacError::Unsupported("unknown counter group")),
+    }
+}
+
+fn parse_counter_filter_type(input: &str) -> Result<u8> {
+    match input.trim() {
+        "all-selected" | "0" => Ok(0),
+        "all-but-selected" | "1" => Ok(1),
+        "all" | "2" => Ok(2),
+        _ => Err(RacError::Unsupported("unknown counter filter-type")),
+    }
+}
+
+fn parse_counter_analyze_flag(label: &'static str, input: &str) -> Result<u8> {
+    match input.trim() {
+        "analyze" | "1" => Ok(1),
+        "not-analyze" | "0" => Ok(0),
+        _ => Err(RacError::Unsupported(label)),
     }
 }

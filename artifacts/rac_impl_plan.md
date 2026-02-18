@@ -2,17 +2,16 @@
 
 | # | Mode | Command | Description | Message formats | Analyzed | Implemented | Notes |
 |---|------|---------|-------------|-----------------|----------|-------------|-------|
-| 1 | `counter` | `accumulated-values` | `-` | `-` | yes | - | - |
-| 2 | `counter` | `clear` | `-` | `-` | yes | - | - |
-| 3 | `counter` | `remove` | `-` | `-` | yes | - | - |
-| 4 | `limit` | `info` | `-` | `-` | yes | - | - |
-| 5 | `limit` | `update` | `-` | `-` | yes | - | - |
-| 6 | `limit` | `remove` | `-` | `-` | yes | - | - |
-| 7 | `service-setting` | `list` | ``docs/modes/rac_mode_service-setting.md`` | ``docs/messages/rac_message_formats_service-setting.md`` | yes | - | - |
-| 8 | `service-setting` | `info` | `-` | `-` | yes | - | - |
-| 9 | `service-setting` | `insert` | `-` | `-` | yes | - | - |
-| 10 | `service-setting` | `update` | `-` | `-` | yes | - | - |
-| 11 | `service-setting` | `get-service-data-dirs-for-transfer` | `-` | `-` | yes | - | - |
-| 12 | `service-setting` | `remove` | `-` | `-` | yes | - | - |
-| 13 | `service-setting` | `apply` | `-` | `-` | yes | - | - |
-| 14 | `agent` | `admin list` | ``docs/modes/rac_mode_agent.md`` | `-` | yes | - | - |
+| 1 | `counter` | `clear` | `-` | `-` | yes | - | - |
+| 2 | `counter` | `remove` | `-` | `-` | yes | - | - |
+| 3 | `limit` | `info` | `-` | `-` | yes | - | - |
+| 4 | `limit` | `update` | `-` | `-` | yes | - | - |
+| 5 | `limit` | `remove` | `-` | `-` | yes | - | - |
+| 6 | `service-setting` | `list` | ``docs/modes/rac_mode_service-setting.md`` | ``docs/messages/rac_message_formats_service-setting.md`` | yes | - | - |
+| 7 | `service-setting` | `info` | `-` | `-` | yes | - | - |
+| 8 | `service-setting` | `insert` | `-` | `-` | yes | - | - |
+| 9 | `service-setting` | `update` | `-` | `-` | yes | - | - |
+| 10 | `service-setting` | `get-service-data-dirs-for-transfer` | `-` | `-` | yes | - | - |
+| 11 | `service-setting` | `remove` | `-` | `-` | yes | - | - |
+| 12 | `service-setting` | `apply` | `-` | `-` | yes | - | - |
+| 13 | `agent` | `admin list` | ``docs/modes/rac_mode_agent.md`` | `-` | yes | - | - |

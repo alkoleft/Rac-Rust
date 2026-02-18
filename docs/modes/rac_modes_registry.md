@@ -56,7 +56,7 @@ Tracks per-mode documentation coverage. "Processed" means a mode has a dedicated
 | `service-setting` | `docs/modes/rac_mode_service-setting.md` | `docs/messages/rac_message_formats_service-setting.md` | `list` | yes | yes | - |
 |  |  |  | `info` | yes | yes | - |
 |  |  |  | `insert` | yes | yes | - |
-|                       |                                              |                                                   | `update`                             | yes      | -           | -     |
+|  |  |  | `update` | yes | yes | - |
 |                       |                                              |                                                   | `get-service-data-dirs-for-transfer` | yes      | -           | -     |
 |                       |                                              |                                                   | `remove`                             | yes      | -           | -     |
 |                       |                                              |                                                   | `apply`                              | yes      | -           | -     |

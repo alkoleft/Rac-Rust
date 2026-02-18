@@ -104,6 +104,7 @@ pub enum RacRequest {
         number_of_sessions: u8,
         descr: String,
     },
+    CounterRemove { cluster: Uuid16, name: String },
     CounterClear {
         cluster: Uuid16,
         counter: String,
@@ -291,6 +292,7 @@ impl RacProtocol for V16Protocol {
             | RacRequest::CounterList { cluster }
             | RacRequest::CounterInfo { cluster, .. }
             | RacRequest::CounterUpdate { cluster, .. }
+            | RacRequest::CounterRemove { cluster, .. }
             | RacRequest::CounterClear { cluster, .. }
             | RacRequest::CounterValues { cluster, .. }
             | RacRequest::CounterAccumulatedValues { cluster, .. }
@@ -590,6 +592,14 @@ impl RacProtocol for V16Protocol {
                     descr.as_bytes(),
                 )?);
                 (encode_rpc(METHOD_COUNTER_UPDATE_REQ, &body), None)
+            }
+            RacRequest::CounterRemove { cluster, name } => {
+                let mut body = Vec::with_capacity(16 + 1 + name.len());
+                body.extend_from_slice(&cluster);
+                body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(
+                    name.as_bytes(),
+                )?);
+                (encode_rpc(METHOD_COUNTER_REMOVE_REQ, &body), None)
             }
             RacRequest::CounterClear {
                 cluster,

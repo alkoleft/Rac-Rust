@@ -1,15 +1,6 @@
 [
   {
     "mode": "service-setting",
-    "command": "list",
-    "description_file": "`docs/modes/rac_mode_service-setting.md`",
-    "message_formats_file": "`docs/messages/rac_message_formats_service-setting.md`",
-    "analyzed": "yes",
-    "implemented": "-",
-    "notes": "-"
-  },
-  {
-    "mode": "service-setting",
     "command": "info",
     "description_file": "",
     "message_formats_file": "",

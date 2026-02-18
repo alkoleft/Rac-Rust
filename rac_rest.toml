@@ -1,0 +1,11 @@
+listen_addr = "127.0.0.1:8081"
+
+rac_addr = "127.0.0.1:1545"
+connect_timeout_ms = 5000
+read_timeout_ms = 5000
+write_timeout_ms = 5000
+
+pool_max = 4
+idle_ttl_secs = 60
+
+include_raw_payload = false

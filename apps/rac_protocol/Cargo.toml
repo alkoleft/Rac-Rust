@@ -10,6 +10,10 @@ toml = "0.8"
 clap = { version = "4.5", features = ["derive"] }
 serde_json = "1.0"
 log = { version = "0.4", optional = true }
+axum = "0.7"
+tokio = { version = "1.37", features = ["rt-multi-thread", "macros"] }
+tower = "0.5"
+tower-http = { version = "0.5", features = ["trace"] }
 
 [features]
 debug-parse = ["log"]

@@ -19,7 +19,7 @@ Tracks per-mode documentation coverage. "Processed" means a mode has a dedicated
 |                       |                                              |                                                   | `insert`                             | -        | -           | -     |
 |                       |                                              |                                                   | `update`                             | -        | -           | -     |
 |                       |                                              |                                                   | `remove`                             | -        | -           | -     |
-| `process`             | `docs/modes/rac_mode_process.md`             | `docs/messages/rac_message_formats_process.md`    | `list`                               | yes      |             | -     |
+| `process` | `docs/modes/rac_mode_process.md` | `docs/messages/rac_message_formats_process.md` | `list` | yes | yes | - |
 |                       |                                              |                                                   | `info`                               | yes      |             | -     |
 |                       |                                              |                                                   | `turn-off`                           | -        | -           | -     |
 | `connection`          | `docs/modes/rac_mode_connection.md`          | `docs/messages/rac_message_formats_connection.md` | `list`                               | yes      |             | -     |

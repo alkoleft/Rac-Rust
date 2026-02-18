@@ -66,6 +66,17 @@ pub enum RacRequest {
         application_ext: String,
         priority: u32,
     },
+    RuleUpdate {
+        cluster: Uuid16,
+        server: Uuid16,
+        rule: Uuid16,
+        position: u32,
+        object_type: u32,
+        infobase_name: String,
+        rule_type: u8,
+        application_ext: String,
+        priority: u32,
+    },
     CounterList { cluster: Uuid16 },
     LimitList { cluster: Uuid16 },
 }
@@ -234,6 +245,7 @@ impl RacProtocol for V16Protocol {
             | RacRequest::RuleInfo { cluster, .. }
             | RacRequest::RuleApply { cluster, .. }
             | RacRequest::RuleInsert { cluster, .. }
+            | RacRequest::RuleUpdate { cluster, .. }
             | RacRequest::CounterList { cluster }
             | RacRequest::LimitList { cluster } => RequiredContext {
                 cluster: Some(*cluster),
@@ -410,6 +422,38 @@ impl RacProtocol for V16Protocol {
                 body.extend_from_slice(&cluster);
                 body.extend_from_slice(&server);
                 body.extend_from_slice(&[0u8; 16]);
+                body.extend_from_slice(&position.to_be_bytes());
+                body.extend_from_slice(&object_type.to_be_bytes());
+                body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(
+                    infobase_name.as_bytes(),
+                )?);
+                body.push(rule_type);
+                body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(
+                    application_ext.as_bytes(),
+                )?);
+                body.extend_from_slice(&priority.to_be_bytes());
+                (
+                    encode_rpc(METHOD_RULE_INSERT_REQ, &body),
+                    Some(METHOD_RULE_INSERT_RESP),
+                )
+            }
+            RacRequest::RuleUpdate {
+                cluster,
+                server,
+                rule,
+                position,
+                object_type,
+                infobase_name,
+                rule_type,
+                application_ext,
+                priority,
+            } => {
+                let mut body = Vec::with_capacity(
+                    16 + 16 + 16 + 4 + 4 + infobase_name.len() + application_ext.len() + 4 + 3,
+                );
+                body.extend_from_slice(&cluster);
+                body.extend_from_slice(&server);
+                body.extend_from_slice(&rule);
                 body.extend_from_slice(&position.to_be_bytes());
                 body.extend_from_slice(&object_type.to_be_bytes());
                 body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(

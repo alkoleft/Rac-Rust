@@ -1,15 +1,6 @@
 [
   {
     "mode": "rule",
-    "command": "insert",
-    "description_file": "",
-    "message_formats_file": "",
-    "analyzed": "yes",
-    "implemented": "-",
-    "notes": "-"
-  },
-  {
-    "mode": "rule",
     "command": "update",
     "description_file": "",
     "message_formats_file": "",

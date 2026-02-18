@@ -33,7 +33,7 @@ Tracks per-mode documentation coverage. "Processed" means a mode has a dedicated
 | `rule` | `docs/modes/rac_mode_rule.md` | `docs/messages/rac_message_formats_rule.md` | `apply` | yes | yes | - |
 |  |  |  | `list` | yes | yes | - |
 |  |  |  | `info` | yes | yes | - |
-|  |  |  | `insert` | yes | - | - |
+|  |  |  | `insert` | yes | yes | - |
 |  |  |  | `update` | yes | - | - |
 |  |  |  | `remove` | yes | - | - |
 | `profile`             | `docs/modes/rac_mode_profile.md`             | -                                                 | `list`                               |          |             | -     |

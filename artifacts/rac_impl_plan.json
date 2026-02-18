@@ -1,14 +1,5 @@
 [
   {
-    "mode": "lock",
-    "command": "list",
-    "description_file": "`docs/modes/rac_mode_lock.md`",
-    "message_formats_file": "`docs/messages/rac_message_formats_lock.md`",
-    "analyzed": "yes",
-    "implemented": "",
-    "notes": "-"
-  },
-  {
     "mode": "rule",
     "command": "apply",
     "description_file": "`docs/modes/rac_mode_rule.md`",

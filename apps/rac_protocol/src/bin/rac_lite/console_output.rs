@@ -3,7 +3,7 @@ use std::fmt::{self, Display, Write as _};
 use serde::Serialize;
 
 use rac_protocol::commands::{
-    AgentVersionResp, ClusterAdminRecord, ClusterAdminRegisterResp, ClusterInfoResp,
+    AgentAdminRecord, AgentVersionResp, ClusterAdminRecord, ClusterAdminRegisterResp, ClusterInfoResp,
     ClusterListResp, ConnectionRecord, CounterClearResp, CounterRecord, CounterUpdateResp,
     CounterValuesRecord, CounterRemoveResp, InfobaseSummary, LimitRecord, LimitRemoveResp,
     LimitUpdateResp, LockRecord, ManagerRecord, ProcessLicense, ProcessRecord, RuleApplyResp,
@@ -409,6 +409,14 @@ pub fn counter_accumulated_values(
     CounterAccumulatedValuesDisplay { items }
 }
 
+pub struct AgentAdminListDisplay<'a> {
+    items: &'a [AgentAdminRecord],
+}
+
+pub fn agent_admin_list(items: &[AgentAdminRecord]) -> AgentAdminListDisplay<'_> {
+    AgentAdminListDisplay { items }
+}
+
 pub struct ClusterAdminListDisplay<'a> {
     items: &'a [ClusterAdminRecord],
 }
@@ -460,6 +468,24 @@ pub fn rule_remove(resp: &RuleRemoveResp) -> RuleRemoveDisplay<'_> {
 impl Display for ClusterAdminListDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let out = list_to_string("cluster-admins", self.items, 5, MoreLabel::Default, |out, idx, item| {
+            outln!(out, "name[{idx}]: {}", display_str(&item.name));
+            outln!(out, "unknown-tag[{idx}]: {}", item.unknown_tag);
+            outln!(out, "unknown-flags[{idx}]: 0x{:08x}", item.unknown_flags);
+            outln!(
+                out,
+                "unknown-tail[{idx}]: {:02x} {:02x} {:02x}",
+                item.unknown_tail[0],
+                item.unknown_tail[1],
+                item.unknown_tail[2]
+            );
+        });
+        write_trimmed(f, &out)
+    }
+}
+
+impl Display for AgentAdminListDisplay<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let out = list_to_string("agent-admins", self.items, 5, MoreLabel::Default, |out, idx, item| {
             outln!(out, "name[{idx}]: {}", display_str(&item.name));
             outln!(out, "unknown-tag[{idx}]: {}", item.unknown_tag);
             outln!(out, "unknown-flags[{idx}]: 0x{:08x}", item.unknown_flags);

@@ -13,6 +13,11 @@ pub struct SerializedRpc {
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum RacRequest {
+    AgentAuth {
+        user: String,
+        pwd: String,
+    },
+    AgentAdminList,
     AgentVersion,
     ClusterAuth {
         cluster: Uuid16,
@@ -315,7 +320,9 @@ impl RacProtocol for V16Protocol {
 
     fn required_context(&self, request: &RacRequest) -> RequiredContext {
         match request {
-            RacRequest::AgentVersion
+            RacRequest::AgentAuth { .. }
+            | RacRequest::AgentAdminList
+            | RacRequest::AgentVersion
             | RacRequest::ClusterAuth { .. }
             | RacRequest::ClusterAdminList { .. }
             | RacRequest::ClusterAdminRegister { .. }
@@ -391,6 +398,16 @@ impl RacProtocol for V16Protocol {
         use crate::rac_wire::*;
 
         let (payload, expect_method) = match request {
+            RacRequest::AgentAuth { user, pwd } => {
+                let mut body = Vec::with_capacity(2 + user.len() + pwd.len());
+                body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(user.as_bytes())?);
+                body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(pwd.as_bytes())?);
+                (encode_rpc(METHOD_AGENT_AUTH_REQ, &body), None)
+            }
+            RacRequest::AgentAdminList => (
+                encode_rpc(METHOD_AGENT_ADMIN_LIST_REQ, &[]),
+                Some(METHOD_AGENT_ADMIN_LIST_RESP),
+            ),
             RacRequest::AgentVersion => (
                 encode_rpc(METHOD_AGENT_VERSION_REQ, &[]),
                 Some(METHOD_AGENT_VERSION_RESP),

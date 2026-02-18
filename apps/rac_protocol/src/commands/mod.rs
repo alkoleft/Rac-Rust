@@ -17,7 +17,9 @@ pub mod server;
 pub mod session;
 pub mod service_setting;
 
-pub use self::agent::{agent_version, AgentVersionResp};
+pub use self::agent::{
+    agent_admin_list, agent_version, AgentAdminListResp, AgentAdminRecord, AgentVersionResp,
+};
 pub use self::cluster::{
     cluster_admin_list, cluster_admin_register, cluster_info, cluster_list, ClusterAdminListResp,
     ClusterAdminRecord, ClusterAdminRegisterReq, ClusterAdminRegisterResp, ClusterInfoResp,

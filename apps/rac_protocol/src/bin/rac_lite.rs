@@ -8,7 +8,7 @@ mod format;
 use console_output as console;
 use rac_protocol::client::{ClientConfig, RacClient};
 use rac_protocol::commands::{
-    agent_version, cluster_admin_list, cluster_admin_register, cluster_info, cluster_list,
+    agent_admin_list, agent_version, cluster_admin_list, cluster_admin_register, cluster_info, cluster_list,
     connection_info, connection_list, counter_accumulated_values, counter_clear, counter_info,
     counter_list, counter_remove, counter_update, counter_values, infobase_info,
     infobase_summary_info,
@@ -100,6 +100,21 @@ enum TopCommand {
 #[derive(Subcommand, Debug)]
 enum AgentCmd {
     Version { addr: String },
+    Admin {
+        #[command(subcommand)]
+        command: AgentAdminCmd,
+    },
+}
+
+#[derive(Subcommand, Debug)]
+enum AgentAdminCmd {
+    List {
+        addr: String,
+        #[arg(long)]
+        agent_user: String,
+        #[arg(long)]
+        agent_pwd: String,
+    },
 }
 
 #[derive(Subcommand, Debug)]
@@ -665,6 +680,18 @@ fn run(cli: Cli) -> Result<()> {
                 console::output(cli.json, &resp, console::agent_version(&resp));
                 client.close()?;
             }
+            AgentCmd::Admin { command } => match command {
+                AgentAdminCmd::List {
+                    addr,
+                    agent_user,
+                    agent_pwd,
+                } => {
+                    let mut client = RacClient::connect(&addr, cfg.clone())?;
+                    let resp = agent_admin_list(&mut client, &agent_user, &agent_pwd)?;
+                    console::output(cli.json, &resp, console::agent_admin_list(&resp.admins));
+                    client.close()?;
+                }
+            },
         },
         TopCommand::Cluster { command } => match command {
             ClusterCmd::List { addr } => {

@@ -5,9 +5,10 @@ use serde::Serialize;
 use rac_protocol::commands::{
     AgentVersionResp, ClusterAdminRecord, ClusterAdminRegisterResp, ClusterInfoResp,
     ClusterListResp, ConnectionRecord, CounterClearResp, CounterRecord, CounterUpdateResp,
-    CounterValuesRecord, CounterRemoveResp, InfobaseSummary, LimitRecord, LimitUpdateResp, LockRecord,
-    ManagerRecord, ProcessLicense, ProcessRecord, RuleApplyResp, RuleInsertResp, RuleRecord,
-    RuleRemoveResp, RuleUpdateResp, ServerRecord, SessionCounters, SessionLicense, SessionRecord,
+    CounterValuesRecord, CounterRemoveResp, InfobaseSummary, LimitRecord, LimitRemoveResp,
+    LimitUpdateResp, LockRecord, ManagerRecord, ProcessLicense, ProcessRecord, RuleApplyResp,
+    RuleInsertResp, RuleRecord, RuleRemoveResp, RuleUpdateResp, ServerRecord, SessionCounters,
+    SessionLicense, SessionRecord,
 };
 use rac_protocol::rac_wire::format_uuid;
 use rac_protocol::Uuid16;
@@ -282,6 +283,14 @@ pub fn limit_update(resp: &LimitUpdateResp) -> LimitUpdateDisplay<'_> {
     LimitUpdateDisplay { resp }
 }
 
+pub struct LimitRemoveDisplay<'a> {
+    resp: &'a LimitRemoveResp,
+}
+
+pub fn limit_remove(resp: &LimitRemoveResp) -> LimitRemoveDisplay<'_> {
+    LimitRemoveDisplay { resp }
+}
+
 pub struct CounterListDisplay<'a> {
     items: &'a [CounterRecord],
 }
@@ -494,6 +503,17 @@ impl Display for LimitUpdateDisplay<'_> {
             "limit-update: ok"
         } else {
             "limit-update: failed"
+        };
+        write!(f, "{rendered}")
+    }
+}
+
+impl Display for LimitRemoveDisplay<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let rendered = if self.resp.acknowledged {
+            "limit-remove: ok"
+        } else {
+            "limit-remove: failed"
         };
         write!(f, "{rendered}")
     }

@@ -44,6 +44,12 @@ pub struct LimitUpdateResp {
     pub raw_payload: Option<Vec<u8>>,
 }
 
+#[derive(Debug, Serialize)]
+pub struct LimitRemoveResp {
+    pub acknowledged: bool,
+    pub raw_payload: Option<Vec<u8>>,
+}
+
 #[derive(Debug, Serialize, Clone)]
 pub struct LimitRecord {
     pub name: String,
@@ -124,6 +130,32 @@ pub fn limit_update(
     })
 }
 
+pub fn limit_remove(
+    client: &mut RacClient,
+    cluster: Uuid16,
+    cluster_user: &str,
+    cluster_pwd: &str,
+    name: &str,
+) -> Result<LimitRemoveResp> {
+    client.call(RacRequest::ClusterAuth {
+        cluster,
+        user: cluster_user.to_string(),
+        pwd: cluster_pwd.to_string(),
+    })?;
+    let reply = client.call(RacRequest::LimitRemove {
+        cluster,
+        name: name.to_string(),
+    })?;
+    let acknowledged = parse_limit_remove_ack(&reply)?;
+    if !acknowledged {
+        return Err(crate::error::RacError::Decode("limit remove expected ack"));
+    }
+    Ok(LimitRemoveResp {
+        acknowledged,
+        raw_payload: Some(reply),
+    })
+}
+
 fn parse_limit_list_body(body: &[u8]) -> Result<Vec<LimitRecord>> {
     if body.is_empty() {
         return Ok(Vec::new());
@@ -194,6 +226,15 @@ fn parse_limit_update_ack(payload: &[u8]) -> Result<bool> {
     let mut cursor = RecordCursor::new(payload, 0);
     if cursor.remaining_len() < 4 {
         return Err(crate::error::RacError::Decode("limit update ack truncated"));
+    }
+    let ack = cursor.take_u32_be()?;
+    Ok(ack == 0x01000000)
+}
+
+fn parse_limit_remove_ack(payload: &[u8]) -> Result<bool> {
+    let mut cursor = RecordCursor::new(payload, 0);
+    if cursor.remaining_len() < 4 {
+        return Err(crate::error::RacError::Decode("limit remove ack truncated"));
     }
     let ack = cursor.take_u32_be()?;
     Ok(ack == 0x01000000)
@@ -277,6 +318,27 @@ mod tests {
     }
 
     #[test]
+    fn parse_limit_remove_ack_payload() {
+        let payload = decode_hex_str("01000000");
+        let acknowledged = parse_limit_remove_ack(&payload).expect("parse ack");
+        assert!(acknowledged);
+    }
+
+    #[test]
+    fn parse_limit_remove_from_golden_capture() {
+        let hex = include_str!("../../../../artifacts/limit_remove_response.hex");
+        let payload = decode_hex_str(hex);
+        let frames = parse_frames(&payload).expect("frames");
+        assert_eq!(frames.len(), 4);
+        assert_eq!(frames[2].opcode, 0x0e);
+        assert_eq!(frames[3].opcode, 0x0e);
+        let ack_first = parse_limit_remove_ack(&frames[2].payload).expect("parse ack");
+        assert!(ack_first);
+        let ack_second = parse_limit_remove_ack(&frames[3].payload).expect("parse ack");
+        assert!(ack_second);
+    }
+
+    #[test]
     fn encode_limit_update_request() {
         let expected = decode_hex_str(
             "01000001801619820ad36f4d8aa7161516b1dea0770f6c696d69745f636f6465785f746d7003637075020000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000096c696d69745f746d70096c696d69745f746d70",
@@ -300,6 +362,22 @@ mod tests {
             number_of_sessions: 0,
             error_message: "limit_tmp".to_string(),
             descr: "limit_tmp".to_string(),
+        };
+        let protocol = RacProtocolVersion::V16_0.boxed();
+        let serialized = protocol.serialize(req).expect("serialize");
+        assert_eq!(serialized.payload, expected);
+        assert_eq!(serialized.expect_method, None);
+    }
+
+    #[test]
+    fn encode_limit_remove_request() {
+        let expected = decode_hex_str(
+            "01000001811619820ad36f4d8aa7161516b1dea0770f6c696d69745f636f6465785f746d70",
+        );
+        let cluster = parse_uuid("1619820a-d36f-4d8a-a716-1516b1dea077").expect("cluster uuid");
+        let req = RacRequest::LimitRemove {
+            cluster,
+            name: "limit_codex_tmp".to_string(),
         };
         let protocol = RacProtocolVersion::V16_0.boxed();
         let serialized = protocol.serialize(req).expect("serialize");

@@ -141,6 +141,7 @@ pub enum RacRequest {
         error_message: String,
         descr: String,
     },
+    LimitRemove { cluster: Uuid16, name: String },
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
@@ -318,7 +319,8 @@ impl RacProtocol for V16Protocol {
             | RacRequest::CounterAccumulatedValues { cluster, .. }
             | RacRequest::LimitList { cluster }
             | RacRequest::LimitInfo { cluster, .. }
-            | RacRequest::LimitUpdate { cluster, .. } => RequiredContext {
+            | RacRequest::LimitUpdate { cluster, .. }
+            | RacRequest::LimitRemove { cluster, .. } => RequiredContext {
                 cluster: Some(*cluster),
                 infobase_cluster: None,
             },
@@ -737,6 +739,14 @@ impl RacProtocol for V16Protocol {
                     descr.as_bytes(),
                 )?);
                 (encode_rpc(METHOD_LIMIT_UPDATE_REQ, &body), None)
+            }
+            RacRequest::LimitRemove { cluster, name } => {
+                let mut body = Vec::with_capacity(16 + 1 + name.len());
+                body.extend_from_slice(&cluster);
+                body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(
+                    name.as_bytes(),
+                )?);
+                (encode_rpc(METHOD_LIMIT_REMOVE_REQ, &body), None)
             }
         };
 

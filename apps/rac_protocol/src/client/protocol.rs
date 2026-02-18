@@ -170,6 +170,10 @@ pub enum RacRequest {
         server: Uuid16,
         setting: Uuid16,
     },
+    ServiceSettingApply {
+        cluster: Uuid16,
+        server: Uuid16,
+    },
     ServiceSettingGetServiceDataDirsForTransfer {
         cluster: Uuid16,
         server: Uuid16,
@@ -359,6 +363,7 @@ impl RacProtocol for V16Protocol {
             | RacRequest::ServiceSettingInsert { cluster, .. }
             | RacRequest::ServiceSettingUpdate { cluster, .. }
             | RacRequest::ServiceSettingRemove { cluster, .. }
+            | RacRequest::ServiceSettingApply { cluster, .. }
             | RacRequest::ServiceSettingGetServiceDataDirsForTransfer { cluster, .. } => {
                 RequiredContext {
                     cluster: Some(*cluster),
@@ -878,6 +883,12 @@ impl RacProtocol for V16Protocol {
                 body.extend_from_slice(&server);
                 body.extend_from_slice(&setting);
                 (encode_rpc(METHOD_SERVICE_SETTING_REMOVE_REQ, &body), None)
+            }
+            RacRequest::ServiceSettingApply { cluster, server } => {
+                let mut body = Vec::with_capacity(16 + 16);
+                body.extend_from_slice(&cluster);
+                body.extend_from_slice(&server);
+                (encode_rpc(METHOD_SERVICE_SETTING_APPLY_REQ, &body), None)
             }
             RacRequest::ServiceSettingGetServiceDataDirsForTransfer {
                 cluster,

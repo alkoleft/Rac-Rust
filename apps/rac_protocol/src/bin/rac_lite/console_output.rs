@@ -8,9 +8,9 @@ use rac_protocol::commands::{
     CounterValuesRecord, CounterRemoveResp, InfobaseSummary, LimitRecord, LimitRemoveResp,
     LimitUpdateResp, LockRecord, ManagerRecord, ProcessLicense, ProcessRecord, RuleApplyResp,
     RuleInsertResp, RuleRecord, RuleRemoveResp, RuleUpdateResp, ServerRecord,
-    ServiceSettingInsertResp, ServiceSettingRecord, ServiceSettingTransferDataDirRecord,
-    ServiceSettingUpdateResp, ServiceSettingRemoveResp, SessionCounters, SessionLicense,
-    SessionRecord,
+    ServiceSettingApplyResp, ServiceSettingInsertResp, ServiceSettingRecord,
+    ServiceSettingTransferDataDirRecord, ServiceSettingUpdateResp, ServiceSettingRemoveResp,
+    SessionCounters, SessionLicense, SessionRecord,
 };
 use rac_protocol::rac_wire::format_uuid;
 use rac_protocol::Uuid16;
@@ -317,6 +317,14 @@ pub struct ServiceSettingRemoveDisplay<'a> {
 
 pub fn service_setting_remove(resp: &ServiceSettingRemoveResp) -> ServiceSettingRemoveDisplay<'_> {
     ServiceSettingRemoveDisplay { resp }
+}
+
+pub struct ServiceSettingApplyDisplay<'a> {
+    resp: &'a ServiceSettingApplyResp,
+}
+
+pub fn service_setting_apply(resp: &ServiceSettingApplyResp) -> ServiceSettingApplyDisplay<'_> {
+    ServiceSettingApplyDisplay { resp }
 }
 
 pub struct LimitInfoDisplay<'a> {
@@ -723,6 +731,17 @@ impl Display for ServiceSettingRemoveDisplay<'_> {
             "service-setting-remove: ok"
         } else {
             "service-setting-remove: failed"
+        };
+        write!(f, "{rendered}")
+    }
+}
+
+impl Display for ServiceSettingApplyDisplay<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let rendered = if self.resp.acknowledged {
+            "service-setting-apply: ok"
+        } else {
+            "service-setting-apply: failed"
         };
         write!(f, "{rendered}")
     }

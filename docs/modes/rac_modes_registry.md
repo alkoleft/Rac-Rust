@@ -34,7 +34,7 @@ Tracks per-mode documentation coverage. "Processed" means a mode has a dedicated
 |  |  |  | `list` | yes | yes | - |
 |  |  |  | `info` | yes | yes | - |
 |  |  |  | `insert` | yes | yes | - |
-|  |  |  | `update` | yes | - | - |
+|  |  |  | `update` | yes | yes | - |
 |  |  |  | `remove` | yes | - | - |
 | `profile`             | `docs/modes/rac_mode_profile.md`             | -                                                 | `list`                               |          |             | -     |
 |                       |                                              |                                                   | `update`                             | -        | -           | -     |

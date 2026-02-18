@@ -30,7 +30,9 @@ pub use self::infobase::{
 pub use self::lock::{lock_list, LockListResp};
 pub use self::limit::{limit_list, LimitListResp, LimitRecord};
 pub use self::manager::{manager_info, manager_list, ManagerInfoResp, ManagerListResp, ManagerRecord};
-pub use self::process::{process_info, process_list, ProcessInfoResp, ProcessListResp};
+pub use self::process::{
+    process_info, process_list, ProcessInfoResp, ProcessLicense, ProcessListResp, ProcessRecord,
+};
 pub use self::profile::{profile_list, ProfileListResp};
 pub use self::server::{
     server_info, server_list, ServerInfoResp, ServerListResp, ServerRecord,

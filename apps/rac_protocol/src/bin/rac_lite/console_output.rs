@@ -5,7 +5,7 @@ use serde::Serialize;
 use rac_protocol::commands::{
     AgentVersionResp, ClusterAdminRecord, ClusterAdminRegisterResp, ClusterInfoResp,
     ClusterListResp, InfobaseSummary, LimitRecord, ManagerRecord, ServerRecord, SessionCounters,
-    SessionLicense, SessionRecord,
+    ProcessLicense, ProcessRecord, SessionLicense, SessionRecord,
 };
 use rac_protocol::rac_wire::format_uuid;
 use rac_protocol::Uuid16;
@@ -182,6 +182,30 @@ pub struct ServerInfoDisplay<'a> {
 
 pub fn server_info(item: &ServerRecord) -> ServerInfoDisplay<'_> {
     ServerInfoDisplay { item }
+}
+
+pub struct ProcessListDisplay<'a> {
+    items: &'a [ProcessRecord],
+}
+
+pub fn process_list(items: &[ProcessRecord]) -> ProcessListDisplay<'_> {
+    ProcessListDisplay { items }
+}
+
+pub struct ProcessListLicensesDisplay<'a> {
+    items: &'a [ProcessRecord],
+}
+
+pub fn process_list_licenses(items: &[ProcessRecord]) -> ProcessListLicensesDisplay<'_> {
+    ProcessListLicensesDisplay { items }
+}
+
+pub struct ProcessInfoDisplay<'a> {
+    item: &'a ProcessRecord,
+}
+
+pub fn process_info(item: &ProcessRecord) -> ProcessInfoDisplay<'_> {
+    ProcessInfoDisplay { item }
 }
 
 pub struct LimitListDisplay<'a> {
@@ -415,6 +439,87 @@ impl Display for ServerInfoDisplay<'_> {
     }
 }
 
+impl Display for ProcessListDisplay<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let out = list_to_string("processes", self.items, 5, MoreLabel::Default, |out, idx, item| {
+            outln!(out, "process[{idx}]: {}", format_uuid(&item.process));
+            outln!(out, "{}", process_info(item));
+        });
+        write_trimmed(f, &out)
+    }
+}
+
+impl Display for ProcessListLicensesDisplay<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let out = list_to_string("processes", self.items, 5, MoreLabel::Default, |out, idx, item| {
+            outln!(out, "process[{idx}]: {}", format_uuid(&item.process));
+            outln!(out, "host[{idx}]: {}", display_str(&item.host));
+            outln!(out, "port[{idx}]: {}", item.port);
+            outln!(out, "pid[{idx}]: {}", display_str(&item.pid));
+
+            let license_count = item.licenses.len();
+            if license_count == 0 {
+                return;
+            }
+
+            for (license_idx, license) in item.licenses.iter().enumerate() {
+                let suffix = if license_count > 1 {
+                    Some(license_idx)
+                } else {
+                    None
+                };
+                append_process_license(out, idx, suffix, license);
+            }
+        });
+        write_trimmed(f, &out)
+    }
+}
+
+impl Display for ProcessInfoDisplay<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut out = String::new();
+        let item = self.item;
+        let yes_no = |value: bool| if value { "yes" } else { "no" };
+        outln!(&mut out, "process: {}", format_uuid(&item.process));
+        outln!(&mut out, "host: {}", display_str(&item.host));
+        outln!(&mut out, "port: {}", item.port);
+        outln!(&mut out, "pid: {}", display_str(&item.pid));
+        outln!(&mut out, "turned-on: {}", yes_no(item.turned_on));
+        outln!(&mut out, "running: {}", yes_no(item.running));
+        outln!(&mut out, "started-at: {}", display_str(&item.started_at));
+        outln!(&mut out, "use: {}", process_use_label(item.use_status));
+        outln!(
+            &mut out,
+            "available-perfomance: {}",
+            item.available_performance
+        );
+        outln!(&mut out, "capacity: {}", item.capacity);
+        outln!(&mut out, "connections: {}", item.connections);
+        outln!(&mut out, "memory-size: {}", item.memory_size);
+        outln!(
+            &mut out,
+            "memory-excess-time: {}",
+            item.memory_excess_time
+        );
+        outln!(&mut out, "selection-size: {}", item.selection_size);
+        outln!(&mut out, "avg-call-time: {:.3}", item.avg_call_time);
+        outln!(&mut out, "avg-db-call-time: {:.3}", item.avg_db_call_time);
+        outln!(
+            &mut out,
+            "avg-lock-call-time: {:.3}",
+            item.avg_lock_call_time
+        );
+        outln!(
+            &mut out,
+            "avg-server-call-time: {:.3}",
+            item.avg_server_call_time
+        );
+        outln!(&mut out, "avg-threads: {:.3}", item.avg_threads);
+        outln!(&mut out, "reserve: {}", yes_no(item.reserve));
+        write_trimmed(f, &out)
+    }
+}
+
 impl Display for SessionInfoDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mut out = String::new();
@@ -629,6 +734,20 @@ fn manager_using_label(value: u32) -> String {
     }
 }
 
+fn process_use_label(value: u32) -> String {
+    match value {
+        1 => "used".to_string(),
+        _ => value.to_string(),
+    }
+}
+
+fn process_license_type_label(value: u32) -> String {
+    match value {
+        0 => "soft".to_string(),
+        _ => value.to_string(),
+    }
+}
+
 fn server_using_label(value: u32) -> String {
     match value {
         1 => "main".to_string(),
@@ -641,6 +760,66 @@ fn dedicate_managers_label(value: u32) -> String {
         0 => "none".to_string(),
         _ => value.to_string(),
     }
+}
+
+fn append_process_license(
+    out: &mut String,
+    record_idx: usize,
+    license_idx: Option<usize>,
+    license: &ProcessLicense,
+) {
+    let yes_no = |value: bool| if value { "yes" } else { "no" };
+    let label = |name: &str| match license_idx {
+        Some(license_idx) => format!("{name}[{record_idx}.{license_idx}]"),
+        None => format!("{name}[{record_idx}]"),
+    };
+    outln!(out, "{}: \"{}\"", label("full-name"), display_str(&license.file_name));
+    outln!(out, "{}: \"{}\"", label("series"), display_str(&license.key_series));
+    outln!(
+        out,
+        "{}: {}",
+        label("issued-by-server"),
+        yes_no(license.issued_by_server)
+    );
+    outln!(
+        out,
+        "{}: {}",
+        label("license-type"),
+        process_license_type_label(license.license_type)
+    );
+    outln!(out, "{}: {}", label("net"), yes_no(license.network_key));
+    outln!(out, "{}: {}", label("max-users-all"), license.max_users_all);
+    outln!(
+        out,
+        "{}: {}",
+        label("max-users-cur"),
+        license.max_users_current
+    );
+    outln!(
+        out,
+        "{}: \"{}\"",
+        label("rmngr-address"),
+        display_str(&license.server_address)
+    );
+    outln!(out, "{}: {}", label("rmngr-port"), license.server_port);
+    outln!(
+        out,
+        "{}: {}",
+        label("rmngr-pid"),
+        display_str(&license.process_id)
+    );
+    outln!(
+        out,
+        "{}: \"{}\"",
+        label("short-presentation"),
+        display_str(&license.brief_presentation)
+    );
+    outln!(
+        out,
+        "{}: \"{}\"",
+        label("full-presentation"),
+        display_str(&license.full_presentation)
+    );
 }
 
 fn append_counters_prefixed(out: &mut String, counters: &SessionCounters, prefix: &str) {

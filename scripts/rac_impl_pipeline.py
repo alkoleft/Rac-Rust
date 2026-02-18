@@ -392,6 +392,7 @@ def main() -> None:
     run.add_argument("--registry", default="docs/modes/rac_modes_registry.md")
     run.add_argument("--label", default=None)
     run.add_argument("--commit-message", default=None)
+    run.add_argument("--codex-review", action="store_true", help="Run Codex review+fix step.")
 
     run_next = sub.add_parser(
         "run-next",
@@ -399,6 +400,7 @@ def main() -> None:
     )
     run_next.add_argument("--plan", default="artifacts/rac_impl_plan.json")
     run_next.add_argument("--registry", default="docs/modes/rac_modes_registry.md")
+    run_next.add_argument("--codex-review", action="store_true", help="Run Codex review+fix step.")
 
     run_all = sub.add_parser(
         "run-all",
@@ -406,6 +408,7 @@ def main() -> None:
     )
     run_all.add_argument("--plan", default="artifacts/rac_impl_plan.json")
     run_all.add_argument("--registry", default="docs/modes/rac_modes_registry.md")
+    run_all.add_argument("--codex-review", action="store_true", help="Run Codex review+fix step.")
 
     args = parser.parse_args()
 
@@ -545,7 +548,7 @@ def main() -> None:
         commit_message = args.commit_message or f"impl: {args.mode} {args.command}"
         commit_if_needed(commit_message, "impl")
 
-        # Pre-check and Codex review+fix
+        # Pre-check (optional Codex review)
         paths = git_diff_files()
         log_step("review: pre-check")
         run_review(paths, False)
@@ -564,8 +567,8 @@ def main() -> None:
                 for issue in issues:
                     lines.append(f"  - {issue}")
             precheck_note = "\n".join(lines)
-
-        review_prompt = f"""
+        if args.codex_review:
+            review_prompt = f"""
 Ты Codex-агент. Проведи ревью изменений в репозитории и исправь замечания.
 
 Требования:
@@ -581,9 +584,11 @@ def main() -> None:
 1) Найди проблемы и исправь их.
 2) Затем повторно проверь, что нарушений нет.
 """.strip()
-        log_step("review: codex")
-        codex_exec(review_prompt, f"{label}_review")
-        log_step("review: codex complete")
+            log_step("review: codex")
+            codex_exec(review_prompt, f"{label}_review")
+            log_step("review: codex complete")
+        elif precheck_note != "Pre-check: OK (no findings).":
+            log_step(precheck_note)
 
         log_step("registry: update implemented=yes")
         update_registry(args.mode, args.command, "yes")
@@ -622,6 +627,8 @@ def main() -> None:
             "--registry",
             args.registry,
         ]
+        if args.codex_review:
+            cmd.append("--codex-review")
         result = subprocess.run(cmd, cwd=str(ROOT), check=False)
         if result.returncode != 0:
             raise SystemExit(result.returncode)
@@ -657,6 +664,8 @@ def main() -> None:
                 "--registry",
                 args.registry,
             ]
+            if args.codex_review:
+                cmd.append("--codex-review")
             result = subprocess.run(cmd, cwd=str(ROOT), check=False)
             if result.returncode != 0:
                 raise SystemExit(result.returncode)

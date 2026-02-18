@@ -5,7 +5,8 @@ use serde::Serialize;
 use rac_protocol::commands::{
     AgentVersionResp, ClusterAdminRecord, ClusterAdminRegisterResp, ClusterInfoResp,
     ClusterListResp, ConnectionRecord, InfobaseSummary, LimitRecord, LockRecord, ManagerRecord,
-    ProcessLicense, ProcessRecord, ServerRecord, SessionCounters, SessionLicense, SessionRecord,
+    ProcessLicense, ProcessRecord, RuleApplyResp, ServerRecord, SessionCounters, SessionLicense,
+    SessionRecord,
 };
 use rac_protocol::rac_wire::format_uuid;
 use rac_protocol::Uuid16;
@@ -264,6 +265,14 @@ pub fn cluster_admin_register(resp: &ClusterAdminRegisterResp) -> ClusterAdminRe
     ClusterAdminRegisterDisplay { resp }
 }
 
+pub struct RuleApplyDisplay<'a> {
+    resp: &'a RuleApplyResp,
+}
+
+pub fn rule_apply(resp: &RuleApplyResp) -> RuleApplyDisplay<'_> {
+    RuleApplyDisplay { resp }
+}
+
 impl Display for ClusterAdminListDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let out = list_to_string("cluster-admins", self.items, 5, MoreLabel::Default, |out, idx, item| {
@@ -288,6 +297,17 @@ impl Display for ClusterAdminRegisterDisplay<'_> {
             "cluster-admin-register: ok"
         } else {
             "cluster-admin-register: failed"
+        };
+        write!(f, "{rendered}")
+    }
+}
+
+impl Display for RuleApplyDisplay<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let rendered = if self.resp.acknowledged {
+            "rule-apply: ok"
+        } else {
+            "rule-apply: failed"
         };
         write!(f, "{rendered}")
     }

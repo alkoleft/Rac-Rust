@@ -11,8 +11,8 @@ use rac_protocol::commands::{
     agent_version, cluster_admin_list, cluster_admin_register, cluster_info, cluster_list,
     connection_info, connection_list, counter_list, infobase_info, infobase_summary_info,
     infobase_summary_list, limit_list, lock_list, manager_info, manager_list, process_info,
-    process_list, profile_list, server_info, server_list, session_info, session_list,
-    ClusterAdminRegisterReq,
+    process_list, profile_list, rule_apply, server_info, server_list, session_info, session_list,
+    ClusterAdminRegisterReq, RuleApplyMode,
 };
 use rac_protocol::error::{RacError, Result};
 use rac_protocol::rac_wire::parse_uuid;
@@ -78,6 +78,10 @@ enum TopCommand {
     Limit {
         #[command(subcommand)]
         command: LimitCmd,
+    },
+    Rule {
+        #[command(subcommand)]
+        command: RuleCmd,
     },
 }
 
@@ -272,6 +276,21 @@ enum LimitCmd {
         addr: String,
         #[arg(long)]
         cluster: String,
+    },
+}
+
+#[derive(Subcommand, Debug)]
+enum RuleCmd {
+    Apply {
+        addr: String,
+        #[arg(long)]
+        cluster: String,
+        #[arg(long)]
+        cluster_user: String,
+        #[arg(long)]
+        cluster_pwd: String,
+        #[arg(long, default_value = "full")]
+        mode: String,
     },
 }
 
@@ -596,6 +615,22 @@ fn run(cli: Cli) -> Result<()> {
                 client.close()?;
             }
         },
+        TopCommand::Rule { command } => match command {
+            RuleCmd::Apply {
+                addr,
+                cluster,
+                cluster_user,
+                cluster_pwd,
+                mode,
+            } => {
+                let cluster = parse_uuid_arg(&cluster)?;
+                let mode = parse_rule_apply_mode(&mode)?;
+                let mut client = RacClient::connect(&addr, cfg.clone())?;
+                let resp = rule_apply(&mut client, cluster, &cluster_user, &cluster_pwd, mode)?;
+                console::output(cli.json, &resp, console::rule_apply(&resp));
+                client.close()?;
+            }
+        },
     }
     Ok(())
 }
@@ -628,4 +663,12 @@ fn parse_auth_flags(input: &str) -> Result<u8> {
         }
     }
     Ok(flags)
+}
+
+fn parse_rule_apply_mode(input: &str) -> Result<RuleApplyMode> {
+    match input.trim() {
+        "full" => Ok(RuleApplyMode::Full),
+        "partial" => Ok(RuleApplyMode::Partial),
+        _ => Err(RacError::Unsupported("unknown rule apply mode")),
+    }
 }

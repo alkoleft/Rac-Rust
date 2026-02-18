@@ -12,6 +12,7 @@ pub mod limit;
 pub mod manager;
 pub mod process;
 pub mod profile;
+pub mod rule;
 pub mod server;
 pub mod session;
 
@@ -36,6 +37,7 @@ pub use self::process::{
     process_info, process_list, ProcessInfoResp, ProcessLicense, ProcessListResp, ProcessRecord,
 };
 pub use self::profile::{profile_list, ProfileListResp};
+pub use self::rule::{rule_apply, RuleApplyMode, RuleApplyResp};
 pub use self::server::{
     server_info, server_list, ServerInfoResp, ServerListResp, ServerRecord,
 };

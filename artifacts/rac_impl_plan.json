@@ -1,14 +1,5 @@
 [
   {
-    "mode": "rule",
-    "command": "remove",
-    "description_file": "",
-    "message_formats_file": "",
-    "analyzed": "yes",
-    "implemented": "-",
-    "notes": "-"
-  },
-  {
     "mode": "counter",
     "command": "list",
     "description_file": "`docs/modes/rac_mode_counter.md`",

@@ -43,7 +43,7 @@ Tracks per-mode documentation coverage. "Processed" means a mode has a dedicated
 |                       |                                              |                                                   | `acl com`                            | -        | -           | -     |
 |                       |                                              |                                                   | `acl addin`                          | -        | -           | -     |
 | `counter` | `docs/modes/rac_mode_counter.md` | `docs/messages/rac_message_formats_counter.md` | `list` | yes | yes | - |
-|  |  |  | `info` | yes | - | - |
+|  |  |  | `info` | yes | yes | - |
 |  |  |  | `update` | yes | - | - |
 |  |  |  | `values` | yes | - | - |
 |  |  |  | `accumulated-values` | yes | - | - |

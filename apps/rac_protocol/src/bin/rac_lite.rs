@@ -16,9 +16,9 @@ use rac_protocol::commands::{
     manager_info,
     manager_list, process_info, process_list, profile_list, rule_apply, rule_info, rule_insert,
     rule_list, rule_update, rule_remove, server_info, server_list, session_info, session_list,
-    service_setting_info, service_setting_insert, service_setting_list, ClusterAdminRegisterReq,
-    CounterUpdateReq, LimitUpdateReq, RuleApplyMode, RuleInsertReq, RuleUpdateReq,
-    ServiceSettingInsertReq,
+    service_setting_info, service_setting_insert, service_setting_list, service_setting_update,
+    ClusterAdminRegisterReq, CounterUpdateReq, LimitUpdateReq, RuleApplyMode, RuleInsertReq,
+    RuleUpdateReq, ServiceSettingInsertReq, ServiceSettingUpdateReq,
 };
 use rac_protocol::error::{RacError, Result};
 use rac_protocol::rac_wire::parse_uuid;
@@ -589,6 +589,21 @@ enum ServiceSettingCmd {
         #[arg(long, default_value = "")]
         infobase_name: String,
         #[arg(long, default_value = "")]
+        service_data_dir: String,
+    },
+    Update {
+        addr: String,
+        #[arg(long)]
+        cluster: String,
+        #[arg(long)]
+        cluster_user: String,
+        #[arg(long)]
+        cluster_pwd: String,
+        #[arg(long)]
+        server: String,
+        #[arg(long)]
+        setting: String,
+        #[arg(long)]
         service_data_dir: String,
     },
 }
@@ -1377,6 +1392,40 @@ fn run(cli: Cli) -> Result<()> {
                     req,
                 )?;
                 console::output(cli.json, &resp, console::service_setting_insert(&resp));
+                client.close()?;
+            }
+            ServiceSettingCmd::Update {
+                addr,
+                cluster,
+                cluster_user,
+                cluster_pwd,
+                server,
+                setting,
+                service_data_dir,
+            } => {
+                let cluster = parse_uuid_arg(&cluster)?;
+                let server = parse_uuid_arg(&server)?;
+                let setting = parse_uuid_arg(&setting)?;
+                let mut client = RacClient::connect(&addr, cfg.clone())?;
+                let info = service_setting_info(
+                    &mut client,
+                    cluster,
+                    &cluster_user,
+                    &cluster_pwd,
+                    server,
+                    setting,
+                )?;
+                let req = ServiceSettingUpdateReq {
+                    server,
+                    setting,
+                    service_name: info.record.service_name,
+                    infobase_name: info.record.infobase_name,
+                    service_data_dir,
+                    active: info.record.active,
+                };
+                let resp =
+                    service_setting_update(&mut client, cluster, &cluster_user, &cluster_pwd, req)?;
+                console::output(cli.json, &resp, console::service_setting_update(&resp));
                 client.close()?;
             }
         },

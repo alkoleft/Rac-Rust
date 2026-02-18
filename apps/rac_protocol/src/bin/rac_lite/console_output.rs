@@ -8,7 +8,8 @@ use rac_protocol::commands::{
     CounterValuesRecord, CounterRemoveResp, InfobaseSummary, LimitRecord, LimitRemoveResp,
     LimitUpdateResp, LockRecord, ManagerRecord, ProcessLicense, ProcessRecord, RuleApplyResp,
     RuleInsertResp, RuleRecord, RuleRemoveResp, RuleUpdateResp, ServerRecord,
-    ServiceSettingInsertResp, ServiceSettingRecord, SessionCounters, SessionLicense, SessionRecord,
+    ServiceSettingInsertResp, ServiceSettingRecord, ServiceSettingUpdateResp, SessionCounters,
+    SessionLicense, SessionRecord,
 };
 use rac_protocol::rac_wire::format_uuid;
 use rac_protocol::Uuid16;
@@ -289,6 +290,14 @@ pub struct ServiceSettingInsertDisplay<'a> {
 
 pub fn service_setting_insert(resp: &ServiceSettingInsertResp) -> ServiceSettingInsertDisplay<'_> {
     ServiceSettingInsertDisplay { resp }
+}
+
+pub struct ServiceSettingUpdateDisplay<'a> {
+    resp: &'a ServiceSettingUpdateResp,
+}
+
+pub fn service_setting_update(resp: &ServiceSettingUpdateResp) -> ServiceSettingUpdateDisplay<'_> {
+    ServiceSettingUpdateDisplay { resp }
 }
 
 pub struct LimitInfoDisplay<'a> {
@@ -644,6 +653,14 @@ impl Display for ServiceSettingInfoDisplay<'_> {
 }
 
 impl Display for ServiceSettingInsertDisplay<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut out = String::new();
+        outln!(&mut out, "setting: {}", format_uuid(&self.resp.setting));
+        write_trimmed(f, &out)
+    }
+}
+
+impl Display for ServiceSettingUpdateDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mut out = String::new();
         outln!(&mut out, "setting: {}", format_uuid(&self.resp.setting));

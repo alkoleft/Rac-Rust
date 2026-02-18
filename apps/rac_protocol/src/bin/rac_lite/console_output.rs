@@ -4,8 +4,8 @@ use serde::Serialize;
 
 use rac_protocol::commands::{
     AgentVersionResp, ClusterAdminRecord, ClusterAdminRegisterResp, ClusterInfoResp,
-    ClusterListResp, InfobaseSummary, LimitRecord, ManagerRecord, ServerRecord, SessionCounters,
-    ProcessLicense, ProcessRecord, SessionLicense, SessionRecord,
+    ClusterListResp, ConnectionRecord, InfobaseSummary, LimitRecord, ManagerRecord, ServerRecord,
+    SessionCounters, ProcessLicense, ProcessRecord, SessionLicense, SessionRecord,
 };
 use rac_protocol::rac_wire::format_uuid;
 use rac_protocol::Uuid16;
@@ -150,6 +150,22 @@ pub struct SessionInfoDisplay<'a> {
 
 pub fn session_info(item: &SessionRecord) -> SessionInfoDisplay<'_> {
     SessionInfoDisplay { item }
+}
+
+pub struct ConnectionListDisplay<'a> {
+    items: &'a [ConnectionRecord],
+}
+
+pub fn connection_list(items: &[ConnectionRecord]) -> ConnectionListDisplay<'_> {
+    ConnectionListDisplay { items }
+}
+
+pub struct ConnectionInfoDisplay<'a> {
+    item: &'a ConnectionRecord,
+}
+
+pub fn connection_info(item: &ConnectionRecord) -> ConnectionInfoDisplay<'_> {
+    ConnectionInfoDisplay { item }
 }
 
 pub struct ManagerListDisplay<'a> {
@@ -594,6 +610,40 @@ impl Display for SessionInfoDisplay<'_> {
         append_license_prefixed(&mut out, &item.license, "license.");
         outln!(&mut out, "session-id: {}", item.session_id);
         append_counters_prefixed(&mut out, &item.counters, "");
+        write_trimmed(f, &out)
+    }
+}
+
+impl Display for ConnectionListDisplay<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let out = list_to_string("connections", self.items, 5, MoreLabel::Default, |out, idx, item| {
+            outln!(out, "connection[{idx}]: {}", format_uuid(&item.connection));
+            outln!(out, "application[{idx}]: {}", display_str(&item.application));
+            outln!(out, "connected-at[{idx}]: {}", display_str(&item.connected_at));
+            outln!(out, "conn-id[{idx}]: {}", item.conn_id);
+            outln!(out, "host[{idx}]: {}", display_str(&item.host));
+            outln!(out, "infobase[{idx}]: {}", format_uuid(&item.infobase));
+            outln!(out, "process[{idx}]: {}", format_uuid(&item.process));
+            outln!(out, "session-number[{idx}]: {}", item.session_number);
+            outln!(out, "blocked-by-ls[{idx}]: {}", item.blocked_by_ls);
+        });
+        write_trimmed(f, &out)
+    }
+}
+
+impl Display for ConnectionInfoDisplay<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut out = String::new();
+        let item = self.item;
+        outln!(&mut out, "connection: {}", format_uuid(&item.connection));
+        outln!(&mut out, "application: {}", display_str(&item.application));
+        outln!(&mut out, "connected-at: {}", display_str(&item.connected_at));
+        outln!(&mut out, "conn-id: {}", item.conn_id);
+        outln!(&mut out, "host: {}", display_str(&item.host));
+        outln!(&mut out, "infobase: {}", format_uuid(&item.infobase));
+        outln!(&mut out, "process: {}", format_uuid(&item.process));
+        outln!(&mut out, "session-number: {}", item.session_number);
+        outln!(&mut out, "blocked-by-ls: {}", item.blocked_by_ls);
         write_trimmed(f, &out)
     }
 }

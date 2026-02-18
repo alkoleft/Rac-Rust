@@ -21,7 +21,9 @@ pub use self::cluster::{
     ClusterAdminRecord, ClusterAdminRegisterReq, ClusterAdminRegisterResp, ClusterInfoResp,
     ClusterListResp, ClusterSummary,
 };
-pub use self::connection::{connection_info, connection_list, ConnectionInfoResp, ConnectionListResp};
+pub use self::connection::{
+    connection_info, connection_list, ConnectionInfoResp, ConnectionListResp, ConnectionRecord,
+};
 pub use self::counter::{counter_list, CounterListResp};
 pub use self::infobase::{
     infobase_info, infobase_summary_info, infobase_summary_list, InfobaseInfoResp,

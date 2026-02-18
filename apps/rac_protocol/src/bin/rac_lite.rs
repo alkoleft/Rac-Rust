@@ -510,7 +510,7 @@ fn run(cli: Cli) -> Result<()> {
                 console::output(
                     cli.json,
                     &resp,
-                    console::uuid_list("connections", &resp.connections),
+                    console::connection_list(&resp.records),
                 );
                 client.close()?;
             }
@@ -526,7 +526,7 @@ fn run(cli: Cli) -> Result<()> {
                 console::output(
                     cli.json,
                     &resp,
-                    console::info("connection", &resp.connection, &resp.fields),
+                    console::connection_info(&resp.record),
                 );
                 client.close()?;
             }

@@ -225,6 +225,14 @@ pub fn rule_list(items: &[RuleRecord]) -> RuleListDisplay<'_> {
     RuleListDisplay { items }
 }
 
+pub struct RuleInfoDisplay<'a> {
+    item: &'a RuleRecord,
+}
+
+pub fn rule_info(item: &RuleRecord) -> RuleInfoDisplay<'_> {
+    RuleInfoDisplay { item }
+}
+
 pub struct ProcessListLicensesDisplay<'a> {
     items: &'a [ProcessRecord],
 }
@@ -543,6 +551,24 @@ impl Display for RuleListDisplay<'_> {
             );
             outln!(out, "priority[{idx}]: {}", item.priority);
         });
+        write_trimmed(f, &out)
+    }
+}
+
+impl Display for RuleInfoDisplay<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut out = String::new();
+        let item = self.item;
+        outln!(&mut out, "rule: {}", format_uuid(&item.rule));
+        outln!(&mut out, "object-type: {}", item.object_type);
+        outln!(&mut out, "infobase-name: {}", display_str(&item.infobase_name));
+        outln!(&mut out, "rule-type: {}", rule_type_label(item.rule_type));
+        outln!(
+            &mut out,
+            "application-ext: {}",
+            display_str(&item.application_ext)
+        );
+        outln!(&mut out, "priority: {}", item.priority);
         write_trimmed(f, &out)
     }
 }

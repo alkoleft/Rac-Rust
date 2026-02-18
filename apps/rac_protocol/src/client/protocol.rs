@@ -47,6 +47,11 @@ pub enum RacRequest {
     LockList { cluster: Uuid16 },
     ProfileList { cluster: Uuid16 },
     RuleList { cluster: Uuid16, server: Uuid16 },
+    RuleInfo {
+        cluster: Uuid16,
+        server: Uuid16,
+        rule: Uuid16,
+    },
     RuleApply {
         cluster: Uuid16,
         apply_mode: u32,
@@ -216,6 +221,7 @@ impl RacProtocol for V16Protocol {
             | RacRequest::LockList { cluster }
             | RacRequest::ProfileList { cluster }
             | RacRequest::RuleList { cluster, .. }
+            | RacRequest::RuleInfo { cluster, .. }
             | RacRequest::RuleApply { cluster, .. }
             | RacRequest::CounterList { cluster }
             | RacRequest::LimitList { cluster } => RequiredContext {
@@ -357,6 +363,17 @@ impl RacProtocol for V16Protocol {
                 Self::encode_cluster_scoped_object(METHOD_RULE_LIST_REQ, cluster, server),
                 Some(METHOD_RULE_LIST_RESP),
             ),
+            RacRequest::RuleInfo {
+                cluster,
+                server,
+                rule,
+            } => {
+                let mut body = Vec::with_capacity(16 + 16 + 16);
+                body.extend_from_slice(&cluster);
+                body.extend_from_slice(&server);
+                body.extend_from_slice(&rule);
+                (encode_rpc(METHOD_RULE_INFO_REQ, &body), Some(METHOD_RULE_INFO_RESP))
+            }
             RacRequest::RuleApply {
                 cluster,
                 apply_mode,

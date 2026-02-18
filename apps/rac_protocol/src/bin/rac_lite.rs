@@ -17,9 +17,9 @@ use rac_protocol::commands::{
     manager_list, process_info, process_list, profile_list, rule_apply, rule_info, rule_insert,
     rule_list, rule_update, rule_remove, server_info, server_list, session_info, session_list,
     service_setting_get_service_data_dirs_for_transfer, service_setting_info,
-    service_setting_insert, service_setting_list, service_setting_update, ClusterAdminRegisterReq,
-    CounterUpdateReq, LimitUpdateReq, RuleApplyMode, RuleInsertReq, RuleUpdateReq,
-    ServiceSettingInsertReq, ServiceSettingUpdateReq,
+    service_setting_insert, service_setting_list, service_setting_remove, service_setting_update,
+    ClusterAdminRegisterReq, CounterUpdateReq, LimitUpdateReq, RuleApplyMode, RuleInsertReq,
+    RuleUpdateReq, ServiceSettingInsertReq, ServiceSettingUpdateReq,
 };
 use rac_protocol::error::{RacError, Result};
 use rac_protocol::rac_wire::parse_uuid;
@@ -606,6 +606,19 @@ enum ServiceSettingCmd {
         setting: String,
         #[arg(long)]
         service_data_dir: String,
+    },
+    Remove {
+        addr: String,
+        #[arg(long)]
+        cluster: String,
+        #[arg(long)]
+        cluster_user: String,
+        #[arg(long)]
+        cluster_pwd: String,
+        #[arg(long)]
+        server: String,
+        #[arg(long)]
+        setting: String,
     },
     GetServiceDataDirsForTransfer {
         addr: String,
@@ -1440,6 +1453,29 @@ fn run(cli: Cli) -> Result<()> {
                 let resp =
                     service_setting_update(&mut client, cluster, &cluster_user, &cluster_pwd, req)?;
                 console::output(cli.json, &resp, console::service_setting_update(&resp));
+                client.close()?;
+            }
+            ServiceSettingCmd::Remove {
+                addr,
+                cluster,
+                cluster_user,
+                cluster_pwd,
+                server,
+                setting,
+            } => {
+                let cluster = parse_uuid_arg(&cluster)?;
+                let server = parse_uuid_arg(&server)?;
+                let setting = parse_uuid_arg(&setting)?;
+                let mut client = RacClient::connect(&addr, cfg.clone())?;
+                let resp = service_setting_remove(
+                    &mut client,
+                    cluster,
+                    &cluster_user,
+                    &cluster_pwd,
+                    server,
+                    setting,
+                )?;
+                console::output(cli.json, &resp, console::service_setting_remove(&resp));
                 client.close()?;
             }
             ServiceSettingCmd::GetServiceDataDirsForTransfer {

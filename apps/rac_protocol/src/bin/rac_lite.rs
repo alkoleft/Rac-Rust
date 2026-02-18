@@ -687,7 +687,7 @@ fn run(cli: Cli) -> Result<()> {
                 console::output(
                     cli.json,
                     &resp,
-                    console::string_list("counters", &resp.counters),
+                    console::counter_list(&resp.records),
                 );
                 client.close()?;
             }

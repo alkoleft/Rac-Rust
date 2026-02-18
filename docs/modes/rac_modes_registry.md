@@ -30,7 +30,7 @@ Tracks per-mode documentation coverage. "Processed" means a mode has a dedicated
 |                       |                                              |                                                   | `terminate`                          | -        | -           | -     |
 |                       |                                              |                                                   | `interrupt-current-server-call`      | -        | -           | -     |
 | `lock` | `docs/modes/rac_mode_lock.md` | `docs/messages/rac_message_formats_lock.md` | `list` | yes | yes | - |
-| `rule` | `docs/modes/rac_mode_rule.md` | `docs/messages/rac_message_formats_rule.md` | `apply` | yes | - | - |
+| `rule` | `docs/modes/rac_mode_rule.md` | `docs/messages/rac_message_formats_rule.md` | `apply` | yes | yes | - |
 |  |  |  | `list` | yes | - | - |
 |  |  |  | `info` | yes | - | - |
 |  |  |  | `insert` | yes | - | - |

@@ -1,15 +1,6 @@
 [
   {
     "mode": "rule",
-    "command": "apply",
-    "description_file": "`docs/modes/rac_mode_rule.md`",
-    "message_formats_file": "`docs/messages/rac_message_formats_rule.md`",
-    "analyzed": "yes",
-    "implemented": "-",
-    "notes": "-"
-  },
-  {
-    "mode": "rule",
     "command": "list",
     "description_file": "",
     "message_formats_file": "",

@@ -38,9 +38,9 @@ pub use self::process::{
 };
 pub use self::profile::{profile_list, ProfileListResp};
 pub use self::rule::{
-    rule_apply, rule_info, rule_insert, rule_list, rule_update, RuleApplyMode, RuleApplyResp,
-    RuleInfoResp, RuleInsertReq, RuleInsertResp, RuleListResp, RuleRecord, RuleUpdateReq,
-    RuleUpdateResp,
+    rule_apply, rule_info, rule_insert, rule_list, rule_remove, rule_update, RuleApplyMode,
+    RuleApplyResp, RuleInfoResp, RuleInsertReq, RuleInsertResp, RuleListResp, RuleRecord,
+    RuleRemoveResp, RuleUpdateReq, RuleUpdateResp,
 };
 pub use self::server::{
     server_info, server_list, ServerInfoResp, ServerListResp, ServerRecord,

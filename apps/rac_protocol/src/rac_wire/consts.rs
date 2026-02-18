@@ -48,6 +48,7 @@ pub const METHOD_PROFILE_LIST_RESP: u8 = 0x5a;
 pub const METHOD_RULE_APPLY_REQ: u8 = 0x51;
 pub const METHOD_RULE_INSERT_REQ: u8 = 0x52;
 pub const METHOD_RULE_INSERT_RESP: u8 = 0x53;
+pub const METHOD_RULE_REMOVE_REQ: u8 = 0x54;
 pub const METHOD_RULE_LIST_REQ: u8 = 0x55;
 pub const METHOD_RULE_LIST_RESP: u8 = 0x56;
 pub const METHOD_RULE_INFO_REQ: u8 = 0x57;

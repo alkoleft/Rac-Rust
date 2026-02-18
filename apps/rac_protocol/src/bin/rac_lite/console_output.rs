@@ -5,8 +5,8 @@ use serde::Serialize;
 use rac_protocol::commands::{
     AgentVersionResp, ClusterAdminRecord, ClusterAdminRegisterResp, ClusterInfoResp,
     ClusterListResp, ConnectionRecord, InfobaseSummary, LimitRecord, LockRecord, ManagerRecord,
-    ProcessLicense, ProcessRecord, RuleApplyResp, RuleInsertResp, RuleRecord, RuleUpdateResp,
-    ServerRecord, SessionCounters, SessionLicense, SessionRecord,
+    ProcessLicense, ProcessRecord, RuleApplyResp, RuleInsertResp, RuleRecord, RuleRemoveResp,
+    RuleUpdateResp, ServerRecord, SessionCounters, SessionLicense, SessionRecord,
 };
 use rac_protocol::rac_wire::format_uuid;
 use rac_protocol::Uuid16;
@@ -305,6 +305,14 @@ pub fn rule_update(resp: &RuleUpdateResp) -> RuleUpdateDisplay<'_> {
     RuleUpdateDisplay { resp }
 }
 
+pub struct RuleRemoveDisplay<'a> {
+    resp: &'a RuleRemoveResp,
+}
+
+pub fn rule_remove(resp: &RuleRemoveResp) -> RuleRemoveDisplay<'_> {
+    RuleRemoveDisplay { resp }
+}
+
 impl Display for ClusterAdminListDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let out = list_to_string("cluster-admins", self.items, 5, MoreLabel::Default, |out, idx, item| {
@@ -358,6 +366,17 @@ impl Display for RuleUpdateDisplay<'_> {
         let mut out = String::new();
         outln!(&mut out, "rule: {}", format_uuid(&self.resp.rule));
         write_trimmed(f, &out)
+    }
+}
+
+impl Display for RuleRemoveDisplay<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let rendered = if self.resp.acknowledged {
+            "rule-remove: ok"
+        } else {
+            "rule-remove: failed"
+        };
+        write!(f, "{rendered}")
     }
 }
 

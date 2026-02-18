@@ -56,6 +56,11 @@ pub enum RacRequest {
         cluster: Uuid16,
         apply_mode: u32,
     },
+    RuleRemove {
+        cluster: Uuid16,
+        server: Uuid16,
+        rule: Uuid16,
+    },
     RuleInsert {
         cluster: Uuid16,
         server: Uuid16,
@@ -244,6 +249,7 @@ impl RacProtocol for V16Protocol {
             | RacRequest::RuleList { cluster, .. }
             | RacRequest::RuleInfo { cluster, .. }
             | RacRequest::RuleApply { cluster, .. }
+            | RacRequest::RuleRemove { cluster, .. }
             | RacRequest::RuleInsert { cluster, .. }
             | RacRequest::RuleUpdate { cluster, .. }
             | RacRequest::CounterList { cluster }
@@ -405,6 +411,17 @@ impl RacProtocol for V16Protocol {
                 body.extend_from_slice(&cluster);
                 body.extend_from_slice(&apply_mode.to_be_bytes());
                 (encode_rpc(METHOD_RULE_APPLY_REQ, &body), None)
+            }
+            RacRequest::RuleRemove {
+                cluster,
+                server,
+                rule,
+            } => {
+                let mut body = Vec::with_capacity(16 + 16 + 16);
+                body.extend_from_slice(&cluster);
+                body.extend_from_slice(&server);
+                body.extend_from_slice(&rule);
+                (encode_rpc(METHOD_RULE_REMOVE_REQ, &body), None)
             }
             RacRequest::RuleInsert {
                 cluster,

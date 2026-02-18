@@ -1,14 +1,5 @@
 [
   {
-    "mode": "service-setting",
-    "command": "apply",
-    "description_file": "",
-    "message_formats_file": "",
-    "analyzed": "yes",
-    "implemented": "-",
-    "notes": "-"
-  },
-  {
     "mode": "agent",
     "command": "admin list",
     "description_file": "`docs/modes/rac_mode_agent.md`",

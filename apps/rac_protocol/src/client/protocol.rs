@@ -121,6 +121,7 @@ pub enum RacRequest {
         object: String,
     },
     LimitList { cluster: Uuid16 },
+    LimitInfo { cluster: Uuid16, limit: String },
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
@@ -296,7 +297,8 @@ impl RacProtocol for V16Protocol {
             | RacRequest::CounterClear { cluster, .. }
             | RacRequest::CounterValues { cluster, .. }
             | RacRequest::CounterAccumulatedValues { cluster, .. }
-            | RacRequest::LimitList { cluster } => RequiredContext {
+            | RacRequest::LimitList { cluster }
+            | RacRequest::LimitInfo { cluster, .. } => RequiredContext {
                 cluster: Some(*cluster),
                 infobase_cluster: None,
             },
@@ -656,6 +658,17 @@ impl RacProtocol for V16Protocol {
                 Self::encode_cluster_scoped(METHOD_LIMIT_LIST_REQ, cluster),
                 Some(METHOD_LIMIT_LIST_RESP),
             ),
+            RacRequest::LimitInfo { cluster, limit } => {
+                let mut body = Vec::with_capacity(16 + 1 + limit.len());
+                body.extend_from_slice(&cluster);
+                body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(
+                    limit.as_bytes(),
+                )?);
+                (
+                    encode_rpc(METHOD_LIMIT_INFO_REQ, &body),
+                    Some(METHOD_LIMIT_INFO_RESP),
+                )
+            }
         };
 
         if payload.is_empty() {

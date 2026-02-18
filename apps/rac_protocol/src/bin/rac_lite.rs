@@ -12,7 +12,7 @@ use rac_protocol::commands::{
     connection_info, connection_list, counter_accumulated_values, counter_clear, counter_info,
     counter_list, counter_remove, counter_update, counter_values, infobase_info,
     infobase_summary_info,
-    infobase_summary_list, limit_list, lock_list, manager_info, manager_list, process_info,
+    infobase_summary_list, limit_info, limit_list, lock_list, manager_info, manager_list, process_info,
     process_list, profile_list, rule_apply, rule_info, rule_insert, rule_list, rule_update,
     rule_remove, server_info,
     server_list, session_info, session_list, ClusterAdminRegisterReq, CounterUpdateReq,
@@ -380,6 +380,13 @@ enum LimitCmd {
         addr: String,
         #[arg(long)]
         cluster: String,
+    },
+    Info {
+        addr: String,
+        #[arg(long)]
+        cluster: String,
+        #[arg(long)]
+        limit: String,
     },
 }
 
@@ -958,6 +965,17 @@ fn run(cli: Cli) -> Result<()> {
                 let mut client = RacClient::connect(&addr, cfg.clone())?;
                 let resp = limit_list(&mut client, cluster)?;
                 console::output(cli.json, &resp, console::limit_list(&resp.limits));
+                client.close()?;
+            }
+            LimitCmd::Info {
+                addr,
+                cluster,
+                limit,
+            } => {
+                let cluster = parse_uuid_arg(&cluster)?;
+                let mut client = RacClient::connect(&addr, cfg.clone())?;
+                let resp = limit_info(&mut client, cluster, &limit)?;
+                console::output(cli.json, &resp, console::limit_info(&resp.record));
                 client.close()?;
             }
         },

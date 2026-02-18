@@ -68,3 +68,4 @@ pub const METHOD_LIMIT_LIST_REQ: u8 = 0x7c;
 pub const METHOD_LIMIT_LIST_RESP: u8 = 0x7d;
 pub const METHOD_LIMIT_INFO_REQ: u8 = 0x7e;
 pub const METHOD_LIMIT_INFO_RESP: u8 = 0x7f;
+pub const METHOD_LIMIT_UPDATE_REQ: u8 = 0x80;

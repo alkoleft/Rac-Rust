@@ -12,11 +12,11 @@ use rac_protocol::commands::{
     connection_info, connection_list, counter_accumulated_values, counter_clear, counter_info,
     counter_list, counter_remove, counter_update, counter_values, infobase_info,
     infobase_summary_info,
-    infobase_summary_list, limit_info, limit_list, lock_list, manager_info, manager_list, process_info,
-    process_list, profile_list, rule_apply, rule_info, rule_insert, rule_list, rule_update,
-    rule_remove, server_info,
-    server_list, session_info, session_list, ClusterAdminRegisterReq, CounterUpdateReq,
-    RuleApplyMode, RuleInsertReq, RuleUpdateReq,
+    infobase_summary_list, limit_info, limit_list, limit_update, lock_list, manager_info,
+    manager_list, process_info, process_list, profile_list, rule_apply, rule_info, rule_insert,
+    rule_list, rule_update, rule_remove, server_info, server_list, session_info, session_list,
+    ClusterAdminRegisterReq, CounterUpdateReq, LimitUpdateReq, RuleApplyMode, RuleInsertReq,
+    RuleUpdateReq,
 };
 use rac_protocol::error::{RacError, Result};
 use rac_protocol::rac_wire::parse_uuid;
@@ -387,6 +387,47 @@ enum LimitCmd {
         cluster: String,
         #[arg(long)]
         limit: String,
+    },
+    Update {
+        addr: String,
+        #[arg(long)]
+        cluster: String,
+        #[arg(long)]
+        cluster_user: String,
+        #[arg(long)]
+        cluster_pwd: String,
+        #[arg(long)]
+        name: String,
+        #[arg(long)]
+        action: String,
+        #[arg(long, default_value = "")]
+        counter: String,
+        #[arg(long, default_value_t = 0)]
+        duration: u64,
+        #[arg(long, default_value_t = 0)]
+        cpu_time: u64,
+        #[arg(long, default_value_t = 0)]
+        memory: u64,
+        #[arg(long, default_value_t = 0)]
+        read: u64,
+        #[arg(long, default_value_t = 0)]
+        write: u64,
+        #[arg(long, default_value_t = 0)]
+        duration_dbms: u64,
+        #[arg(long, default_value_t = 0)]
+        dbms_bytes: u64,
+        #[arg(long, default_value_t = 0)]
+        service: u64,
+        #[arg(long, default_value_t = 0)]
+        call: u64,
+        #[arg(long, default_value_t = 0)]
+        number_of_active_sessions: u64,
+        #[arg(long, default_value_t = 0)]
+        number_of_sessions: u64,
+        #[arg(long, default_value = "")]
+        error_message: String,
+        #[arg(long, default_value = "")]
+        descr: String,
     },
 }
 
@@ -978,6 +1019,52 @@ fn run(cli: Cli) -> Result<()> {
                 console::output(cli.json, &resp, console::limit_info(&resp.record));
                 client.close()?;
             }
+            LimitCmd::Update {
+                addr,
+                cluster,
+                cluster_user,
+                cluster_pwd,
+                name,
+                action,
+                counter,
+                duration,
+                cpu_time,
+                memory,
+                read,
+                write,
+                duration_dbms,
+                dbms_bytes,
+                service,
+                call,
+                number_of_active_sessions,
+                number_of_sessions,
+                error_message,
+                descr,
+            } => {
+                let cluster = parse_uuid_arg(&cluster)?;
+                let req = LimitUpdateReq {
+                    name,
+                    counter,
+                    action: parse_limit_action(&action)?,
+                    duration,
+                    cpu_time,
+                    memory,
+                    read,
+                    write,
+                    duration_dbms,
+                    dbms_bytes,
+                    service,
+                    call,
+                    number_of_active_sessions,
+                    number_of_sessions,
+                    error_message,
+                    descr,
+                };
+                let mut client = RacClient::connect(&addr, cfg.clone())?;
+                let resp = limit_update(&mut client, cluster, &cluster_user, &cluster_pwd, req)?;
+                console::output(cli.json, &resp, console::limit_update(&resp));
+                client.close()?;
+            }
         },
         TopCommand::Rule { command } => match command {
             RuleCmd::Apply {
@@ -1198,5 +1285,15 @@ fn parse_counter_analyze_flag(label: &'static str, input: &str) -> Result<u8> {
         "analyze" | "1" => Ok(1),
         "not-analyze" | "0" => Ok(0),
         _ => Err(RacError::Unsupported(label)),
+    }
+}
+
+fn parse_limit_action(input: &str) -> Result<u8> {
+    match input.trim() {
+        "none" | "0" => Ok(0),
+        "set-low-priority-thread" | "1" => Ok(1),
+        "interrupt-current-call" | "2" => Ok(2),
+        "interrupt-session" | "3" => Ok(3),
+        _ => Err(RacError::Unsupported("unknown limit action")),
     }
 }

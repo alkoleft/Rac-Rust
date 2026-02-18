@@ -36,7 +36,10 @@ pub use self::infobase::{
     InfobaseSummary, InfobaseSummaryInfoResp, InfobaseSummaryListResp,
 };
 pub use self::lock::{lock_list, LockListResp, LockRecord};
-pub use self::limit::{limit_info, limit_list, LimitInfoResp, LimitListResp, LimitRecord};
+pub use self::limit::{
+    limit_info, limit_list, limit_update, LimitInfoResp, LimitListResp, LimitRecord, LimitUpdateReq,
+    LimitUpdateResp,
+};
 pub use self::manager::{manager_info, manager_list, ManagerInfoResp, ManagerListResp, ManagerRecord};
 pub use self::process::{
     process_info, process_list, ProcessInfoResp, ProcessLicense, ProcessListResp, ProcessRecord,

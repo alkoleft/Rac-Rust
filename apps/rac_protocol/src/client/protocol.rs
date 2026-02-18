@@ -122,6 +122,25 @@ pub enum RacRequest {
     },
     LimitList { cluster: Uuid16 },
     LimitInfo { cluster: Uuid16, limit: String },
+    LimitUpdate {
+        cluster: Uuid16,
+        name: String,
+        counter: String,
+        action: u8,
+        duration: u64,
+        cpu_time: u64,
+        memory: u64,
+        read: u64,
+        write: u64,
+        duration_dbms: u64,
+        dbms_bytes: u64,
+        service: u64,
+        call: u64,
+        number_of_active_sessions: u64,
+        number_of_sessions: u64,
+        error_message: String,
+        descr: String,
+    },
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
@@ -298,7 +317,8 @@ impl RacProtocol for V16Protocol {
             | RacRequest::CounterValues { cluster, .. }
             | RacRequest::CounterAccumulatedValues { cluster, .. }
             | RacRequest::LimitList { cluster }
-            | RacRequest::LimitInfo { cluster, .. } => RequiredContext {
+            | RacRequest::LimitInfo { cluster, .. }
+            | RacRequest::LimitUpdate { cluster, .. } => RequiredContext {
                 cluster: Some(*cluster),
                 infobase_cluster: None,
             },
@@ -668,6 +688,55 @@ impl RacProtocol for V16Protocol {
                     encode_rpc(METHOD_LIMIT_INFO_REQ, &body),
                     Some(METHOD_LIMIT_INFO_RESP),
                 )
+            }
+            RacRequest::LimitUpdate {
+                cluster,
+                name,
+                counter,
+                action,
+                duration,
+                cpu_time,
+                memory,
+                read,
+                write,
+                duration_dbms,
+                dbms_bytes,
+                service,
+                call,
+                number_of_active_sessions,
+                number_of_sessions,
+                error_message,
+                descr,
+            } => {
+                let mut body = Vec::with_capacity(
+                    16 + 96 + name.len() + counter.len() + error_message.len() + descr.len(),
+                );
+                body.extend_from_slice(&cluster);
+                body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(
+                    name.as_bytes(),
+                )?);
+                body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(
+                    counter.as_bytes(),
+                )?);
+                body.push(action);
+                body.extend_from_slice(&duration.to_be_bytes());
+                body.extend_from_slice(&cpu_time.to_be_bytes());
+                body.extend_from_slice(&memory.to_be_bytes());
+                body.extend_from_slice(&read.to_be_bytes());
+                body.extend_from_slice(&write.to_be_bytes());
+                body.extend_from_slice(&duration_dbms.to_be_bytes());
+                body.extend_from_slice(&dbms_bytes.to_be_bytes());
+                body.extend_from_slice(&service.to_be_bytes());
+                body.extend_from_slice(&call.to_be_bytes());
+                body.extend_from_slice(&number_of_active_sessions.to_be_bytes());
+                body.extend_from_slice(&number_of_sessions.to_be_bytes());
+                body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(
+                    error_message.as_bytes(),
+                )?);
+                body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(
+                    descr.as_bytes(),
+                )?);
+                (encode_rpc(METHOD_LIMIT_UPDATE_REQ, &body), None)
             }
         };
 

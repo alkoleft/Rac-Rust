@@ -7,7 +7,7 @@ use rac_protocol::commands::{
     ClusterListResp, ConnectionRecord, CounterRecord, CounterUpdateResp, InfobaseSummary,
     LimitRecord, LockRecord, ManagerRecord, ProcessLicense, ProcessRecord, RuleApplyResp,
     RuleInsertResp, RuleRecord, RuleRemoveResp, RuleUpdateResp, ServerRecord, SessionCounters,
-    SessionLicense, SessionRecord,
+    SessionLicense, SessionRecord, CounterValuesRecord,
 };
 use rac_protocol::rac_wire::format_uuid;
 use rac_protocol::Uuid16;
@@ -290,6 +290,14 @@ pub fn counter_update(resp: &CounterUpdateResp) -> CounterUpdateDisplay<'_> {
     CounterUpdateDisplay { resp }
 }
 
+pub struct CounterValuesDisplay<'a> {
+    items: &'a [CounterValuesRecord],
+}
+
+pub fn counter_values(items: &[CounterValuesRecord]) -> CounterValuesDisplay<'_> {
+    CounterValuesDisplay { items }
+}
+
 pub struct ClusterAdminListDisplay<'a> {
     items: &'a [ClusterAdminRecord],
 }
@@ -510,6 +518,37 @@ impl Display for CounterInfoDisplay<'_> {
         );
         outln!(&mut out, "number-of-sessions: {}", item.number_of_sessions);
         outln!(&mut out, "descr: {}", display_str(&item.descr));
+        write_trimmed(f, &out)
+    }
+}
+
+impl Display for CounterValuesDisplay<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let out =
+            list_to_string("counter-values", self.items, 5, MoreLabel::Default, |out, idx, item| {
+                outln!(out, "object[{idx}]: {}", display_str(&item.object));
+                outln!(out, "collection-time[{idx}]: {}", item.collection_time);
+                outln!(out, "duration[{idx}]: {}", item.duration);
+                outln!(out, "cpu-time[{idx}]: {}", item.cpu_time);
+                outln!(out, "memory[{idx}]: {}", item.memory);
+                outln!(out, "read[{idx}]: {}", item.read);
+                outln!(out, "write[{idx}]: {}", item.write);
+                outln!(out, "duration-dbms[{idx}]: {}", item.duration_dbms);
+                outln!(out, "dbms-bytes[{idx}]: {}", item.dbms_bytes);
+                outln!(out, "service[{idx}]: {}", item.service);
+                outln!(out, "call[{idx}]: {}", item.call);
+                outln!(
+                    out,
+                    "number-of-active-sessions[{idx}]: {}",
+                    item.number_of_active_sessions
+                );
+                outln!(
+                    out,
+                    "number-of-sessions[{idx}]: {}",
+                    item.number_of_sessions
+                );
+                outln!(out, "time[{idx}]: {}", display_str(&item.time));
+            });
         write_trimmed(f, &out)
     }
 }

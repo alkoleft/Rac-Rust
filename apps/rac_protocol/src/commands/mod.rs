@@ -26,8 +26,8 @@ pub use self::connection::{
     connection_info, connection_list, ConnectionInfoResp, ConnectionListResp, ConnectionRecord,
 };
 pub use self::counter::{
-    counter_info, counter_list, counter_update, CounterInfoResp, CounterListResp, CounterRecord,
-    CounterUpdateReq, CounterUpdateResp,
+    counter_info, counter_list, counter_update, counter_values, CounterInfoResp, CounterListResp,
+    CounterRecord, CounterUpdateReq, CounterUpdateResp, CounterValuesRecord, CounterValuesResp,
 };
 pub use self::infobase::{
     infobase_info, infobase_summary_info, infobase_summary_list, InfobaseInfoResp,

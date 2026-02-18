@@ -5,8 +5,8 @@ use serde::Serialize;
 use rac_protocol::commands::{
     AgentVersionResp, ClusterAdminRecord, ClusterAdminRegisterResp, ClusterInfoResp,
     ClusterListResp, ConnectionRecord, InfobaseSummary, LimitRecord, LockRecord, ManagerRecord,
-    ProcessLicense, ProcessRecord, RuleApplyResp, ServerRecord, SessionCounters, SessionLicense,
-    SessionRecord,
+    ProcessLicense, ProcessRecord, RuleApplyResp, RuleRecord, ServerRecord, SessionCounters,
+    SessionLicense, SessionRecord,
 };
 use rac_protocol::rac_wire::format_uuid;
 use rac_protocol::Uuid16;
@@ -215,6 +215,14 @@ pub struct LockListDisplay<'a> {
 
 pub fn lock_list(items: &[LockRecord]) -> LockListDisplay<'_> {
     LockListDisplay { items }
+}
+
+pub struct RuleListDisplay<'a> {
+    items: &'a [RuleRecord],
+}
+
+pub fn rule_list(items: &[RuleRecord]) -> RuleListDisplay<'_> {
+    RuleListDisplay { items }
 }
 
 pub struct ProcessListLicensesDisplay<'a> {
@@ -512,6 +520,28 @@ impl Display for LockListDisplay<'_> {
             outln!(out, "locked-at[{idx}]: {}", display_str(&item.locked_at));
             outln!(out, "session[{idx}]: {}", format_uuid(&item.session));
             outln!(out, "object[{idx}]: {}", format_uuid(&item.object));
+        });
+        write_trimmed(f, &out)
+    }
+}
+
+impl Display for RuleListDisplay<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let out = list_to_string("rules", self.items, 5, MoreLabel::Default, |out, idx, item| {
+            outln!(out, "rule[{idx}]: {}", format_uuid(&item.rule));
+            outln!(out, "object-type[{idx}]: {}", item.object_type);
+            outln!(out, "infobase-name[{idx}]: {}", display_str(&item.infobase_name));
+            outln!(
+                out,
+                "rule-type[{idx}]: {}",
+                rule_type_label(item.rule_type)
+            );
+            outln!(
+                out,
+                "application-ext[{idx}]: {}",
+                display_str(&item.application_ext)
+            );
+            outln!(out, "priority[{idx}]: {}", item.priority);
         });
         write_trimmed(f, &out)
     }
@@ -861,6 +891,15 @@ fn process_use_label(value: u32) -> String {
 fn process_license_type_label(value: u32) -> String {
     match value {
         0 => "soft".to_string(),
+        _ => value.to_string(),
+    }
+}
+
+fn rule_type_label(value: u8) -> String {
+    match value {
+        1 => "auto".to_string(),
+        2 => "always".to_string(),
+        3 => "never".to_string(),
         _ => value.to_string(),
     }
 }

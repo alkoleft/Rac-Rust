@@ -46,6 +46,7 @@ pub enum RacRequest {
     SessionInfo { cluster: Uuid16, session: Uuid16 },
     LockList { cluster: Uuid16 },
     ProfileList { cluster: Uuid16 },
+    RuleList { cluster: Uuid16, server: Uuid16 },
     RuleApply {
         cluster: Uuid16,
         apply_mode: u32,
@@ -214,6 +215,7 @@ impl RacProtocol for V16Protocol {
             | RacRequest::SessionInfo { cluster, .. }
             | RacRequest::LockList { cluster }
             | RacRequest::ProfileList { cluster }
+            | RacRequest::RuleList { cluster, .. }
             | RacRequest::RuleApply { cluster, .. }
             | RacRequest::CounterList { cluster }
             | RacRequest::LimitList { cluster } => RequiredContext {
@@ -350,6 +352,10 @@ impl RacProtocol for V16Protocol {
             RacRequest::ProfileList { cluster } => (
                 Self::encode_cluster_scoped(METHOD_PROFILE_LIST_REQ, cluster),
                 Some(METHOD_PROFILE_LIST_RESP),
+            ),
+            RacRequest::RuleList { cluster, server } => (
+                Self::encode_cluster_scoped_object(METHOD_RULE_LIST_REQ, cluster, server),
+                Some(METHOD_RULE_LIST_RESP),
             ),
             RacRequest::RuleApply {
                 cluster,

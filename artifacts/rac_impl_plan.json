@@ -1,15 +1,6 @@
 [
   {
     "mode": "connection",
-    "command": "list",
-    "description_file": "`docs/modes/rac_mode_connection.md`",
-    "message_formats_file": "`docs/messages/rac_message_formats_connection.md`",
-    "analyzed": "yes",
-    "implemented": "",
-    "notes": "-"
-  },
-  {
-    "mode": "connection",
     "command": "info",
     "description_file": "",
     "message_formats_file": "",

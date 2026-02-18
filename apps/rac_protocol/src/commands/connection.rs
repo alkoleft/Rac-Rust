@@ -56,7 +56,7 @@ pub fn connection_info(
         connection,
     })?;
     let body = rpc_body(&reply)?;
-    let record = parse_connection_record_1cv8c(body)?;
+    let record = parse_connection_info_body(body, connection)?;
     let fields = collect_connection_fields(&record);
     Ok(ConnectionInfoResp {
         connection: record.connection,
@@ -82,6 +82,33 @@ fn parse_connection_list_records(body: &[u8]) -> Result<Vec<ConnectionRecord>> {
 fn parse_connection_record_1cv8c(body: &[u8]) -> Result<ConnectionRecord> {
     let mut cursor = RecordCursor::new(body, 0);
     parse_connection_record(&mut cursor)
+}
+
+fn parse_connection_info_body(body: &[u8], requested: Uuid16) -> Result<ConnectionRecord> {
+    match parse_connection_info_from_list(body, requested) {
+        Ok(record) => Ok(record),
+        Err(_) => parse_connection_record_for_info(body, requested),
+    }
+}
+
+fn parse_connection_record_for_info(body: &[u8], requested: Uuid16) -> Result<ConnectionRecord> {
+    let record = parse_connection_record_1cv8c(body)?;
+    if record.connection != requested {
+        return Err(RacError::Decode(
+            "connection info record does not match requested connection",
+        ));
+    }
+    Ok(record)
+}
+
+fn parse_connection_info_from_list(body: &[u8], requested: Uuid16) -> Result<ConnectionRecord> {
+    let records = parse_connection_list_records(body)?;
+    for record in records {
+        if record.connection == requested {
+            return Ok(record);
+        }
+    }
+    Err(RacError::Decode("connection info record not found"))
 }
 
 fn parse_connection_record(cursor: &mut RecordCursor<'_>) -> Result<ConnectionRecord> {
@@ -253,6 +280,57 @@ mod tests {
         assert_eq!(parsed.host, "host-3");
         assert_eq!(parsed.infobase, info);
         assert_eq!(parsed.process, proc);
+        assert_eq!(parsed.session_number, 9);
+    }
+
+    #[test]
+    fn parse_connection_info_from_list_body() {
+        let conn_a = crate::rac_wire::parse_uuid("10101010-2020-3030-4040-505050505050").unwrap();
+        let conn_b = crate::rac_wire::parse_uuid("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee").unwrap();
+        let info_b = crate::rac_wire::parse_uuid("bbbbbbbb-cccc-dddd-eeee-ffffffffffff").unwrap();
+        let proc_a = crate::rac_wire::parse_uuid("11111111-2222-3333-4444-555555555555").unwrap();
+        let proc_b = crate::rac_wire::parse_uuid("cccccccc-dddd-eeee-ffff-111111111111").unwrap();
+
+        let record_a = ConnectionRecord {
+            connection: conn_a,
+            application: "RAS".to_string(),
+            blocked_by_ls: 0,
+            connected_at: String::new(),
+            conn_id: 12,
+            host: "host-a".to_string(),
+            infobase: Uuid16::default(),
+            process: proc_a,
+            session_number: 1,
+        };
+        let record_b = ConnectionRecord {
+            connection: conn_b,
+            application: "1CV8C".to_string(),
+            blocked_by_ls: 3,
+            connected_at: String::new(),
+            conn_id: 77,
+            host: "host-b".to_string(),
+            infobase: info_b,
+            process: proc_b,
+            session_number: 9,
+        };
+
+        let raw_a = 621_355_968_000_000u64;
+        let raw_b = raw_a + 100_000;
+
+        let mut body = Vec::new();
+        body.push(2);
+        append_record(&mut body, &record_a, raw_a);
+        append_record(&mut body, &record_b, raw_b);
+
+        let parsed = parse_connection_info_body(&body, conn_b).expect("connection info parse");
+        assert_eq!(parsed.connection, conn_b);
+        assert_eq!(parsed.application, "1CV8C");
+        assert_eq!(parsed.blocked_by_ls, 3);
+        assert_eq!(parsed.connected_at, "1970-01-01T00:00:10");
+        assert_eq!(parsed.conn_id, 77);
+        assert_eq!(parsed.host, "host-b");
+        assert_eq!(parsed.infobase, info_b);
+        assert_eq!(parsed.process, proc_b);
         assert_eq!(parsed.session_number, 9);
     }
 }

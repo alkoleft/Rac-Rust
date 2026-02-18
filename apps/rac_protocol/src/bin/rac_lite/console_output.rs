@@ -275,6 +275,14 @@ pub fn service_setting_list(items: &[ServiceSettingRecord]) -> ServiceSettingLis
     ServiceSettingListDisplay { items }
 }
 
+pub struct ServiceSettingInfoDisplay<'a> {
+    item: &'a ServiceSettingRecord,
+}
+
+pub fn service_setting_info(item: &ServiceSettingRecord) -> ServiceSettingInfoDisplay<'_> {
+    ServiceSettingInfoDisplay { item }
+}
+
 pub struct LimitInfoDisplay<'a> {
     item: &'a LimitRecord,
 }
@@ -593,6 +601,35 @@ impl Display for ServiceSettingListDisplay<'_> {
                     if item.active { "yes" } else { "no" }
                 );
             },
+        );
+        write_trimmed(f, &out)
+    }
+}
+
+impl Display for ServiceSettingInfoDisplay<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut out = String::new();
+        let item = self.item;
+        outln!(&mut out, "setting: {}", format_uuid(&item.setting));
+        outln!(
+            &mut out,
+            "service-name: {}",
+            display_str(&item.service_name)
+        );
+        outln!(
+            &mut out,
+            "infobase-name: {}",
+            display_str(&item.infobase_name)
+        );
+        outln!(
+            &mut out,
+            "service-data-dir: {}",
+            display_str(&item.service_data_dir)
+        );
+        outln!(
+            &mut out,
+            "active: {}",
+            if item.active { "yes" } else { "no" }
         );
         write_trimmed(f, &out)
     }

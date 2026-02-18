@@ -142,6 +142,11 @@ pub enum RacRequest {
         descr: String,
     },
     LimitRemove { cluster: Uuid16, name: String },
+    ServiceSettingInfo {
+        cluster: Uuid16,
+        server: Uuid16,
+        setting: Uuid16,
+    },
     ServiceSettingList { cluster: Uuid16, server: Uuid16 },
 }
 
@@ -322,6 +327,7 @@ impl RacProtocol for V16Protocol {
             | RacRequest::LimitInfo { cluster, .. }
             | RacRequest::LimitUpdate { cluster, .. }
             | RacRequest::LimitRemove { cluster, .. }
+            | RacRequest::ServiceSettingInfo { cluster, .. }
             | RacRequest::ServiceSettingList { cluster, .. } => RequiredContext {
                 cluster: Some(*cluster),
                 infobase_cluster: None,
@@ -749,6 +755,20 @@ impl RacProtocol for V16Protocol {
                     name.as_bytes(),
                 )?);
                 (encode_rpc(METHOD_LIMIT_REMOVE_REQ, &body), None)
+            }
+            RacRequest::ServiceSettingInfo {
+                cluster,
+                server,
+                setting,
+            } => {
+                let mut body = Vec::with_capacity(16 + 16 + 16);
+                body.extend_from_slice(&cluster);
+                body.extend_from_slice(&server);
+                body.extend_from_slice(&setting);
+                (
+                    encode_rpc(METHOD_SERVICE_SETTING_INFO_REQ, &body),
+                    Some(METHOD_SERVICE_SETTING_INFO_RESP),
+                )
             }
             RacRequest::ServiceSettingList { cluster, server } => (
                 Self::encode_cluster_scoped_object(METHOD_SERVICE_SETTING_LIST_REQ, cluster, server),

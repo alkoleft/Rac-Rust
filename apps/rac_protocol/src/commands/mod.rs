@@ -59,7 +59,8 @@ pub use self::session::{
     SessionRecord,
 };
 pub use self::service_setting::{
-    service_setting_list, ServiceSettingListResp, ServiceSettingRecord,
+    service_setting_info, service_setting_list, ServiceSettingInfoResp, ServiceSettingListResp,
+    ServiceSettingRecord,
 };
 
 pub(crate) fn rpc_body(payload: &[u8]) -> Result<&[u8]> {

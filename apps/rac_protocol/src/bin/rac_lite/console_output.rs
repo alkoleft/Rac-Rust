@@ -208,6 +208,14 @@ pub fn process_info(item: &ProcessRecord) -> ProcessInfoDisplay<'_> {
     ProcessInfoDisplay { item }
 }
 
+pub struct ProcessInfoLicensesDisplay<'a> {
+    item: &'a ProcessRecord,
+}
+
+pub fn process_info_licenses(item: &ProcessRecord) -> ProcessInfoLicensesDisplay<'_> {
+    ProcessInfoLicensesDisplay { item }
+}
+
 pub struct LimitListDisplay<'a> {
     items: &'a [LimitRecord],
 }
@@ -520,6 +528,21 @@ impl Display for ProcessInfoDisplay<'_> {
     }
 }
 
+impl Display for ProcessInfoLicensesDisplay<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut out = String::new();
+        let item = self.item;
+        outln!(&mut out, "process: {}", format_uuid(&item.process));
+        outln!(&mut out, "host: {}", display_str(&item.host));
+        outln!(&mut out, "port: {}", item.port);
+        outln!(&mut out, "pid: {}", display_str(&item.pid));
+        for license in &item.licenses {
+            append_process_license_plain(&mut out, license);
+        }
+        write_trimmed(f, &out)
+    }
+}
+
 impl Display for SessionInfoDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mut out = String::new();
@@ -818,6 +841,46 @@ fn append_process_license(
         out,
         "{}: \"{}\"",
         label("full-presentation"),
+        display_str(&license.full_presentation)
+    );
+}
+
+fn append_process_license_plain(out: &mut String, license: &ProcessLicense) {
+    let yes_no = |value: bool| if value { "yes" } else { "no" };
+    outln!(out, "full-name: \"{}\"", display_str(&license.file_name));
+    outln!(out, "series: \"{}\"", display_str(&license.key_series));
+    outln!(
+        out,
+        "issued-by-server: {}",
+        yes_no(license.issued_by_server)
+    );
+    outln!(
+        out,
+        "license-type: {}",
+        process_license_type_label(license.license_type)
+    );
+    outln!(out, "net: {}", yes_no(license.network_key));
+    outln!(out, "max-users-all: {}", license.max_users_all);
+    outln!(out, "max-users-cur: {}", license.max_users_current);
+    outln!(
+        out,
+        "rmngr-address: \"{}\"",
+        display_str(&license.server_address)
+    );
+    outln!(out, "rmngr-port: {}", license.server_port);
+    outln!(
+        out,
+        "rmngr-pid: {}",
+        display_str(&license.process_id)
+    );
+    outln!(
+        out,
+        "short-presentation: \"{}\"",
+        display_str(&license.brief_presentation)
+    );
+    outln!(
+        out,
+        "full-presentation: \"{}\"",
         display_str(&license.full_presentation)
     );
 }

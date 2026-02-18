@@ -327,4 +327,40 @@ mod tests {
             .full_presentation
             .contains("file:///home/alko/.1cv8/1C/1cv8/conf/20260213011049.lic"));
     }
+
+    #[test]
+    fn process_info_licenses_response_decodes_license_fields() {
+        let hex = include_str!("../../../../artifacts/process_info_licenses_response.hex");
+        let payload = decode_hex_str(hex);
+        let body = rpc_body(&payload).expect("rpc body");
+        let record = parse_process_record_1cv8c(body).expect("process info licenses");
+        assert_eq!(
+            record.process,
+            *b"\xf7\x7f,\x1d\x1e[HU\xa0\xb9\x949\x0c\xcdL\xe5"
+        );
+        assert_eq!(record.host, "alko-home");
+        assert_eq!(record.port, 1560);
+        assert_eq!(record.pid, "314150");
+        assert_eq!(record.licenses.len(), 1);
+        let license = &record.licenses[0];
+        assert_eq!(
+            license.file_name,
+            "file:///home/alko/.1cv8/1C/1cv8/conf/20260213011049.lic"
+        );
+        assert_eq!(license.key_series, "500000025347");
+        assert_eq!(license.issued_by_server, true);
+        assert_eq!(license.license_type, 0);
+        assert_eq!(license.network_key, false);
+        assert_eq!(license.max_users_all, 4);
+        assert_eq!(license.max_users_current, 4);
+        assert_eq!(license.server_address, "alko-home");
+        assert_eq!(license.server_port, 1560);
+        assert_eq!(license.process_id, "314150");
+        assert!(license
+            .brief_presentation
+            .contains("500000025347 4 4"));
+        assert!(license
+            .full_presentation
+            .contains("file:///home/alko/.1cv8/1C/1cv8/conf/20260213011049.lic"));
+    }
 }

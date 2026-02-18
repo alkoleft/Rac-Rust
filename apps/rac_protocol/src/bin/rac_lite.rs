@@ -179,6 +179,8 @@ enum ProcessCmd {
         cluster: String,
         #[arg(long)]
         process: String,
+        #[arg(long)]
+        licenses: bool,
     },
 }
 
@@ -433,16 +435,25 @@ fn run(cli: Cli) -> Result<()> {
                 addr,
                 cluster,
                 process,
+                licenses,
             } => {
                 let cluster = parse_uuid_arg(&cluster)?;
                 let process = parse_uuid_arg(&process)?;
                 let mut client = RacClient::connect(&addr, cfg.clone())?;
                 let resp = process_info(&mut client, cluster, process)?;
-                console::output(
-                    cli.json,
-                    &resp,
-                    console::process_info(&resp.record),
-                );
+                if licenses {
+                    console::output(
+                        cli.json,
+                        &resp,
+                        console::process_info_licenses(&resp.record),
+                    );
+                } else {
+                    console::output(
+                        cli.json,
+                        &resp,
+                        console::process_info(&resp.record),
+                    );
+                }
                 client.close()?;
             }
         },

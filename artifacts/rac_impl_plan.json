@@ -1,15 +1,6 @@
 [
   {
     "mode": "counter",
-    "command": "update",
-    "description_file": "",
-    "message_formats_file": "",
-    "analyzed": "yes",
-    "implemented": "-",
-    "notes": "-"
-  },
-  {
-    "mode": "counter",
     "command": "values",
     "description_file": "",
     "message_formats_file": "",

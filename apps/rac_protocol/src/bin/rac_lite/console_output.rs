@@ -4,10 +4,10 @@ use serde::Serialize;
 
 use rac_protocol::commands::{
     AgentVersionResp, ClusterAdminRecord, ClusterAdminRegisterResp, ClusterInfoResp,
-    ClusterListResp, ConnectionRecord, CounterRecord, CounterUpdateResp, InfobaseSummary,
-    LimitRecord, LockRecord, ManagerRecord, ProcessLicense, ProcessRecord, RuleApplyResp,
-    RuleInsertResp, RuleRecord, RuleRemoveResp, RuleUpdateResp, ServerRecord, SessionCounters,
-    SessionLicense, SessionRecord, CounterValuesRecord,
+    ClusterListResp, ConnectionRecord, CounterClearResp, CounterRecord, CounterUpdateResp,
+    CounterValuesRecord, InfobaseSummary, LimitRecord, LockRecord, ManagerRecord, ProcessLicense,
+    ProcessRecord, RuleApplyResp, RuleInsertResp, RuleRecord, RuleRemoveResp, RuleUpdateResp,
+    ServerRecord, SessionCounters, SessionLicense, SessionRecord,
 };
 use rac_protocol::rac_wire::format_uuid;
 use rac_protocol::Uuid16;
@@ -290,6 +290,14 @@ pub fn counter_update(resp: &CounterUpdateResp) -> CounterUpdateDisplay<'_> {
     CounterUpdateDisplay { resp }
 }
 
+pub struct CounterClearDisplay<'a> {
+    resp: &'a CounterClearResp,
+}
+
+pub fn counter_clear(resp: &CounterClearResp) -> CounterClearDisplay<'_> {
+    CounterClearDisplay { resp }
+}
+
 pub struct CounterValuesDisplay<'a> {
     items: &'a [CounterValuesRecord],
 }
@@ -429,6 +437,17 @@ impl Display for CounterUpdateDisplay<'_> {
             "counter-update: ok"
         } else {
             "counter-update: failed"
+        };
+        write!(f, "{rendered}")
+    }
+}
+
+impl Display for CounterClearDisplay<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let rendered = if self.resp.acknowledged {
+            "counter-clear: ok"
+        } else {
+            "counter-clear: failed"
         };
         write!(f, "{rendered}")
     }

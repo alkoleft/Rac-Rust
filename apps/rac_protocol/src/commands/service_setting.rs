@@ -5,7 +5,7 @@ use crate::codec::RecordCursor;
 use crate::error::{RacError, Result};
 use crate::Uuid16;
 
-use super::rpc_body;
+use super::{parse_ack_payload, parse_uuid_body, rpc_body};
 
 #[derive(Debug, Serialize, Clone)]
 pub struct ServiceSettingRecord {
@@ -100,6 +100,15 @@ pub fn service_setting_info(
         user: cluster_user.to_string(),
         pwd: cluster_pwd.to_string(),
     })?;
+    service_setting_info_no_auth(client, cluster, server, setting)
+}
+
+pub fn service_setting_info_no_auth(
+    client: &mut RacClient,
+    cluster: Uuid16,
+    server: Uuid16,
+    setting: Uuid16,
+) -> Result<ServiceSettingInfoResp> {
     let reply = client.call(RacRequest::ServiceSettingInfo {
         cluster,
         server,
@@ -174,6 +183,14 @@ pub fn service_setting_update(
         user: cluster_user.to_string(),
         pwd: cluster_pwd.to_string(),
     })?;
+    service_setting_update_no_auth(client, cluster, req)
+}
+
+pub fn service_setting_update_no_auth(
+    client: &mut RacClient,
+    cluster: Uuid16,
+    req: ServiceSettingUpdateReq,
+) -> Result<ServiceSettingUpdateResp> {
     let reply = client.call(RacRequest::ServiceSettingUpdate {
         cluster,
         server: req.server,
@@ -290,43 +307,19 @@ fn parse_service_setting_info(body: &[u8]) -> Result<ServiceSettingRecord> {
 }
 
 fn parse_service_setting_insert_body(body: &[u8]) -> Result<Uuid16> {
-    if body.is_empty() {
-        return Err(RacError::Decode("service-setting insert empty body"));
-    }
-    let mut cursor = RecordCursor::new(body, 0);
-    if cursor.remaining_len() < 16 {
-        return Err(RacError::Decode("service-setting insert truncated"));
-    }
-    Ok(cursor.take_uuid()?)
+    parse_uuid_body(body, "service-setting insert empty body")
 }
 
 fn parse_service_setting_update_body(body: &[u8]) -> Result<Uuid16> {
-    if body.is_empty() {
-        return Err(RacError::Decode("service-setting update empty body"));
-    }
-    let mut cursor = RecordCursor::new(body, 0);
-    if cursor.remaining_len() < 16 {
-        return Err(RacError::Decode("service-setting update truncated"));
-    }
-    Ok(cursor.take_uuid()?)
+    parse_uuid_body(body, "service-setting update empty body")
 }
 
 fn parse_service_setting_remove_ack(payload: &[u8]) -> Result<bool> {
-    let mut cursor = RecordCursor::new(payload, 0);
-    if cursor.remaining_len() < 4 {
-        return Err(RacError::Decode("service-setting remove ack truncated"));
-    }
-    let ack = cursor.take_u32_be()?;
-    Ok(ack == 0x01000000)
+    parse_ack_payload(payload, "service-setting remove ack truncated")
 }
 
 fn parse_service_setting_apply_ack(payload: &[u8]) -> Result<bool> {
-    let mut cursor = RecordCursor::new(payload, 0);
-    if cursor.remaining_len() < 4 {
-        return Err(RacError::Decode("service-setting apply ack truncated"));
-    }
-    let ack = cursor.take_u32_be()?;
-    Ok(ack == 0x01000000)
+    parse_ack_payload(payload, "service-setting apply ack truncated")
 }
 
 fn parse_service_setting_transfer_data_dirs(

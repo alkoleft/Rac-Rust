@@ -5,7 +5,7 @@ use crate::codec::RecordCursor;
 use crate::error::{RacError, Result};
 use crate::Uuid16;
 
-use super::rpc_body;
+use super::{parse_ack_payload, parse_uuid_body, rpc_body};
 
 #[derive(Debug, Serialize, Clone, Copy, PartialEq, Eq)]
 pub enum RuleApplyMode {
@@ -16,6 +16,7 @@ pub enum RuleApplyMode {
 impl RuleApplyMode {
     pub fn as_u32(self) -> u32 {
         match self {
+            // Captures show apply_mode = 1 for "full"; 0 is assumed for "partial".
             RuleApplyMode::Full => 1,
             RuleApplyMode::Partial => 0,
         }
@@ -278,15 +279,15 @@ fn parse_rule_record(cursor: &mut RecordCursor<'_>) -> Result<RuleRecord> {
     let rule = cursor.take_uuid()?;
     let object_type = cursor
         .take_u32_be()
-        .map_err(|_| RacError::Decode("rule list object-type truncated"))?;
+        .map_err(|_| RacError::Decode("rule record object-type truncated"))?;
     let infobase_name = cursor.take_str8()?;
     let rule_type = cursor
         .take_u8()
-        .map_err(|_| RacError::Decode("rule list rule-type truncated"))?;
+        .map_err(|_| RacError::Decode("rule record rule-type truncated"))?;
     let application_ext = cursor.take_str8()?;
     let priority = cursor
         .take_u32_be()
-        .map_err(|_| RacError::Decode("rule list priority truncated"))?;
+        .map_err(|_| RacError::Decode("rule record priority truncated"))?;
     Ok(RuleRecord {
         rule,
         object_type,
@@ -298,37 +299,19 @@ fn parse_rule_record(cursor: &mut RecordCursor<'_>) -> Result<RuleRecord> {
 }
 
 fn parse_rule_insert_body(body: &[u8]) -> Result<Uuid16> {
-    if body.is_empty() {
-        return Err(RacError::Decode("rule insert empty body"));
-    }
-    let mut cursor = RecordCursor::new(body, 0);
-    Ok(cursor.take_uuid()?)
+    parse_uuid_body(body, "rule insert empty body")
 }
 
 fn parse_rule_update_body(body: &[u8]) -> Result<Uuid16> {
-    if body.is_empty() {
-        return Err(RacError::Decode("rule update empty body"));
-    }
-    let mut cursor = RecordCursor::new(body, 0);
-    Ok(cursor.take_uuid()?)
+    parse_uuid_body(body, "rule update empty body")
 }
 
 fn parse_rule_apply_ack(payload: &[u8]) -> Result<bool> {
-    let mut cursor = RecordCursor::new(payload, 0);
-    if cursor.remaining_len() < 4 {
-        return Err(RacError::Decode("rule apply ack truncated"));
-    }
-    let ack = cursor.take_u32_be()?;
-    Ok(ack == 0x01000000)
+    parse_ack_payload(payload, "rule apply ack truncated")
 }
 
 fn parse_rule_remove_ack(payload: &[u8]) -> Result<bool> {
-    let mut cursor = RecordCursor::new(payload, 0);
-    if cursor.remaining_len() < 4 {
-        return Err(RacError::Decode("rule remove ack truncated"));
-    }
-    let ack = cursor.take_u32_be()?;
-    Ok(ack == 0x01000000)
+    parse_ack_payload(payload, "rule remove ack truncated")
 }
 
 #[cfg(test)]

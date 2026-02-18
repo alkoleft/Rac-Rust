@@ -338,23 +338,22 @@ fn parse_uuid_param(input: &str) -> Result<Uuid16, (StatusCode, Json<Value>)> {
 }
 
 fn error_response(err: RpcError) -> (StatusCode, Json<RpcResponse>) {
-    let status = match err.code.as_str() {
-        "bad_request" => StatusCode::BAD_REQUEST,
-        "service_unavailable" => StatusCode::SERVICE_UNAVAILABLE,
-        "rac_error" => StatusCode::BAD_GATEWAY,
-        _ => StatusCode::INTERNAL_SERVER_ERROR,
-    };
+    let status = status_from_rpc_error(&err.code);
     (status, Json(RpcResponse::from(err)))
 }
 
 fn error_value(err: RpcError) -> (StatusCode, Json<Value>) {
-    let status = match err.code.as_str() {
+    let status = status_from_rpc_error(&err.code);
+    (status, Json(json!({ "error": err })))
+}
+
+fn status_from_rpc_error(code: &str) -> StatusCode {
+    match code {
         "bad_request" => StatusCode::BAD_REQUEST,
         "service_unavailable" => StatusCode::SERVICE_UNAVAILABLE,
         "rac_error" => StatusCode::BAD_GATEWAY,
         _ => StatusCode::INTERNAL_SERVER_ERROR,
-    };
-    (status, Json(json!({ "error": err })))
+    }
 }
 
 fn command_name(cmd: &Command) -> &'static str {

@@ -67,9 +67,9 @@ struct ConfigFile {
 
 pub fn load_config(path: &str) -> Result<Config, RpcError> {
     let raw = fs::read_to_string(path)
-        .map_err(|err| RpcError::new("bad_request", format!("config read failed: {err}")))?;
+        .map_err(|err| RpcError::new("config_error", format!("config read failed: {err}")))?;
     let file: ConfigFile = toml::from_str(&raw)
-        .map_err(|err| RpcError::new("bad_request", format!("config parse failed: {err}")))?;
+        .map_err(|err| RpcError::new("config_error", format!("config parse failed: {err}")))?;
     let mut cfg = Config::default();
     if let Some(value) = file.listen_addr {
         cfg.listen_addr = value;

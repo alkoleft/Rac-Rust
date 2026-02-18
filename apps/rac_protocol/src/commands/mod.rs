@@ -1,6 +1,6 @@
 use crate::codec::RecordCursor;
 use crate::error::{RacError, Result};
-use crate::rac_wire::decode_rpc_method;
+use crate::Uuid16;
 
 pub mod agent;
 pub mod cluster;
@@ -62,10 +62,11 @@ pub use self::session::{
 };
 pub use self::service_setting::{
     service_setting_apply, service_setting_get_service_data_dirs_for_transfer,
-    service_setting_info, service_setting_insert, service_setting_list, service_setting_remove,
-    service_setting_update, ServiceSettingApplyResp, ServiceSettingInfoResp,
-    ServiceSettingInsertReq, ServiceSettingInsertResp, ServiceSettingListResp,
-    ServiceSettingRecord, ServiceSettingTransferDataDirRecord, ServiceSettingTransferDataDirsResp,
+    service_setting_info, service_setting_info_no_auth, service_setting_insert,
+    service_setting_list, service_setting_remove, service_setting_update,
+    service_setting_update_no_auth, ServiceSettingApplyResp, ServiceSettingInfoResp,
+    ServiceSettingInsertReq, ServiceSettingInsertResp, ServiceSettingListResp, ServiceSettingRecord,
+    ServiceSettingTransferDataDirRecord, ServiceSettingTransferDataDirsResp,
     ServiceSettingRemoveResp, ServiceSettingUpdateReq, ServiceSettingUpdateResp,
 };
 
@@ -78,8 +79,22 @@ pub(crate) fn rpc_body(payload: &[u8]) -> Result<&[u8]> {
             return Ok(cursor.remaining_slice());
         }
     }
-    if decode_rpc_method(payload).is_none() {
-        return Err(RacError::Decode("missing rpc header"));
+    Err(RacError::Decode("missing rpc header"))
+}
+
+pub(crate) fn parse_ack_payload(payload: &[u8], context: &'static str) -> Result<bool> {
+    let mut cursor = RecordCursor::new(payload, 0);
+    if cursor.remaining_len() < 4 {
+        return Err(RacError::Decode(context));
     }
-    Err(RacError::Decode("unexpected rpc header"))
+    let ack = cursor.take_u32_be()?;
+    Ok(ack == 0x01000000)
+}
+
+pub(crate) fn parse_uuid_body(body: &[u8], context: &'static str) -> Result<Uuid16> {
+    if body.is_empty() {
+        return Err(RacError::Decode(context));
+    }
+    let mut cursor = RecordCursor::new(body, 0);
+    Ok(cursor.take_uuid()?)
 }

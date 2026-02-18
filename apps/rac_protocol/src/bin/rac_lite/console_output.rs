@@ -141,8 +141,8 @@ pub fn session_list(items: &[SessionRecord]) -> SessionListDisplay<'_> {
 
 impl Display for SessionListDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let out = list_to_string("sessions", self.items, 5, MoreLabel::Default, |out, idx, item| {
-            outln!(out, "session[{idx}]: {}", format_uuid(&item.session));
+        let out =
+            list_to_string("sessions", self.items, 5, MoreLabel::Default, |out, _idx, item| {
             outln!(out, "{}", session_info(&item));
         });
         write_trimmed(f, &out)
@@ -777,7 +777,7 @@ impl Display for LimitInfoDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mut out = String::new();
         let item = self.item;
-        outln!(&mut out, "name: {}", display_str(&item.name));
+        outln!(&mut out, "limit: {}", display_str(&item.name));
         outln!(&mut out, "counter: {}", display_str(&item.counter));
         outln!(&mut out, "action: {}", item.action);
         outln!(&mut out, "duration: {}", item.duration);
@@ -869,69 +869,44 @@ impl Display for CounterInfoDisplay<'_> {
 
 impl Display for CounterValuesDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let out =
-            list_to_string("counter-values", self.items, 5, MoreLabel::Default, |out, idx, item| {
-                outln!(out, "object[{idx}]: {}", display_str(&item.object));
-                outln!(out, "collection-time[{idx}]: {}", item.collection_time);
-                outln!(out, "duration[{idx}]: {}", item.duration);
-                outln!(out, "cpu-time[{idx}]: {}", item.cpu_time);
-                outln!(out, "memory[{idx}]: {}", item.memory);
-                outln!(out, "read[{idx}]: {}", item.read);
-                outln!(out, "write[{idx}]: {}", item.write);
-                outln!(out, "duration-dbms[{idx}]: {}", item.duration_dbms);
-                outln!(out, "dbms-bytes[{idx}]: {}", item.dbms_bytes);
-                outln!(out, "service[{idx}]: {}", item.service);
-                outln!(out, "call[{idx}]: {}", item.call);
-                outln!(
-                    out,
-                    "number-of-active-sessions[{idx}]: {}",
-                    item.number_of_active_sessions
-                );
-                outln!(
-                    out,
-                    "number-of-sessions[{idx}]: {}",
-                    item.number_of_sessions
-                );
-                outln!(out, "time[{idx}]: {}", display_str(&item.time));
-            });
-        write_trimmed(f, &out)
+        write_trimmed(f, &render_counter_values("counter-values", self.items))
     }
 }
 
 impl Display for CounterAccumulatedValuesDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let out = list_to_string(
-            "counter-accumulated-values",
-            self.items,
-            5,
-            MoreLabel::Default,
-            |out, idx, item| {
-                outln!(out, "object[{idx}]: {}", display_str(&item.object));
-                outln!(out, "collection-time[{idx}]: {}", item.collection_time);
-                outln!(out, "duration[{idx}]: {}", item.duration);
-                outln!(out, "cpu-time[{idx}]: {}", item.cpu_time);
-                outln!(out, "memory[{idx}]: {}", item.memory);
-                outln!(out, "read[{idx}]: {}", item.read);
-                outln!(out, "write[{idx}]: {}", item.write);
-                outln!(out, "duration-dbms[{idx}]: {}", item.duration_dbms);
-                outln!(out, "dbms-bytes[{idx}]: {}", item.dbms_bytes);
-                outln!(out, "service[{idx}]: {}", item.service);
-                outln!(out, "call[{idx}]: {}", item.call);
-                outln!(
-                    out,
-                    "number-of-active-sessions[{idx}]: {}",
-                    item.number_of_active_sessions
-                );
-                outln!(
-                    out,
-                    "number-of-sessions[{idx}]: {}",
-                    item.number_of_sessions
-                );
-                outln!(out, "time[{idx}]: {}", display_str(&item.time));
-            },
-        );
-        write_trimmed(f, &out)
+        write_trimmed(
+            f,
+            &render_counter_values("counter-accumulated-values", self.items),
+        )
     }
+}
+
+fn render_counter_values(label: &str, items: &[CounterValuesRecord]) -> String {
+    list_to_string(label, items, 5, MoreLabel::Default, |out, idx, item| {
+        outln!(out, "object[{idx}]: {}", display_str(&item.object));
+        outln!(out, "collection-time[{idx}]: {}", item.collection_time);
+        outln!(out, "duration[{idx}]: {}", item.duration);
+        outln!(out, "cpu-time[{idx}]: {}", item.cpu_time);
+        outln!(out, "memory[{idx}]: {}", item.memory);
+        outln!(out, "read[{idx}]: {}", item.read);
+        outln!(out, "write[{idx}]: {}", item.write);
+        outln!(out, "duration-dbms[{idx}]: {}", item.duration_dbms);
+        outln!(out, "dbms-bytes[{idx}]: {}", item.dbms_bytes);
+        outln!(out, "service[{idx}]: {}", item.service);
+        outln!(out, "call[{idx}]: {}", item.call);
+        outln!(
+            out,
+            "number-of-active-sessions[{idx}]: {}",
+            item.number_of_active_sessions
+        );
+        outln!(
+            out,
+            "number-of-sessions[{idx}]: {}",
+            item.number_of_sessions
+        );
+        outln!(out, "time[{idx}]: {}", display_str(&item.time));
+    })
 }
 
 impl Display for ManagerListDisplay<'_> {
@@ -1078,8 +1053,8 @@ impl Display for ServerInfoDisplay<'_> {
 
 impl Display for ProcessListDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let out = list_to_string("processes", self.items, 5, MoreLabel::Default, |out, idx, item| {
-            outln!(out, "process[{idx}]: {}", format_uuid(&item.process));
+        let out =
+            list_to_string("processes", self.items, 5, MoreLabel::Default, |out, _idx, item| {
             outln!(out, "{}", process_info(item));
         });
         write_trimmed(f, &out)
@@ -1172,7 +1147,6 @@ impl Display for ProcessInfoDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mut out = String::new();
         let item = self.item;
-        let yes_no = |value: bool| if value { "yes" } else { "no" };
         outln!(&mut out, "process: {}", format_uuid(&item.process));
         outln!(&mut out, "host: {}", display_str(&item.host));
         outln!(&mut out, "port: {}", item.port);
@@ -1183,7 +1157,7 @@ impl Display for ProcessInfoDisplay<'_> {
         outln!(&mut out, "use: {}", process_use_label(item.use_status));
         outln!(
             &mut out,
-            "available-perfomance: {}",
+            "available-performance: {}",
             item.available_performance
         );
         outln!(&mut out, "capacity: {}", item.capacity);
@@ -1232,7 +1206,6 @@ impl Display for SessionInfoDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mut out = String::new();
         let item = self.item;
-        let yes_no = |value: bool| if value { "yes" } else { "no" };
         outln!(&mut out, "session: {}", format_uuid(&item.session));
         outln!(&mut out, "app-id: {}", display_str(&item.app_id));
         outln!(&mut out, "connection: {}", format_uuid(&item.connection));
@@ -1469,11 +1442,19 @@ fn append_license_prefixed(out: &mut String, license: &SessionLicense, prefix: &
     append_opt_yes_no(out, &format!("{prefix}network-key"), Some(license.network_key));
 }
 
-fn manager_using_label(value: u32) -> String {
+fn yes_no(value: bool) -> &'static str {
+    if value { "yes" } else { "no" }
+}
+
+fn using_label(value: u32) -> String {
     match value {
         1 => "main".to_string(),
         _ => value.to_string(),
     }
+}
+
+fn manager_using_label(value: u32) -> String {
+    using_label(value)
 }
 
 fn process_use_label(value: u32) -> String {
@@ -1500,10 +1481,7 @@ fn rule_type_label(value: u8) -> String {
 }
 
 fn server_using_label(value: u32) -> String {
-    match value {
-        1 => "main".to_string(),
-        _ => value.to_string(),
-    }
+    using_label(value)
 }
 
 fn dedicate_managers_label(value: u32) -> String {
@@ -1519,11 +1497,21 @@ fn append_process_license(
     license_idx: Option<usize>,
     license: &ProcessLicense,
 ) {
-    let yes_no = |value: bool| if value { "yes" } else { "no" };
     let label = |name: &str| match license_idx {
         Some(license_idx) => format!("{name}[{record_idx}.{license_idx}]"),
         None => format!("{name}[{record_idx}]"),
     };
+    append_process_license_fields(out, label, license);
+}
+
+fn append_process_license_plain(out: &mut String, license: &ProcessLicense) {
+    append_process_license_fields(out, |name| name.to_string(), license);
+}
+
+fn append_process_license_fields<F>(out: &mut String, label: F, license: &ProcessLicense)
+where
+    F: Fn(&str) -> String,
+{
     outln!(out, "{}: \"{}\"", label("full-name"), display_str(&license.file_name));
     outln!(out, "{}: \"{}\"", label("series"), display_str(&license.key_series));
     outln!(
@@ -1569,46 +1557,6 @@ fn append_process_license(
         out,
         "{}: \"{}\"",
         label("full-presentation"),
-        display_str(&license.full_presentation)
-    );
-}
-
-fn append_process_license_plain(out: &mut String, license: &ProcessLicense) {
-    let yes_no = |value: bool| if value { "yes" } else { "no" };
-    outln!(out, "full-name: \"{}\"", display_str(&license.file_name));
-    outln!(out, "series: \"{}\"", display_str(&license.key_series));
-    outln!(
-        out,
-        "issued-by-server: {}",
-        yes_no(license.issued_by_server)
-    );
-    outln!(
-        out,
-        "license-type: {}",
-        process_license_type_label(license.license_type)
-    );
-    outln!(out, "net: {}", yes_no(license.network_key));
-    outln!(out, "max-users-all: {}", license.max_users_all);
-    outln!(out, "max-users-cur: {}", license.max_users_current);
-    outln!(
-        out,
-        "rmngr-address: \"{}\"",
-        display_str(&license.server_address)
-    );
-    outln!(out, "rmngr-port: {}", license.server_port);
-    outln!(
-        out,
-        "rmngr-pid: {}",
-        display_str(&license.process_id)
-    );
-    outln!(
-        out,
-        "short-presentation: \"{}\"",
-        display_str(&license.brief_presentation)
-    );
-    outln!(
-        out,
-        "full-presentation: \"{}\"",
         display_str(&license.full_presentation)
     );
 }

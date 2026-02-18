@@ -6,7 +6,7 @@ mod console_output;
 mod format;
 
 use console_output as console;
-use rac_protocol::client::{ClientConfig, RacClient};
+use rac_protocol::client::{ClientConfig, RacClient, RacRequest};
 use rac_protocol::commands::{
     agent_admin_list, agent_version, cluster_admin_list, cluster_admin_register, cluster_info, cluster_list,
     connection_info, connection_list, counter_accumulated_values, counter_clear, counter_info,
@@ -17,10 +17,10 @@ use rac_protocol::commands::{
     manager_list, process_info, process_list, profile_list, rule_apply, rule_info, rule_insert,
     rule_list, rule_update, rule_remove, server_info, server_list, session_info, session_list,
     service_setting_apply, service_setting_get_service_data_dirs_for_transfer,
-    service_setting_info, service_setting_insert, service_setting_list, service_setting_remove,
-    service_setting_update, ClusterAdminRegisterReq, CounterUpdateReq, LimitUpdateReq,
-    RuleApplyMode, RuleInsertReq, RuleUpdateReq, ServiceSettingInsertReq,
-    ServiceSettingUpdateReq,
+    service_setting_info, service_setting_info_no_auth, service_setting_insert,
+    service_setting_list, service_setting_remove, service_setting_update_no_auth,
+    ClusterAdminRegisterReq, CounterUpdateReq, LimitUpdateReq, RuleApplyMode, RuleInsertReq,
+    RuleUpdateReq, ServiceSettingInsertReq, ServiceSettingUpdateReq,
 };
 use rac_protocol::error::{RacError, Result};
 use rac_protocol::rac_wire::parse_uuid;
@@ -607,6 +607,10 @@ enum ServiceSettingCmd {
         infobase_name: String,
         #[arg(long, default_value = "")]
         service_data_dir: String,
+        #[arg(long, default_value_t = false)]
+        active: bool,
+        #[arg(long = "no-active", default_value_t = false)]
+        no_active: bool,
     },
     Update {
         addr: String,
@@ -1439,16 +1443,19 @@ fn run(cli: Cli) -> Result<()> {
                 service_name,
                 infobase_name,
                 service_data_dir,
+                active,
+                no_active,
             } => {
                 let cluster = parse_uuid_arg(&cluster)?;
                 let server = parse_uuid_arg(&server)?;
+                let active = if no_active { false } else { active };
                 let mut client = RacClient::connect(&addr, cfg.clone())?;
                 let req = ServiceSettingInsertReq {
                     server,
                     service_name,
                     infobase_name,
                     service_data_dir,
-                    active: false,
+                    active,
                 };
                 let resp = service_setting_insert(
                     &mut client,
@@ -1473,11 +1480,14 @@ fn run(cli: Cli) -> Result<()> {
                 let server = parse_uuid_arg(&server)?;
                 let setting = parse_uuid_arg(&setting)?;
                 let mut client = RacClient::connect(&addr, cfg.clone())?;
-                let info = service_setting_info(
+                client.call(RacRequest::ClusterAuth {
+                    cluster,
+                    user: cluster_user.to_string(),
+                    pwd: cluster_pwd.to_string(),
+                })?;
+                let info = service_setting_info_no_auth(
                     &mut client,
                     cluster,
-                    &cluster_user,
-                    &cluster_pwd,
                     server,
                     setting,
                 )?;
@@ -1489,8 +1499,7 @@ fn run(cli: Cli) -> Result<()> {
                     service_data_dir,
                     active: info.record.active,
                 };
-                let resp =
-                    service_setting_update(&mut client, cluster, &cluster_user, &cluster_pwd, req)?;
+                let resp = service_setting_update_no_auth(&mut client, cluster, req)?;
                 console::output(cli.json, &resp, console::service_setting_update(&resp));
                 client.close()?;
             }

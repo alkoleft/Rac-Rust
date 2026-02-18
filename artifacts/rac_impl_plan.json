@@ -1,15 +1,6 @@
 [
   {
     "mode": "service-setting",
-    "command": "get-service-data-dirs-for-transfer",
-    "description_file": "",
-    "message_formats_file": "",
-    "analyzed": "yes",
-    "implemented": "-",
-    "notes": "-"
-  },
-  {
-    "mode": "service-setting",
     "command": "remove",
     "description_file": "",
     "message_formats_file": "",

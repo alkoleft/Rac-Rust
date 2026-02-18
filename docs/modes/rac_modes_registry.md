@@ -57,7 +57,7 @@ Tracks per-mode documentation coverage. "Processed" means a mode has a dedicated
 |  |  |  | `info` | yes | yes | - |
 |  |  |  | `insert` | yes | yes | - |
 |  |  |  | `update` | yes | yes | - |
-|                       |                                              |                                                   | `get-service-data-dirs-for-transfer` | yes      | -           | -     |
+|  |  |  | `get-service-data-dirs-for-transfer` | yes | yes | - |
 |                       |                                              |                                                   | `remove`                             | yes      | -           | -     |
 |                       |                                              |                                                   | `apply`                              | yes      | -           | -     |
 | `binary-data-storage` | `docs/modes/rac_mode_binary-data-storage.md` | -                                                 | `list`                               | -        | -           | -     |

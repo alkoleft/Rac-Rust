@@ -1,15 +1,6 @@
 [
   {
     "mode": "service-setting",
-    "command": "insert",
-    "description_file": "",
-    "message_formats_file": "",
-    "analyzed": "yes",
-    "implemented": "-",
-    "notes": "-"
-  },
-  {
-    "mode": "service-setting",
     "command": "update",
     "description_file": "",
     "message_formats_file": "",

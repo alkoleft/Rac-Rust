@@ -1,14 +1,5 @@
 [
   {
-    "mode": "connection",
-    "command": "info",
-    "description_file": "",
-    "message_formats_file": "",
-    "analyzed": "yes",
-    "implemented": "",
-    "notes": "-"
-  },
-  {
     "mode": "lock",
     "command": "list",
     "description_file": "`docs/modes/rac_mode_lock.md`",

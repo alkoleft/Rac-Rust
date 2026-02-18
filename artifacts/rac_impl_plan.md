@@ -2,29 +2,28 @@
 
 | # | Mode | Command | Description | Message formats | Analyzed | Implemented | Notes |
 |---|------|---------|-------------|-----------------|----------|-------------|-------|
-| 1 | `connection` | `info` | `-` | `-` | yes | - | - |
-| 2 | `lock` | `list` | ``docs/modes/rac_mode_lock.md`` | ``docs/messages/rac_message_formats_lock.md`` | yes | - | - |
-| 3 | `rule` | `apply` | ``docs/modes/rac_mode_rule.md`` | ``docs/messages/rac_message_formats_rule.md`` | yes | - | - |
-| 4 | `rule` | `list` | `-` | `-` | yes | - | - |
-| 5 | `rule` | `info` | `-` | `-` | yes | - | - |
-| 6 | `rule` | `insert` | `-` | `-` | yes | - | - |
-| 7 | `rule` | `update` | `-` | `-` | yes | - | - |
-| 8 | `rule` | `remove` | `-` | `-` | yes | - | - |
-| 9 | `counter` | `list` | ``docs/modes/rac_mode_counter.md`` | ``docs/messages/rac_message_formats_counter.md`` | yes | - | - |
-| 10 | `counter` | `info` | `-` | `-` | yes | - | - |
-| 11 | `counter` | `update` | `-` | `-` | yes | - | - |
-| 12 | `counter` | `values` | `-` | `-` | yes | - | - |
-| 13 | `counter` | `accumulated-values` | `-` | `-` | yes | - | - |
-| 14 | `counter` | `clear` | `-` | `-` | yes | - | - |
-| 15 | `counter` | `remove` | `-` | `-` | yes | - | - |
-| 16 | `limit` | `info` | `-` | `-` | yes | - | - |
-| 17 | `limit` | `update` | `-` | `-` | yes | - | - |
-| 18 | `limit` | `remove` | `-` | `-` | yes | - | - |
-| 19 | `service-setting` | `list` | ``docs/modes/rac_mode_service-setting.md`` | ``docs/messages/rac_message_formats_service-setting.md`` | yes | - | - |
-| 20 | `service-setting` | `info` | `-` | `-` | yes | - | - |
-| 21 | `service-setting` | `insert` | `-` | `-` | yes | - | - |
-| 22 | `service-setting` | `update` | `-` | `-` | yes | - | - |
-| 23 | `service-setting` | `get-service-data-dirs-for-transfer` | `-` | `-` | yes | - | - |
-| 24 | `service-setting` | `remove` | `-` | `-` | yes | - | - |
-| 25 | `service-setting` | `apply` | `-` | `-` | yes | - | - |
-| 26 | `agent` | `admin list` | ``docs/modes/rac_mode_agent.md`` | `-` | yes | - | - |
+| 1 | `lock` | `list` | ``docs/modes/rac_mode_lock.md`` | ``docs/messages/rac_message_formats_lock.md`` | yes | - | - |
+| 2 | `rule` | `apply` | ``docs/modes/rac_mode_rule.md`` | ``docs/messages/rac_message_formats_rule.md`` | yes | - | - |
+| 3 | `rule` | `list` | `-` | `-` | yes | - | - |
+| 4 | `rule` | `info` | `-` | `-` | yes | - | - |
+| 5 | `rule` | `insert` | `-` | `-` | yes | - | - |
+| 6 | `rule` | `update` | `-` | `-` | yes | - | - |
+| 7 | `rule` | `remove` | `-` | `-` | yes | - | - |
+| 8 | `counter` | `list` | ``docs/modes/rac_mode_counter.md`` | ``docs/messages/rac_message_formats_counter.md`` | yes | - | - |
+| 9 | `counter` | `info` | `-` | `-` | yes | - | - |
+| 10 | `counter` | `update` | `-` | `-` | yes | - | - |
+| 11 | `counter` | `values` | `-` | `-` | yes | - | - |
+| 12 | `counter` | `accumulated-values` | `-` | `-` | yes | - | - |
+| 13 | `counter` | `clear` | `-` | `-` | yes | - | - |
+| 14 | `counter` | `remove` | `-` | `-` | yes | - | - |
+| 15 | `limit` | `info` | `-` | `-` | yes | - | - |
+| 16 | `limit` | `update` | `-` | `-` | yes | - | - |
+| 17 | `limit` | `remove` | `-` | `-` | yes | - | - |
+| 18 | `service-setting` | `list` | ``docs/modes/rac_mode_service-setting.md`` | ``docs/messages/rac_message_formats_service-setting.md`` | yes | - | - |
+| 19 | `service-setting` | `info` | `-` | `-` | yes | - | - |
+| 20 | `service-setting` | `insert` | `-` | `-` | yes | - | - |
+| 21 | `service-setting` | `update` | `-` | `-` | yes | - | - |
+| 22 | `service-setting` | `get-service-data-dirs-for-transfer` | `-` | `-` | yes | - | - |
+| 23 | `service-setting` | `remove` | `-` | `-` | yes | - | - |
+| 24 | `service-setting` | `apply` | `-` | `-` | yes | - | - |
+| 25 | `agent` | `admin list` | ``docs/modes/rac_mode_agent.md`` | `-` | yes | - | - |

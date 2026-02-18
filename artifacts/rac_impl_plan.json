@@ -1,15 +1,6 @@
 [
   {
     "mode": "rule",
-    "command": "list",
-    "description_file": "",
-    "message_formats_file": "",
-    "analyzed": "yes",
-    "implemented": "-",
-    "notes": "-"
-  },
-  {
-    "mode": "rule",
     "command": "info",
     "description_file": "",
     "message_formats_file": "",

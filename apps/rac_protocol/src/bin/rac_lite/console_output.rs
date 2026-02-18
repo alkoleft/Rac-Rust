@@ -8,8 +8,8 @@ use rac_protocol::commands::{
     CounterValuesRecord, CounterRemoveResp, InfobaseSummary, LimitRecord, LimitRemoveResp,
     LimitUpdateResp, LockRecord, ManagerRecord, ProcessLicense, ProcessRecord, RuleApplyResp,
     RuleInsertResp, RuleRecord, RuleRemoveResp, RuleUpdateResp, ServerRecord,
-    ServiceSettingInsertResp, ServiceSettingRecord, ServiceSettingUpdateResp, SessionCounters,
-    SessionLicense, SessionRecord,
+    ServiceSettingInsertResp, ServiceSettingRecord, ServiceSettingTransferDataDirRecord,
+    ServiceSettingUpdateResp, SessionCounters, SessionLicense, SessionRecord,
 };
 use rac_protocol::rac_wire::format_uuid;
 use rac_protocol::Uuid16;
@@ -274,6 +274,16 @@ pub struct ServiceSettingListDisplay<'a> {
 
 pub fn service_setting_list(items: &[ServiceSettingRecord]) -> ServiceSettingListDisplay<'_> {
     ServiceSettingListDisplay { items }
+}
+
+pub struct ServiceSettingTransferDataDirsDisplay<'a> {
+    items: &'a [ServiceSettingTransferDataDirRecord],
+}
+
+pub fn service_setting_get_data_dirs_for_transfer(
+    items: &[ServiceSettingTransferDataDirRecord],
+) -> ServiceSettingTransferDataDirsDisplay<'_> {
+    ServiceSettingTransferDataDirsDisplay { items }
 }
 
 pub struct ServiceSettingInfoDisplay<'a> {
@@ -616,6 +626,36 @@ impl Display for ServiceSettingListDisplay<'_> {
                     out,
                     "active[{idx}]: {}",
                     if item.active { "yes" } else { "no" }
+                );
+            },
+        );
+        write_trimmed(f, &out)
+    }
+}
+
+impl Display for ServiceSettingTransferDataDirsDisplay<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let out = list_to_string(
+            "service-data-dirs",
+            self.items,
+            5,
+            MoreLabel::Default,
+            |out, idx, item| {
+                outln!(
+                    out,
+                    "service-name[{idx}]: {}",
+                    display_str(&item.service_name)
+                );
+                outln!(out, "user[{idx}]: {}", display_str(&item.user));
+                outln!(
+                    out,
+                    "source-dir[{idx}]: {}",
+                    display_str(&item.source_dir)
+                );
+                outln!(
+                    out,
+                    "target-dir[{idx}]: {}",
+                    display_str(&item.target_dir)
                 );
             },
         );

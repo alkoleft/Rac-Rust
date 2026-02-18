@@ -165,6 +165,11 @@ pub enum RacRequest {
         service_data_dir: String,
         active: bool,
     },
+    ServiceSettingGetServiceDataDirsForTransfer {
+        cluster: Uuid16,
+        server: Uuid16,
+        service_name: String,
+    },
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
@@ -347,10 +352,13 @@ impl RacProtocol for V16Protocol {
             | RacRequest::ServiceSettingInfo { cluster, .. }
             | RacRequest::ServiceSettingList { cluster, .. }
             | RacRequest::ServiceSettingInsert { cluster, .. }
-            | RacRequest::ServiceSettingUpdate { cluster, .. } => RequiredContext {
-                cluster: Some(*cluster),
-                infobase_cluster: None,
-            },
+            | RacRequest::ServiceSettingUpdate { cluster, .. }
+            | RacRequest::ServiceSettingGetServiceDataDirsForTransfer { cluster, .. } => {
+                RequiredContext {
+                    cluster: Some(*cluster),
+                    infobase_cluster: None,
+                }
+            }
         }
     }
 
@@ -852,6 +860,24 @@ impl RacProtocol for V16Protocol {
                 (
                     encode_rpc(METHOD_SERVICE_SETTING_INSERT_REQ, &body),
                     Some(METHOD_SERVICE_SETTING_INSERT_RESP),
+                )
+            }
+            RacRequest::ServiceSettingGetServiceDataDirsForTransfer {
+                cluster,
+                server,
+                service_name,
+            } => {
+                let mut body = Vec::with_capacity(32 + 1 + service_name.len());
+                body.extend_from_slice(&cluster);
+                body.extend_from_slice(&server);
+                if !service_name.is_empty() {
+                    body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(
+                        service_name.as_bytes(),
+                    )?);
+                }
+                (
+                    encode_rpc(METHOD_SERVICE_SETTING_GET_DATA_DIRS_REQ, &body),
+                    Some(METHOD_SERVICE_SETTING_GET_DATA_DIRS_RESP),
                 )
             }
         };

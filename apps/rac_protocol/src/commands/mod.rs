@@ -59,10 +59,11 @@ pub use self::session::{
     SessionRecord,
 };
 pub use self::service_setting::{
-    service_setting_info, service_setting_insert, service_setting_list, service_setting_update,
+    service_setting_get_service_data_dirs_for_transfer, service_setting_info,
+    service_setting_insert, service_setting_list, service_setting_update,
     ServiceSettingInfoResp, ServiceSettingInsertReq, ServiceSettingInsertResp,
-    ServiceSettingListResp, ServiceSettingRecord, ServiceSettingUpdateReq,
-    ServiceSettingUpdateResp,
+    ServiceSettingListResp, ServiceSettingRecord, ServiceSettingTransferDataDirRecord,
+    ServiceSettingTransferDataDirsResp, ServiceSettingUpdateReq, ServiceSettingUpdateResp,
 };
 
 pub(crate) fn rpc_body(payload: &[u8]) -> Result<&[u8]> {

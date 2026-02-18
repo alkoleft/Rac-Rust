@@ -15,6 +15,7 @@ pub mod profile;
 pub mod rule;
 pub mod server;
 pub mod session;
+pub mod service_setting;
 
 pub use self::agent::{agent_version, AgentVersionResp};
 pub use self::cluster::{
@@ -56,6 +57,9 @@ pub use self::server::{
 pub use self::session::{
     session_info, session_list, SessionCounters, SessionInfoResp, SessionLicense, SessionListResp,
     SessionRecord,
+};
+pub use self::service_setting::{
+    service_setting_list, ServiceSettingListResp, ServiceSettingRecord,
 };
 
 pub(crate) fn rpc_body(payload: &[u8]) -> Result<&[u8]> {

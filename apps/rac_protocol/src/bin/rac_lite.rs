@@ -16,8 +16,8 @@ use rac_protocol::commands::{
     manager_info,
     manager_list, process_info, process_list, profile_list, rule_apply, rule_info, rule_insert,
     rule_list, rule_update, rule_remove, server_info, server_list, session_info, session_list,
-    ClusterAdminRegisterReq, CounterUpdateReq, LimitUpdateReq, RuleApplyMode, RuleInsertReq,
-    RuleUpdateReq,
+    service_setting_list, ClusterAdminRegisterReq, CounterUpdateReq, LimitUpdateReq, RuleApplyMode,
+    RuleInsertReq, RuleUpdateReq,
 };
 use rac_protocol::error::{RacError, Result};
 use rac_protocol::rac_wire::parse_uuid;
@@ -87,6 +87,10 @@ enum TopCommand {
     Rule {
         #[command(subcommand)]
         command: RuleCmd,
+    },
+    ServiceSetting {
+        #[command(subcommand)]
+        command: ServiceSettingCmd,
     },
 }
 
@@ -540,6 +544,21 @@ enum RuleCmd {
         server: String,
         #[arg(long)]
         rule: String,
+    },
+}
+
+#[derive(Subcommand, Debug)]
+enum ServiceSettingCmd {
+    List {
+        addr: String,
+        #[arg(long)]
+        cluster: String,
+        #[arg(long)]
+        cluster_user: String,
+        #[arg(long)]
+        cluster_pwd: String,
+        #[arg(long)]
+        server: String,
     },
 }
 
@@ -1244,6 +1263,32 @@ fn run(cli: Cli) -> Result<()> {
                     rule,
                 )?;
                 console::output(cli.json, &resp, console::rule_remove(&resp));
+                client.close()?;
+            }
+        },
+        TopCommand::ServiceSetting { command } => match command {
+            ServiceSettingCmd::List {
+                addr,
+                cluster,
+                cluster_user,
+                cluster_pwd,
+                server,
+            } => {
+                let cluster = parse_uuid_arg(&cluster)?;
+                let server = parse_uuid_arg(&server)?;
+                let mut client = RacClient::connect(&addr, cfg.clone())?;
+                let resp = service_setting_list(
+                    &mut client,
+                    cluster,
+                    &cluster_user,
+                    &cluster_pwd,
+                    server,
+                )?;
+                console::output(
+                    cli.json,
+                    &resp,
+                    console::service_setting_list(&resp.records),
+                );
                 client.close()?;
             }
         },

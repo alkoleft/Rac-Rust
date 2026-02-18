@@ -7,8 +7,8 @@ use rac_protocol::commands::{
     ClusterListResp, ConnectionRecord, CounterClearResp, CounterRecord, CounterUpdateResp,
     CounterValuesRecord, CounterRemoveResp, InfobaseSummary, LimitRecord, LimitRemoveResp,
     LimitUpdateResp, LockRecord, ManagerRecord, ProcessLicense, ProcessRecord, RuleApplyResp,
-    RuleInsertResp, RuleRecord, RuleRemoveResp, RuleUpdateResp, ServerRecord, SessionCounters,
-    SessionLicense, SessionRecord,
+    RuleInsertResp, RuleRecord, RuleRemoveResp, RuleUpdateResp, ServerRecord,
+    ServiceSettingRecord, SessionCounters, SessionLicense, SessionRecord,
 };
 use rac_protocol::rac_wire::format_uuid;
 use rac_protocol::Uuid16;
@@ -265,6 +265,14 @@ pub struct LimitListDisplay<'a> {
 
 pub fn limit_list(items: &[LimitRecord]) -> LimitListDisplay<'_> {
     LimitListDisplay { items }
+}
+
+pub struct ServiceSettingListDisplay<'a> {
+    items: &'a [ServiceSettingRecord],
+}
+
+pub fn service_setting_list(items: &[ServiceSettingRecord]) -> ServiceSettingListDisplay<'_> {
+    ServiceSettingListDisplay { items }
 }
 
 pub struct LimitInfoDisplay<'a> {
@@ -551,6 +559,41 @@ impl Display for LimitListDisplay<'_> {
             );
             outln!(out, "descr[{idx}]: {}", display_str(&item.descr));
         });
+        write_trimmed(f, &out)
+    }
+}
+
+impl Display for ServiceSettingListDisplay<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let out = list_to_string(
+            "service-settings",
+            self.items,
+            5,
+            MoreLabel::Default,
+            |out, idx, item| {
+                outln!(out, "setting[{idx}]: {}", format_uuid(&item.setting));
+                outln!(
+                    out,
+                    "service-name[{idx}]: {}",
+                    display_str(&item.service_name)
+                );
+                outln!(
+                    out,
+                    "infobase-name[{idx}]: {}",
+                    display_str(&item.infobase_name)
+                );
+                outln!(
+                    out,
+                    "service-data-dir[{idx}]: {}",
+                    display_str(&item.service_data_dir)
+                );
+                outln!(
+                    out,
+                    "active[{idx}]: {}",
+                    if item.active { "yes" } else { "no" }
+                );
+            },
+        );
         write_trimmed(f, &out)
     }
 }

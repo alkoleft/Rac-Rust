@@ -142,6 +142,7 @@ pub enum RacRequest {
         descr: String,
     },
     LimitRemove { cluster: Uuid16, name: String },
+    ServiceSettingList { cluster: Uuid16, server: Uuid16 },
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
@@ -320,7 +321,8 @@ impl RacProtocol for V16Protocol {
             | RacRequest::LimitList { cluster }
             | RacRequest::LimitInfo { cluster, .. }
             | RacRequest::LimitUpdate { cluster, .. }
-            | RacRequest::LimitRemove { cluster, .. } => RequiredContext {
+            | RacRequest::LimitRemove { cluster, .. }
+            | RacRequest::ServiceSettingList { cluster, .. } => RequiredContext {
                 cluster: Some(*cluster),
                 infobase_cluster: None,
             },
@@ -748,6 +750,10 @@ impl RacProtocol for V16Protocol {
                 )?);
                 (encode_rpc(METHOD_LIMIT_REMOVE_REQ, &body), None)
             }
+            RacRequest::ServiceSettingList { cluster, server } => (
+                Self::encode_cluster_scoped_object(METHOD_SERVICE_SETTING_LIST_REQ, cluster, server),
+                Some(METHOD_SERVICE_SETTING_LIST_RESP),
+            ),
         };
 
         if payload.is_empty() {

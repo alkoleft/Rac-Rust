@@ -25,6 +25,6 @@ Related method mapping:
 ## Status
 
 - `description`: done
-- `message_formats`: missing
-- `captures`: pending
-- `rpc_mapping`: partial
+- `message_formats`: done (list/info/update/remove)
+- `captures`: list/info/update/remove
+- `rpc_mapping`: partial (list/info/update/remove)

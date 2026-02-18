@@ -1,12 +1,11 @@
 use serde::Serialize;
 
 use crate::client::{RacClient, RacRequest};
-use crate::error::{RacError, Result};
 use crate::codec::RecordCursor;
-use crate::rac_wire::{scan_len_prefixed_strings, take_str8, uuid_from_slice};
+use crate::error::{RacError, Result};
 use crate::Uuid16;
 
-use super::{first_uuid, rpc_body};
+use super::rpc_body;
 
 #[derive(Debug, Serialize, Default, Clone)]
 pub struct SessionCounters {
@@ -122,38 +121,13 @@ pub fn session_info(
     let body = rpc_body(&reply)?;
     let record = match parse_session_record_for_info(body, session) {
         Ok(record) => record,
-        Err(_) => SessionRecord {
-            session: first_uuid(body)?,
-            app_id: String::new(),
-            connection: Uuid16::default(),
-            process: Uuid16::default(),
-            infobase: Uuid16::default(),
-            host: String::new(),
-            hibernate: false,
-            locale: String::new(),
-            user_name: String::new(),
-            started_at: String::new(),
-            last_active_at: String::new(),
-            client_ip: String::new(),
-            retrieved_by_server: false,
-            software_license: false,
-            network_key: false,
-            license: SessionLicense::default(),
-            db_proc_info: String::new(),
-            db_proc_took_at: String::new(),
-            current_service_name: String::new(),
-            data_separation: String::new(),
-            session_id: 0,
-            counters: SessionCounters::default(),
-        },
+        Err(_) => fallback_session_record(body)?,
     };
+    let fields = collect_session_fields(&record);
     Ok(SessionInfoResp {
         session: record.session,
         record,
-        fields: scan_len_prefixed_strings(body)
-            .into_iter()
-            .map(|(_, s)| s)
-            .collect(),
+        fields,
         raw_payload: Some(reply),
     })
 }
@@ -173,93 +147,30 @@ fn parse_session_list_records(body: &[u8]) -> Result<Vec<SessionRecord>> {
         return Ok(Vec::new());
     }
 
-    let expected = body[0] as usize;
+    let mut cursor = RecordCursor::new(body, 0);
+    let expected = cursor.take_u8()? as usize;
     if expected == 0 {
         return Ok(Vec::new());
     }
-    if body.len() < 1 + 16 {
-        return Err(RacError::Decode("session list body truncated"));
-    }
 
-    let mut starts = Vec::with_capacity(expected);
-    let mut cursor = 1usize;
-
-    // Prefer the canonical first record offset, but fall back to scanning if needed.
-    if parse_session_record_start(body, cursor).is_some() {
-        starts.push(cursor);
-        cursor = cursor.saturating_add(16 + 1);
-    } else if let Some((off, _)) = find_next_session_record_start(body, cursor) {
-        starts.push(off);
-        cursor = off.saturating_add(16 + 1);
-    } else {
-        return Err(RacError::Decode("failed to locate first session record"));
-    }
-
-    while starts.len() < expected {
-        match find_next_session_record_start(body, cursor) {
-            Some((off, _)) => {
-                starts.push(off);
-                cursor = off.saturating_add(16 + 1);
-            }
-            None => break,
-        }
-    }
-
-    if starts.len() != expected {
-        return Err(RacError::Decode("failed to decode all session records"));
-    }
-
-    let mut records = Vec::with_capacity(starts.len());
-    for (idx, start) in starts.iter().copied().enumerate() {
-        let end = starts.get(idx + 1).copied().unwrap_or(body.len());
-        if end <= start || end > body.len() {
-            return Err(RacError::Decode("invalid session list record boundaries"));
-        }
-        records.push(parse_session_record_1cv8c(&body[start..end])?);
+    let mut records = Vec::with_capacity(expected);
+    for _ in 0..expected {
+        records.push(parse_session_record(&mut cursor)?);
     }
     Ok(records)
 }
 
-fn find_next_session_record_start(data: &[u8], start: usize) -> Option<(usize, Uuid16)> {
-    if data.len() < 1 + 16 + 2 || start >= data.len() {
-        return None;
-    }
-    let last = data.len().saturating_sub(16 + 2);
-    for off in start..=last {
-        if let Some((_, uuid)) = parse_session_record_start(data, off) {
-            return Some((off, uuid));
-        }
-    }
-    None
-}
-
-fn parse_session_record_start(data: &[u8], offset: usize) -> Option<(String, Uuid16)> {
-    // Session record header (docs/messages/rac_message_formats_session.md):
-    // - uuid[16] (session) at +0x00
-    // - str8 app-id at +0x10 (len byte), bytes start at +0x11
-    if offset + 16 + 1 > data.len() {
-        return None;
-    }
-    let uuid = uuid_from_slice(&data[offset..offset + 16]).ok()?;
-    if !is_probable_rfc4122_uuid(&uuid) {
-        return None;
-    }
-    let app_off = offset + 16;
-    let (app_id, _next) = take_str8(data, app_off).ok()?;
-    let app_id = app_id.to_string();
-    if !is_reasonable_app_id(&app_id) {
-        return None;
-    }
-    Some((app_id, uuid))
-}
-
 fn parse_session_record_1cv8c(data: &[u8]) -> Result<SessionRecord> {
-    if data.len() < 16 {
+    let mut cursor = RecordCursor::new(data, 0);
+    parse_session_record(&mut cursor)
+}
+
+fn parse_session_record(cursor: &mut RecordCursor<'_>) -> Result<SessionRecord> {
+    if cursor.remaining_len() < 16 {
         return Err(RacError::Decode("session record: truncated uuid"));
     }
     #[cfg(feature = "debug-parse")]
-    log::debug!("Binary data: {:?}", data);
-    let mut cursor = RecordCursor::new(data, 0);
+    log::debug!("Binary data: {:?}", cursor.remaining_len());
     let session = cursor.take_uuid()?;
 
     let mut rec = SessionRecord {
@@ -318,13 +229,13 @@ fn parse_session_record_1cv8c(data: &[u8]) -> Result<SessionRecord> {
 
     rec.last_active_at = cursor.take_datetime_opt()?.unwrap_or_default();
 
-    rec.hibernate = cursor.take_bool_opt()?.unwrap_or_default(); // TODO
+    rec.hibernate = cursor.take_bool_opt()?.unwrap_or_default();
     rec.counters.passive_session_hibernate_time =
         cursor.take_u32_be_opt()?.unwrap_or_default();
     rec.counters.hibernate_session_terminate_time =
         cursor.take_u32_be_opt()?.unwrap_or_default();
 
-    rec.license = parse_licenses(&mut cursor)?;
+    rec.license = parse_licenses(cursor)?;
 
     rec.locale = cursor.take_str8_opt()?.unwrap_or_default();
     rec.process = cursor.take_uuid_opt()?.unwrap_or_default();
@@ -335,7 +246,7 @@ fn parse_session_record_1cv8c(data: &[u8]) -> Result<SessionRecord> {
     rec.counters.memory_current = cursor.take_u64_be_opt()?.unwrap_or_default();
     rec.counters.memory_last_5min = cursor.take_u64_be_opt()?.unwrap_or_default();
     rec.counters.memory_total = cursor.take_u64_be_opt()?.unwrap_or_default();
-    
+
     rec.counters.read_current = cursor.take_u64_be_opt()?.unwrap_or_default();
     rec.counters.read_last_5min = cursor.take_u64_be_opt()?.unwrap_or_default();
     rec.counters.read_total = cursor.take_u64_be_opt()?.unwrap_or_default();
@@ -343,17 +254,17 @@ fn parse_session_record_1cv8c(data: &[u8]) -> Result<SessionRecord> {
     rec.counters.write_current = cursor.take_u64_be_opt()?.unwrap_or_default();
     rec.counters.write_last_5min = cursor.take_u64_be_opt()?.unwrap_or_default();
     rec.counters.write_total = cursor.take_u64_be_opt()?.unwrap_or_default();
-    
+
     rec.counters.duration_current_service = cursor.take_u32_be_opt()?.unwrap_or_default();
     rec.counters.duration_last_5min_service = cursor.take_u64_be_opt()?.unwrap_or_default();
     rec.counters.duration_all_service = cursor.take_u32_be_opt()?.unwrap_or_default();
-    
+
     rec.current_service_name = cursor.take_str8_opt()?.unwrap_or_default();
 
     rec.counters.cpu_time_current = cursor.take_u64_be_opt()?.unwrap_or_default();
     rec.counters.cpu_time_last_5min = cursor.take_u64_be_opt()?.unwrap_or_default();
     rec.counters.cpu_time_total = cursor.take_u64_be_opt()?.unwrap_or_default();
-    
+
     rec.data_separation = cursor.take_str8_opt()?.unwrap_or_default();
     rec.client_ip = cursor.take_str8_opt()?.unwrap_or_default();
 
@@ -382,7 +293,6 @@ fn parse_licenses(cursor: &mut RecordCursor) -> Result<SessionLicense> {
         let server_port = cursor.take_u32_be_opt()?.unwrap_or_default();
 
         let key_series = cursor.take_str8_opt()?.unwrap_or_default();
-        // let software_license = cursor.take_bool_opt();
 
         let brief_presentation = cursor.take_str8_opt()?.unwrap_or_default();
         return Ok(SessionLicense {
@@ -404,42 +314,69 @@ fn parse_licenses(cursor: &mut RecordCursor) -> Result<SessionLicense> {
     Ok(SessionLicense::default())
 }
 
-fn is_probable_rfc4122_uuid(uuid: &Uuid16) -> bool {
-    if uuid.iter().all(|&b| b == 0) {
-        return false;
-    }
-    let version = uuid[6] >> 4;
-    if !(1..=5).contains(&version) {
-        return false;
-    }
-    (uuid[8] & 0b1100_0000) == 0b1000_0000
+fn fallback_session_record(body: &[u8]) -> Result<SessionRecord> {
+    let mut cursor = RecordCursor::new(body, 0);
+    let session = cursor.take_uuid()?;
+    Ok(SessionRecord {
+        session,
+        app_id: String::new(),
+        connection: Uuid16::default(),
+        process: Uuid16::default(),
+        infobase: Uuid16::default(),
+        host: String::new(),
+        hibernate: false,
+        locale: String::new(),
+        user_name: String::new(),
+        started_at: String::new(),
+        last_active_at: String::new(),
+        client_ip: String::new(),
+        retrieved_by_server: false,
+        software_license: false,
+        network_key: false,
+        license: SessionLicense::default(),
+        db_proc_info: String::new(),
+        db_proc_took_at: String::new(),
+        current_service_name: String::new(),
+        data_separation: String::new(),
+        session_id: 0,
+        counters: SessionCounters::default(),
+    })
 }
 
-fn is_reasonable_app_id(value: &str) -> bool {
-    if value.is_empty() || value.len() > 64 {
-        return false;
-    }
-    value
-        .bytes()
-        .all(|b| matches!(b, b'a'..=b'z' | b'A'..=b'Z' | b'0'..=b'9' | b'_' | b'-' | b'.'))
+fn collect_session_fields(record: &SessionRecord) -> Vec<String> {
+    let mut out = Vec::new();
+    push_if_nonempty(&mut out, &record.app_id);
+    push_if_nonempty(&mut out, &record.db_proc_info);
+    push_if_nonempty(&mut out, &record.db_proc_took_at);
+    push_if_nonempty(&mut out, &record.host);
+    push_if_nonempty(&mut out, &record.locale);
+    push_if_nonempty(&mut out, &record.user_name);
+    push_if_nonempty(&mut out, &record.started_at);
+    push_if_nonempty(&mut out, &record.last_active_at);
+    push_if_nonempty(&mut out, &record.client_ip);
+    push_if_nonempty(&mut out, &record.current_service_name);
+    push_if_nonempty(&mut out, &record.data_separation);
+    push_if_nonempty(&mut out, &record.license.file_name);
+    push_if_nonempty(&mut out, &record.license.brief_presentation);
+    push_if_nonempty(&mut out, &record.license.full_presentation);
+    push_if_nonempty(&mut out, &record.license.server_address);
+    push_if_nonempty(&mut out, &record.license.process_id);
+    push_if_nonempty(&mut out, &record.license.key_series);
+    out
 }
 
+fn push_if_nonempty(out: &mut Vec<String>, value: &str) {
+    if !value.is_empty() {
+        out.push(value.to_string());
+    }
+}
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
     fn decode_hex_str(input: &str) -> Vec<u8> {
-        let s = input.trim();
-        assert!(s.len() % 2 == 0, "hex length must be even");
-        let mut out = Vec::with_capacity(s.len() / 2);
-        let bytes = s.as_bytes();
-        for i in (0..bytes.len()).step_by(2) {
-            let hi = (bytes[i] as char).to_digit(16).expect("hex hi");
-            let lo = (bytes[i + 1] as char).to_digit(16).expect("hex lo");
-            out.push(((hi << 4) | lo) as u8);
-        }
-        out
+        hex::decode(input.trim()).expect("hex decode")
     }
 
     #[test]

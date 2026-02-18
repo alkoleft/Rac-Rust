@@ -1,0 +1,6 @@
+setting          : 1496c164-a9f5-446e-a021-16a127b06a11
+service-name     : "EventLogService"
+infobase-name    : 
+service-data-dir : /tmp/codex_service_setting/
+active           : no
+

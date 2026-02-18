@@ -25,7 +25,7 @@ Observed field names in `rac process list` output, with capture mapping status.
 | `running` | bool | yes | 17 |
 | `started-at` | datetime | yes | 16 |
 | `use` | enum | yes | 14 |
-| `available-perfomance` | u32 | yes | 18 |
+| `available-performance` | u32 | yes | 18 |
 | `capacity` | u32 | yes | 3 |
 | `connections` | u32 | yes | 4 |
 | `memory-size` | u32 | yes | 12 |
@@ -64,7 +64,7 @@ Payload structure (method body):
 - `gap_0` is an unknown 8-byte field.
 - `avg-*` metrics are consecutive `f64_be` values.
 - After `host`, the record always carries a license block (even if `--licenses` is not used in CLI output).
-- The tail after the license block contains `port`, `pid`, `memory-size`, `selection-size`, and `available-perfomance`, plus several still-unknown fields.
+- The tail after the license block contains `port`, `pid`, `memory-size`, `selection-size`, and `available-performance`, plus several still-unknown fields.
 
 ### Record Layout (Observed, Partial)
 
@@ -166,7 +166,7 @@ Define `t0` as the byte immediately after `brief-presentation` (end of string). 
 | `0x0f + pid_len` | `4` | `selection-size` | `u32_be` | observed `21944` / `3625` |
 | `0x13 + pid_len` | `8` | `started-at` | `datetime` | 1C timestamp (u64_be) |
 | `0x1b + pid_len` | `4` | `running` | `u32_be` | observed `1` when `running=yes` |
-| `0x1f + pid_len` | `4` | `available-perfomance` | `u32_be` | observed `153` / `192` |
+| `0x1f + pid_len` | `4` | `available-performance` | `u32_be` | observed `153` / `192` |
 | `0x23 + pid_len` | `1` | `reserve` | `u8` | hypothesis, observed `0` when `reserve=no` |
 
 ## Process Info

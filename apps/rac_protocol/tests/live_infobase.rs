@@ -11,9 +11,11 @@ struct TestParams {
     addr: String,
 }
 
-fn load_cluster_uuid() -> Option<[u8; 16]> {
-    let value = std::env::var("RAC_CLUSTER").ok()?;
-    parse_uuid(&value).ok()
+fn cluster_uuid_from_env_or_first(client: &mut RacClient) -> [u8; 16] {
+    let value = std::env::var("RAC_CLUSTER").expect("RAC_CLUSTER not set");
+    let parsed = parse_uuid(&value).expect("RAC_CLUSTER must be a valid uuid");
+    let _ = cluster_list(client).expect("cluster list");
+    parsed
 }
 
 fn load_params() -> TestParams {
@@ -24,9 +26,10 @@ fn load_params() -> TestParams {
 }
 
 #[test]
+#[ignore]
 fn live_infobase_info() {
     let params = load_params();
-    let addr = std::env::var("RAC_ADDR").unwrap_or_else(|_| params.addr.clone());
+    let addr = params.addr.clone();
 
     let cfg = ClientConfig {
         connect_timeout: Duration::from_secs(5),
@@ -39,42 +42,13 @@ fn live_infobase_info() {
 
     let _ = agent_version(&mut client);
 
-    let cluster_uuid = match load_cluster_uuid() {
-        Some(uuid) => uuid,
-        None => {
-            let clusters = match cluster_list(&mut client) {
-                Ok(resp) => resp.clusters,
-                Err(err) => {
-                    eprintln!("cluster list failed: {err:?}");
-                    let _ = client.close();
-                    return;
-                }
-            };
-            let Some(first) = clusters.first() else {
-                eprintln!("cluster list empty; skipping infobase info");
-                let _ = client.close();
-                return;
-            };
-            first.uuid
-        }
-    };
+    let cluster_uuid = cluster_uuid_from_env_or_first(&mut client);
 
-    let list = match infobase_summary_list(&mut client, cluster_uuid) {
-        Ok(resp) => resp.infobases,
-        Err(err) => {
-            eprintln!("infobase summary list failed: {err:?}");
-            let _ = client.close();
-            return;
-        }
-    };
+    let list = infobase_summary_list(&mut client, cluster_uuid)
+        .expect("infobase summary list")
+        .infobases;
+    let infobase = *list.first().expect("infobase summary list empty");
 
-    if list.is_empty() {
-        eprintln!("infobase summary list empty; skipping infobase info");
-        client.close().expect("close");
-        return;
-    }
-
-    let infobase = list[0];
     let info = infobase_info(&mut client, cluster_uuid, infobase).expect("infobase info");
     println!(
         "infobase_info: uuid={}, fields={}",

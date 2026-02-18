@@ -1,0 +1,17 @@
+name                      : limit_codex_tmp
+counter                   : cpu
+action                    : interrupt-current-call
+duration                  : 0
+cpu-time                  : 10
+memory                    : 0
+read                      : 0
+write                     : 0
+duration-dbms             : 0
+dbms-bytes                : 0
+service                   : 0
+call                      : 0
+number-of-active-sessions : 0
+number-of-sessions        : 0
+error-message             : limit_tmp
+descr                     : limit_tmp
+

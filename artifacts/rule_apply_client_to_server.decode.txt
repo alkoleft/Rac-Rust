@@ -1,0 +1,20 @@
+file=/home/alko/develop/open-source/v8_protocols/logs/session_1771359945_3673197_127_0_0_1_36476/client_to_server.stream.bin
+size=131
+init_packet offset=0x0 len=32 hex=1c535750010001000116010f636f6e6e6563742e74696d656f757404000007d0
+frames=4 start_offset=0x20
+frame=1 offset=0x20 opcode=0x0b len=31 len_field_size=1
+  payload_hex=1876382e736572766963652e41646d696e2e436c75737465720431362e3080
+  text_at=0x0 value=v8.service.Admin.Cluster
+  text_at=0x19 value=16.0
+frame=2 offset=0x41 opcode=0x0e len=34 len_field_size=1
+  payload_hex=01000001091619820ad36f4d8aa7161516b1dea077066361646d696e056370617373
+  rpc_method_id=0x9 (9) rpc_head_size=5
+  text_at=0x15 value=cadmin
+  text_at=0x1c value=cpass
+  uuid_at=0x6 value=820ad36f-4d8a-a716-1516-b1dea0770663
+frame=3 offset=0x65 opcode=0x0e len=25 len_field_size=1
+  payload_hex=01000001511619820ad36f4d8aa7161516b1dea07700000001
+  rpc_method_id=0x51 (81) rpc_head_size=5
+  uuid_at=0x6 value=820ad36f-4d8a-a716-1516-b1dea0770000
+frame=4 offset=0x80 opcode=0x0d len=1 len_field_size=1
+  payload_hex=01

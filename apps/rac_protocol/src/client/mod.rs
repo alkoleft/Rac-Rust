@@ -6,10 +6,11 @@ mod transport;
 use std::io;
 use std::time::Duration;
 
-use crate::client::debug::{format_payload_head, log_frame, payload_has_service_name};
+use crate::client::debug::{format_payload_head, log_frame};
 use crate::client::handshake::negotiate;
 use crate::client::protocol::RacProtocol;
 use crate::client::transport::RacTransport;
+use crate::codec::RecordCursor;
 use crate::error::{RacError, Result};
 
 pub use protocol::{RacProtocolVersion, RacRequest};
@@ -85,7 +86,7 @@ impl RacClient {
     }
 
     pub fn call(&mut self, request: RacRequest) -> Result<Vec<u8>> {
-        let required = self.protocol.required_context(request);
+        let required = self.protocol.required_context(&request);
         if let Some(cluster) = required.cluster {
             self.ensure_cluster_context(cluster)?;
         }
@@ -148,10 +149,10 @@ impl RacClient {
 
         for _ in 0..3 {
             let reply = self.transport.read_frame()?;
+            if reply.opcode == 0x0f {
+                continue;
+            }
             if reply.opcode != self.protocol.opcode_rpc() {
-                if reply.opcode == 0x0f && payload_has_service_name(&reply.payload) {
-                    continue;
-                }
                 if self.debug_raw {
                     log_frame("rpc-unexpected-opcode", &reply);
                 }
@@ -176,7 +177,7 @@ impl RacClient {
                 let got = match self.protocol.decode_rpc_method_id(&reply.payload) {
                     Some(method) => method,
                     None => {
-                        if payload_has_service_name(&reply.payload) {
+                        if is_service_notice(&reply.payload) {
                             continue;
                         }
                         if self.debug_raw {
@@ -206,4 +207,16 @@ impl RacClient {
 
         Err(RacError::Protocol("rpc reply not received"))
     }
+}
+
+fn is_service_notice(payload: &[u8]) -> bool {
+    let mut cursor = RecordCursor::new(payload, 0);
+    if cursor.remaining_len() < 4 {
+        return false;
+    }
+    let head = match cursor.take_bytes(4) {
+        Ok(bytes) => bytes,
+        Err(_) => return false,
+    };
+    head == [0x01, 0x00, 0x00, 0xff]
 }

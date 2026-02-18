@@ -1,0 +1,104 @@
+file=/home/alko/develop/open-source/v8_protocols/logs/session_1771358425_3653158_127_0_0_1_55954/server_to_client.stream.bin
+size=229
+frames=4 start_offset=0x0
+frame=1 offset=0x0 opcode=0x02 len=1 len_field_size=1
+  payload_hex=80
+frame=2 offset=0x3 opcode=0x0c len=32 len_field_size=1
+  payload_hex=1876382e736572766963652e41646d696e2e436c75737465720431362e300180
+  text_at=0x0 value=v8.service.Admin.Cluster
+  text_at=0x19 value=16.0
+frame=3 offset=0x25 opcode=0x0e len=4 len_field_size=1
+  payload_hex=01000000
+frame=4 offset=0x2b opcode=0x0e len=183 len_field_size=2
+  payload_hex=0100000192010f4576656e744c6f675365727669636507796178756e697445012f746d702f316376382d6167656e742f7265675f313534312f37313762646461372d326636302d343537372d623236322d6631666338633065343732632f314376384c6f6750012f746d702f636f6465785f736572766963655f73657474696e672f7265675f313534312f37313762646461372d326636302d343537372d623236322d6631666338633065343732632f314376384c6f67
+  rpc_method_id=0x92 (146) rpc_head_size=5
+  text_at=0x4 value=EventLogServiceyaxunitE/tmp/1cv8-agent/reg_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_setting/reg_1541/717bdda7-2f6
+  text_at=0x6 value=EventLogService
+  text_at=0x7 value=ventLogServiceyaxunitE/tmp/1cv8-agent/reg_1541/717bdda7-2f60-4577-b
+  text_at=0x8 value=entLogServiceyaxunitE/tmp/1cv8-agent/reg_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_setti
+  text_at=0x9 value=ntLogServiceyaxunitE/tmp/1cv8-agent/reg_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/cod
+  text_at=0xa value=tLogServiceyaxunitE/tmp/1cv8-agent/reg_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service
+  text_at=0xb value=LogServiceyaxunitE/tmp/1cv8-agent/reg_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_settin
+  text_at=0xc value=ogServiceyaxunitE/tmp/1cv8-agent/reg_1541/717bdda7-2f60-4577-b262-f1fc8c0e
+  text_at=0xd value=gServiceyaxunitE/tmp/1cv8-agent/reg_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_set
+  text_at=0xe value=ServiceyaxunitE/tmp/1cv8-agent/reg_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_serv
+  text_at=0xf value=erviceyaxunitE/tmp/1cv8-agent/reg_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8L
+  text_at=0x10 value=rviceyaxunitE/tmp/1cv8-agent/reg_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_serv
+  text_at=0x11 value=viceyaxunitE/tmp/1cv8-agent/reg_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_setting/re
+  text_at=0x12 value=iceyaxunitE/tmp/1cv8-agent/reg_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_setting/reg_154
+  text_at=0x13 value=ceyaxunitE/tmp/1cv8-agent/reg_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_set
+  text_at=0x14 value=eyaxunitE/tmp/1cv8-agent/reg_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_servic
+  text_at=0x15 value=yaxunitE/tmp/1cv8-agent/reg_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_s
+  text_at=0x16 value=yaxunit
+  text_at=0x17 value=axunitE/tmp/1cv8-agent/reg_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_setting/reg_1541/717bdd
+  text_at=0x18 value=xunitE/tmp/1cv8-agent/reg_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_
+  text_at=0x19 value=unitE/tmp/1cv8-agent/reg_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_setting/reg_1541/717bdda
+  text_at=0x1a value=nitE/tmp/1cv8-agent/reg_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_setting/reg_1541/717bd
+  text_at=0x1b value=itE/tmp/1cv8-agent/reg_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_setting/reg_1541
+  text_at=0x1c value=tE/tmp/1cv8-agent/reg_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_setting/reg_
+  text_at=0x1d value=E/tmp/1cv8-agent/reg_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_setting/reg_1541/717bdda
+  text_at=0x1e value=/tmp/1cv8-agent/reg_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8Lo
+  text_at=0x20 value=tmp/1cv8-agent/reg_1541/717bdda7-2f60-4577-b262
+  text_at=0x21 value=mp/1cv8-agent/reg_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_setting/reg_1541/717bdda7-2f
+  text_at=0x22 value=p/1cv8-agent/reg_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_setting/reg_1541/717bd
+  text_at=0x23 value=/1cv8-agent/reg_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_setting/reg_1541/717bdda7-
+  text_at=0x24 value=1cv8-agent/reg_1541/717bdda7-2f60-4577-b262-f1f
+  text_at=0x25 value=cv8-agent/reg_1541/717bdda7-2f60-4577-b262-f1fc8c
+  text_at=0x26 value=v8-agent/reg_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_setting/reg_1541
+  text_at=0x27 value=8-agent/reg_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_setting/reg_1541/717bdda7-2f60-4577-
+  text_at=0x28 value=-agent/reg_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv
+  text_at=0x29 value=agent/reg_1541/717bdda7-2f60-4577-b262-f1fc8c
+  text_at=0x2a value=gent/reg_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_setting/reg_1541/7
+  text_at=0x2b value=ent/reg_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_setting/reg_1541/717bdda7
+  text_at=0x2c value=nt/reg_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_setting/reg_1541/717bdda
+  text_at=0x2d value=t/reg_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_setting/reg_1541/717bdda7-2f60-457
+  text_at=0x2e value=/reg_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_setting/reg_1541/717bdda7-2f60-4577-b262-
+  text_at=0x2f value=reg_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1
+  text_at=0x30 value=eg_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_setting/reg_1541/717bdda7-2f60-4577-b262-
+  text_at=0x31 value=g_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_setting/reg_1541/717bdda7-2f6
+  text_at=0x32 value=_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_setting/reg_1541/717bdda7-2f60-4
+  text_at=0x33 value=1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_setting/reg_1541/717bdda7
+  text_at=0x34 value=541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP
+  text_at=0x35 value=41/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp
+  text_at=0x36 value=1/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp
+  text_at=0x37 value=/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/t
+  text_at=0x38 value=717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/
+  text_at=0x39 value=17bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex
+  text_at=0x3a value=7bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/
+  text_at=0x3b value=bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_s
+  text_at=0x3c value=dda7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_setting/reg_1541/717bdda7-2f60-4577-b
+  text_at=0x3d value=da7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_setting/reg_1541/717bdda7-2f60-4577-b262
+  text_at=0x3e value=a7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_setting/reg_1541/717bdda7-2f60-4577-b262-
+  text_at=0x3f value=7-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_setting/reg_1541/717bdda7-2f60-4577-b26
+  text_at=0x40 value=-2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_servic
+  text_at=0x41 value=2f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/cod
+  text_at=0x42 value=f60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_ser
+  text_at=0x43 value=60-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_setting/reg_1541/717bdda7-2f60-4577-b262-f1fc8c0
+  text_at=0x44 value=0-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_s
+  text_at=0x45 value=-4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_serv
+  text_at=0x46 value=4577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_se
+  text_at=0x47 value=577-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_se
+  text_at=0x48 value=77-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_sett
+  text_at=0x49 value=7-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_setting
+  text_at=0x4a value=-b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_setting/
+  text_at=0x4b value=b262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service
+  text_at=0x4c value=262-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_setting/reg_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c
+  text_at=0x4d value=62-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_settin
+  text_at=0x4e value=2-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_setting/reg
+  text_at=0x4f value=-f1fc8c0e472c/1Cv8LogP/tmp/codex_service_setting/
+  text_at=0x50 value=f1fc8c0e472c/1Cv8LogP/tmp/codex_service_sett
+  text_at=0x52 value=fc8c0e472c/1Cv8LogP/tmp/codex_service_setting/re
+  text_at=0x55 value=c0e472c/1Cv8LogP/tmp/codex_service_setting/reg_1541/717
+  text_at=0x57 value=e472c/1Cv8LogP/tmp/codex_service_setting/reg_15
+  text_at=0x59 value=72c/1Cv8LogP/tmp/codex_service_setting/reg_1541/717
+  text_at=0x5a value=2c/1Cv8LogP/tmp/codex_service_setting/reg_1541/717bdda
+  text_at=0x5b value=c/1Cv8LogP/tmp/codex_service_setting/reg_1541/717
+  text_at=0x5d value=1Cv8LogP/tmp/codex_service_setting/reg_1541/71
+  text_at=0x5e value=Cv8LogP/tmp/codex_service_setting/reg_1541/717bd
+  text_at=0x5f value=v8LogP/tmp/codex_service_setting/reg_1541/717bdda7-2f60-4577-b262-
+  text_at=0x61 value=LogP/tmp/codex_service_setting/reg_1541/717bdda7-2f60-4
+  text_at=0x62 value=ogP/tmp/codex_service_setting/reg_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c
+  text_at=0x65 value=/tmp/codex_service_setting/reg_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1Cv8Lo
+  text_at=0x67 value=tmp/codex_service_setting/reg_1541/717bdda7-2f6
+  text_at=0x6b value=codex_service_setting/reg_1541/717bdda7-2f60-45
+  text_at=0x81 value=reg_1541/717bdda7-2f60-4577-b262-f1fc8c0e472c/1

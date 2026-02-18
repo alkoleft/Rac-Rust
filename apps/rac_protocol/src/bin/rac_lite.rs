@@ -557,7 +557,7 @@ fn run(cli: Cli) -> Result<()> {
                 let cluster = parse_uuid_arg(&cluster)?;
                 let mut client = RacClient::connect(&addr, cfg.clone())?;
                 let resp = lock_list(&mut client, cluster)?;
-                console::output(cli.json, &resp, console::uuid_list("locks", &resp.locks));
+                console::output(cli.json, &resp, console::lock_list(&resp.records));
                 client.close()?;
             }
         },

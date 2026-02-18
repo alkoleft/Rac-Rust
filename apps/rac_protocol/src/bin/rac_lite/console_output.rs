@@ -4,8 +4,8 @@ use serde::Serialize;
 
 use rac_protocol::commands::{
     AgentVersionResp, ClusterAdminRecord, ClusterAdminRegisterResp, ClusterInfoResp,
-    ClusterListResp, ConnectionRecord, InfobaseSummary, LimitRecord, ManagerRecord, ServerRecord,
-    SessionCounters, ProcessLicense, ProcessRecord, SessionLicense, SessionRecord,
+    ClusterListResp, ConnectionRecord, InfobaseSummary, LimitRecord, LockRecord, ManagerRecord,
+    ProcessLicense, ProcessRecord, ServerRecord, SessionCounters, SessionLicense, SessionRecord,
 };
 use rac_protocol::rac_wire::format_uuid;
 use rac_protocol::Uuid16;
@@ -206,6 +206,14 @@ pub struct ProcessListDisplay<'a> {
 
 pub fn process_list(items: &[ProcessRecord]) -> ProcessListDisplay<'_> {
     ProcessListDisplay { items }
+}
+
+pub struct LockListDisplay<'a> {
+    items: &'a [LockRecord],
+}
+
+pub fn lock_list(items: &[LockRecord]) -> LockListDisplay<'_> {
+    LockListDisplay { items }
 }
 
 pub struct ProcessListLicensesDisplay<'a> {
@@ -468,6 +476,22 @@ impl Display for ProcessListDisplay<'_> {
         let out = list_to_string("processes", self.items, 5, MoreLabel::Default, |out, idx, item| {
             outln!(out, "process[{idx}]: {}", format_uuid(&item.process));
             outln!(out, "{}", process_info(item));
+        });
+        write_trimmed(f, &out)
+    }
+}
+
+impl Display for LockListDisplay<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let out = list_to_string("locks", self.items, 5, MoreLabel::Default, |out, idx, item| {
+            outln!(out, "connection[{idx}]: {}", format_uuid(&item.connection));
+            outln!(out, "descr[{idx}]: {}", display_str(&item.descr));
+            if let Some(flag) = item.descr_flag {
+                outln!(out, "descr-flag[{idx}]: {flag}");
+            }
+            outln!(out, "locked-at[{idx}]: {}", display_str(&item.locked_at));
+            outln!(out, "session[{idx}]: {}", format_uuid(&item.session));
+            outln!(out, "object[{idx}]: {}", format_uuid(&item.object));
         });
         write_trimmed(f, &out)
     }

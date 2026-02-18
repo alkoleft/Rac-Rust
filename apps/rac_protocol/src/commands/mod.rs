@@ -29,7 +29,7 @@ pub use self::infobase::{
     infobase_info, infobase_summary_info, infobase_summary_list, InfobaseInfoResp,
     InfobaseSummary, InfobaseSummaryInfoResp, InfobaseSummaryListResp,
 };
-pub use self::lock::{lock_list, LockListResp};
+pub use self::lock::{lock_list, LockListResp, LockRecord};
 pub use self::limit::{limit_list, LimitListResp, LimitRecord};
 pub use self::manager::{manager_info, manager_list, ManagerInfoResp, ManagerListResp, ManagerRecord};
 pub use self::process::{

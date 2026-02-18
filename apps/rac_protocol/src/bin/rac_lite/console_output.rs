@@ -273,6 +273,14 @@ pub fn counter_list(items: &[CounterRecord]) -> CounterListDisplay<'_> {
     CounterListDisplay { items }
 }
 
+pub struct CounterInfoDisplay<'a> {
+    item: &'a CounterRecord,
+}
+
+pub fn counter_info(item: &CounterRecord) -> CounterInfoDisplay<'_> {
+    CounterInfoDisplay { item }
+}
+
 pub struct ClusterAdminListDisplay<'a> {
     items: &'a [ClusterAdminRecord],
 }
@@ -453,6 +461,35 @@ impl Display for CounterListDisplay<'_> {
             );
             outln!(out, "descr[{idx}]: {}", display_str(&item.descr));
         });
+        write_trimmed(f, &out)
+    }
+}
+
+impl Display for CounterInfoDisplay<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut out = String::new();
+        let item = self.item;
+        outln!(&mut out, "name: {}", display_str(&item.name));
+        outln!(&mut out, "collection-time: {}", item.collection_time);
+        outln!(&mut out, "group: {}", item.group);
+        outln!(&mut out, "filter-type: {}", item.filter_type);
+        outln!(&mut out, "filter: {}", display_str(&item.filter));
+        outln!(&mut out, "duration: {}", item.duration);
+        outln!(&mut out, "cpu-time: {}", item.cpu_time);
+        outln!(&mut out, "duration-dbms: {}", item.duration_dbms);
+        outln!(&mut out, "service: {}", item.service);
+        outln!(&mut out, "memory: {}", item.memory);
+        outln!(&mut out, "read: {}", item.read);
+        outln!(&mut out, "write: {}", item.write);
+        outln!(&mut out, "dbms-bytes: {}", item.dbms_bytes);
+        outln!(&mut out, "call: {}", item.call);
+        outln!(
+            &mut out,
+            "number-of-active-sessions: {}",
+            item.number_of_active_sessions
+        );
+        outln!(&mut out, "number-of-sessions: {}", item.number_of_sessions);
+        outln!(&mut out, "descr: {}", display_str(&item.descr));
         write_trimmed(f, &out)
     }
 }

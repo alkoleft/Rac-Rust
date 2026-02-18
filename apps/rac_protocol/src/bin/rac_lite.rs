@@ -9,11 +9,11 @@ use console_output as console;
 use rac_protocol::client::{ClientConfig, RacClient};
 use rac_protocol::commands::{
     agent_version, cluster_admin_list, cluster_admin_register, cluster_info, cluster_list,
-    connection_info, connection_list, counter_list, infobase_info, infobase_summary_info,
-    infobase_summary_list, limit_list, lock_list, manager_info, manager_list, process_info,
-    process_list, profile_list, rule_apply, rule_info, rule_insert, rule_list, rule_update,
-    rule_remove, server_info, server_list, session_info, session_list, ClusterAdminRegisterReq,
-    RuleApplyMode, RuleInsertReq, RuleUpdateReq,
+    connection_info, connection_list, counter_info, counter_list, infobase_info,
+    infobase_summary_info, infobase_summary_list, limit_list, lock_list, manager_info,
+    manager_list, process_info, process_list, profile_list, rule_apply, rule_info, rule_insert,
+    rule_list, rule_update, rule_remove, server_info, server_list, session_info, session_list,
+    ClusterAdminRegisterReq, RuleApplyMode, RuleInsertReq, RuleUpdateReq,
 };
 use rac_protocol::error::{RacError, Result};
 use rac_protocol::rac_wire::parse_uuid;
@@ -268,6 +268,13 @@ enum CounterCmd {
         addr: String,
         #[arg(long)]
         cluster: String,
+    },
+    Info {
+        addr: String,
+        #[arg(long)]
+        cluster: String,
+        #[arg(long)]
+        counter: String,
     },
 }
 
@@ -689,6 +696,17 @@ fn run(cli: Cli) -> Result<()> {
                     &resp,
                     console::counter_list(&resp.records),
                 );
+                client.close()?;
+            }
+            CounterCmd::Info {
+                addr,
+                cluster,
+                counter,
+            } => {
+                let cluster = parse_uuid_arg(&cluster)?;
+                let mut client = RacClient::connect(&addr, cfg.clone())?;
+                let resp = counter_info(&mut client, cluster, &counter)?;
+                console::output(cli.json, &resp, console::counter_info(&resp.record));
                 client.close()?;
             }
         },

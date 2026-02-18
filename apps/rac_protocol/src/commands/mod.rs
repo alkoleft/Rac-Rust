@@ -25,7 +25,9 @@ pub use self::cluster::{
 pub use self::connection::{
     connection_info, connection_list, ConnectionInfoResp, ConnectionListResp, ConnectionRecord,
 };
-pub use self::counter::{counter_list, CounterListResp, CounterRecord};
+pub use self::counter::{
+    counter_info, counter_list, CounterInfoResp, CounterListResp, CounterRecord,
+};
 pub use self::infobase::{
     infobase_info, infobase_summary_info, infobase_summary_list, InfobaseInfoResp,
     InfobaseSummary, InfobaseSummaryInfoResp, InfobaseSummaryListResp,

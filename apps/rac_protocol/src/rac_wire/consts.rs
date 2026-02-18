@@ -55,5 +55,7 @@ pub const METHOD_RULE_INFO_REQ: u8 = 0x57;
 pub const METHOD_RULE_INFO_RESP: u8 = 0x58;
 pub const METHOD_COUNTER_LIST_REQ: u8 = 0x76;
 pub const METHOD_COUNTER_LIST_RESP: u8 = 0x77;
+pub const METHOD_COUNTER_INFO_REQ: u8 = 0x78;
+pub const METHOD_COUNTER_INFO_RESP: u8 = 0x79;
 pub const METHOD_LIMIT_LIST_REQ: u8 = 0x7c;
 pub const METHOD_LIMIT_LIST_RESP: u8 = 0x7d;

@@ -11,8 +11,8 @@ use rac_protocol::commands::{
     agent_version, cluster_admin_list, cluster_admin_register, cluster_info, cluster_list,
     connection_info, connection_list, counter_list, infobase_info, infobase_summary_info,
     infobase_summary_list, limit_list, lock_list, manager_info, manager_list, process_info,
-    process_list, profile_list, rule_apply, rule_info, rule_list, server_info, server_list,
-    session_info, session_list, ClusterAdminRegisterReq, RuleApplyMode,
+    process_list, profile_list, rule_apply, rule_info, rule_insert, rule_list, server_info,
+    server_list, session_info, session_list, ClusterAdminRegisterReq, RuleApplyMode, RuleInsertReq,
 };
 use rac_protocol::error::{RacError, Result};
 use rac_protocol::rac_wire::parse_uuid;
@@ -315,6 +315,29 @@ enum RuleCmd {
         server: String,
         #[arg(long)]
         rule: String,
+    },
+    Insert {
+        addr: String,
+        #[arg(long)]
+        cluster: String,
+        #[arg(long)]
+        cluster_user: String,
+        #[arg(long)]
+        cluster_pwd: String,
+        #[arg(long)]
+        server: String,
+        #[arg(long)]
+        position: u32,
+        #[arg(long)]
+        object_type: u32,
+        #[arg(long, default_value = "")]
+        infobase_name: String,
+        #[arg(long, default_value_t = 0)]
+        rule_type: u8,
+        #[arg(long, default_value = "")]
+        application_ext: String,
+        #[arg(long, default_value_t = 0)]
+        priority: u32,
     },
 }
 
@@ -695,6 +718,41 @@ fn run(cli: Cli) -> Result<()> {
                     rule,
                 )?;
                 console::output(cli.json, &resp, console::rule_info(&resp.record));
+                client.close()?;
+            }
+            RuleCmd::Insert {
+                addr,
+                cluster,
+                cluster_user,
+                cluster_pwd,
+                server,
+                position,
+                object_type,
+                infobase_name,
+                rule_type,
+                application_ext,
+                priority,
+            } => {
+                let cluster = parse_uuid_arg(&cluster)?;
+                let server = parse_uuid_arg(&server)?;
+                let mut client = RacClient::connect(&addr, cfg.clone())?;
+                let req = RuleInsertReq {
+                    server,
+                    position,
+                    object_type,
+                    infobase_name,
+                    rule_type,
+                    application_ext,
+                    priority,
+                };
+                let resp = rule_insert(
+                    &mut client,
+                    cluster,
+                    &cluster_user,
+                    &cluster_pwd,
+                    req,
+                )?;
+                console::output(cli.json, &resp, console::rule_insert(&resp));
                 client.close()?;
             }
         },

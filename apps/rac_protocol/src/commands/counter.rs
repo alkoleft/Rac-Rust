@@ -70,6 +70,12 @@ pub struct CounterValuesResp {
     pub raw_payload: Option<Vec<u8>>,
 }
 
+#[derive(Debug, Serialize)]
+pub struct CounterAccumulatedValuesResp {
+    pub records: Vec<CounterValuesRecord>,
+    pub raw_payload: Option<Vec<u8>>,
+}
+
 #[derive(Debug, Serialize, Clone)]
 pub struct CounterRecord {
     pub name: String,
@@ -285,6 +291,32 @@ pub fn counter_values(
     })
 }
 
+pub fn counter_accumulated_values(
+    client: &mut RacClient,
+    cluster: crate::Uuid16,
+    cluster_user: &str,
+    cluster_pwd: &str,
+    counter: &str,
+    object: &str,
+) -> Result<CounterAccumulatedValuesResp> {
+    client.call(RacRequest::ClusterAuth {
+        cluster,
+        user: cluster_user.to_string(),
+        pwd: cluster_pwd.to_string(),
+    })?;
+    let reply = client.call(RacRequest::CounterAccumulatedValues {
+        cluster,
+        counter: counter.to_string(),
+        object: object.to_string(),
+    })?;
+    let body = rpc_body(&reply)?;
+    let records = parse_counter_accumulated_values_body(body)?;
+    Ok(CounterAccumulatedValuesResp {
+        records,
+        raw_payload: Some(reply),
+    })
+}
+
 fn parse_counter_list_body(body: &[u8]) -> Result<Vec<CounterRecord>> {
     if body.is_empty() {
         return Ok(Vec::new());
@@ -304,6 +336,19 @@ fn parse_counter_info_body(body: &[u8]) -> Result<CounterRecord> {
 }
 
 fn parse_counter_values_body(body: &[u8]) -> Result<Vec<CounterValuesRecord>> {
+    if body.is_empty() {
+        return Ok(Vec::new());
+    }
+    let mut cursor = RecordCursor::new(body, 0);
+    let count = cursor.take_u8()? as usize;
+    let mut records = Vec::with_capacity(count);
+    for _ in 0..count {
+        records.push(CounterValuesRecord::decode(&mut cursor)?);
+    }
+    Ok(records)
+}
+
+fn parse_counter_accumulated_values_body(body: &[u8]) -> Result<Vec<CounterValuesRecord>> {
     if body.is_empty() {
         return Ok(Vec::new());
     }
@@ -490,5 +535,50 @@ mod tests {
         let serialized = protocol.serialize(req).expect("serialize");
         assert_eq!(serialized.payload, expected);
         assert_eq!(serialized.expect_method, Some(0x83));
+    }
+
+    #[test]
+    fn parse_counter_accumulated_values_from_golden_capture() {
+        let hex = include_str!("../../../../artifacts/counter_accumulated_values_codex_tmp_response.hex");
+        let payload = decode_hex_str(hex);
+        let frames = parse_frames(&payload).expect("frames");
+        assert_eq!(frames.len(), 4);
+        assert_eq!(frames[3].opcode, 0x0e);
+        let body = rpc_body(&frames[3].payload).expect("rpc body");
+        let records = parse_counter_accumulated_values_body(body)
+            .expect("counter accumulated values parse");
+
+        assert_eq!(records.len(), 1);
+        assert_eq!(records[0].object, "infobase=yaxunit;user=DefUser");
+        assert_eq!(records[0].collection_time, 10000);
+        assert_eq!(records[0].duration, 1001);
+        assert_eq!(records[0].cpu_time, 0);
+        assert_eq!(records[0].memory, 0);
+        assert_eq!(records[0].read, 0);
+        assert_eq!(records[0].write, 0);
+        assert_eq!(records[0].duration_dbms, 0);
+        assert_eq!(records[0].dbms_bytes, 0);
+        assert_eq!(records[0].service, 0);
+        assert_eq!(records[0].call, 0);
+        assert_eq!(records[0].number_of_active_sessions, 0);
+        assert_eq!(records[0].number_of_sessions, 0);
+        assert_eq!(records[0].time, "2026-02-17T19:42:45");
+    }
+
+    #[test]
+    fn encode_counter_accumulated_values_request() {
+        let expected = decode_hex_str(
+            "01000001851619820ad36f4d8aa7161516b1dea07709636f6465785f746d7000",
+        );
+        let cluster = parse_uuid("1619820a-d36f-4d8a-a716-1516b1dea077").expect("cluster uuid");
+        let req = RacRequest::CounterAccumulatedValues {
+            cluster,
+            counter: "codex_tmp".to_string(),
+            object: "".to_string(),
+        };
+        let protocol = RacProtocolVersion::V16_0.boxed();
+        let serialized = protocol.serialize(req).expect("serialize");
+        assert_eq!(serialized.payload, expected);
+        assert_eq!(serialized.expect_method, Some(0x86));
     }
 }

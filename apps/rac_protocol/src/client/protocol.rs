@@ -109,6 +109,11 @@ pub enum RacRequest {
         counter: String,
         object: String,
     },
+    CounterAccumulatedValues {
+        cluster: Uuid16,
+        counter: String,
+        object: String,
+    },
     LimitList { cluster: Uuid16 },
 }
 
@@ -282,6 +287,7 @@ impl RacProtocol for V16Protocol {
             | RacRequest::CounterInfo { cluster, .. }
             | RacRequest::CounterUpdate { cluster, .. }
             | RacRequest::CounterValues { cluster, .. }
+            | RacRequest::CounterAccumulatedValues { cluster, .. }
             | RacRequest::LimitList { cluster } => RequiredContext {
                 cluster: Some(*cluster),
                 infobase_cluster: None,
@@ -595,6 +601,24 @@ impl RacProtocol for V16Protocol {
                 (
                     encode_rpc(METHOD_COUNTER_VALUES_REQ, &body),
                     Some(METHOD_COUNTER_VALUES_RESP),
+                )
+            }
+            RacRequest::CounterAccumulatedValues {
+                cluster,
+                counter,
+                object,
+            } => {
+                let mut body = Vec::with_capacity(16 + 2 + counter.len() + object.len());
+                body.extend_from_slice(&cluster);
+                body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(
+                    counter.as_bytes(),
+                )?);
+                body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(
+                    object.as_bytes(),
+                )?);
+                (
+                    encode_rpc(METHOD_COUNTER_ACCUMULATED_VALUES_REQ, &body),
+                    Some(METHOD_COUNTER_ACCUMULATED_VALUES_RESP),
                 )
             }
             RacRequest::LimitList { cluster } => (

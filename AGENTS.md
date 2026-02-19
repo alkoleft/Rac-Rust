@@ -19,3 +19,7 @@ These rules apply to all Codex-driven implementation and review work in this rep
 
 ## Review Expectations
 - Review must enforce all rules above before commit.
+
+## Git Workflow Rules
+- At the start of each task, create a new git branch.
+- Create a commit for each stage of work.

@@ -101,7 +101,7 @@ mod tests {
 
     #[test]
     fn process_list_response_decodes_fields() {
-        let hex = include_str!("../../../../artifacts/process_list_response.hex");
+        let hex = include_str!("../../../../artifacts/rac/process_list_response.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
         let records = parse_process_list_records(body).expect("process list");
@@ -152,7 +152,7 @@ mod tests {
 
     #[test]
     fn process_info_response_decodes_fields() {
-        let hex = include_str!("../../../../artifacts/process_info_response.hex");
+        let hex = include_str!("../../../../artifacts/rac/process_info_response.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
         let record = parse_process_record_1cv8c(body).expect("process info");
@@ -169,7 +169,7 @@ mod tests {
 
     #[test]
     fn process_list_licenses_response_decodes_license_fields() {
-        let hex = include_str!("../../../../artifacts/process_list_licenses_response.hex");
+        let hex = include_str!("../../../../artifacts/rac/process_list_licenses_response.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
         let records = parse_process_list_records(body).expect("process list");
@@ -207,7 +207,7 @@ mod tests {
 
     #[test]
     fn process_info_licenses_response_decodes_license_fields() {
-        let hex = include_str!("../../../../artifacts/process_info_licenses_response.hex");
+        let hex = include_str!("../../../../artifacts/rac/process_info_licenses_response.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
         let record = parse_process_record_1cv8c(body).expect("process info licenses");

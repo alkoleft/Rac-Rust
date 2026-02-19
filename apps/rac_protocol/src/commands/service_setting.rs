@@ -350,7 +350,7 @@ mod tests {
 
     #[test]
     fn parse_service_setting_list_from_capture() {
-        let hex = include_str!("../../../../artifacts/service_setting_list_nonempty_response.hex");
+        let hex = include_str!("../../../../artifacts/rac/service_setting_list_nonempty_response.hex");
         let payload = decode_hex_str(hex);
         let frames = parse_frames(&payload).expect("frames");
         assert_eq!(frames.len(), 4);
@@ -371,7 +371,7 @@ mod tests {
 
     #[test]
     fn parse_service_setting_info_from_capture() {
-        let hex = include_str!("../../../../artifacts/service_setting_info_response.hex");
+        let hex = include_str!("../../../../artifacts/rac/service_setting_info_response.hex");
         let payload = decode_hex_str(hex);
         let frames = parse_frames(&payload).expect("frames");
         assert_eq!(frames.len(), 4);
@@ -390,7 +390,7 @@ mod tests {
 
     #[test]
     fn parse_service_setting_insert_response_from_capture() {
-        let hex = include_str!("../../../../artifacts/service_setting_insert_response.hex");
+        let hex = include_str!("../../../../artifacts/rac/service_setting_insert_response.hex");
         let payload = decode_hex_str(hex);
         let frames = parse_frames(&payload).expect("frames");
         assert_eq!(frames.len(), 4);
@@ -405,7 +405,7 @@ mod tests {
 
     #[test]
     fn parse_service_setting_update_response_from_capture() {
-        let hex = include_str!("../../../../artifacts/service_setting_update_response.hex");
+        let hex = include_str!("../../../../artifacts/rac/service_setting_update_response.hex");
         let payload = decode_hex_str(hex);
         let frames = parse_frames(&payload).expect("frames");
         assert_eq!(frames.len(), 5);
@@ -497,7 +497,7 @@ mod tests {
 
     #[test]
     fn parse_service_setting_remove_from_capture() {
-        let hex = include_str!("../../../../artifacts/service_setting_remove_response.hex");
+        let hex = include_str!("../../../../artifacts/rac/service_setting_remove_response.hex");
         let payload = decode_hex_str(hex);
         let frames = parse_frames(&payload).expect("frames");
         assert_eq!(frames.len(), 4);
@@ -513,7 +513,7 @@ mod tests {
 
     #[test]
     fn parse_service_setting_apply_from_capture() {
-        let hex = include_str!("../../../../artifacts/service_setting_apply_response.hex");
+        let hex = include_str!("../../../../artifacts/rac/service_setting_apply_response.hex");
         let payload = decode_hex_str(hex);
         let frames = parse_frames(&payload).expect("frames");
         assert_eq!(frames.len(), 4);
@@ -560,7 +560,7 @@ mod tests {
 
     #[test]
     fn parse_service_setting_get_data_dirs_for_transfer_response_from_capture() {
-        let hex = include_str!("../../../../artifacts/service_setting_get_data_dirs_response.hex");
+        let hex = include_str!("../../../../artifacts/rac/service_setting_get_data_dirs_response.hex");
         let payload = decode_hex_str(hex);
         let frames = parse_frames(&payload).expect("frames");
         assert_eq!(frames.len(), 4);

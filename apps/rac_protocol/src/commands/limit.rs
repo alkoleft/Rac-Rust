@@ -198,7 +198,7 @@ mod tests {
 
     #[test]
     fn parse_limit_list_from_golden_capture() {
-        let hex = include_str!("../../../../artifacts/limit_list_nonempty_response.hex");
+        let hex = include_str!("../../../../artifacts/rac/limit_list_nonempty_response.hex");
         let payload = decode_hex_str(hex);
         let frames = parse_frames(&payload).expect("frames");
         assert_eq!(frames.len(), 4);
@@ -224,7 +224,7 @@ mod tests {
 
     #[test]
     fn parse_limit_info_from_golden_capture() {
-        let hex = include_str!("../../../../artifacts/limit_info_response.hex");
+        let hex = include_str!("../../../../artifacts/rac/limit_info_response.hex");
         let payload = decode_hex_str(hex);
         let frames = parse_frames(&payload).expect("frames");
         assert!(!frames.is_empty());
@@ -250,7 +250,7 @@ mod tests {
 
     #[test]
     fn parse_limit_update_from_golden_capture() {
-        let hex = include_str!("../../../../artifacts/limit_update_response.hex");
+        let hex = include_str!("../../../../artifacts/rac/limit_update_response.hex");
         let payload = decode_hex_str(hex);
         let frames = parse_frames(&payload).expect("frames");
         assert_eq!(frames.len(), 4);
@@ -271,7 +271,7 @@ mod tests {
 
     #[test]
     fn parse_limit_remove_from_golden_capture() {
-        let hex = include_str!("../../../../artifacts/limit_remove_response.hex");
+        let hex = include_str!("../../../../artifacts/rac/limit_remove_response.hex");
         let payload = decode_hex_str(hex);
         let frames = parse_frames(&payload).expect("frames");
         assert_eq!(frames.len(), 4);

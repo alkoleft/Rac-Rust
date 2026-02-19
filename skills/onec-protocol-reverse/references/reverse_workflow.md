@@ -5,7 +5,7 @@
 1. Ensure capture pipeline is actually in path:
    - Proxy listens on expected port.
    - `LISTEN_ADDR` is free.
-   - `./logs/` and `./artifacts/` are writable.
+   - `./logs/` and `./artifacts/rac/` are writable.
 2. Verify core tools:
    - `cargo`, `jq`, `openssl`, `tcpdump`/`tshark` or `mitmproxy`.
 3. Run a tiny control capture:

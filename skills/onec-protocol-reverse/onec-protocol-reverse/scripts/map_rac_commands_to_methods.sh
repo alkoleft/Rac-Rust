@@ -7,7 +7,7 @@ set -euo pipefail
 ROOT_DIR="${ROOT_DIR:-$(pwd)}"
 CAPTURE_SCRIPT="${CAPTURE_SCRIPT:-$ROOT_DIR/skills/onec-protocol-reverse/scripts/capture_rac_command.sh}"
 RAC_DECODE="${RAC_DECODE:-cargo run --quiet --bin rac_decode --}"
-OUT_MD="${1:-$ROOT_DIR/docs/documentation/rac_cli_method_map.generated.md}"
+OUT_MD="${1:-$ROOT_DIR/docs/rac/documentation/rac_cli_method_map.generated.md}"
 
 if [[ ! -x "$CAPTURE_SCRIPT" ]]; then
   echo "capture script not found or not executable: $CAPTURE_SCRIPT" >&2

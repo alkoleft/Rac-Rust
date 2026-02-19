@@ -90,7 +90,7 @@ mod tests {
 
     #[test]
     fn parse_manager_list_from_capture() {
-        let hex = include_str!("../../../../artifacts/manager_list_response.hex");
+        let hex = include_str!("../../../../artifacts/rac/manager_list_response.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
         let managers = parse_manager_list_body(body).expect("parse list");
@@ -112,7 +112,7 @@ mod tests {
 
     #[test]
     fn parse_manager_info_from_capture() {
-        let hex = include_str!("../../../../artifacts/manager_info_response.hex");
+        let hex = include_str!("../../../../artifacts/rac/manager_info_response.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
         let manager = parse_manager_info_body(body).expect("parse info");

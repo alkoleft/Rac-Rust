@@ -58,35 +58,35 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/rpc", post(rpc_handler))
         .route("/agent/version", get(agent_version))
         .route("/clusters", get(clusters_list))
-        .route("/clusters/:cluster", get(clusters_info))
-        .route("/clusters/:cluster/managers", get(managers_list))
-        .route("/clusters/:cluster/managers/:manager", get(managers_info))
-        .route("/clusters/:cluster/servers", get(servers_list))
-        .route("/clusters/:cluster/servers/:server", get(servers_info))
-        .route("/clusters/:cluster/processes", get(processes_list))
-        .route("/clusters/:cluster/processes/:process", get(processes_info))
+        .route("/clusters/{cluster}", get(clusters_info))
+        .route("/clusters/{cluster}/managers", get(managers_list))
+        .route("/clusters/{cluster}/managers/{manager}", get(managers_info))
+        .route("/clusters/{cluster}/servers", get(servers_list))
+        .route("/clusters/{cluster}/servers/{server}", get(servers_info))
+        .route("/clusters/{cluster}/processes", get(processes_list))
+        .route("/clusters/{cluster}/processes/{process}", get(processes_info))
         .route(
-            "/clusters/:cluster/infobases/summary",
+            "/clusters/{cluster}/infobases/summary",
             get(infobase_summary_list),
         )
         .route(
-            "/clusters/:cluster/infobases/summary/:infobase",
+            "/clusters/{cluster}/infobases/summary/{infobase}",
             get(infobase_summary_info),
         )
-        .route("/clusters/:cluster/infobases/:infobase", get(infobase_info))
-        .route("/clusters/:cluster/connections", get(connections_list))
+        .route("/clusters/{cluster}/infobases/{infobase}", get(infobase_info))
+        .route("/clusters/{cluster}/connections", get(connections_list))
         .route(
-            "/clusters/:cluster/connections/:connection",
+            "/clusters/{cluster}/connections/{connection}",
             get(connections_info),
         )
-        .route("/clusters/:cluster/sessions", get(sessions_list))
-        .route("/clusters/:cluster/sessions/:session", get(sessions_info))
-        .route("/clusters/:cluster/locks", get(locks_list))
-        .route("/clusters/:cluster/profiles", get(profiles_list))
-        .route("/clusters/:cluster/counters", get(counters_list))
-        .route("/clusters/:cluster/counters/:counter", get(counters_info))
-        .route("/clusters/:cluster/limits", get(limits_list))
-        .route("/clusters/:cluster/limits/:limit", get(limits_info))
+        .route("/clusters/{cluster}/sessions", get(sessions_list))
+        .route("/clusters/{cluster}/sessions/{session}", get(sessions_info))
+        .route("/clusters/{cluster}/locks", get(locks_list))
+        .route("/clusters/{cluster}/profiles", get(profiles_list))
+        .route("/clusters/{cluster}/counters", get(counters_list))
+        .route("/clusters/{cluster}/counters/{counter}", get(counters_info))
+        .route("/clusters/{cluster}/limits", get(limits_list))
+        .route("/clusters/{cluster}/limits/{limit}", get(limits_info))
         .with_state(state);
 
     let addr: SocketAddr = cfg.listen_addr.parse()?;

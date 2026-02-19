@@ -1,0 +1,21 @@
+[record.ClusterAdminRecord]
+derive = ["Debug", "Serialize", "Clone"]
+fields = [
+  { name = "name", type = "str8" },
+  { name = "unknown_tag", type = "u8" },
+  { name = "unknown_flags", type = "u32_be" },
+  { name = "unknown_tail", type = "bytes_fixed", len = 3 },
+]
+
+[record.ClusterRecord]
+derive = ["Debug", "Serialize", "Clone"]
+fields = [
+  { name = "uuid", type = "uuid" },
+  { name = "expiration_timeout", type = "u32_be" },
+  { name = "host", type = "str8" },
+  { name = "_unknown_u32", type = "u32_be", skip = true },
+  { name = "port", type = "u16_be" },
+  { name = "_unknown_u64", type = "u64_be", skip = true },
+  { name = "display_name", type = "str8" },
+  { name = "_tail", type = "bytes", len = 32, skip = true },
+]

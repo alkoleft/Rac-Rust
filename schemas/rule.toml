@@ -1,0 +1,10 @@
+[record.RuleRecord]
+derive = ["Debug", "Serialize", "Clone"]
+fields = [
+  { name = "rule", type = "uuid" },
+  { name = "object_type", type = "u32_be" },
+  { name = "infobase_name", type = "str8" },
+  { name = "rule_type", type = "u8" },
+  { name = "application_ext", type = "str8" },
+  { name = "priority", type = "u32_be" },
+]

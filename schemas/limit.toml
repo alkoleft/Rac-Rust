@@ -1,0 +1,20 @@
+[record.LimitRecord]
+derive = ["Debug", "Serialize", "Clone"]
+fields = [
+  { name = "name", type = "str8" },
+  { name = "counter", type = "str8" },
+  { name = "action", type = "u8" },
+  { name = "duration", type = "u64_be" },
+  { name = "cpu_time", type = "u64_be" },
+  { name = "memory", type = "u64_be" },
+  { name = "read", type = "u64_be" },
+  { name = "write", type = "u64_be" },
+  { name = "duration_dbms", type = "u64_be" },
+  { name = "dbms_bytes", type = "u64_be" },
+  { name = "service", type = "u64_be" },
+  { name = "call", type = "u64_be" },
+  { name = "number_of_active_sessions", type = "u64_be" },
+  { name = "number_of_sessions", type = "u64_be" },
+  { name = "error_message", type = "str8" },
+  { name = "descr", type = "str8" },
+]

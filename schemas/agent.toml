@@ -1,0 +1,8 @@
+[record.AgentAdminRecord]
+derive = ["Debug", "Serialize", "Clone"]
+fields = [
+  { name = "name", type = "str8" },
+  { name = "unknown_tag", type = "u8" },
+  { name = "unknown_flags", type = "u32_be" },
+  { name = "unknown_tail", type = "bytes_fixed", len = 3 },
+]

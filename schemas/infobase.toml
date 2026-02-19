@@ -1,0 +1,14 @@
+[record.InfobaseSummary]
+derive = ["Debug", "Serialize", "Clone"]
+fields = [
+  { name = "infobase", type = "uuid" },
+  { name = "descr", type = "str_len_u8_or_2c" },
+  { name = "name", type = "str_len_u8" },
+]
+
+[record.InfobaseFieldsRecord]
+derive = ["Debug", "Serialize", "Clone"]
+fields = [
+  { name = "infobase", type = "uuid" },
+  { name = "fields", type = "list_str8_rest" },
+]

@@ -106,6 +106,15 @@ impl<'a> RecordCursor<'a> {
         Ok(u16::from_be_bytes([bytes[0], bytes[1]]))
     }
 
+    pub fn take_u16_le(&mut self) -> Result<u16, WireError> {
+        if self.off + 2 > self.data.len() {
+            return Err(WireError::Truncated("u16"));
+        }
+        let bytes = &self.data[self.off..self.off + 2];
+        self.off += 2;
+        Ok(u16::from_le_bytes([bytes[0], bytes[1]]))
+    }
+
     pub fn take_u32_le(&mut self) -> Result<u32, WireError> {
         if self.off + 4 > self.data.len() {
             return Err(WireError::Truncated("u32"));

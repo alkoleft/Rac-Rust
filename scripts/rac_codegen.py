@@ -19,6 +19,7 @@ class FieldSpec:
     type_name: str
     item: Optional[str] = None
     length: Optional[int] = None
+    len_source: Optional[str] = None
     skip: bool = False
     computed: Optional[str] = None
     source: Optional[str] = None
@@ -52,6 +53,7 @@ def parse_schema_payload(payload: Dict[str, Any]) -> List[RecordSpec]:
                     type_name=str(raw.get("type", "")),
                     item=raw.get("item"),
                     length=raw.get("len"),
+                    len_source=raw.get("len_source"),
                     skip=bool(raw.get("skip", False)),
                     computed=raw.get("computed"),
                     source=raw.get("source"),
@@ -184,37 +186,101 @@ def rust_type(field: FieldSpec) -> str:
         return field.rust_type
     if field.type_name == "uuid":
         return "Uuid16"
-    if field.type_name in {"str8", "str_u14", "datetime_u64_be"}:
+    if field.type_name in {
+        "str8",
+        "str8_opt",
+        "str_len_u8",
+        "str_len_u8_or_2c",
+        "str_u14",
+        "datetime_u64_be",
+        "datetime_u64_be_opt",
+    }:
         return "String"
     if field.type_name == "bytes":
         return "Vec<u8>"
+    if field.type_name == "bytes_fixed":
+        if field.length is None:
+            raise ValueError("bytes_fixed requires len")
+        return f"[u8; {field.length}]"
+    if field.type_name == "lock_descr":
+        return "LockDescr"
     if field.type_name == "u8":
         return "u8"
     if field.type_name == "u16_be":
         return "u16"
+    if field.type_name == "u16_le":
+        return "u16"
+    if field.type_name == "u16_be_bool":
+        return "bool"
     if field.type_name == "u32_be":
         return "u32"
+    if field.type_name == "u32_le":
+        return "u32"
+    if field.type_name == "u32_be_opt":
+        return "u32"
     if field.type_name == "u64_be":
+        return "u64"
+    if field.type_name == "u64_be_opt":
         return "u64"
     if field.type_name == "f64_be":
         return "f64"
     if field.type_name in {"u8_bool", "u32_be_bool"}:
         return "bool"
+    if field.type_name == "u8_opt":
+        return "u8"
+    if field.type_name == "bool_opt":
+        return "bool"
+    if field.type_name == "uuid_opt":
+        return "Uuid16"
     if field.type_name == "list_u8":
         if not field.item:
             raise ValueError("list_u8 requires item")
         return f"Vec<{field.item}>"
+    if field.type_name == "list_str8_rest":
+        return "Vec<String>"
+    if field.type_name == "record":
+        if not field.item:
+            raise ValueError("record requires item")
+        return field.item
+    if field.type_name == "record_u8_first":
+        if not field.item:
+            raise ValueError("record_u8_first requires item")
+        return field.item
     if field.type_name == "computed":
         return field.rust_type or "bool"
     raise ValueError(f"unknown type: {field.type_name}")
 
 
-def decode_expr(field: FieldSpec) -> List[str]:
+def decode_expr(field: FieldSpec, var_map: Dict[str, str]) -> List[str]:
     t = field.type_name
     if t == "uuid":
         return ["cursor.take_uuid()?;"]
+    if t == "uuid_opt":
+        return ["cursor.take_uuid_opt()?.unwrap_or_default();"]
     if t == "str8":
         return ["cursor.take_str8()?;"]
+    if t == "str8_opt":
+        return ["cursor.take_str8_opt()?.unwrap_or_default();"]
+    if t == "str_len_u8":
+        if field.len_source:
+            len_var = var_map.get(field.len_source, field.len_source)
+            return [
+                f"let len = {len_var} as usize;",
+                "let bytes = cursor.take_bytes(len)?;",
+                "String::from_utf8_lossy(&bytes).to_string();",
+            ]
+        return [
+            "let len = cursor.take_u8()? as usize;",
+            "let bytes = cursor.take_bytes(len)?;",
+            "String::from_utf8_lossy(&bytes).to_string();",
+        ]
+    if t == "str_len_u8_or_2c":
+        return [
+            "let first = cursor.take_u8()? as usize;",
+            "let len = if first == 0x2c { cursor.take_u8()? as usize } else { first };",
+            "let bytes = cursor.take_bytes(len)?;",
+            "String::from_utf8_lossy(&bytes).to_string();",
+        ]
     if t == "str_u14":
         return [
             "let b0 = cursor.take_u8()? as usize;",
@@ -227,22 +293,90 @@ def decode_expr(field: FieldSpec) -> List[str]:
         if field.length is None:
             raise ValueError("bytes requires len")
         return [f"cursor.take_bytes({field.length})?;"]
+    if t == "bytes_fixed":
+        if field.length is None:
+            raise ValueError("bytes_fixed requires len")
+        arr_len = field.length
+        return [
+            f"let bytes = cursor.take_bytes({arr_len})?;",
+            f"let value: [u8; {arr_len}] = bytes.as_slice().try_into()"
+            f".map_err(|_| RacError::Decode(\"bytes_fixed\"))?;",
+            "value",
+        ]
+    if t == "lock_descr":
+        return [
+            "let descr_len = cursor.take_u8()? as usize;",
+            "if descr_len == 0 {",
+            "    LockDescr { descr: String::new(), descr_flag: None }",
+            "} else {",
+            "    let first = cursor.take_u8()?;",
+            "    let remaining = cursor.remaining_len();",
+            "    let needed_no_flag = descr_len.saturating_sub(1) + 40;",
+            "    let needed_flag = descr_len + 40;",
+            "    let use_flag = if first == 0x01 {",
+            "        if remaining == needed_flag {",
+            "            true",
+            "        } else if remaining == needed_no_flag {",
+            "            false",
+            "        } else if remaining >= needed_flag && remaining < needed_no_flag {",
+            "            true",
+            "        } else if remaining >= needed_no_flag {",
+            "            false",
+            "        } else {",
+            "            remaining >= needed_flag",
+            "        }",
+            "    } else {",
+            "        false",
+            "    };",
+            "    if use_flag {",
+            "        let descr_bytes = cursor.take_bytes(descr_len)?;",
+            "        let descr = String::from_utf8(descr_bytes)",
+            "            .map_err(|_| RacError::Decode(\"lock descr invalid utf-8\"))?;",
+            "        LockDescr { descr, descr_flag: Some(first) }",
+            "    } else {",
+            "        let mut descr_bytes = Vec::with_capacity(descr_len);",
+            "        descr_bytes.push(first);",
+            "        if descr_len > 1 {",
+            "            descr_bytes.extend_from_slice(&cursor.take_bytes(descr_len - 1)?);",
+            "        }",
+            "        let descr = String::from_utf8(descr_bytes)",
+            "            .map_err(|_| RacError::Decode(\"lock descr invalid utf-8\"))?;",
+            "        LockDescr { descr, descr_flag: None }",
+            "    }",
+            "}",
+        ]
     if t == "u8":
         return ["cursor.take_u8()?;"]
+    if t == "u8_opt":
+        return ["cursor.take_u8_opt()?.unwrap_or_default();"]
     if t == "u16_be":
         return ["cursor.take_u16_be()?;"]
+    if t == "u16_le":
+        return ["cursor.take_u16_le()?;"]
     if t == "u32_be":
         return ["cursor.take_u32_be()?;"]
+    if t == "u32_le":
+        return ["cursor.take_u32_le()?;"]
+    if t == "u32_be_opt":
+        return ["cursor.take_u32_be_opt()?.unwrap_or_default();"]
     if t == "u64_be":
         return ["cursor.take_u64_be()?;"]
+    if t == "u64_be_opt":
+        return ["cursor.take_u64_be_opt()?.unwrap_or_default();"]
     if t == "f64_be":
         return ["cursor.take_f64_be()?;"]
     if t == "u8_bool":
         return ["cursor.take_u8()? != 0;"]
     if t == "u32_be_bool":
         return ["cursor.take_u32_be()? != 0;"]
+    if t == "u16_be_bool":
+        return ["cursor.take_u16_be()? != 0;"]
+    if t == "bool_opt":
+        return ["cursor.take_bool_opt()?.unwrap_or_default();"]
     if t == "datetime_u64_be":
         return ["v8_datetime_to_iso(cursor.take_u64_be()?).unwrap_or_default();"]
+    if t == "datetime_u64_be_opt":
+        return ["cursor.take_datetime_opt()?.unwrap_or_default();"]
     if t == "list_u8":
         item = field.item
         if not item:
@@ -255,13 +389,42 @@ def decode_expr(field: FieldSpec) -> List[str]:
             "}",
             "out",
         ]
+    if t == "list_str8_rest":
+        return [
+            "let mut out = Vec::new();",
+            "while cursor.remaining_len() > 0 {",
+            "    out.push(cursor.take_str8()?);",
+            "}",
+            "out",
+        ]
+    if t == "record":
+        item = field.item
+        if not item:
+            raise ValueError("record requires item")
+        return [f"{item}::decode(cursor)?;"]
+    if t == "record_u8_first":
+        item = field.item
+        if not item:
+            raise ValueError("record_u8_first requires item")
+        return [
+            "let count = cursor.take_u8()? as usize;",
+            f"if count == 0 {{ {item}::default() }} else {{ {item}::decode(cursor)? }}",
+        ]
     raise ValueError(f"unknown type for decode: {t}")
 
 
 def needs_datetime(records: List[RecordSpec]) -> bool:
     for record in records:
         for field in record.fields:
-            if field.type_name == "datetime_u64_be":
+            if field.type_name in {"datetime_u64_be", "datetime_u64_be_opt"}:
+                return True
+    return False
+
+
+def needs_rac_error(records: List[RecordSpec]) -> bool:
+    for record in records:
+        for field in record.fields:
+            if field.type_name in {"bytes_fixed", "lock_descr"}:
                 return True
     return False
 
@@ -271,6 +434,8 @@ def generate(records: List[RecordSpec]) -> str:
     uses = ["use crate::codec::RecordCursor;", "use crate::error::Result;", "use crate::Uuid16;"]
     if needs_datetime(records):
         uses.insert(0, "use crate::codec::v8_datetime_to_iso;")
+    if needs_rac_error(records):
+        uses.insert(0, "use crate::error::RacError;")
     uses.append("use serde::Serialize;")
     lines.extend(uses)
     lines.append("")
@@ -294,6 +459,7 @@ def generate(records: List[RecordSpec]) -> str:
         lines.append("    pub fn decode(cursor: &mut RecordCursor<'_>) -> Result<Self> {")
 
         computed_lines: List[str] = []
+        var_map: Dict[str, str] = {}
         for field in record.fields:
             if field.computed:
                 if field.computed != "ne_zero" or not field.source:
@@ -303,7 +469,8 @@ def generate(records: List[RecordSpec]) -> str:
             var_name = field.name
             if field.skip:
                 var_name = f"_{field.name}"
-            expr = decode_expr(field)
+            var_map[field.name] = var_name
+            expr = decode_expr(field, var_map)
             if len(expr) == 1:
                 lines.append(f"        let {var_name} = {expr[0]}")
             else:

@@ -1,0 +1,40 @@
+[record.CounterRecord]
+derive = ["Debug", "Serialize", "Clone"]
+fields = [
+  { name = "name", type = "str8" },
+  { name = "collection_time", type = "u64_be" },
+  { name = "group", type = "u8" },
+  { name = "filter_type", type = "u8" },
+  { name = "filter", type = "str8" },
+  { name = "duration", type = "u8" },
+  { name = "cpu_time", type = "u8" },
+  { name = "duration_dbms", type = "u8" },
+  { name = "service", type = "u8" },
+  { name = "memory", type = "u8" },
+  { name = "read", type = "u8" },
+  { name = "write", type = "u8" },
+  { name = "dbms_bytes", type = "u8" },
+  { name = "call", type = "u8" },
+  { name = "number_of_active_sessions", type = "u8" },
+  { name = "number_of_sessions", type = "u8" },
+  { name = "descr", type = "str8" },
+]
+
+[record.CounterValuesRecord]
+derive = ["Debug", "Serialize", "Clone"]
+fields = [
+  { name = "object", type = "str8" },
+  { name = "collection_time", type = "u64_be" },
+  { name = "duration", type = "u64_be" },
+  { name = "cpu_time", type = "u64_be" },
+  { name = "memory", type = "u64_be" },
+  { name = "read", type = "u64_be" },
+  { name = "write", type = "u64_be" },
+  { name = "duration_dbms", type = "u64_be" },
+  { name = "dbms_bytes", type = "u64_be" },
+  { name = "service", type = "u64_be" },
+  { name = "call", type = "u64_be" },
+  { name = "number_of_active_sessions", type = "u64_be" },
+  { name = "number_of_sessions", type = "u64_be" },
+  { name = "time", type = "datetime_u64_be" },
+]

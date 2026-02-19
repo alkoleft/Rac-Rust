@@ -1,0 +1,22 @@
+[record.ServiceSettingRecord]
+derive = ["Debug", "Serialize", "Clone"]
+fields = [
+  { name = "setting", type = "uuid" },
+  { name = "service_name", type = "str8" },
+  { name = "infobase_name", type = "str8" },
+  { name = "service_data_dir", type = "str8" },
+  { name = "active", type = "u16_be_bool" },
+]
+
+[record.ServiceSettingTransferDataDirRecord]
+derive = ["Debug", "Serialize", "Clone"]
+fields = [
+  { name = "service_name", type = "str8" },
+  { name = "user", type = "str8" },
+  { name = "source_dir_len", type = "u8", skip = true },
+  { name = "source_dir_flag", type = "u8" },
+  { name = "source_dir", type = "str_len_u8", len_source = "source_dir_len" },
+  { name = "target_dir_len", type = "u8", skip = true },
+  { name = "target_dir_flag", type = "u8" },
+  { name = "target_dir", type = "str_len_u8", len_source = "target_dir_len" },
+]

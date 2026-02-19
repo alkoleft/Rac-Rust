@@ -1,0 +1,10 @@
+[record.ManagerRecord]
+derive = ["Debug", "Serialize", "Clone"]
+fields = [
+  { name = "manager", type = "uuid" },
+  { name = "descr", type = "str8" },
+  { name = "host", type = "str8" },
+  { name = "using", type = "u32_be" },
+  { name = "port", type = "u16_be" },
+  { name = "pid", type = "str8" },
+]

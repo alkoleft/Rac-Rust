@@ -1,0 +1,9 @@
+rac_path=/opt/1cv8/x86_64/8.5.1.1150
+cluster_uuid=1619820a-d36f-4d8a-a716-1516b1dea077
+endpoint=localhost:1545
+agent_user=admin
+agent_pwd=pass
+cluster_user=cadmin
+cluster_pwd=cpass
+infobase_user=iadmin
+infobase_pwd=opass

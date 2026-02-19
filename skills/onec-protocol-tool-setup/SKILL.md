@@ -14,7 +14,7 @@ Verify that the capture pipeline and decode tools are installed, reachable, and 
 1. Read `references/tooling_checklist.md` and run the pre-flight checks.
 2. Confirm ports/paths:
    - `LISTEN_ADDR` is free.
-   - `./logs/` and `./artifacts/` are writable.
+   - `./logs/` and `./artifacts/rac/` are writable.
 3. Run a control capture:
    - One known command with expected output.
    - Confirm streams exist and `rac_decode` parses them.

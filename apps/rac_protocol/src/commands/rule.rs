@@ -427,7 +427,7 @@ mod tests {
 
     #[test]
     fn parse_rule_list_from_golden_capture() {
-        let hex = include_str!("../../../../artifacts/rule_list_response.hex");
+        let hex = include_str!("../../../../artifacts/rac/rule_list_response.hex");
         let payload = decode_hex_str(hex);
         let frames = parse_frames(&payload).expect("frames");
         assert_eq!(frames.len(), 4);
@@ -449,7 +449,7 @@ mod tests {
 
     #[test]
     fn parse_rule_info_from_golden_capture() {
-        let hex = include_str!("../../../../artifacts/rule_info_response.hex");
+        let hex = include_str!("../../../../artifacts/rac/rule_info_response.hex");
         let payload = decode_hex_str(hex);
         let frames = parse_frames(&payload).expect("frames");
         assert_eq!(frames.len(), 4);
@@ -470,7 +470,7 @@ mod tests {
 
     #[test]
     fn parse_rule_insert_from_golden_capture() {
-        let hex = include_str!("../../../../artifacts/rule_insert_response.hex");
+        let hex = include_str!("../../../../artifacts/rac/rule_insert_response.hex");
         let payload = decode_hex_str(hex);
         let frames = parse_frames(&payload).expect("frames");
         assert_eq!(frames.len(), 4);
@@ -486,7 +486,7 @@ mod tests {
 
     #[test]
     fn parse_rule_update_from_golden_capture() {
-        let hex = include_str!("../../../../artifacts/rule_update_response.hex");
+        let hex = include_str!("../../../../artifacts/rac/rule_update_response.hex");
         let payload = decode_hex_str(hex);
         let frames = parse_frames(&payload).expect("frames");
         assert_eq!(frames.len(), 5);
@@ -502,7 +502,7 @@ mod tests {
 
     #[test]
     fn parse_rule_remove_from_golden_capture() {
-        let hex = include_str!("../../../../artifacts/rule_remove_response.hex");
+        let hex = include_str!("../../../../artifacts/rac/rule_remove_response.hex");
         let payload = decode_hex_str(hex);
         let frames = parse_frames(&payload).expect("frames");
         assert_eq!(frames.len(), 4);

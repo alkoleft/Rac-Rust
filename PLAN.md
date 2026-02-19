@@ -5,12 +5,12 @@ Build a definitive Markdown spec of RAC message formats for read/info commands a
 
 ## Scope
 - Commands: **read/info only** (list/info/summary/connection/session/lock/profile/counter/limit/agent version).
-- Output: **Markdown spec** at `docs/messages/rac_message_formats.md`.
+- Output: **Markdown spec** at `docs/rac/messages/rac_message_formats.md`.
 - “Chain” definition: **transport + RPC sequence** (init + negotiation + context + RPC + close).
 - Detail level: **max semantics** (name fields whenever defensible, mark uncertain fields as hypotheses).
 
 ## Deliverables
-1. `docs/messages/rac_message_formats.md` (spec)
+1. `docs/rac/messages/rac_message_formats.md` (spec)
 2. `src/rac_wire/` library module with codecs
 3. CLI tool (`src/bin/rac_lite.rs` extended) using the library
 4. Tests against existing captures
@@ -22,11 +22,11 @@ Build a definitive Markdown spec of RAC message formats for read/info commands a
 ### 1) Spec Extraction Pipeline (non-code)
 **Inputs**
 - Captures in `logs/session_*`
-- Method map in `docs/documentation/rac_cli_method_map.generated.md`
-- Existing notes in `docs/documentation/rac_protocol_notes.md`, `skills/onec-protocol-reverse/references/rac_method_map.md`
+- Method map in `docs/rac/documentation/rac_cli_method_map.generated.md`
+- Existing notes in `docs/rac/documentation/rac_protocol_notes.md`, `skills/onec-protocol-reverse/references/rac_method_map.md`
 
 **Steps**
-1. Enumerate read/info commands from `docs/documentation/rac_cli_method_map.generated.md`.
+1. Enumerate read/info commands from `docs/rac/documentation/rac_cli_method_map.generated.md`.
 2. For each command, locate its capture sessions and pull:
    - c2s/s2c frames from `client_to_server.stream.bin` and `server_to_client.stream.bin`
    - `events.log` for sequencing
@@ -42,7 +42,7 @@ Build a definitive Markdown spec of RAC message formats for read/info commands a
    - Any secondary frames (e.g., extra version frame for process info)
 
 **Output**
-- `docs/messages/rac_message_formats.md` with one section per command:
+- `docs/rac/messages/rac_message_formats.md` with one section per command:
   - `Command`, `Request method_id`, `Response method_id`
   - `Chain` (init → negotiation → context → RPC → close)
   - `Parameters` (field, type, format notes)
@@ -88,7 +88,7 @@ Build a definitive Markdown spec of RAC message formats for read/info commands a
 - Golden decode tests: use existing `logs/session_*` binary files
 - Tests that:
   - Frame parsing consumes full stream
-  - Method IDs match `docs/documentation/rac_cli_method_map.generated.md`
+  - Method IDs match `docs/rac/documentation/rac_cli_method_map.generated.md`
   - Known strings/UUIDs extracted correctly
 
 ---
@@ -100,7 +100,7 @@ Build a definitive Markdown spec of RAC message formats for read/info commands a
 ---
 
 ## Acceptance Criteria
-- `docs/messages/rac_message_formats.md` lists every read/info command with:
+- `docs/rac/messages/rac_message_formats.md` lists every read/info command with:
   - request/response method IDs
   - parameter formats
   - response field formats

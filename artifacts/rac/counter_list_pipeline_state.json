@@ -1,0 +1,19 @@
+{
+  "command": "counter list --cluster 1619820a-d36f-4d8a-a716-1516b1dea077 --cluster-user cadmin --cluster-pwd cpass",
+  "capture_name": "counter_list",
+  "doc_path": "docs/rac/messages/rac_message_formats_counter.md",
+  "session_dir": null,
+  "artifacts_dir": "artifacts",
+  "rac_out": null,
+  "rac_err": null,
+  "c2s_stream": null,
+  "s2c_stream": null,
+  "c2s_decode": null,
+  "s2c_decode": null,
+  "response_hex": null,
+  "score": 1.0,
+  "score_reasons": [],
+  "needs_user": false,
+  "user_answers": {},
+  "codex_last_message": null
+}

@@ -8,7 +8,7 @@
 - `apps/v8_proxy` — TCP‑прокси для перехвата и логирования сессий.
 - `apps/rac_protocol` — инструменты для RAC: декодер фрейминга и минимальный клиент.
 - `apps/rac_rest` — REST‑шлюз к RAC (read‑only).
-- `docs/` — заметки по протоколу и карта методов.
+- `docs/rac/` — заметки по протоколу и карта методов.
 
 ## Быстрый старт
 
@@ -91,7 +91,7 @@ curl http://127.0.0.1:8081/clusters/550e8400-e29b-41d4-a716-446655440000/session
 
 1. Прокси ставится между клиентом 1С и сервером.
 2. Трафик сохраняется в `logs/`, раскладывается на пары request/response.
-3. Дальше — анализ фрейминга, соответствия методов, построение карты команд в `docs/`.
+3. Дальше — анализ фрейминга, соответствия методов, построение карты команд в `docs/rac/`.
 
 ## Статус
 
@@ -99,5 +99,5 @@ curl http://127.0.0.1:8081/clusters/550e8400-e29b-41d4-a716-446655440000/session
 
 ## Полезные файлы
 
-- `docs/documentation/rac_protocol_notes.md`
-- `docs/documentation/rac_method_map.md`
+- `docs/rac/documentation/rac_protocol_notes.md`
+- `docs/rac/documentation/rac_method_map.md`

@@ -13,7 +13,7 @@ If a tool is missing, install or adjust PATH before continuing.
 
 - `LISTEN_ADDR` free (use `ss -lntp | rg <port>`).
 - `./logs/` exists and writable.
-- `./artifacts/` exists and writable.
+- `./artifacts/rac/` exists and writable.
 
 ## Control Capture (Minimum)
 

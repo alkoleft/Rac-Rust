@@ -359,7 +359,7 @@ mod tests {
 
     #[test]
     fn parse_counter_list_from_golden_capture() {
-        let hex = include_str!("../../../../artifacts/counter_list_response.hex");
+        let hex = include_str!("../../../../artifacts/rac/counter_list_response.hex");
         let payload = decode_hex_str(hex);
         let frames = parse_frames(&payload).expect("frames");
         assert_eq!(frames.len(), 4);
@@ -392,7 +392,7 @@ mod tests {
 
     #[test]
     fn parse_counter_info_from_golden_capture() {
-        let hex = include_str!("../../../../artifacts/counter_info_codex_tmp_response.hex");
+        let hex = include_str!("../../../../artifacts/rac/counter_info_codex_tmp_response.hex");
         let payload = decode_hex_str(hex);
         let frames = parse_frames(&payload).expect("frames");
         assert_eq!(frames.len(), 4);
@@ -428,7 +428,7 @@ mod tests {
 
     #[test]
     fn parse_counter_update_from_golden_capture() {
-        let hex = include_str!("../../../../artifacts/counter_update_codex_tmp_response.hex");
+        let hex = include_str!("../../../../artifacts/rac/counter_update_codex_tmp_response.hex");
         let payload = decode_hex_str(hex);
         let frames = parse_frames(&payload).expect("frames");
         assert_eq!(frames.len(), 4);
@@ -446,7 +446,7 @@ mod tests {
 
     #[test]
     fn parse_counter_clear_from_golden_capture() {
-        let hex = include_str!("../../../../artifacts/counter_clear_codex_tmp_response.hex");
+        let hex = include_str!("../../../../artifacts/rac/counter_clear_codex_tmp_response.hex");
         let payload = decode_hex_str(hex);
         let frames = parse_frames(&payload).expect("frames");
         assert_eq!(frames.len(), 4);
@@ -464,7 +464,7 @@ mod tests {
 
     #[test]
     fn parse_counter_remove_from_golden_capture() {
-        let hex = include_str!("../../../../artifacts/counter_remove_codex_tmp_response.hex");
+        let hex = include_str!("../../../../artifacts/rac/counter_remove_codex_tmp_response.hex");
         let payload = decode_hex_str(hex);
         let frames = parse_frames(&payload).expect("frames");
         assert_eq!(frames.len(), 4);
@@ -543,7 +543,7 @@ mod tests {
 
     #[test]
     fn parse_counter_values_from_golden_capture() {
-        let hex = include_str!("../../../../artifacts/counter_values_codex_tmp_response.hex");
+        let hex = include_str!("../../../../artifacts/rac/counter_values_codex_tmp_response.hex");
         let payload = decode_hex_str(hex);
         let frames = parse_frames(&payload).expect("frames");
         assert_eq!(frames.len(), 4);
@@ -587,7 +587,7 @@ mod tests {
 
     #[test]
     fn parse_counter_accumulated_values_from_golden_capture() {
-        let hex = include_str!("../../../../artifacts/counter_accumulated_values_codex_tmp_response.hex");
+        let hex = include_str!("../../../../artifacts/rac/counter_accumulated_values_codex_tmp_response.hex");
         let payload = decode_hex_str(hex);
         let frames = parse_frames(&payload).expect("frames");
         assert_eq!(frames.len(), 4);

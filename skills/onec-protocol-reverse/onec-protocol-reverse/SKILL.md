@@ -12,8 +12,8 @@ Use this workflow for unknown 1C protocols and for extending known RAC protocol 
 1. Build tools in the current workspace:
    - `cargo build --release`
 2. Capture one command/session:
-   - Use `scripts/capture_rac_command.sh` in this skill for RAC commands.
-   - Raw captures go under `./logs/`. Extracted byte sequences go under `./artifacts/`.
+   - Use `scripts/rac/capture_rac_command.sh` in this skill for RAC commands.
+   - Raw captures go under `./logs/`. Extracted byte sequences go under `./artifacts/rac/`.
    - Or run equivalent proxy + client workflow for a different protocol.
 3. Decode streams:
    - `cargo run --bin rac_decode -- <session>/client_to_server.stream.bin`
@@ -47,27 +47,27 @@ Use this workflow for unknown 1C protocols and for extending known RAC protocol 
 
 ## Scripts
 
-- `scripts/capture_rac_command.sh`
+- `scripts/rac/capture_rac_command.sh`
   - Deterministic single-command capture via local proxy.
-- `scripts/method_map_from_sessions.sh`
+- `scripts/rac/method_map_from_sessions.sh`
   - Batch extract method IDs from session directories using `rac_decode`.
-- `scripts/map_rac_commands_to_methods.sh`
-  - Run a capture matrix and generate `docs/documentation/rac_cli_method_map.generated.md`.
-- `scripts/dump_rac_static_info.sh`
+- `scripts/rac/map_rac_commands_to_methods.sh`
+  - Run a capture matrix and generate `docs/rac/documentation/rac_cli_method_map.generated.md`.
+- `scripts/rac/dump_rac_static_info.sh`
   - Dump static metadata from `rac` binary (ELF profile, debuglink, IDS keys, supported modes).
-- `docs/documentation/rac_help_methods.md`
+- `docs/rac/documentation/rac_help_methods.md`
   - Quick reference for `rac help <mode>` commands, parameters, and descriptions.
 
 Run scripts from repository root unless user asks otherwise. Captures are written to `./logs/` by default via `LOG_DIR`.
 
 ## Extracting Response Examples
 
-Use `scripts/extract_rac_response_example.sh` to save response payload bytes into `./artifacts/` for documentation.
+Use `scripts/rac/extract_rac_response_example.sh` to save response payload bytes into `./artifacts/rac/` for documentation.
 
 ## Capture/Decode Practices (Chat-Derived)
 
-- Keep raw capture data in `./logs/`. Do not cite `logs/` as durable evidence; extract only the required byte sequences into `./artifacts/` and reference those in docs.
-- When listing evidence in docs, prefer `artifacts/<label>.hex` over `logs/session_*`.
+- Keep raw capture data in `./logs/`. Do not cite `logs/` as durable evidence; extract only the required byte sequences into `./artifacts/rac/` and reference those in docs.
+- When listing evidence in docs, prefer `artifacts/rac/<label>.hex` over `logs/session_*`.
 - If a proxy listen port is in use, change `LISTEN_ADDR` (e.g., `127.0.0.1:1566`) before retrying.
 - For `rac_decode`, the correct invocation in this repo is:
   - `cargo run -p rac_protocol --quiet --bin rac_decode -- <stream.bin>`

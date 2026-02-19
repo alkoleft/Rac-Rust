@@ -175,7 +175,7 @@ mod tests {
 
     #[test]
     fn parse_cluster_admin_list_from_capture() {
-        let hex = include_str!("../../../../artifacts/cluster_admin_list_response.hex");
+        let hex = include_str!("../../../../artifacts/rac/cluster_admin_list_response.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
         let admins = parse_cluster_admin_list_body(body).expect("parse list");
@@ -190,7 +190,7 @@ mod tests {
     #[test]
     fn encode_cluster_admin_register_request() {
         let expected =
-            decode_hex_str(include_str!("../../../../artifacts/cluster_admin_register_request.hex"));
+            decode_hex_str(include_str!("../../../../artifacts/rac/cluster_admin_register_request.hex"));
         let cluster = [
             0x16, 0x19, 0x82, 0x0a, 0xd3, 0x6f, 0x4d, 0x8a, 0xa7, 0x16, 0x15, 0x16, 0xb1,
             0xde, 0xa0, 0x77,
@@ -210,7 +210,7 @@ mod tests {
     #[test]
     fn encode_cluster_admin_list_request() {
         let expected =
-            decode_hex_str(include_str!("../../../../artifacts/cluster_admin_list_request.hex"));
+            decode_hex_str(include_str!("../../../../artifacts/rac/cluster_admin_list_request.hex"));
         let cluster = [
             0x16, 0x19, 0x82, 0x0a, 0xd3, 0x6f, 0x4d, 0x8a, 0xa7, 0x16, 0x15, 0x16, 0xb1,
             0xde, 0xa0, 0x77,

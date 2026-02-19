@@ -88,7 +88,7 @@ mod tests {
 
     #[test]
     fn parse_server_list_from_capture() {
-        let hex = include_str!("../../../../artifacts/server_list_response.hex");
+        let hex = include_str!("../../../../artifacts/rac/server_list_response.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
         let servers = parse_server_list(body).expect("parse list");
@@ -130,7 +130,7 @@ mod tests {
 
     #[test]
     fn parse_server_info_from_capture() {
-        let hex = include_str!("../../../../artifacts/server_info_response.hex");
+        let hex = include_str!("../../../../artifacts/rac/server_info_response.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
         let mut cursor = RecordCursor::new(body, 0);

@@ -15,7 +15,7 @@ fn decode_hex_str(input: &str) -> Vec<u8> {
 
 #[test]
 fn manager_list_response_method() {
-    let hex = include_str!("../../../artifacts/manager_list_response.hex");
+    let hex = include_str!("../../../artifacts/rac/manager_list_response.hex");
     let payload = decode_hex_str(hex);
     let method = decode_rpc_method(&payload).expect("rpc method");
     assert_eq!(method, 0x13);
@@ -23,7 +23,7 @@ fn manager_list_response_method() {
 
 #[test]
 fn manager_info_response_method() {
-    let hex = include_str!("../../../artifacts/manager_info_response.hex");
+    let hex = include_str!("../../../artifacts/rac/manager_info_response.hex");
     let payload = decode_hex_str(hex);
     let method = decode_rpc_method(&payload).expect("rpc method");
     assert_eq!(method, 0x15);
@@ -31,7 +31,7 @@ fn manager_info_response_method() {
 
 #[test]
 fn cluster_admin_list_response_method() {
-    let hex = include_str!("../../../artifacts/cluster_admin_list_response.hex");
+    let hex = include_str!("../../../artifacts/rac/cluster_admin_list_response.hex");
     let payload = decode_hex_str(hex);
     let method = decode_rpc_method(&payload).expect("rpc method");
     assert_eq!(method, 0x03);
@@ -39,7 +39,7 @@ fn cluster_admin_list_response_method() {
 
 #[test]
 fn parse_frames_single_payload() {
-    let hex = include_str!("../../../artifacts/manager_list_response.hex");
+    let hex = include_str!("../../../artifacts/rac/manager_list_response.hex");
     let payload = decode_hex_str(hex);
     let mut frame = Vec::new();
     frame.push(0x0e);

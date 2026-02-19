@@ -1,0 +1,19 @@
+{
+  "command": "rule apply --cluster 1619820a-d36f-4d8a-a716-1516b1dea077 --full --cluster-user cadmin --cluster-pwd cpass",
+  "capture_name": "rule_apply",
+  "doc_path": "docs/rac/messages/rac_message_formats_rule.md",
+  "session_dir": "session_1771359945_3673197_127_0_0_1_36476",
+  "artifacts_dir": "artifacts",
+  "rac_out": "/tmp/rac_rule_apply.out",
+  "rac_err": "/tmp/rac_rule_apply.err",
+  "c2s_stream": "/home/alko/develop/open-source/v8_protocols/logs/session_1771359945_3673197_127_0_0_1_36476/client_to_server.stream.bin",
+  "s2c_stream": "/home/alko/develop/open-source/v8_protocols/logs/session_1771359945_3673197_127_0_0_1_36476/server_to_client.stream.bin",
+  "c2s_decode": "/home/alko/develop/open-source/v8_protocols/artifacts/rac/rule_apply_client_to_server.decode.txt",
+  "s2c_decode": "/home/alko/develop/open-source/v8_protocols/artifacts/rac/rule_apply_server_to_client.decode.txt",
+  "response_hex": "/home/alko/develop/open-source/v8_protocols/artifacts/rac/rule_apply_response.hex",
+  "score": null,
+  "score_reasons": [],
+  "needs_user": false,
+  "user_answers": {},
+  "codex_last_message": null
+}

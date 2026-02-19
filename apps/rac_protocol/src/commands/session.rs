@@ -327,7 +327,7 @@ mod tests {
 
     #[test]
     fn parse_session_list_sessions_from_golden_capture() {
-        let hex = include_str!("../../../../artifacts/session_list_response.hex");
+        let hex = include_str!("../../../../artifacts/rac/session_list_response.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
         let records = parse_session_list_records(body).expect("session list parse");
@@ -358,7 +358,7 @@ mod tests {
 
     #[test]
     fn parse_session_info_from_golden_capture() {
-        let hex = include_str!("../../../../artifacts/session_info_response.hex");
+        let hex = include_str!("../../../../artifacts/rac/session_info_response.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
         let record = parse_session_record_1cv8c(body).expect("session info parse");
@@ -379,7 +379,7 @@ mod tests {
 
     #[test]
     fn parse_session_info_1cv8c_from_capture() {
-        let hex = include_str!("../../../../artifacts/session_info_response_1cv8c.hex");
+        let hex = include_str!("../../../../artifacts/rac/session_info_response_1cv8c.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
         let requested =
@@ -415,7 +415,7 @@ mod tests {
 
     #[test]
     fn parse_session_info_1cv8c_dbproc_from_capture() {
-        let hex = include_str!("../../../../artifacts/session_info_response_1cv8c_dbproc.hex");
+        let hex = include_str!("../../../../artifacts/rac/session_info_response_1cv8c_dbproc.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
         let requested =

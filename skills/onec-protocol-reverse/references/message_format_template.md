@@ -1,6 +1,6 @@
 # Message Format Template (RAC)
 
-Use this template for message format documentation in `docs/messages/`.
+Use this template for message format documentation in `docs/rac/messages/`.
 
 ---
 
@@ -10,10 +10,10 @@ Source capture:
 - `logs/<session>/server_to_client.stream.bin`
 
 Payload example:
-- `artifacts/<label>.hex`
+- `artifacts/rac/<label>.hex`
 
 RAC output reference:
-- `artifacts/<label>_rac.out`
+- `artifacts/rac/<label>_rac.out`
 
 ## Поля ответа (из `rac`)
 

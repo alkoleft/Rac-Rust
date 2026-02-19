@@ -7,15 +7,12 @@ use crate::Uuid16;
 
 use super::rpc_body;
 
-const CLUSTER_TAIL_SIZE: usize = 32;
-
-#[derive(Debug, Serialize, Clone)]
-pub struct ClusterAdminRecord {
-    pub name: String,
-    pub unknown_tag: u8,
-    pub unknown_flags: u32,
-    pub unknown_tail: [u8; 3],
+mod generated {
+    include!("cluster_generated.rs");
 }
+
+pub use generated::ClusterAdminRecord;
+use generated::ClusterRecord;
 
 #[derive(Debug, Serialize)]
 pub struct ClusterAdminListResp {
@@ -134,17 +131,7 @@ fn parse_cluster_admin_list_body(body: &[u8]) -> Result<Vec<ClusterAdminRecord>>
     let count = cursor.take_u8()? as usize;
     let mut admins = Vec::with_capacity(count);
     for _ in 0..count {
-        let name = cursor.take_str8()?;
-        let unknown_tag = cursor.take_u8()?;
-        let unknown_flags = cursor.take_u32_be()?;
-        let tail = cursor.take_bytes(3)?;
-        let unknown_tail = [tail[0], tail[1], tail[2]];
-        admins.push(ClusterAdminRecord {
-            name,
-            unknown_tag,
-            unknown_flags,
-            unknown_tail,
-        });
+        admins.push(ClusterAdminRecord::decode(&mut cursor)?);
     }
     Ok(admins)
 }
@@ -167,20 +154,13 @@ fn parse_cluster_list_body(body: &[u8]) -> Result<Vec<ClusterSummary>> {
 }
 
 fn parse_cluster_record(cursor: &mut RecordCursor<'_>) -> Result<ClusterSummary> {
-    let uuid = cursor.take_uuid()?;
-    let expiration_timeout = cursor.take_u32_be()?;
-    let host = cursor.take_str8()?;
-    let _unknown_u32 = cursor.take_u32_be()?;
-    let port = cursor.take_u16_be()?;
-    let _unknown_u64 = cursor.take_u64_be()?;
-    let display_name = cursor.take_str8()?;
-    let _tail = cursor.take_bytes(CLUSTER_TAIL_SIZE)?;
+    let record = ClusterRecord::decode(cursor)?;
     Ok(ClusterSummary {
-        uuid,
-        host: Some(host),
-        display_name: Some(display_name),
-        port: Some(port),
-        expiration_timeout: Some(expiration_timeout),
+        uuid: record.uuid,
+        host: Some(record.host),
+        display_name: Some(record.display_name),
+        port: Some(record.port),
+        expiration_timeout: Some(record.expiration_timeout),
     })
 }
 

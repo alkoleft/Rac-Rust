@@ -7,6 +7,12 @@ use crate::Uuid16;
 
 use super::{parse_ack_payload, parse_uuid_body, rpc_body};
 
+mod generated {
+    include!("rule_generated.rs");
+}
+
+pub use generated::RuleRecord;
+
 #[derive(Debug, Serialize, Clone, Copy, PartialEq, Eq)]
 pub enum RuleApplyMode {
     Full,
@@ -68,16 +74,6 @@ pub struct RuleUpdateReq {
 pub struct RuleUpdateResp {
     pub rule: Uuid16,
     pub raw_payload: Option<Vec<u8>>,
-}
-
-#[derive(Debug, Serialize, Clone)]
-pub struct RuleRecord {
-    pub rule: Uuid16,
-    pub object_type: u32,
-    pub infobase_name: String,
-    pub rule_type: u8,
-    pub application_ext: String,
-    pub priority: u32,
 }
 
 #[derive(Debug, Serialize)]
@@ -276,26 +272,7 @@ fn parse_rule_info_body(body: &[u8]) -> Result<RuleRecord> {
 }
 
 fn parse_rule_record(cursor: &mut RecordCursor<'_>) -> Result<RuleRecord> {
-    let rule = cursor.take_uuid()?;
-    let object_type = cursor
-        .take_u32_be()
-        .map_err(|_| RacError::Decode("rule record object-type truncated"))?;
-    let infobase_name = cursor.take_str8()?;
-    let rule_type = cursor
-        .take_u8()
-        .map_err(|_| RacError::Decode("rule record rule-type truncated"))?;
-    let application_ext = cursor.take_str8()?;
-    let priority = cursor
-        .take_u32_be()
-        .map_err(|_| RacError::Decode("rule record priority truncated"))?;
-    Ok(RuleRecord {
-        rule,
-        object_type,
-        infobase_name,
-        rule_type,
-        application_ext,
-        priority,
-    })
+    RuleRecord::decode(cursor).map_err(|_| RacError::Decode("rule record truncated"))
 }
 
 fn parse_rule_insert_body(body: &[u8]) -> Result<Uuid16> {

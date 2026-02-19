@@ -1,0 +1,9 @@
+[record.LockRecordRaw]
+derive = ["Debug", "Serialize", "Clone"]
+fields = [
+  { name = "connection", type = "uuid" },
+  { name = "descr", type = "lock_descr" },
+  { name = "locked_at", type = "datetime_u64_be" },
+  { name = "session", type = "uuid" },
+  { name = "object", type = "uuid" },
+]

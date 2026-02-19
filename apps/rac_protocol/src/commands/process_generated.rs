@@ -1,7 +1,7 @@
+use crate::Uuid16;
 use crate::codec::v8_datetime_to_iso;
 use crate::codec::RecordCursor;
 use crate::error::Result;
-use crate::Uuid16;
 use serde::Serialize;
 
 #[derive(Debug, Serialize, Default, Clone)]
@@ -29,7 +29,7 @@ impl ProcessLicense {
             let b1 = cursor.take_u8()? as usize;
             let len = (b0 & 0x3f) | (b1 << 6);
             let bytes = cursor.take_bytes(len)?;
-            String::from_utf8_lossy(&bytes).to_string();
+            String::from_utf8_lossy(&bytes).to_string()
         };
         let issued_by_server = cursor.take_u8()? != 0;
         let license_type = cursor.take_u32_be()?;

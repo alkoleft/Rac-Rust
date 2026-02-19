@@ -1,24 +1,17 @@
 use serde::Serialize;
 
 use crate::client::{RacClient, RacRequest};
-use crate::codec::{v8_datetime_to_iso, RecordCursor};
+use crate::codec::RecordCursor;
 use crate::error::{RacError, Result};
 use crate::Uuid16;
 
 use super::rpc_body;
 
-#[derive(Debug, Serialize, Clone)]
-pub struct ConnectionRecord {
-    pub connection: Uuid16,
-    pub application: String,
-    pub blocked_by_ls: u32,
-    pub connected_at: String,
-    pub conn_id: u32,
-    pub host: String,
-    pub infobase: Uuid16,
-    pub process: Uuid16,
-    pub session_number: u32,
+mod generated {
+    include!("connection_generated.rs");
 }
+
+pub use generated::ConnectionRecord;
 
 #[derive(Debug, Serialize)]
 pub struct ConnectionListResp {
@@ -115,27 +108,7 @@ fn parse_connection_record(cursor: &mut RecordCursor<'_>) -> Result<ConnectionRe
     if cursor.remaining_len() < 16 {
         return Err(RacError::Decode("connection record truncated"));
     }
-    let connection = cursor.take_uuid()?;
-    let application = cursor.take_str8()?;
-    let blocked_by_ls = cursor.take_u32_be()?;
-    let connected_raw = cursor.take_u64_be()?;
-    let conn_id = cursor.take_u32_be()?;
-    let host = cursor.take_str8()?;
-    let infobase = cursor.take_uuid()?;
-    let process = cursor.take_uuid()?;
-    let session_number = cursor.take_u32_be()?;
-    let connected_at = v8_datetime_to_iso(connected_raw).unwrap_or_default();
-    Ok(ConnectionRecord {
-        connection,
-        application,
-        blocked_by_ls,
-        connected_at,
-        conn_id,
-        host,
-        infobase,
-        process,
-        session_number,
-    })
+    ConnectionRecord::decode(cursor)
 }
 
 fn collect_connection_fields(record: &ConnectionRecord) -> Vec<String> {

@@ -1,0 +1,13 @@
+[record.ConnectionRecord]
+derive = ["Debug", "Serialize", "Clone"]
+fields = [
+  { name = "connection", type = "uuid" },
+  { name = "application", type = "str8" },
+  { name = "blocked_by_ls", type = "u32_be" },
+  { name = "connected_at", type = "datetime_u64_be" },
+  { name = "conn_id", type = "u32_be" },
+  { name = "host", type = "str8" },
+  { name = "infobase", type = "uuid" },
+  { name = "process", type = "uuid" },
+  { name = "session_number", type = "u32_be" },
+]

@@ -1,52 +1,17 @@
 use serde::Serialize;
 
 use crate::client::{RacClient, RacRequest};
-use crate::codec::{v8_datetime_to_iso, RecordCursor};
+use crate::codec::RecordCursor;
 use crate::error::{RacError, Result};
 use crate::Uuid16;
 
 use super::rpc_body;
 
-#[derive(Debug, Serialize, Default, Clone)]
-pub struct ProcessLicense {
-    pub file_name: String,
-    pub key_series: String,
-    pub issued_by_server: bool,
-    pub license_type: u32,
-    pub network_key: bool,
-    pub max_users_all: u32,
-    pub max_users_current: u32,
-    pub server_address: String,
-    pub server_port: u32,
-    pub process_id: String,
-    pub brief_presentation: String,
-    pub full_presentation: String,
+mod generated {
+    include!("process_generated.rs");
 }
 
-#[derive(Debug, Serialize, Clone)]
-pub struct ProcessRecord {
-    pub process: Uuid16,
-    pub host: String,
-    pub port: u16,
-    pub pid: String,
-    pub turned_on: bool,
-    pub running: bool,
-    pub started_at: String,
-    pub use_status: u32,
-    pub available_performance: u32,
-    pub capacity: u32,
-    pub connections: u32,
-    pub memory_size: u32,
-    pub memory_excess_time: u32,
-    pub selection_size: u32,
-    pub avg_call_time: f64,
-    pub avg_db_call_time: f64,
-    pub avg_lock_call_time: f64,
-    pub avg_server_call_time: f64,
-    pub avg_threads: f64,
-    pub reserve: bool,
-    pub licenses: Vec<ProcessLicense>,
-}
+pub use generated::{ProcessLicense, ProcessRecord};
 
 #[derive(Debug, Serialize)]
 pub struct ProcessListResp {
@@ -113,95 +78,7 @@ fn parse_process_record(cursor: &mut RecordCursor<'_>) -> Result<ProcessRecord> 
     if cursor.remaining_len() < 16 {
         return Err(RacError::Decode("process record truncated"));
     }
-    let process = cursor.take_uuid()?;
-
-    let _gap_0 = cursor.take_bytes(8)?;
-    let avg_call_time = cursor.take_f64_be()?;
-    let avg_db_call_time = cursor.take_f64_be()?;
-    let avg_lock_call_time = cursor.take_f64_be()?;
-    let avg_server_call_time = cursor.take_f64_be()?;
-    let avg_threads = cursor.take_f64_be()?;
-    let capacity = cursor.take_u32_be()?;
-    let connections = cursor.take_u32_be()?;
-
-    let host = cursor.take_str8()?;
-
-    let license_count = cursor.take_u8()? as usize;
-    let mut licenses = Vec::with_capacity(license_count);
-    for _ in 0..license_count {
-        let _gap_license_0 = cursor.take_u8()?;
-        let file_name = cursor.take_str8()?;
-        let full_len = take_u14_len(cursor)?;
-        let full_bytes = cursor.take_bytes(full_len)?;
-        let full_presentation = String::from_utf8_lossy(&full_bytes).to_string();
-        let issued_by_server = cursor.take_bool()?;
-        let license_type = cursor.take_u32_be()?;
-        let max_users_all = cursor.take_u32_be()?;
-        let max_users_current = cursor.take_u32_be()?;
-        let network_key = cursor.take_bool()?;
-        let server_address = cursor.take_str8()?;
-        let process_id = cursor.take_str8()?;
-        let server_port = cursor.take_u32_be()?;
-        let key_series = cursor.take_str8()?;
-        let brief_presentation = cursor.take_str8()?;
-        licenses.push(ProcessLicense {
-            file_name,
-            key_series,
-            issued_by_server,
-            license_type,
-            network_key,
-            max_users_all,
-            max_users_current,
-            server_address,
-            server_port,
-            process_id,
-            brief_presentation,
-            full_presentation,
-        });
-    }
-
-    let port = cursor.take_u16_be()?;
-    let memory_excess_time = cursor.take_u32_be()?;
-    let memory_size = cursor.take_u32_be()?;
-    let pid = cursor.take_str8()?;
-    let use_status = cursor.take_u32_be()?;
-    let selection_size = cursor.take_u32_be()?;
-    let started_raw = cursor.take_u64_be()?;
-    let running = cursor.take_u32_be()? != 0;
-    let available_performance = cursor.take_u32_be()?;
-    let reserve = cursor.take_u8()? != 0;
-    let started_at = v8_datetime_to_iso(started_raw).unwrap_or_default();
-    let turned_on = use_status != 0;
-
-    Ok(ProcessRecord {
-        process,
-        host,
-        port,
-        pid,
-        turned_on,
-        running,
-        started_at,
-        use_status,
-        available_performance,
-        capacity,
-        connections,
-        memory_size,
-        memory_excess_time,
-        selection_size,
-        avg_call_time,
-        avg_db_call_time,
-        avg_lock_call_time,
-        avg_server_call_time,
-        avg_threads,
-        reserve,
-        licenses,
-    })
-}
-
-fn take_u14_len(cursor: &mut RecordCursor<'_>) -> Result<usize> {
-    let b0 = cursor.take_u8()? as usize;
-    let b1 = cursor.take_u8()? as usize;
-    Ok((b0 & 0x3f) | (b1 << 6))
+    ProcessRecord::decode(cursor)
 }
 
 #[cfg(test)]

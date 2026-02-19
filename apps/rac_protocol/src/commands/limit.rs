@@ -6,6 +6,12 @@ use crate::error::{RacError, Result};
 use super::rpc_body;
 use crate::Uuid16;
 
+mod generated {
+    include!("limit_generated.rs");
+}
+
+pub use generated::LimitRecord;
+
 #[derive(Debug, Serialize)]
 pub struct LimitListResp {
     pub limits: Vec<LimitRecord>,
@@ -48,26 +54,6 @@ pub struct LimitUpdateResp {
 pub struct LimitRemoveResp {
     pub acknowledged: bool,
     pub raw_payload: Option<Vec<u8>>,
-}
-
-#[derive(Debug, Serialize, Clone)]
-pub struct LimitRecord {
-    pub name: String,
-    pub counter: String,
-    pub action: u8,
-    pub duration: u64,
-    pub cpu_time: u64,
-    pub memory: u64,
-    pub read: u64,
-    pub write: u64,
-    pub duration_dbms: u64,
-    pub dbms_bytes: u64,
-    pub service: u64,
-    pub call: u64,
-    pub number_of_active_sessions: u64,
-    pub number_of_sessions: u64,
-    pub error_message: String,
-    pub descr: String,
 }
 
 pub fn limit_list(client: &mut RacClient, cluster: Uuid16) -> Result<LimitListResp> {
@@ -178,48 +164,7 @@ fn parse_limit_info_body(body: &[u8]) -> Result<LimitRecord> {
 }
 
 fn parse_limit_record(cursor: &mut RecordCursor<'_>) -> Result<LimitRecord> {
-    let name = cursor.take_str8()?;
-    let counter = cursor.take_str8()?;
-    let action = cursor
-        .take_u8()
-        .map_err(|_| RacError::Decode("limit record action truncated"))?;
-    let duration = take_u64_required(cursor)?;
-    let cpu_time = take_u64_required(cursor)?;
-    let memory = take_u64_required(cursor)?;
-    let read = take_u64_required(cursor)?;
-    let write = take_u64_required(cursor)?;
-    let duration_dbms = take_u64_required(cursor)?;
-    let dbms_bytes = take_u64_required(cursor)?;
-    let service = take_u64_required(cursor)?;
-    let call = take_u64_required(cursor)?;
-    let number_of_active_sessions = take_u64_required(cursor)?;
-    let number_of_sessions = take_u64_required(cursor)?;
-    let error_message = cursor.take_str8()?;
-    let descr = cursor.take_str8()?;
-    Ok(LimitRecord {
-        name,
-        counter,
-        action,
-        duration,
-        cpu_time,
-        memory,
-        read,
-        write,
-        duration_dbms,
-        dbms_bytes,
-        service,
-        call,
-        number_of_active_sessions,
-        number_of_sessions,
-        error_message,
-        descr,
-    })
-}
-
-fn take_u64_required(cursor: &mut RecordCursor<'_>) -> Result<u64> {
-    cursor
-        .take_u64_be_opt()?
-        .ok_or(RacError::Decode("limit record u64 truncated"))
+    LimitRecord::decode(cursor).map_err(|_| RacError::Decode("limit record truncated"))
 }
 
 fn parse_limit_update_ack(payload: &[u8]) -> Result<bool> {

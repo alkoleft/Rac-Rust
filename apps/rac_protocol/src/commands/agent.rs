@@ -6,13 +6,11 @@ use crate::error::Result;
 
 use super::rpc_body;
 
-#[derive(Debug, Serialize, Clone)]
-pub struct AgentAdminRecord {
-    pub name: String,
-    pub unknown_tag: u8,
-    pub unknown_flags: u32,
-    pub unknown_tail: [u8; 3],
+mod generated {
+    include!("agent_generated.rs");
 }
+
+pub use generated::AgentAdminRecord;
 
 #[derive(Debug, Serialize)]
 pub struct AgentAdminListResp {
@@ -65,17 +63,7 @@ fn parse_agent_admin_list_body(body: &[u8]) -> Result<Vec<AgentAdminRecord>> {
     let count = cursor.take_u8()? as usize;
     let mut admins = Vec::with_capacity(count);
     for _ in 0..count {
-        let name = cursor.take_str8()?;
-        let unknown_tag = cursor.take_u8()?;
-        let unknown_flags = cursor.take_u32_be()?;
-        let tail = cursor.take_bytes(3)?;
-        let unknown_tail = [tail[0], tail[1], tail[2]];
-        admins.push(AgentAdminRecord {
-            name,
-            unknown_tag,
-            unknown_flags,
-            unknown_tail,
-        });
+        admins.push(AgentAdminRecord::decode(&mut cursor)?);
     }
     Ok(admins)
 }

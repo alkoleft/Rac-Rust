@@ -1,3 +1,5 @@
+use serde::Serialize;
+
 use crate::client::{RacClient, RacRequest};
 
 use super::rpc_body;

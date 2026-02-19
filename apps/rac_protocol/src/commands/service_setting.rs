@@ -7,14 +7,11 @@ use crate::Uuid16;
 
 use super::{parse_ack_payload, parse_uuid_body, rpc_body};
 
-#[derive(Debug, Serialize, Clone)]
-pub struct ServiceSettingRecord {
-    pub setting: Uuid16,
-    pub service_name: String,
-    pub infobase_name: String,
-    pub service_data_dir: String,
-    pub active: bool,
+mod generated {
+    include!("service_setting_generated.rs");
 }
+
+pub use generated::{ServiceSettingRecord, ServiceSettingTransferDataDirRecord};
 
 #[derive(Debug, Serialize)]
 pub struct ServiceSettingListResp {
@@ -69,16 +66,6 @@ pub struct ServiceSettingRemoveResp {
 pub struct ServiceSettingApplyResp {
     pub acknowledged: bool,
     pub raw_payload: Option<Vec<u8>>,
-}
-
-#[derive(Debug, Serialize, Clone)]
-pub struct ServiceSettingTransferDataDirRecord {
-    pub service_name: String,
-    pub user: String,
-    pub source_dir: String,
-    pub source_dir_flag: u8,
-    pub target_dir: String,
-    pub target_dir_flag: u8,
 }
 
 #[derive(Debug, Serialize)]
@@ -341,49 +328,13 @@ fn parse_service_setting_record(cursor: &mut RecordCursor<'_>) -> Result<Service
     if cursor.remaining_len() < 16 {
         return Err(RacError::Decode("service-setting record truncated"));
     }
-    let setting = cursor.take_uuid()?;
-    let service_name = cursor.take_str8()?;
-    let infobase_name = cursor.take_str8()?;
-    let service_data_dir = cursor.take_str8()?;
-    let active = cursor.take_u16_be()? != 0;
-
-    Ok(ServiceSettingRecord {
-        setting,
-        service_name,
-        infobase_name,
-        service_data_dir,
-        active,
-    })
+    ServiceSettingRecord::decode(cursor)
 }
 
 fn parse_service_setting_transfer_data_dir_record(
     cursor: &mut RecordCursor<'_>,
 ) -> Result<ServiceSettingTransferDataDirRecord> {
-    let service_name = cursor.take_str8()?;
-    let user = cursor.take_str8()?;
-    let source_dir_len = cursor.take_u8()? as usize;
-    let source_dir_flag = cursor.take_u8()?;
-    let source_dir = parse_len_str(cursor, source_dir_len)?;
-    let target_dir_len = cursor.take_u8()? as usize;
-    let target_dir_flag = cursor.take_u8()?;
-    let target_dir = parse_len_str(cursor, target_dir_len)?;
-
-    Ok(ServiceSettingTransferDataDirRecord {
-        service_name,
-        user,
-        source_dir,
-        source_dir_flag,
-        target_dir,
-        target_dir_flag,
-    })
-}
-
-fn parse_len_str(cursor: &mut RecordCursor<'_>, len: usize) -> Result<String> {
-    let bytes = cursor.take_bytes(len)?;
-    let value = std::str::from_utf8(&bytes)
-        .map_err(|_| RacError::Decode("invalid utf-8"))?
-        .to_string();
-    Ok(value)
+    ServiceSettingTransferDataDirRecord::decode(cursor)
 }
 
 #[cfg(test)]

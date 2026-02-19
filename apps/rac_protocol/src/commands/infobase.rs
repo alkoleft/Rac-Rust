@@ -7,18 +7,18 @@ use crate::Uuid16;
 
 use super::rpc_body;
 
+mod generated {
+    include!("infobase_generated.rs");
+}
+
+pub use generated::InfobaseSummary;
+use generated::InfobaseFieldsRecord;
+
 #[derive(Debug, Serialize)]
 pub struct InfobaseSummaryListResp {
     pub infobases: Vec<Uuid16>,
     pub summaries: Vec<InfobaseSummary>,
     pub raw_payload: Option<Vec<u8>>,
-}
-
-#[derive(Debug, Serialize)]
-pub struct InfobaseSummary {
-    pub infobase: Uuid16,
-    pub name: String,
-    pub descr: String,
 }
 
 #[derive(Debug, Serialize)]
@@ -57,11 +57,10 @@ pub fn infobase_summary_info(
     let reply = client.call(RacRequest::InfobaseSummaryInfo { cluster, infobase })?;
     let body = rpc_body(&reply)?;
     let mut cursor = RecordCursor::new(body, 0);
-    let infobase = cursor.take_uuid()?;
-    let fields = read_str8_fields(&mut cursor)?;
+    let record = InfobaseFieldsRecord::decode(&mut cursor)?;
     Ok(InfobaseSummaryInfoResp {
-        infobase,
-        fields,
+        infobase: record.infobase,
+        fields: record.fields,
         raw_payload: Some(reply),
     })
 }
@@ -74,11 +73,10 @@ pub fn infobase_info(
     let reply = client.call(RacRequest::InfobaseInfo { cluster, infobase })?;
     let body = rpc_body(&reply)?;
     let mut cursor = RecordCursor::new(body, 0);
-    let infobase = cursor.take_uuid()?;
-    let fields = read_str8_fields(&mut cursor)?;
+    let record = InfobaseFieldsRecord::decode(&mut cursor)?;
     Ok(InfobaseInfoResp {
-        infobase,
-        fields,
+        infobase: record.infobase,
+        fields: record.fields,
         raw_payload: Some(reply),
     })
 }
@@ -91,39 +89,7 @@ fn parse_infobase_summary_list_body(body: &[u8]) -> Result<Vec<InfobaseSummary>>
     let count = cursor.take_u8()? as usize;
     let mut out = Vec::with_capacity(count);
     for _ in 0..count {
-        let uuid = cursor.take_uuid()?;
-        let first = cursor.take_u8()?;
-        let descr_len = if first == 0x2c {
-            cursor.take_u8()? as usize
-        } else {
-            first as usize
-        };
-        let descr = if descr_len == 0 {
-            String::new()
-        } else {
-            let bytes = cursor.take_bytes(descr_len)?;
-            String::from_utf8_lossy(&bytes).to_string()
-        };
-        let name_len = cursor.take_u8()? as usize;
-        let name = if name_len == 0 {
-            String::new()
-        } else {
-            let bytes = cursor.take_bytes(name_len)?;
-            String::from_utf8_lossy(&bytes).to_string()
-        };
-        out.push(InfobaseSummary {
-            infobase: uuid,
-            name,
-            descr,
-        });
-    }
-    Ok(out)
-}
-
-fn read_str8_fields(cursor: &mut RecordCursor<'_>) -> Result<Vec<String>> {
-    let mut out = Vec::new();
-    while cursor.remaining_len() > 0 {
-        out.push(cursor.take_str8()?);
+        out.push(InfobaseSummary::decode(&mut cursor)?);
     }
     Ok(out)
 }

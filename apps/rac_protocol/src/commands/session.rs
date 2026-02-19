@@ -7,6 +7,12 @@ use crate::Uuid16;
 
 use super::rpc_body;
 
+mod generated {
+    include!("session_generated.rs");
+}
+
+use generated::{SessionLicenseRecord, SessionRecordRaw};
+
 #[derive(Debug, Serialize, Default, Clone)]
 pub struct SessionCounters {
     pub blocked_by_dbms: u32,
@@ -171,147 +177,8 @@ fn parse_session_record(cursor: &mut RecordCursor<'_>) -> Result<SessionRecord> 
     }
     #[cfg(feature = "debug-parse")]
     log::debug!("Binary data: {:?}", cursor.remaining_len());
-    let session = cursor.take_uuid()?;
-
-    let mut rec = SessionRecord {
-        session,
-        app_id: String::new(),
-        connection: Uuid16::default(),
-        process: Uuid16::default(),
-        infobase: Uuid16::default(),
-        host: String::new(),
-        hibernate: false,
-        locale: String::new(),
-        user_name: String::new(),
-        started_at: String::new(),
-        last_active_at: String::new(),
-        client_ip: String::new(),
-        retrieved_by_server: false,
-        software_license: false,
-        network_key: false,
-        license: SessionLicense::default(),
-        db_proc_info: String::new(),
-        db_proc_took_at: String::new(),
-        current_service_name: String::new(),
-        data_separation: String::new(),
-        session_id: 0,
-        counters: SessionCounters::default(),
-    };
-
-    rec.app_id = cursor.take_str8()?;
-    rec.counters.blocked_by_dbms = cursor.take_u32_be_opt()?.unwrap_or_default();
-    rec.counters.blocked_by_ls = cursor.take_u32_be_opt()?.unwrap_or_default();
-
-    rec.counters.bytes_all = cursor.take_u64_be_opt()?.unwrap_or_default();
-    rec.counters.bytes_last_5min = cursor.take_u64_be_opt()?.unwrap_or_default();
-
-    rec.counters.calls_all = cursor.take_u32_be_opt()?.unwrap_or_default();
-    rec.counters.calls_last_5min = cursor.take_u64_be_opt()?.unwrap_or_default();
-
-    rec.connection = cursor.take_uuid_opt()?.unwrap_or_default();
-
-    rec.counters.dbms_bytes_all = cursor.take_u64_be_opt()?.unwrap_or_default();
-    rec.counters.dbms_bytes_last_5min = cursor.take_u64_be_opt()?.unwrap_or_default();
-
-    rec.db_proc_info = cursor.take_str8_opt()?.unwrap_or_default();
-    rec.counters.db_proc_took = cursor.take_u32_be_opt()?.unwrap_or_default();
-    rec.db_proc_took_at = cursor.take_datetime_opt()?.unwrap_or_default();
-
-    rec.counters.duration_all = cursor.take_u32_be_opt()?.unwrap_or_default();
-    rec.counters.duration_all_dbms = cursor.take_u32_be_opt()?.unwrap_or_default();
-    rec.counters.duration_current = cursor.take_u32_be_opt()?.unwrap_or_default();
-    rec.counters.duration_current_dbms = cursor.take_u32_be_opt()?.unwrap_or_default();
-    rec.counters.duration_last_5min = cursor.take_u64_be_opt()?.unwrap_or_default();
-    rec.counters.duration_last_5min_dbms = cursor.take_u64_be_opt()?.unwrap_or_default();
-
-    rec.host = cursor.take_str8_opt()?.unwrap_or_default();
-    rec.infobase = cursor.take_uuid_opt()?.unwrap_or_default();
-
-    rec.last_active_at = cursor.take_datetime_opt()?.unwrap_or_default();
-
-    rec.hibernate = cursor.take_bool_opt()?.unwrap_or_default();
-    rec.counters.passive_session_hibernate_time =
-        cursor.take_u32_be_opt()?.unwrap_or_default();
-    rec.counters.hibernate_session_terminate_time =
-        cursor.take_u32_be_opt()?.unwrap_or_default();
-
-    rec.license = parse_licenses(cursor)?;
-
-    rec.locale = cursor.take_str8_opt()?.unwrap_or_default();
-    rec.process = cursor.take_uuid_opt()?.unwrap_or_default();
-    rec.session_id = cursor.take_u32_be_opt()?.unwrap_or_default();
-    rec.started_at = cursor.take_datetime_opt()?.unwrap_or_default();
-    rec.user_name = cursor.take_str8_opt()?.unwrap_or_default();
-
-    rec.counters.memory_current = cursor.take_u64_be_opt()?.unwrap_or_default();
-    rec.counters.memory_last_5min = cursor.take_u64_be_opt()?.unwrap_or_default();
-    rec.counters.memory_total = cursor.take_u64_be_opt()?.unwrap_or_default();
-
-    rec.counters.read_current = cursor.take_u64_be_opt()?.unwrap_or_default();
-    rec.counters.read_last_5min = cursor.take_u64_be_opt()?.unwrap_or_default();
-    rec.counters.read_total = cursor.take_u64_be_opt()?.unwrap_or_default();
-
-    rec.counters.write_current = cursor.take_u64_be_opt()?.unwrap_or_default();
-    rec.counters.write_last_5min = cursor.take_u64_be_opt()?.unwrap_or_default();
-    rec.counters.write_total = cursor.take_u64_be_opt()?.unwrap_or_default();
-
-    rec.counters.duration_current_service = cursor.take_u32_be_opt()?.unwrap_or_default();
-    rec.counters.duration_last_5min_service = cursor.take_u64_be_opt()?.unwrap_or_default();
-    rec.counters.duration_all_service = cursor.take_u32_be_opt()?.unwrap_or_default();
-
-    rec.current_service_name = cursor.take_str8_opt()?.unwrap_or_default();
-
-    rec.counters.cpu_time_current = cursor.take_u64_be_opt()?.unwrap_or_default();
-    rec.counters.cpu_time_last_5min = cursor.take_u64_be_opt()?.unwrap_or_default();
-    rec.counters.cpu_time_total = cursor.take_u64_be_opt()?.unwrap_or_default();
-
-    rec.data_separation = cursor.take_str8_opt()?.unwrap_or_default();
-    rec.client_ip = cursor.take_str8_opt()?.unwrap_or_default();
-
-    Ok(rec)
-}
-
-fn parse_licenses(cursor: &mut RecordCursor) -> Result<SessionLicense> {
-    let count = cursor.take_u8()?;
-    for _ in 0..count {
-        #[cfg(feature = "debug-parse")]
-        log::debug!("Licenses count: {}", count);
-
-        let full_name = cursor.take_str8_opt()?.unwrap_or_default();
-        let full_presentation = cursor.take_str8_opt()?.unwrap_or_default();
-
-        let issued_by_server = cursor.take_bool_opt()?.unwrap_or_default();
-        let license_type = cursor.take_u32_be_opt()?.unwrap_or_default();
-
-        let max_users_all = cursor.take_u32_be_opt()?.unwrap_or_default();
-        let max_users_current = cursor.take_u32_be_opt()?.unwrap_or_default();
-
-        let network_key = cursor.take_bool()?;
-
-        let server_address = cursor.take_str8_opt()?.unwrap_or_default();
-        let process_id = cursor.take_str8_opt()?.unwrap_or_default();
-        let server_port = cursor.take_u32_be_opt()?.unwrap_or_default();
-
-        let key_series = cursor.take_str8_opt()?.unwrap_or_default();
-
-        let brief_presentation = cursor.take_str8_opt()?.unwrap_or_default();
-        return Ok(SessionLicense {
-            license_type,
-            server_address,
-            process_id,
-            file_name: full_name,
-            brief_presentation,
-            max_users_all,
-            max_users_current,
-            full_presentation,
-            issued_by_server,
-            server_port,
-            software_license: false,
-            key_series,
-            network_key,
-        });
-    }
-    Ok(SessionLicense::default())
+    let raw = SessionRecordRaw::decode(cursor)?;
+    Ok(map_session_record(raw))
 }
 
 fn fallback_session_record(body: &[u8]) -> Result<SessionRecord> {
@@ -341,6 +208,85 @@ fn fallback_session_record(body: &[u8]) -> Result<SessionRecord> {
         session_id: 0,
         counters: SessionCounters::default(),
     })
+}
+
+fn map_session_record(raw: SessionRecordRaw) -> SessionRecord {
+    let counters = SessionCounters {
+        blocked_by_dbms: raw.blocked_by_dbms,
+        blocked_by_ls: raw.blocked_by_ls,
+        bytes_all: raw.bytes_all,
+        bytes_last_5min: raw.bytes_last_5min,
+        calls_all: raw.calls_all,
+        calls_last_5min: raw.calls_last_5min,
+        dbms_bytes_all: raw.dbms_bytes_all,
+        dbms_bytes_last_5min: raw.dbms_bytes_last_5min,
+        db_proc_took: raw.db_proc_took,
+        duration_all: raw.duration_all,
+        duration_all_dbms: raw.duration_all_dbms,
+        duration_current: raw.duration_current,
+        duration_current_dbms: raw.duration_current_dbms,
+        duration_last_5min: raw.duration_last_5min,
+        duration_last_5min_dbms: raw.duration_last_5min_dbms,
+        passive_session_hibernate_time: raw.passive_session_hibernate_time,
+        hibernate_session_terminate_time: raw.hibernate_session_terminate_time,
+        memory_current: raw.memory_current,
+        memory_last_5min: raw.memory_last_5min,
+        memory_total: raw.memory_total,
+        read_current: raw.read_current,
+        read_last_5min: raw.read_last_5min,
+        read_total: raw.read_total,
+        write_current: raw.write_current,
+        write_last_5min: raw.write_last_5min,
+        write_total: raw.write_total,
+        duration_current_service: raw.duration_current_service,
+        duration_last_5min_service: raw.duration_last_5min_service,
+        duration_all_service: raw.duration_all_service,
+        cpu_time_current: raw.cpu_time_current,
+        cpu_time_last_5min: raw.cpu_time_last_5min,
+        cpu_time_total: raw.cpu_time_total,
+    };
+    SessionRecord {
+        session: raw.session,
+        app_id: raw.app_id,
+        connection: raw.connection,
+        process: raw.process,
+        infobase: raw.infobase,
+        host: raw.host,
+        hibernate: raw.hibernate,
+        locale: raw.locale,
+        user_name: raw.user_name,
+        started_at: raw.started_at,
+        last_active_at: raw.last_active_at,
+        client_ip: raw.client_ip,
+        retrieved_by_server: false,
+        software_license: false,
+        network_key: false,
+        license: map_session_license(raw.license),
+        db_proc_info: raw.db_proc_info,
+        db_proc_took_at: raw.db_proc_took_at,
+        current_service_name: raw.current_service_name,
+        data_separation: raw.data_separation,
+        session_id: raw.session_id,
+        counters,
+    }
+}
+
+fn map_session_license(raw: SessionLicenseRecord) -> SessionLicense {
+    SessionLicense {
+        license_type: raw.license_type,
+        server_address: raw.server_address,
+        process_id: raw.process_id,
+        file_name: raw.file_name,
+        brief_presentation: raw.brief_presentation,
+        max_users_all: raw.max_users_all,
+        max_users_current: raw.max_users_current,
+        full_presentation: raw.full_presentation,
+        issued_by_server: raw.issued_by_server,
+        server_port: raw.server_port,
+        software_license: false,
+        key_series: raw.key_series,
+        network_key: raw.network_key,
+    }
 }
 
 fn collect_session_fields(record: &SessionRecord) -> Vec<String> {

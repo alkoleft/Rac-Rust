@@ -7,15 +7,11 @@ use crate::Uuid16;
 
 use super::rpc_body;
 
-#[derive(Debug, Serialize, Clone)]
-pub struct ManagerRecord {
-    pub manager: Uuid16,
-    pub descr: String,
-    pub host: String,
-    pub using: u32,
-    pub port: u16,
-    pub pid: String,
+mod generated {
+    include!("manager_generated.rs");
 }
+
+pub use generated::ManagerRecord;
 
 #[derive(Debug, Serialize)]
 pub struct ManagerListResp {
@@ -71,20 +67,7 @@ fn parse_manager_info_body(body: &[u8]) -> Result<ManagerRecord> {
 }
 
 fn parse_manager_record(cursor: &mut RecordCursor<'_>) -> Result<ManagerRecord> {
-    let manager = cursor.take_uuid()?;
-    let descr = cursor.take_str8()?;
-    let host = cursor.take_str8()?;
-    let using = cursor.take_u32_be()?;
-    let port = cursor.take_u16_be()?;
-    let pid = cursor.take_str8()?;
-    Ok(ManagerRecord {
-        manager,
-        descr,
-        host,
-        using,
-        port,
-        pid,
-    })
+    ManagerRecord::decode(cursor)
 }
 
 #[cfg(test)]

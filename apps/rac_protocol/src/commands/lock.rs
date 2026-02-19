@@ -1,11 +1,19 @@
 use serde::Serialize;
 
 use crate::client::{RacClient, RacRequest};
-use crate::codec::{v8_datetime_to_iso, RecordCursor};
+use crate::codec::RecordCursor;
 use crate::error::{RacError, Result};
 use crate::Uuid16;
 
 use super::rpc_body;
+
+#[derive(Debug, Serialize, Clone)]
+pub struct LockDescr {
+    pub descr: String,
+    pub descr_flag: Option<u8>,
+}
+
+include!("lock_generated.rs");
 
 #[derive(Debug, Serialize, Clone)]
 pub struct LockRecord {
@@ -52,60 +60,15 @@ fn parse_lock_record(cursor: &mut RecordCursor<'_>) -> Result<LockRecord> {
     if cursor.remaining_len() < 16 {
         return Err(RacError::Decode("lock record truncated"));
     }
-    let connection = cursor.take_uuid()?;
-    let (descr, descr_flag) = parse_lock_descr(cursor)?;
-    let locked_raw = cursor.take_u64_be()?;
-    let session = cursor.take_uuid()?;
-    let object = cursor.take_uuid()?;
-    let locked_at = v8_datetime_to_iso(locked_raw).unwrap_or_default();
+    let record = LockRecordRaw::decode(cursor)?;
     Ok(LockRecord {
-        connection,
-        descr,
-        descr_flag,
-        locked_at,
-        session,
-        object,
+        connection: record.connection,
+        descr: record.descr.descr,
+        descr_flag: record.descr.descr_flag,
+        locked_at: record.locked_at,
+        session: record.session,
+        object: record.object,
     })
-}
-
-fn parse_lock_descr(cursor: &mut RecordCursor<'_>) -> Result<(String, Option<u8>)> {
-    let descr_len = cursor.take_u8()? as usize;
-    if descr_len == 0 {
-        return Ok((String::new(), None));
-    }
-    let first = cursor.take_u8()?;
-    let remaining = cursor.remaining_len();
-    let needed_no_flag = descr_len.saturating_sub(1) + 40;
-    let needed_flag = descr_len + 40;
-    let use_flag = if first == 0x01 {
-        if remaining == needed_flag {
-            true
-        } else if remaining == needed_no_flag {
-            false
-        } else if remaining >= needed_flag && remaining < needed_no_flag {
-            true
-        } else if remaining >= needed_no_flag {
-            false
-        } else {
-            remaining >= needed_flag
-        }
-    } else {
-        false
-    };
-    if use_flag {
-        let descr_bytes = cursor.take_bytes(descr_len)?;
-        let descr = String::from_utf8(descr_bytes)
-            .map_err(|_| RacError::Decode("lock descr invalid utf-8"))?;
-        return Ok((descr, Some(first)));
-    }
-    let mut descr_bytes = Vec::with_capacity(descr_len);
-    descr_bytes.push(first);
-    if descr_len > 1 {
-        descr_bytes.extend_from_slice(&cursor.take_bytes(descr_len - 1)?);
-    }
-    let descr =
-        String::from_utf8(descr_bytes).map_err(|_| RacError::Decode("lock descr invalid utf-8"))?;
-    Ok((descr, None))
 }
 
 #[cfg(test)]

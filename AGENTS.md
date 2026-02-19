@@ -21,6 +21,7 @@ These rules apply to all Codex-driven implementation and review work in this rep
 - Review must enforce all rules above before commit.
 
 ## Git Workflow Rules
-- At the start of each task, create a new git branch.
+- At the start of a new task, create a new git branch.
+- Do not create new branches for subtasks within the same ongoing task; continue on the existing branch.
 - Use the `codex/` prefix for new branch names (example: `codex/super-task`).
 - Create a commit for each stage of work.

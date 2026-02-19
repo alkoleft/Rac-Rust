@@ -15,6 +15,7 @@ LISTEN_ADDR="${LISTEN_ADDR:-127.0.0.1:1565}"
 TARGET_ADDR="${TARGET_ADDR:-127.0.0.1:1545}"
 LOG_DIR="${LOG_DIR:-./logs}"
 RAC_TIMEOUT_SEC="${RAC_TIMEOUT_SEC:-15}"
+PROXY_BIN="${PROXY_BIN:-./target/release/v8_proxy}"
 
 PROXY_LOG="/tmp/v8_capture_${NAME}.log"
 RAC_OUT="/tmp/rac_${NAME}.out"
@@ -35,7 +36,7 @@ finish() {
 
 ls -1 "$LOG_DIR" 2>/dev/null | sort >"$before_file" || true
 
-./target/release/v8_protocols \
+"$PROXY_BIN" \
   --listen "$LISTEN_ADDR" \
   --target "$TARGET_ADDR" \
   --log-dir "$LOG_DIR" >"$PROXY_LOG" 2>&1 &

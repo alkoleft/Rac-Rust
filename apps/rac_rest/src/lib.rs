@@ -6,16 +6,16 @@ use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::fmt;
 
-use crate::client::{ClientConfig, RacClient};
-use crate::commands::{
+use rac_protocol::client::{ClientConfig, RacClient};
+use rac_protocol::commands::{
     agent_version, cluster_info, cluster_list, connection_info, connection_list, counter_info,
     counter_list, infobase_info, infobase_summary_info, infobase_summary_list, limit_info,
     limit_list, lock_list, manager_info, manager_list, process_info, process_list, profile_list,
     server_info, server_list, session_info, session_list,
 };
-use crate::error::RacError;
-use crate::rac_wire::{format_uuid, parse_uuid};
-use crate::Uuid16;
+use rac_protocol::error::RacError;
+use rac_protocol::rac_wire::{format_uuid, parse_uuid};
+use rac_protocol::Uuid16;
 
 const DEFAULT_LISTEN_ADDR: &str = "127.0.0.1:8080";
 const DEFAULT_RAC_ADDR: &str = "127.0.0.1:1545";
@@ -756,7 +756,7 @@ mod tests {
 
     #[test]
     fn response_value_strips_raw_payload() {
-        let resp = crate::commands::ClusterListResp {
+        let resp = rac_protocol::commands::ClusterListResp {
             clusters: Vec::new(),
             raw_payload: Some(vec![1, 2, 3]),
         };
@@ -767,8 +767,8 @@ mod tests {
     #[test]
     fn response_value_formats_uuid_as_string() {
         let uuid = parse_uuid("550e8400-e29b-41d4-a716-446655440000").expect("uuid");
-        let resp = crate::commands::ClusterListResp {
-            clusters: vec![crate::commands::ClusterSummary {
+        let resp = rac_protocol::commands::ClusterListResp {
+            clusters: vec![rac_protocol::commands::ClusterSummary {
                 uuid,
                 host: Some("127.0.0.1".to_string()),
                 display_name: Some("cluster".to_string()),

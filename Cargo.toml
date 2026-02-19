@@ -1,9 +1,3 @@
-[package]
-name = "v8_protocols"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-
 [workspace]
-members = [".", "apps/rac_protocol"]
+resolver = "2"
+members = ["apps/rac_protocol", "apps/rac_rest", "apps/v8_proxy"]

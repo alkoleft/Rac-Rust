@@ -466,17 +466,28 @@ dependencies = [
 name = "rac_protocol"
 version = "0.1.0"
 dependencies = [
- "axum",
  "clap",
  "hex",
  "log",
+ "serde",
+ "serde_json",
+ "toml",
+ "uuid",
+]
+
+[[package]]
+name = "rac_rest"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "clap",
+ "rac_protocol",
  "serde",
  "serde_json",
  "tokio",
  "toml",
  "tower",
  "tower-http",
- "uuid",
 ]
 
 [[package]]
@@ -765,7 +776,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "v8_protocols"
+name = "v8_proxy"
 version = "0.1.0"
 
 [[package]]

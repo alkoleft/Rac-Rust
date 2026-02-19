@@ -11,7 +11,7 @@ use serde_json::{json, Value};
 use tokio::task;
 
 use rac_protocol::client::ClientConfig;
-use rac_protocol::rest::{
+use rac_rest::{
     dispatch_command, load_config, parse_command, Command, Pool, PoolConfig, RpcError, RpcMeta,
     RpcRequest, RpcResponse, SystemClock,
 };

@@ -11,7 +11,7 @@ NAME="$1"
 shift
 
 RAC_BIN="${RAC_BIN:-/opt/1cv8/x86_64/8.5.1.1150/rac}"
-PROXY_BIN="${PROXY_BIN:-./target/release/v8_protocols}"
+PROXY_BIN="${PROXY_BIN:-./target/release/v8_proxy}"
 LISTEN_ADDR="${LISTEN_ADDR:-127.0.0.1:1565}"
 TARGET_ADDR="${TARGET_ADDR:-127.0.0.1:1545}"
 LOG_DIR="${LOG_DIR:-./logs}"

@@ -5,8 +5,9 @@
 
 ## Что внутри
 
-- `v8_protocols` — TCP‑прокси для перехвата и логирования сессий.
+- `apps/v8_proxy` — TCP‑прокси для перехвата и логирования сессий.
 - `apps/rac_protocol` — инструменты для RAC: декодер фрейминга и минимальный клиент.
+- `apps/rac_rest` — REST‑шлюз к RAC (read‑only).
 - `docs/` — заметки по протоколу и карта методов.
 
 ## Быстрый старт
@@ -14,14 +15,15 @@
 Сборка:
 
 ```bash
-cargo build --release -p v8_protocols
+cargo build --release -p v8_proxy
 cargo build --release -p rac_protocol
+cargo build --release -p rac_rest
 ```
 
 Запуск прокси:
 
 ```bash
-cargo run --release -p v8_protocols -- \
+cargo run --release -p v8_proxy -- \
   --listen 127.0.0.1:15410 \
   --target 127.0.0.1:1541 \
   --log-dir ./logs \
@@ -48,7 +50,7 @@ REST сервис для RAC (read‑only):
 2) Запуск:
 
 ```bash
-cargo run -p rac_protocol --bin rac_rest -- --config rac_rest.toml
+cargo run -p rac_rest -- --config rac_rest.toml
 ```
 
 Эндпоинты (GET, «чистый» JSON):

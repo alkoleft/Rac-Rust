@@ -344,7 +344,7 @@ fn parse_bool(value: &str) -> Result<bool, String> {
 fn print_help() {
     println!("v8-proxy");
     println!("Usage:");
-    println!("  v8_protocols --listen <addr:port> --target <addr:port> [--log-dir <path>] [--try-inflate <true|false>]");
+    println!("  v8_proxy --listen <addr:port> --target <addr:port> [--log-dir <path>] [--try-inflate <true|false>]");
     println!();
     println!("Options:");
     println!("  --listen       Proxy listen address, example 127.0.0.1:15410");

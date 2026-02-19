@@ -1,6 +1,6 @@
+use crate::Uuid16;
 use crate::codec::RecordCursor;
 use crate::error::Result;
-use crate::Uuid16;
 use serde::Serialize;
 
 #[derive(Debug, Serialize, Clone)]
@@ -48,14 +48,14 @@ impl ServiceSettingTransferDataDirRecord {
         let source_dir = {
             let len = _source_dir_len as usize;
             let bytes = cursor.take_bytes(len)?;
-            String::from_utf8_lossy(&bytes).to_string();
+            String::from_utf8_lossy(&bytes).to_string()
         };
         let _target_dir_len = cursor.take_u8()?;
         let target_dir_flag = cursor.take_u8()?;
         let target_dir = {
             let len = _target_dir_len as usize;
             let bytes = cursor.take_bytes(len)?;
-            String::from_utf8_lossy(&bytes).to_string();
+            String::from_utf8_lossy(&bytes).to_string()
         };
         Ok(Self {
             service_name,

@@ -1,7 +1,6 @@
 use crate::error::RacError;
 use crate::codec::RecordCursor;
 use crate::error::Result;
-use crate::Uuid16;
 use serde::Serialize;
 
 #[derive(Debug, Serialize, Clone)]

@@ -267,19 +267,19 @@ def decode_expr(field: FieldSpec, var_map: Dict[str, str]) -> List[str]:
             return [
                 f"let len = {len_var} as usize;",
                 "let bytes = cursor.take_bytes(len)?;",
-                "String::from_utf8_lossy(&bytes).to_string();",
+                "String::from_utf8_lossy(&bytes).to_string()",
             ]
         return [
             "let len = cursor.take_u8()? as usize;",
             "let bytes = cursor.take_bytes(len)?;",
-            "String::from_utf8_lossy(&bytes).to_string();",
+            "String::from_utf8_lossy(&bytes).to_string()",
         ]
     if t == "str_len_u8_or_2c":
         return [
             "let first = cursor.take_u8()? as usize;",
             "let len = if first == 0x2c { cursor.take_u8()? as usize } else { first };",
             "let bytes = cursor.take_bytes(len)?;",
-            "String::from_utf8_lossy(&bytes).to_string();",
+            "String::from_utf8_lossy(&bytes).to_string()",
         ]
     if t == "str_u14":
         return [
@@ -287,7 +287,7 @@ def decode_expr(field: FieldSpec, var_map: Dict[str, str]) -> List[str]:
             "let b1 = cursor.take_u8()? as usize;",
             "let len = (b0 & 0x3f) | (b1 << 6);",
             "let bytes = cursor.take_bytes(len)?;",
-            "String::from_utf8_lossy(&bytes).to_string();",
+            "String::from_utf8_lossy(&bytes).to_string()",
         ]
     if t == "bytes":
         if field.length is None:
@@ -416,7 +416,15 @@ def decode_expr(field: FieldSpec, var_map: Dict[str, str]) -> List[str]:
 def needs_datetime(records: List[RecordSpec]) -> bool:
     for record in records:
         for field in record.fields:
-            if field.type_name in {"datetime_u64_be", "datetime_u64_be_opt"}:
+            if field.type_name == "datetime_u64_be":
+                return True
+    return False
+
+
+def needs_uuid(records: List[RecordSpec]) -> bool:
+    for record in records:
+        for field in record.fields:
+            if field.type_name in {"uuid", "uuid_opt"}:
                 return True
     return False
 
@@ -431,11 +439,13 @@ def needs_rac_error(records: List[RecordSpec]) -> bool:
 
 def generate(records: List[RecordSpec]) -> str:
     lines: List[str] = []
-    uses = ["use crate::codec::RecordCursor;", "use crate::error::Result;", "use crate::Uuid16;"]
+    uses = ["use crate::codec::RecordCursor;", "use crate::error::Result;"]
     if needs_datetime(records):
         uses.insert(0, "use crate::codec::v8_datetime_to_iso;")
     if needs_rac_error(records):
         uses.insert(0, "use crate::error::RacError;")
+    if needs_uuid(records):
+        uses.insert(0, "use crate::Uuid16;")
     uses.append("use serde::Serialize;")
     lines.extend(uses)
     lines.append("")

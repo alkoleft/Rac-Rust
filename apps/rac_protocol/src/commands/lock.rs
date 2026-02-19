@@ -1,9 +1,4 @@
-use serde::Serialize;
-
 use crate::client::{RacClient, RacRequest};
-use crate::codec::RecordCursor;
-use crate::error::{RacError, Result};
-use crate::Uuid16;
 
 use super::rpc_body;
 

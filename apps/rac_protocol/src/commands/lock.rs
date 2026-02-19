@@ -1,10 +1,8 @@
-use serde::Serialize;
-
 use crate::client::{RacClient, RacRequest};
 
 use super::rpc_body;
 
-#[derive(Debug, Serialize, Clone)]
+#[derive(Debug, serde::Serialize, Clone)]
 pub struct LockDescr {
     pub descr: String,
     pub descr_flag: Option<u8>,

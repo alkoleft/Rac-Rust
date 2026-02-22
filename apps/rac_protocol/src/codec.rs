@@ -1,3 +1,5 @@
+use std::io::{self, Read};
+
 use crate::rac_wire::{uuid_from_slice, WireError};
 use crate::Uuid16;
 
@@ -264,6 +266,224 @@ pub fn v8_datetime_to_iso(raw: u64) -> Option<String> {
     Some(format!(
         "{year:04}-{month:02}-{day:02}T{hour:02}:{minute:02}:{second:02}"
     ))
+}
+
+pub struct RecordReaderCursor<R> {
+    reader: R,
+    read_len: usize,
+}
+
+impl<R: Read> RecordReaderCursor<R> {
+    pub fn new(reader: R) -> Self {
+        Self {
+            reader,
+            read_len: 0,
+        }
+    }
+
+    pub fn read_len(&self) -> usize {
+        self.read_len
+    }
+
+    pub fn into_inner(self) -> R {
+        self.reader
+    }
+
+    pub fn take_uuid(&mut self) -> io::Result<Uuid16> {
+        let mut buf = [0u8; 16];
+        self.read_exact(&mut buf)?;
+        uuid_from_slice(&buf)
+            .map_err(|_| io::Error::new(io::ErrorKind::InvalidData, "invalid uuid"))
+    }
+
+    pub fn take_uuid_opt(&mut self) -> io::Result<Option<Uuid16>> {
+        let mut buf = [0u8; 16];
+        let first = match self.read_one()? {
+            Some(value) => value,
+            None => return Ok(None),
+        };
+        buf[0] = first;
+        self.read_exact(&mut buf[1..])?;
+        let uuid = uuid_from_slice(&buf)
+            .map_err(|_| io::Error::new(io::ErrorKind::InvalidData, "invalid uuid"))?;
+        Ok(Some(uuid))
+    }
+
+    pub fn take_str8(&mut self) -> io::Result<String> {
+        let len = self.take_u8()? as usize;
+        let mut data = vec![0u8; len];
+        self.read_exact(&mut data)?;
+        let value = std::str::from_utf8(&data)
+            .map_err(|_| io::Error::new(io::ErrorKind::InvalidData, "invalid utf-8"))?
+            .to_string();
+        Ok(value)
+    }
+
+    pub fn take_str8_opt(&mut self) -> io::Result<Option<String>> {
+        let len = match self.read_one()? {
+            Some(value) => value as usize,
+            None => return Ok(None),
+        };
+        let first = match self.read_one()? {
+            Some(value) => value,
+            None => {
+                return Err(io::Error::new(
+                    io::ErrorKind::UnexpectedEof,
+                    "str8 data",
+                ))
+            }
+        };
+
+        let mut data = Vec::with_capacity(len);
+        if first == 1u8 {
+            let mut rest = vec![0u8; len];
+            self.read_exact(&mut rest)?;
+            data.extend_from_slice(&rest);
+        } else {
+            data.push(first);
+            if len > 1 {
+                let mut rest = vec![0u8; len - 1];
+                self.read_exact(&mut rest)?;
+                data.extend_from_slice(&rest);
+            }
+        }
+
+        let value = match std::str::from_utf8(&data) {
+            Ok(value) => value.to_string(),
+            Err(_) => return Ok(None),
+        };
+        Ok(Some(value))
+    }
+
+    pub fn take_u32_be(&mut self) -> io::Result<u32> {
+        let mut buf = [0u8; 4];
+        self.read_exact(&mut buf)?;
+        Ok(u32::from_be_bytes(buf))
+    }
+
+    pub fn take_u16_be(&mut self) -> io::Result<u16> {
+        let mut buf = [0u8; 2];
+        self.read_exact(&mut buf)?;
+        Ok(u16::from_be_bytes(buf))
+    }
+
+    pub fn take_u16_le(&mut self) -> io::Result<u16> {
+        let mut buf = [0u8; 2];
+        self.read_exact(&mut buf)?;
+        Ok(u16::from_le_bytes(buf))
+    }
+
+    pub fn take_u32_le(&mut self) -> io::Result<u32> {
+        let mut buf = [0u8; 4];
+        self.read_exact(&mut buf)?;
+        Ok(u32::from_le_bytes(buf))
+    }
+
+    pub fn take_u32_be_opt(&mut self) -> io::Result<Option<u32>> {
+        let first = match self.read_one()? {
+            Some(value) => value,
+            None => return Ok(None),
+        };
+        let mut buf = [0u8; 4];
+        buf[0] = first;
+        self.read_exact(&mut buf[1..])?;
+        Ok(Some(u32::from_be_bytes(buf)))
+    }
+
+    pub fn take_u64_be_opt(&mut self) -> io::Result<Option<u64>> {
+        let first = match self.read_one()? {
+            Some(value) => value,
+            None => return Ok(None),
+        };
+        let mut buf = [0u8; 8];
+        buf[0] = first;
+        self.read_exact(&mut buf[1..])?;
+        Ok(Some(u64::from_be_bytes(buf)))
+    }
+
+    pub fn take_u64_be(&mut self) -> io::Result<u64> {
+        let mut buf = [0u8; 8];
+        self.read_exact(&mut buf)?;
+        Ok(u64::from_be_bytes(buf))
+    }
+
+    pub fn take_datetime_opt(&mut self) -> io::Result<Option<String>> {
+        let value = match self.take_u64_be_opt()? {
+            Some(value) => value,
+            None => return Ok(None),
+        };
+        Ok(v8_datetime_to_iso(value))
+    }
+
+    pub fn take_u8(&mut self) -> io::Result<u8> {
+        let value = self
+            .read_one()?
+            .ok_or_else(|| io::Error::new(io::ErrorKind::UnexpectedEof, "u8"))?;
+        Ok(value)
+    }
+
+    pub fn take_bytes(&mut self, len: usize) -> io::Result<Vec<u8>> {
+        let mut out = vec![0u8; len];
+        self.read_exact(&mut out)?;
+        Ok(out)
+    }
+
+    pub fn take_f64_be(&mut self) -> io::Result<f64> {
+        let mut buf = [0u8; 8];
+        self.read_exact(&mut buf)?;
+        Ok(f64::from_be_bytes(buf))
+    }
+
+    pub fn take_u8_opt(&mut self) -> io::Result<Option<u8>> {
+        self.read_one()
+    }
+
+    pub fn take_bool(&mut self) -> io::Result<bool> {
+        Ok(self.take_u8()? != 0)
+    }
+
+    pub fn take_bool_opt(&mut self) -> io::Result<Option<bool>> {
+        Ok(self.read_one()?.map(|value| value != 0))
+    }
+
+    pub fn take_u16_le_opt(&mut self) -> io::Result<Option<u16>> {
+        let first = match self.read_one()? {
+            Some(value) => value,
+            None => return Ok(None),
+        };
+        let mut buf = [0u8; 2];
+        buf[0] = first;
+        self.read_exact(&mut buf[1..])?;
+        Ok(Some(u16::from_le_bytes(buf)))
+    }
+
+    pub fn take_i32_be_opt(&mut self) -> io::Result<Option<i32>> {
+        let first = match self.read_one()? {
+            Some(value) => value,
+            None => return Ok(None),
+        };
+        let mut buf = [0u8; 4];
+        buf[0] = first;
+        self.read_exact(&mut buf[1..])?;
+        Ok(Some(i32::from_be_bytes(buf)))
+    }
+
+    fn read_one(&mut self) -> io::Result<Option<u8>> {
+        let mut buf = [0u8; 1];
+        match self.reader.read(&mut buf)? {
+            0 => Ok(None),
+            _ => {
+                self.read_len += 1;
+                Ok(Some(buf[0]))
+            }
+        }
+    }
+
+    fn read_exact(&mut self, buf: &mut [u8]) -> io::Result<()> {
+        self.reader.read_exact(buf)?;
+        self.read_len += buf.len();
+        Ok(())
+    }
 }
 
 fn civil_from_days(days_since_unix_epoch: i64) -> (i64, i64, i64) {

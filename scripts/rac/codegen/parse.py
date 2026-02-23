@@ -92,6 +92,7 @@ def parse_schema_payload(
             RpcSpec(
                 name=name,
                 request=spec.get("request"),
+                response=spec.get("response"),
                 method_req=int(spec.get("method_req")),
                 method_resp=spec.get("method_resp"),
                 requires_cluster_context=bool(spec.get("requires_cluster_context", False)),

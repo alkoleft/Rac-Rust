@@ -3,6 +3,9 @@ use crate::codec::RecordCursor;
 use crate::error::Result;
 use serde::Serialize;
 use crate::metadata::RpcMethodMeta;
+use crate::protocol::ProtocolCodec;
+use crate::rpc::{Meta, Request};
+use crate::rpc::AckResponse;
 use crate::rac_wire::encode_with_len_u8;
 
 #[derive(Debug, Serialize, Clone)]
@@ -105,6 +108,69 @@ impl AgentVersionRequest {
 
     pub fn encode_body(&self, _out: &mut Vec<u8>) -> Result<()> {
         Ok(())
+    }
+}
+
+pub struct AgentAuthRpc {
+    pub user: String,
+    pub pwd: String,
+}
+
+impl Request for AgentAuthRpc {
+    type Response = AckResponse;
+
+    fn meta(&self) -> Meta {
+        RPC_AGENT_AUTH_META
+    }
+
+    fn cluster(&self) -> Option<crate::Uuid16> {
+        None
+    }
+
+    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
+        let req = AgentAuthRequest {
+            user: self.user.clone(),
+            pwd: self.pwd.clone(),
+        };
+        let mut out = Vec::with_capacity(req.encoded_len());
+        req.encode_body(&mut out)?;
+        Ok(out)
+    }
+}
+
+pub struct AgentAdminListRpc;
+
+impl Request for AgentAdminListRpc {
+    type Response = super::AgentAdminListResp;
+
+    fn meta(&self) -> Meta {
+        RPC_AGENT_ADMIN_LIST_META
+    }
+
+    fn cluster(&self) -> Option<crate::Uuid16> {
+        None
+    }
+
+    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
+        Ok(Vec::new())
+    }
+}
+
+pub struct AgentVersionRpc;
+
+impl Request for AgentVersionRpc {
+    type Response = super::AgentVersionResp;
+
+    fn meta(&self) -> Meta {
+        RPC_AGENT_VERSION_META
+    }
+
+    fn cluster(&self) -> Option<crate::Uuid16> {
+        None
+    }
+
+    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
+        Ok(Vec::new())
     }
 }
 

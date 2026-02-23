@@ -42,6 +42,7 @@ class RpcTestSpec:
 class RpcSpec:
     name: str
     request: Optional[str]
+    response: Optional[str]
     method_req: int
     method_resp: Optional[int]
     requires_cluster_context: bool

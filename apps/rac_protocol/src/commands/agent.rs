@@ -3,7 +3,7 @@ use serde::Serialize;
 use crate::client::RacClient;
 use crate::error::Result;
 use crate::protocol::ProtocolCodec;
-use crate::rpc::{AckResponse, Meta, Request, Response};
+use crate::rpc::Response;
 use crate::rpc::decode_utils::rpc_body;
 
 use super::parse_list_u8;
@@ -13,10 +13,13 @@ mod generated {
 }
 
 pub use generated::{
+    AgentAdminListRpc,
     AgentAdminRecord,
     AgentAuthRequest,
+    AgentAuthRpc,
     AgentVersionRecord,
     AgentVersionRequest,
+    AgentVersionRpc,
     parse_agent_version_body,
 };
 
@@ -30,78 +33,12 @@ pub struct AgentVersionResp {
     pub version: String,
 }
 
-struct AgentAuthRpc {
-    user: String,
-    pwd: String,
-}
-
-impl Request for AgentAuthRpc {
-    type Response = AckResponse;
-
-    fn meta(&self) -> Meta {
-        generated::RPC_AGENT_AUTH_META
-    }
-
-    fn cluster(&self) -> Option<crate::Uuid16> {
-        None
-    }
-
-    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
-        let req = AgentAuthRequest {
-            user: self.user.clone(),
-            pwd: self.pwd.clone(),
-        };
-        let mut out = Vec::with_capacity(req.encoded_len());
-        req.encode_body(&mut out)?;
-        Ok(out)
-    }
-}
-
-struct AgentAdminListRpc;
-
-impl Request for AgentAdminListRpc {
-    type Response = AgentAdminListResp;
-
-    fn meta(&self) -> Meta {
-        generated::RPC_AGENT_ADMIN_LIST_META
-    }
-
-    fn cluster(&self) -> Option<crate::Uuid16> {
-        None
-    }
-
-    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
-        Ok(Vec::new())
-    }
-}
-
 impl Response for AgentAdminListResp {
     fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
         let body = rpc_body(payload)?;
         Ok(Self {
             admins: parse_agent_admin_list_body(body)?,
         })
-    }
-}
-
-struct AgentVersionRpc;
-
-impl Request for AgentVersionRpc {
-    type Response = AgentVersionResp;
-
-    fn meta(&self) -> Meta {
-        generated::RPC_AGENT_VERSION_META
-    }
-
-    fn cluster(&self) -> Option<crate::Uuid16> {
-        None
-    }
-
-    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
-        let req = AgentVersionRequest {};
-        let mut out = Vec::with_capacity(req.encoded_len());
-        req.encode_body(&mut out)?;
-        Ok(out)
     }
 }
 

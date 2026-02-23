@@ -26,17 +26,20 @@ fields = []
 
 [rpc.AgentAuth]
 request = "AgentAuthRequest"
+response = "AckResponse"
 method_req = 0x08
 requires_cluster_context = false
 requires_infobase_context = false
 
 [rpc.AgentAdminList]
+response = "super::AgentAdminListResp"
 method_req = 0x00
 method_resp = 0x01
 requires_cluster_context = false
 requires_infobase_context = false
 
 [rpc.AgentVersion]
+response = "super::AgentVersionResp"
 method_req = 0x87
 method_resp = 0x88
 requires_cluster_context = false

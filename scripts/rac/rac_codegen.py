@@ -3,7 +3,7 @@ import argparse
 from pathlib import Path
 
 from codegen.parse import parse_schema
-from codegen.render import generate, generate_requests, generate_response_tests
+from codegen.render import generate, generate_requests, generate_response_tests, generate_rpc_requests
 from codegen.rust_types import request_uses
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -24,6 +24,8 @@ def main() -> int:
     output = generate(records, responses, rpcs, extra_uses)
     if requests:
         output = output + "\n" + generate_requests(requests, include_uses=False)
+    if rpcs:
+        output = output + "\n" + generate_rpc_requests(rpcs, requests)
     if responses:
         output = output + "\n" + "\n".join(generate_response_tests(responses)).rstrip() + "\n"
 

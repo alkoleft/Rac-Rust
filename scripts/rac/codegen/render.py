@@ -34,6 +34,11 @@ def generate(
     uses.append("use serde::Serialize;")
     if rpcs:
         uses.append("use crate::metadata::RpcMethodMeta;")
+        if any(rpc.response for rpc in rpcs):
+            uses.append("use crate::protocol::ProtocolCodec;")
+            uses.append("use crate::rpc::{Meta, Request};")
+            if any(rpc.response == "AckResponse" for rpc in rpcs if rpc.response):
+                uses.append("use crate::rpc::AckResponse;")
     if extra_uses:
         for item in extra_uses:
             if item not in uses:
@@ -345,6 +350,65 @@ def generate_requests(requests: List[RequestSpec], include_uses: bool = True) ->
         lines.append(f"    pub fn encode_body(&self, {out_name}: &mut Vec<u8>) -> Result<()> {{")
         lines.extend(expr_lines)
         lines.append("        Ok(())")
+        lines.append("    }")
+        lines.append("}")
+        lines.append("")
+
+    return "\n".join(lines).rstrip() + "\n"
+
+
+def generate_rpc_requests(rpcs: List[RpcSpec], requests: List[RequestSpec]) -> str:
+    request_map = {req.name: req for req in requests}
+    lines: List[str] = []
+
+    for rpc in rpcs:
+        if not rpc.response:
+            continue
+        struct_name = f"{rpc.name}Rpc"
+        req_spec = request_map.get(rpc.request) if rpc.request else None
+        fields = []
+        if req_spec:
+            for field in req_spec.fields:
+                if field.skip or field.literal is not None:
+                    continue
+                fields.append((field.name, request_rust_type(field)))
+
+        if fields:
+            lines.append(f"pub struct {struct_name} {{")
+            for name, ty in fields:
+                lines.append(f"    pub {name}: {ty},")
+            lines.append("}")
+        else:
+            lines.append(f"pub struct {struct_name};")
+        lines.append("")
+        lines.append(f"impl Request for {struct_name} {{")
+        lines.append(f"    type Response = {rpc.response};")
+        lines.append("")
+        lines.append("    fn meta(&self) -> Meta {")
+        lines.append(f"        RPC_{snake_case(rpc.name).upper()}_META")
+        lines.append("    }")
+        lines.append("")
+        lines.append("    fn cluster(&self) -> Option<crate::Uuid16> {")
+        if rpc.requires_cluster_context or rpc.requires_infobase_context:
+            if fields and any(name == "cluster" for name, _ in fields):
+                lines.append("        Some(self.cluster)")
+            else:
+                lines.append("        None")
+        else:
+            lines.append("        None")
+        lines.append("    }")
+        lines.append("")
+        lines.append("    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {")
+        if req_spec:
+            lines.append(f"        let req = {req_spec.name} {{")
+            for name, _ in fields:
+                lines.append(f"            {name}: self.{name}.clone(),")
+            lines.append("        };")
+            lines.append("        let mut out = Vec::with_capacity(req.encoded_len());")
+            lines.append("        req.encode_body(&mut out)?;")
+            lines.append("        Ok(out)")
+        else:
+            lines.append("        Ok(Vec::new())")
         lines.append("    }")
         lines.append("}")
         lines.append("")

@@ -195,6 +195,7 @@ pub struct RequiredContext {
 
 pub trait RacProtocol: Send + Sync {
     fn name(&self) -> &'static str;
+    fn protocol_version(&self) -> RacProtocolVersion;
 
     fn init_packet(&self) -> &'static [u8];
     fn service_negotiation_payload(&self) -> &'static [u8];
@@ -217,6 +218,8 @@ pub trait RacProtocol: Send + Sync {
 
 #[derive(Debug, Serialize, Clone, Copy, PartialEq, Eq)]
 pub enum RacProtocolVersion {
+    #[serde(rename = "auto")]
+    Auto,
     #[serde(rename = "v11.0")]
     V11_0,
     #[serde(rename = "v16.0")]
@@ -225,113 +228,72 @@ pub enum RacProtocolVersion {
 
 impl Default for RacProtocolVersion {
     fn default() -> Self {
-        Self::V11_0
+        Self::Auto
     }
 }
 
 impl RacProtocolVersion {
+    pub fn negotiation_candidates(self) -> &'static [RacProtocolVersion] {
+        const AUTO: [RacProtocolVersion; 2] = [RacProtocolVersion::V16_0, RacProtocolVersion::V11_0];
+        const V11: [RacProtocolVersion; 1] = [RacProtocolVersion::V11_0];
+        const V16: [RacProtocolVersion; 1] = [RacProtocolVersion::V16_0];
+
+        match self {
+            RacProtocolVersion::Auto => &AUTO,
+            RacProtocolVersion::V11_0 => &V11,
+            RacProtocolVersion::V16_0 => &V16,
+        }
+    }
+
     pub fn boxed(self) -> Box<dyn RacProtocol> {
         match self {
-            RacProtocolVersion::V11_0 => Box::new(V11Protocol),
-            RacProtocolVersion::V16_0 => Box::new(V16Protocol),
+            RacProtocolVersion::Auto => {
+                Box::new(RacProtocolImpl::new(RacProtocolVersion::V16_0))
+            }
+            RacProtocolVersion::V11_0 => Box::new(RacProtocolImpl::new(RacProtocolVersion::V11_0)),
+            RacProtocolVersion::V16_0 => Box::new(RacProtocolImpl::new(RacProtocolVersion::V16_0)),
         }
     }
 }
 
 #[derive(Debug)]
-pub struct V11Protocol;
+pub(crate) struct RacProtocolImpl {
+    version: RacProtocolVersion,
+}
 
-impl V11Protocol {
+impl RacProtocolImpl {
     const INIT_PACKET: &'static [u8] = &[
         0x1c, 0x53, 0x57, 0x50, 0x01, 0x00, 0x01, 0x00, 0x01, 0x16, 0x01, 0x0f, 0x63, 0x6f, 0x6e,
         0x6e, 0x65, 0x63, 0x74, 0x2e, 0x74, 0x69, 0x6d, 0x65, 0x6f, 0x75, 0x74, 0x04, 0x00, 0x00,
         0x07, 0xd0,
     ];
 
-    const SERVICE_NEGOTIATION: &'static [u8] = &[
+    const SERVICE_NEGOTIATION_V11: &'static [u8] = &[
         0x18, 0x76, 0x38, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x41, 0x64, 0x6d,
         0x69, 0x6e, 0x2e, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x04, 0x31, 0x31, 0x2e, 0x30,
         0x80,
     ];
 
-    const CLOSE: &'static [u8] = &[0x01];
-}
-
-impl RacProtocol for V11Protocol {
-    fn name(&self) -> &'static str {
-        "v11.0"
-    }
-
-    fn init_packet(&self) -> &'static [u8] {
-        Self::INIT_PACKET
-    }
-
-    fn service_negotiation_payload(&self) -> &'static [u8] {
-        Self::SERVICE_NEGOTIATION
-    }
-
-    fn close_payload(&self) -> &'static [u8] {
-        Self::CLOSE
-    }
-
-    fn opcode_init_ack(&self) -> u8 {
-        OPCODE_INIT_ACK
-    }
-
-    fn opcode_service_negotiation(&self) -> u8 {
-        OPCODE_SERVICE_NEGOTIATION
-    }
-
-    fn opcode_service_ack(&self) -> u8 {
-        OPCODE_SERVICE_ACK
-    }
-
-    fn opcode_rpc(&self) -> u8 {
-        OPCODE_RPC
-    }
-
-    fn opcode_close(&self) -> u8 {
-        OPCODE_CLOSE
-    }
-
-    fn decode_rpc_method_id(&self, payload: &[u8]) -> Option<u8> {
-        decode_rpc_method(payload)
-    }
-
-    fn required_context(&self, request: &RacRequest) -> RequiredContext {
-        <V16Protocol as RacProtocol>::required_context(&V16Protocol, request)
-    }
-
-    fn serialize_set_cluster_context(&self, cluster: Uuid16) -> Result<SerializedRpc> {
-        <V16Protocol as RacProtocol>::serialize_set_cluster_context(&V16Protocol, cluster)
-    }
-
-    fn serialize_set_infobase_context(&self, cluster: Uuid16) -> Result<SerializedRpc> {
-        <V16Protocol as RacProtocol>::serialize_set_infobase_context(&V16Protocol, cluster)
-    }
-
-    fn serialize(&self, request: RacRequest) -> Result<SerializedRpc> {
-        <V16Protocol as RacProtocol>::serialize(&V16Protocol, request)
-    }
-}
-
-#[derive(Debug)]
-pub struct V16Protocol;
-
-impl V16Protocol {
-    const INIT_PACKET: &'static [u8] = &[
-        0x1c, 0x53, 0x57, 0x50, 0x01, 0x00, 0x01, 0x00, 0x01, 0x16, 0x01, 0x0f, 0x63, 0x6f, 0x6e,
-        0x6e, 0x65, 0x63, 0x74, 0x2e, 0x74, 0x69, 0x6d, 0x65, 0x6f, 0x75, 0x74, 0x04, 0x00, 0x00,
-        0x07, 0xd0,
-    ];
-
-    const SERVICE_NEGOTIATION: &'static [u8] = &[
+    const SERVICE_NEGOTIATION_V16: &'static [u8] = &[
         0x18, 0x76, 0x38, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x41, 0x64, 0x6d,
         0x69, 0x6e, 0x2e, 0x43, 0x6c, 0x75, 0x73, 0x74, 0x65, 0x72, 0x04, 0x31, 0x36, 0x2e, 0x30,
         0x80,
     ];
 
     const CLOSE: &'static [u8] = &[0x01];
+
+    pub(crate) fn service_negotiation_payload(
+        version: RacProtocolVersion,
+    ) -> &'static [u8] {
+        match version {
+            RacProtocolVersion::V11_0 => Self::SERVICE_NEGOTIATION_V11,
+            RacProtocolVersion::V16_0 | RacProtocolVersion::Auto => Self::SERVICE_NEGOTIATION_V16,
+        }
+    }
+
+    fn new(version: RacProtocolVersion) -> Self {
+        Self { version }
+    }
 
     fn encode_cluster_context(cluster: Uuid16) -> Vec<u8> {
         let mut body = Vec::with_capacity(16 + 2);
@@ -359,9 +321,17 @@ impl V16Protocol {
     }
 }
 
-impl RacProtocol for V16Protocol {
+impl RacProtocol for RacProtocolImpl {
     fn name(&self) -> &'static str {
-        "v16.0"
+        match self.version {
+            RacProtocolVersion::Auto => "auto",
+            RacProtocolVersion::V11_0 => "v11.0",
+            RacProtocolVersion::V16_0 => "v16.0",
+        }
+    }
+
+    fn protocol_version(&self) -> RacProtocolVersion {
+        self.version
     }
 
     fn init_packet(&self) -> &'static [u8] {
@@ -369,7 +339,7 @@ impl RacProtocol for V16Protocol {
     }
 
     fn service_negotiation_payload(&self) -> &'static [u8] {
-        Self::SERVICE_NEGOTIATION
+        Self::service_negotiation_payload(self.version)
     }
 
     fn close_payload(&self) -> &'static [u8] {

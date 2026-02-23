@@ -28,13 +28,39 @@ pub(crate) fn negotiate(
     )?;
     transport.flush()?;
 
-    let svc = transport.read_frame()?;
-    if svc.opcode != protocol.opcode_service_ack() {
+    for _ in 0..3 {
+        let svc = transport.read_frame()?;
+        if svc.opcode == protocol.opcode_service_ack() {
+            return Ok(());
+        }
+        if svc.opcode == 0x0f {
+            if is_unsupported_service(&svc.payload) {
+                if debug_raw {
+                    log_frame("service-unsupported", &svc);
+                }
+                return Err(RacError::UnsupportedService {
+                    payload: svc.payload,
+                });
+            }
+            if debug_raw {
+                log_frame("service-notice-unexpected", &svc);
+            }
+            continue;
+        }
         if debug_raw {
             log_frame("service-ack-unexpected", &svc);
         }
         return Err(RacError::Protocol("unexpected service negotiation reply"));
     }
 
-    Ok(())
+    Err(RacError::Protocol(
+        "service negotiation reply not received",
+    ))
+}
+
+fn is_unsupported_service(payload: &[u8]) -> bool {
+    const MARKER: &[u8] = b"UnsupportedService";
+    payload
+        .windows(MARKER.len())
+        .any(|window| window == MARKER)
 }

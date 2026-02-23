@@ -160,6 +160,7 @@ fn parse_cluster_record(cursor: &mut RecordCursor<'_>, tail_len: usize) -> Resul
 
 fn cluster_tail_len(protocol_version: RacProtocolVersion) -> usize {
     match protocol_version {
+        RacProtocolVersion::Auto => 32,
         RacProtocolVersion::V11_0 => 0,
         RacProtocolVersion::V16_0 => 32,
     }

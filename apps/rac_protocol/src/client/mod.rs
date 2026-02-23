@@ -47,14 +47,35 @@ pub struct RacClient {
 
 impl RacClient {
     pub fn connect(addr: &str, cfg: ClientConfig) -> Result<Self> {
-        let protocol = cfg.protocol.boxed();
-        Self::connect_with_protocol(addr, cfg, protocol)
+        for protocol_version in cfg.protocol.negotiation_candidates() {
+            let protocol = protocol_version.boxed();
+            match Self::connect_with_protocol_version(addr, &cfg, protocol, *protocol_version) {
+                Ok(client) => return Ok(client),
+                Err(err) => {
+                    if matches!(err, RacError::UnsupportedService { .. }) {
+                        continue;
+                    }
+                    return Err(err);
+                }
+            }
+        }
+        Err(RacError::Protocol("service negotiation failed"))
     }
 
     pub fn connect_with_protocol(
         addr: &str,
         cfg: ClientConfig,
         protocol: Box<dyn RacProtocol>,
+    ) -> Result<Self> {
+        let protocol_version = protocol.protocol_version();
+        Self::connect_with_protocol_version(addr, &cfg, protocol, protocol_version)
+    }
+
+    fn connect_with_protocol_version(
+        addr: &str,
+        cfg: &ClientConfig,
+        protocol: Box<dyn RacProtocol>,
+        protocol_version: RacProtocolVersion,
     ) -> Result<Self> {
         let transport = RacTransport::connect(
             addr,
@@ -66,7 +87,7 @@ impl RacClient {
         let mut client = Self {
             transport,
             protocol,
-            protocol_version: cfg.protocol,
+            protocol_version,
             current_cluster: None,
             current_infobase: None,
             debug_raw: cfg.debug_raw,

@@ -10,6 +10,7 @@ pub enum RacError {
     Protocol(&'static str),
     ProtocolMessage(String),
     Unsupported(&'static str),
+    UnsupportedService { payload: Vec<u8> },
     Decode(&'static str),
     DecodeMessage(String),
     UnexpectedMethod { got: u8, expected: u8 },
@@ -23,6 +24,7 @@ impl fmt::Display for RacError {
             RacError::Protocol(msg) => write!(f, "protocol error: {msg}"),
             RacError::ProtocolMessage(msg) => write!(f, "protocol error: {msg}"),
             RacError::Unsupported(msg) => write!(f, "unsupported: {msg}"),
+            RacError::UnsupportedService { .. } => write!(f, "unsupported service"),
             RacError::Decode(msg) => write!(f, "decode error: {msg}"),
             RacError::DecodeMessage(msg) => write!(f, "decode error: {msg}"),
             RacError::UnexpectedMethod { got, expected } => {

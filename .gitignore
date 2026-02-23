@@ -1,3 +1,4 @@
 /target
 /logs
 docs/.private/
+__pycache__

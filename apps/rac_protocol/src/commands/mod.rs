@@ -23,7 +23,7 @@ pub use self::agent::{
 pub use self::cluster::{
     cluster_admin_list, cluster_admin_register, cluster_info, cluster_list, ClusterAdminListResp,
     ClusterAdminRecord, ClusterAdminRegisterReq, ClusterAdminRegisterResp, ClusterInfoResp,
-    ClusterListResp, ClusterSummary,
+    ClusterListResp, ClusterRecord,
 };
 pub use self::connection::{
     connection_info, connection_list, ConnectionInfoResp, ConnectionListResp, ConnectionRecord,

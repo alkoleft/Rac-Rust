@@ -1326,18 +1326,14 @@ impl Display for ClusterListDisplay<'_> {
                 "cluster_uuid[{idx}]: {}",
                 format_uuid(&cluster.uuid)
             );
-            if let Some(host) = &cluster.host {
-                outln!(out, "cluster_host[{idx}]: {host}");
-            }
-            if let Some(port) = cluster.port {
-                outln!(out, "cluster_port[{idx}]: {port}");
-            }
-            if let Some(name) = &cluster.display_name {
-                outln!(out, "cluster_name[{idx}]: {name}");
-            }
-            if let Some(timeout) = cluster.expiration_timeout {
-                outln!(out, "cluster_expiration_timeout[{idx}]: {timeout}");
-            }
+            outln!(out, "cluster_host[{idx}]: {}", cluster.host);
+            outln!(out, "cluster_port[{idx}]: {}", cluster.port);
+            outln!(out, "cluster_name[{idx}]: {}", cluster.display_name);
+            outln!(
+                out,
+                "cluster_expiration_timeout[{idx}]: {}",
+                cluster.expiration_timeout
+            );
         });
         write_trimmed(f, &out)
     }
@@ -1359,18 +1355,14 @@ impl Display for ClusterInfoDisplay<'_> {
             "cluster_uuid: {}",
             format_uuid(&self.resp.cluster.uuid)
         );
-        if let Some(host) = &self.resp.cluster.host {
-            outln!(&mut out, "host: {host}");
-        }
-        if let Some(port) = self.resp.cluster.port {
-            outln!(&mut out, "port: {port}");
-        }
-        if let Some(name) = &self.resp.cluster.display_name {
-            outln!(&mut out, "display_name: {name}");
-        }
-        if let Some(timeout) = self.resp.cluster.expiration_timeout {
-            outln!(&mut out, "expiration_timeout: {timeout}");
-        }
+        outln!(&mut out, "host: {}", self.resp.cluster.host);
+        outln!(&mut out, "port: {}", self.resp.cluster.port);
+        outln!(&mut out, "display_name: {}", self.resp.cluster.display_name);
+        outln!(
+            &mut out,
+            "expiration_timeout: {}",
+            self.resp.cluster.expiration_timeout
+        );
         write_trimmed(f, &out)
     }
 }

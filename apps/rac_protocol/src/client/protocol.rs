@@ -6,7 +6,11 @@ use crate::rac_wire::{
 use crate::Uuid16;
 use serde::Serialize;
 
-use super::request_schema::cluster as cluster_schema;
+use crate::commands::cluster::{
+    ClusterAdminRegisterRequest,
+    ClusterAuthRequest,
+    ClusterIdRequest,
+};
 
 #[derive(Debug, Clone)]
 pub struct SerializedRpc {
@@ -467,13 +471,13 @@ impl RacProtocol for RacProtocolImpl {
                 Some(METHOD_AGENT_VERSION_RESP),
             ),
             RacRequest::ClusterAuth { cluster, user, pwd } => {
-                let req = cluster_schema::ClusterAuthRequest { cluster, user, pwd };
+                let req = ClusterAuthRequest { cluster, user, pwd };
                 let mut body = Vec::with_capacity(req.encoded_len());
                 req.encode_body(&mut body)?;
                 (encode_rpc(METHOD_CLUSTER_AUTH, &body), None)
             }
             RacRequest::ClusterAdminList { cluster } => {
-                let req = cluster_schema::ClusterIdRequest { cluster };
+                let req = ClusterIdRequest { cluster };
                 let mut body = Vec::with_capacity(req.encoded_len());
                 req.encode_body(&mut body)?;
                 (
@@ -488,7 +492,7 @@ impl RacProtocol for RacProtocolImpl {
                 pwd,
                 auth_flags,
             } => {
-                let req = cluster_schema::ClusterAdminRegisterRequest {
+                let req = ClusterAdminRegisterRequest {
                     cluster,
                     name,
                     descr,
@@ -507,7 +511,7 @@ impl RacProtocol for RacProtocolImpl {
                 Some(METHOD_CLUSTER_LIST_RESP),
             ),
             RacRequest::ClusterInfo { cluster } => {
-                let req = cluster_schema::ClusterIdRequest { cluster };
+                let req = ClusterIdRequest { cluster };
                 let mut body = Vec::with_capacity(req.encoded_len());
                 req.encode_body(&mut body)?;
                 (

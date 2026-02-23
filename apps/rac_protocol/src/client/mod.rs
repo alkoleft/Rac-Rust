@@ -1,7 +1,6 @@
 mod debug;
 mod handshake;
 mod protocol;
-mod request_schema;
 mod transport;
 
 use std::io;

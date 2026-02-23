@@ -11,7 +11,13 @@ mod generated {
     include!("cluster_generated.rs");
 }
 
-pub use generated::{ClusterAdminRecord, ClusterRecord};
+pub use generated::{
+    ClusterAdminRecord,
+    ClusterAdminRegisterRequest,
+    ClusterAuthRequest,
+    ClusterIdRequest,
+    ClusterRecord,
+};
 
 #[derive(Debug, Serialize)]
 pub struct ClusterAdminListResp {

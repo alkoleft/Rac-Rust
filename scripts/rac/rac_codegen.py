@@ -506,7 +506,7 @@ def needs_protocol_version(records: List[RecordSpec]) -> bool:
     return False
 
 
-def generate(records: List[RecordSpec]) -> str:
+def generate(records: List[RecordSpec], extra_uses: Optional[List[str]] = None) -> str:
     lines: List[str] = []
     uses = ["use crate::codec::RecordCursor;", "use crate::error::Result;"]
     if needs_datetime(records):
@@ -518,6 +518,10 @@ def generate(records: List[RecordSpec]) -> str:
     if needs_protocol_version(records):
         uses.insert(0, "use crate::client::RacProtocolVersion;")
     uses.append("use serde::Serialize;")
+    if extra_uses:
+        for item in extra_uses:
+            if item not in uses:
+                uses.append(item)
     lines.extend(uses)
     lines.append("")
 
@@ -678,8 +682,7 @@ def request_encode_expr(field: FieldSpec) -> List[str]:
     raise ValueError(f"unknown type for encode: {t}")
 
 
-def generate_requests(requests: List[RequestSpec]) -> str:
-    lines: List[str] = []
+def request_uses(requests: List[RequestSpec]) -> List[str]:
     uses = ["use crate::error::Result;"]
     if request_needs_encode_with_len_u8(requests):
         uses.insert(0, "use crate::rac_wire::encode_with_len_u8;")
@@ -687,8 +690,14 @@ def generate_requests(requests: List[RequestSpec]) -> str:
         uses.insert(0, "use crate::Uuid16;")
     if request_needs_serde(requests):
         uses.append("use serde::Serialize;")
-    lines.extend(uses)
-    lines.append("")
+    return uses
+
+
+def generate_requests(requests: List[RequestSpec], include_uses: bool = True) -> str:
+    lines: List[str] = []
+    if include_uses:
+        lines.extend(request_uses(requests))
+        lines.append("")
 
     for req in requests:
         derive = ", ".join(req.derives)
@@ -734,7 +743,6 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Generate RAC schema code from TOML schema")
     parser.add_argument("schema", help="Path to TOML schema")
     parser.add_argument("--out", help="Output .rs file path")
-    parser.add_argument("--requests-out", help="Output .rs file path for request encoders")
     args = parser.parse_args()
 
     schema_path = Path(args.schema)
@@ -742,7 +750,10 @@ def main() -> int:
         schema_path = (ROOT / schema_path).resolve()
 
     records, requests = parse_schema(schema_path)
-    output = generate(records)
+    extra_uses = request_uses(requests) if requests else None
+    output = generate(records, extra_uses)
+    if requests:
+        output = output + "\n" + generate_requests(requests, include_uses=False)
 
     out_path: Path
     if args.out:
@@ -754,14 +765,6 @@ def main() -> int:
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(output)
-
-    if args.requests_out:
-        requests_path = Path(args.requests_out)
-        if not requests_path.is_absolute():
-            requests_path = (ROOT / requests_path).resolve()
-        requests_output = generate_requests(requests)
-        requests_path.parent.mkdir(parents=True, exist_ok=True)
-        requests_path.write_text(requests_output)
     return 0
 
 

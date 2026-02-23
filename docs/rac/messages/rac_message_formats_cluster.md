@@ -3,35 +3,42 @@
 ## Cluster List
 
 Source capture:
-- `logs/session_1771110767_483969_127_0_0_1_48522`
+- `logs/session_1771809087_3655605_127_0_0_1_44760` (baseline)
+- `logs/session_1771809193_3656488_127_0_0_1_55892` (custom values)
+- `logs/session_1771809286_3657216_127_0_0_1_33354` (flag toggle)
+
+Payload example:
+- `artifacts/rac/cluster_list_response_baseline.hex`
+- `artifacts/rac/cluster_list_response_custom.hex`
+- `artifacts/rac/cluster_list_response_flags.hex`
 
 RAC output reference:
-- `rac cluster list`
+- `artifacts/rac/cluster_list_baseline_rac.out`
+- `artifacts/rac/cluster_list_custom_rac.out`
+- `artifacts/rac/cluster_list_flags_rac.out`
 
 ## Fields From `rac` Output
 
 Observed field names in `rac cluster list` output, with capture mapping status.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `cluster` | UUID | yes | 1 |
-| `host` | string | yes | 3 |
-| `port` | u16 | yes | 5 |
-| `name` | string | yes | 7 |
-| `expiration-timeout` | u32 | yes | 2 |
-| `lifetime-limit` | unknown | no | - |
-| `max-memory-size` | unknown | no | - |
-| `max-memory-time-limit` | unknown | no | - |
-| `security-level` | unknown | no | - |
-| `session-fault-tolerance-level` | unknown | no | - |
-| `load-balancing-mode` | unknown | no | - |
-| `errors-count-threshold` | unknown | no | - |
-| `kill-problem-processes` | unknown | no | - |
-| `kill-by-memory-with-dump` | unknown | no | - |
-| `allow-access-right-audit-events-recording` | unknown | no | - |
-| `ping-period` | unknown | no | - |
-| `ping-timeout` | unknown | no | - |
-| `restart-schedule` | unknown | no | - |
+| Field | Type | Found In Capture | Order In Capture | Version |
+|---|---|---|---|---|
+| `cluster` | UUID | yes | 1 | 11.0 |
+| `host` | string | yes | 3 | 11.0 |
+| `port` | u16 | yes | 5 | 11.0 |
+| `name` | string | yes | 6 | 11.0 |
+| `expiration-timeout` | u32 | yes | 2 | 11.0 |
+| `lifetime-limit` | u32 | yes | 4 | 11.0 |
+| `max-memory-size` | unknown | no | - | 11.0 |
+| `max-memory-time-limit` | unknown | no | - | 11.0 |
+| `security-level` | u32 | yes | 7 | 11.0 |
+| `session-fault-tolerance-level` | u32 | yes | 8 | 11.0 |
+| `load-balancing-mode` | u32 | yes | 9 | 11.0 |
+| `errors-count-threshold` | u32 | hypothesis | 10 | 11.0 |
+| `kill-problem-processes` | u8 | yes | 11 | 11.0 |
+| `kill-by-memory-with-dump` | u8 | yes | 12 | 11.0 |
+| `allow-access-right-audit-events-recording` | unknown | no | - | 11.0 |
+| `restart-schedule` | unknown | no | - | 11.0 |
 
 ## RPC Envelope
 
@@ -42,38 +49,80 @@ Response method: `0x0c`
 
 Observed request parameters for `rac cluster list`.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| *(none)* | - | n/a | - |
+| Field | Type | Found In Capture | Order In Capture | Version |
+|---|---|---|---|---|
+| *(none)* | - | n/a | - | 11.0 |
 
 Payload structure (method body):
 - offset `0x00`: `count:u8` (observed `0x01`)
 - offset `0x01`: first record starts here
 - subsequent records start at the next cluster UUID occurrence
 
-## Record Layout (Observed)
+## Record Layout (Observed, v11.0)
+
+Offsets are relative to the start of a record.
+
+| Offset | Size | Field | Type | Notes |
+|---|---|---|---|---|
+| `0x00` | `16` | `cluster` | UUID | |
+| `0x10` | `4` | `expiration-timeout` | u32_be | observed `0x0000003c` -> `60` |
+| `0x14` | `1` | `host-len` | u8 | |
+| `0x15` | `host-len` | `host` | string | UTF-8, observed `alko-home` |
+| `0x15 + host-len` | `4` | `lifetime-limit` | u32_be | observed `0x00000457` -> `1111` |
+| `0x19 + host-len` | `2` | `port` | u16_be | observed `0x0605` -> `1541` |
+| `0x1b + host-len` | `8` | `gap_0` | gap | unknown, observed all zeros |
+| `0x23 + host-len` | `1` | `name-len` | u8 | |
+| `0x24 + host-len` | `name-len` | `name` | string | UTF-8, observed `Локальный кластер` |
+| `0x24 + host-len + name-len` | `4` | `security-level` | u32_be | observed `0x00000003` |
+| `0x28 + host-len + name-len` | `4` | `session-fault-tolerance-level` | u32_be | observed `0x00000004` |
+| `0x2c + host-len + name-len` | `4` | `load-balancing-mode` | u32_be | `0=performance`, `1=memory` |
+| `0x30 + host-len + name-len` | `4` | `errors-count-threshold` | u32_be | observed `0x00000000` |
+| `0x34 + host-len + name-len` | `1` | `kill-problem-processes` | u8 | `0/1` |
+| `0x35 + host-len + name-len` | `1` | `kill-by-memory-with-dump` | u8 | `0/1` |
+
+## Record Layout (Observed, v16.0)
 
 Offsets are relative to the start of a record.
 
 - `0x00` `cluster_uuid[16]`
-- `0x10` `expiration_timeout:u32_be` (observed `0x0000003c` -> 60)
+- `0x10` `expiration_timeout:u32_be`
 - `0x14` `host_len:u8`
-- `0x15` `host[host_len]` (UTF-8, observed `alko-home`)
-- `0x15 + host_len` `unknown_0:u32_be` (observed `0x00000000`)
-- `0x19 + host_len` `port:u16_be` (observed `0x0605` -> 1541)
-- `0x1b + host_len` `unknown_1:u64_be` (observed `0x0000000000000000`)
+- `0x15` `host[host_len]`
+- `0x15 + host_len` `unknown_0:u32_be`
+- `0x19 + host_len` `port:u16_be`
+- `0x1b + host_len` `unknown_1:u64_be`
 - `0x23 + host_len` `name_len:u8`
-- `0x24 + host_len` `name[name_len]` (UTF-8, observed `Локальный кластер`)
+- `0x24 + host_len` `name[name_len]`
 - `0x24 + host_len + name_len` `tail[32]` (8 x `u32` unknown)
 
-## Tail Example (Bytes)
+## Tail Example (Bytes, v11.0)
+
+Baseline (all defaults):
+- `000000000000000000000000000000000100`
+
+Custom values (security=3, fault-tolerance=4, load-balancing=memory, kill-by-memory=1):
+- `000000030000000400000001000000000001`
+
+Flag toggle (kill-problem-processes=1, kill-by-memory=0):
+- `000000030000000400000001000000000100`
+
+## Tail Example (Bytes, v16.0)
 
 From the observed record tail:
 - `00000000 00000000 00000000 00000000 01000000 00010000 00000000 00000000`
 
 ## Open Questions
 
+- Confirm `gap_0` (`u64`) meaning; likely `max-memory-size` + `max-memory-time-limit` (not validated).
+- Confirm `errors-count-threshold` (`u32`) by setting non-zero value.
+- Identify where `allow-access-right-audit-events-recording` and `restart-schedule` are encoded.
 - Confirm `tail[32]` field semantics (8 x `u32`).
+
+## Gap Analysis (Required)
+
+- `gap_0` at `0x1b + host-len` (8 bytes): candidate types `u64` or two `u32` fields. Likely `max-memory-size` and `max-memory-time-limit`. To confirm, set non-zero values and re-capture.
+- `errors-count-threshold` at `0x30 + host-len + name-len` (4 bytes): candidate `u32_be` percentage. To confirm, set `--errors-count-threshold` to a non-zero value and re-capture.
+- Missing fields `allow-access-right-audit-events-recording` and `restart-schedule`: capture with a non-zero audit flag and a non-empty schedule string.
 
 
 ## Cluster Info
@@ -97,9 +146,9 @@ Response method: `0x0e`
 
 Observed request parameters for `rac cluster info`.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `cluster` | UUID | yes | 1 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+|---|---|---|---|---|
+| `cluster` | UUID | yes | 1 | 11.0 |
 
 Payload structure (method body):
 - single record in the same layout as `cluster list` (no leading count byte)
@@ -125,12 +174,12 @@ RAC output reference:
 
 Observed field names in `rac cluster admin list` output, with capture mapping status.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `name` | string | yes | 1 |
-| `auth` | unknown | no | - |
-| `os-user` | unknown | no | - |
-| `descr` | unknown | no | - |
+| Field | Type | Found In Capture | Order In Capture | Version |
+|---|---|---|---|---|
+| `name` | string | yes | 1 | 11.0 |
+| `auth` | unknown | no | - | 16.0 |
+| `os-user` | unknown | no | - | 16.0 |
+| `descr` | unknown | no | - | 16.0 |
 
 ## RPC Envelope
 
@@ -141,11 +190,11 @@ Response method: `0x03`
 
 Observed request parameters for `rac cluster admin list`.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `cluster` | UUID | yes | 1 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 2 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+|---|---|---|---|---|
+| `cluster` | UUID | yes | 1 | 11.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
 
 Payload structure (method body):
 - offset `0x00`: `count:u8` (observed `0x01`)
@@ -183,15 +232,15 @@ Response: `01 00 00 00` (ack only, no method id)
 
 Observed request parameters for `rac cluster admin register`.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `cluster` | UUID | yes | 1 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 2 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 |
-| `name` | string | yes | 4 |
-| `descr` | string | yes | 5 |
-| `pwd` | string | yes | 6 |
-| `auth` | enum | yes (as `auth_flags`) | 7 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+|---|---|---|---|---|
+| `cluster` | UUID | yes | 1 | 11.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
+| `name` | string | yes | 4 | 11.0 |
+| `descr` | string | yes | 5 | 11.0 |
+| `pwd` | string | yes | 6 | 11.0 |
+| `auth` | enum | yes (as `auth_flags`) | 7 | 11.0 |
 
 ## Request Layout (Observed)
 

@@ -12,7 +12,6 @@ mod generated {
 }
 
 pub use generated::ClusterAdminRecord;
-use generated::ClusterRecord;
 
 #[derive(Debug, Serialize)]
 pub struct ClusterAdminListResp {
@@ -41,6 +40,13 @@ pub struct ClusterSummary {
     pub display_name: Option<String>,
     pub port: Option<u16>,
     pub expiration_timeout: Option<u32>,
+    pub lifetime_limit: Option<u32>,
+    pub security_level: Option<u32>,
+    pub session_fault_tolerance_level: Option<u32>,
+    pub load_balancing_mode: Option<u32>,
+    pub errors_count_threshold: Option<u32>,
+    pub kill_problem_processes: Option<u8>,
+    pub kill_by_memory_with_dump: Option<u8>,
 }
 
 #[derive(Debug, Serialize)]
@@ -105,7 +111,8 @@ pub fn cluster_admin_register(
 pub fn cluster_list(client: &mut RacClient) -> Result<ClusterListResp> {
     let reply = client.call(RacRequest::ClusterList)?;
     let body = rpc_body(&reply)?;
-    let clusters = parse_cluster_list_body(body)?;
+    let tail_len = cluster_tail_len(client.protocol_name());
+    let clusters = parse_cluster_list_body(body, tail_len)?;
     Ok(ClusterListResp {
         clusters,
         raw_payload: Some(reply),
@@ -116,7 +123,8 @@ pub fn cluster_info(client: &mut RacClient, cluster: Uuid16) -> Result<ClusterIn
     let reply = client.call(RacRequest::ClusterInfo { cluster })?;
     let body = rpc_body(&reply)?;
     let mut cursor = RecordCursor::new(body, 0);
-    let summary = parse_cluster_record(&mut cursor)?;
+    let tail_len = cluster_tail_len(client.protocol_name());
+    let summary = parse_cluster_record(&mut cursor, tail_len)?;
     Ok(ClusterInfoResp {
         cluster: summary,
         raw_payload: Some(reply),
@@ -140,7 +148,7 @@ fn is_ack(payload: &[u8]) -> bool {
     payload == [0x01, 0x00, 0x00, 0x00]
 }
 
-fn parse_cluster_list_body(body: &[u8]) -> Result<Vec<ClusterSummary>> {
+fn parse_cluster_list_body(body: &[u8], tail_len: usize) -> Result<Vec<ClusterSummary>> {
     if body.is_empty() {
         return Ok(Vec::new());
     }
@@ -148,20 +156,60 @@ fn parse_cluster_list_body(body: &[u8]) -> Result<Vec<ClusterSummary>> {
     let count = cursor.take_u8()? as usize;
     let mut clusters = Vec::with_capacity(count);
     for _ in 0..count {
-        clusters.push(parse_cluster_record(&mut cursor)?);
+        clusters.push(parse_cluster_record(&mut cursor, tail_len)?);
     }
     Ok(clusters)
 }
 
-fn parse_cluster_record(cursor: &mut RecordCursor<'_>) -> Result<ClusterSummary> {
-    let record = ClusterRecord::decode(cursor)?;
+fn parse_cluster_record(cursor: &mut RecordCursor<'_>, tail_len: usize) -> Result<ClusterSummary> {
+    let uuid = cursor.take_uuid()?;
+    let expiration_timeout = cursor.take_u32_be()?;
+    let host = cursor.take_str8()?;
+    let lifetime_limit = cursor.take_u32_be()?;
+    let port = cursor.take_u16_be()?;
+    let _unknown_u64 = cursor.take_u64_be()?;
+    let display_name = cursor.take_str8()?;
+    let (security_level, session_fault_tolerance_level, load_balancing_mode, errors_count_threshold, kill_problem_processes, kill_by_memory_with_dump) =
+        if tail_len == 18 {
+            let security_level = cursor.take_u32_be()?;
+            let session_fault_tolerance_level = cursor.take_u32_be()?;
+            let load_balancing_mode = cursor.take_u32_be()?;
+            let errors_count_threshold = cursor.take_u32_be()?;
+            let kill_problem_processes = cursor.take_u8()?;
+            let kill_by_memory_with_dump = cursor.take_u8()?;
+            (
+                Some(security_level),
+                Some(session_fault_tolerance_level),
+                Some(load_balancing_mode),
+                Some(errors_count_threshold),
+                Some(kill_problem_processes),
+                Some(kill_by_memory_with_dump),
+            )
+        } else {
+            let _tail = cursor.take_bytes(tail_len)?;
+            (None, None, None, None, None, None)
+        };
     Ok(ClusterSummary {
-        uuid: record.uuid,
-        host: Some(record.host),
-        display_name: Some(record.display_name),
-        port: Some(record.port),
-        expiration_timeout: Some(record.expiration_timeout),
+        uuid,
+        host: Some(host),
+        display_name: Some(display_name),
+        port: Some(port),
+        expiration_timeout: Some(expiration_timeout),
+        lifetime_limit: Some(lifetime_limit),
+        security_level,
+        session_fault_tolerance_level,
+        load_balancing_mode,
+        errors_count_threshold,
+        kill_problem_processes,
+        kill_by_memory_with_dump,
     })
+}
+
+fn cluster_tail_len(protocol_name: &str) -> usize {
+    match protocol_name {
+        "v11.0" => 18,
+        _ => 32,
+    }
 }
 
 #[cfg(test)]
@@ -219,6 +267,35 @@ mod tests {
         let protocol = RacProtocolVersion::V16_0.boxed();
         let serialized = protocol.serialize(req).expect("serialize");
         assert_eq!(serialized.payload, expected);
+    }
+
+    #[test]
+    fn parse_cluster_list_custom_capture() {
+        let hex = include_str!("../../../../artifacts/rac/cluster_list_response_custom.hex");
+        let payload = decode_hex_str(hex);
+        let body = rpc_body(&payload).expect("rpc body");
+        let clusters = parse_cluster_list_body(body, 18).expect("parse list");
+
+        assert_eq!(clusters.len(), 1);
+        assert_eq!(clusters[0].lifetime_limit, Some(1111));
+        assert_eq!(clusters[0].security_level, Some(3));
+        assert_eq!(clusters[0].session_fault_tolerance_level, Some(4));
+        assert_eq!(clusters[0].load_balancing_mode, Some(1));
+        assert_eq!(clusters[0].errors_count_threshold, Some(0));
+        assert_eq!(clusters[0].kill_problem_processes, Some(0));
+        assert_eq!(clusters[0].kill_by_memory_with_dump, Some(1));
+    }
+
+    #[test]
+    fn parse_cluster_list_flags_capture() {
+        let hex = include_str!("../../../../artifacts/rac/cluster_list_response_flags.hex");
+        let payload = decode_hex_str(hex);
+        let body = rpc_body(&payload).expect("rpc body");
+        let clusters = parse_cluster_list_body(body, 18).expect("parse list");
+
+        assert_eq!(clusters.len(), 1);
+        assert_eq!(clusters[0].kill_problem_processes, Some(1));
+        assert_eq!(clusters[0].kill_by_memory_with_dump, Some(0));
     }
 
     // Additional cluster list/info capture assertions should be added when artifacts are present.

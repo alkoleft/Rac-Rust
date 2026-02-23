@@ -35,7 +35,6 @@ fn client_cfg() -> ClientConfig {
 }
 
 #[test]
-#[ignore]
 fn live_agent_version_only() {
     let params = load_params();
     let addr = params.addr.clone();
@@ -51,7 +50,6 @@ fn live_agent_version_only() {
 }
 
 #[test]
-#[ignore]
 fn live_agent_version_and_cluster_list() {
     let params = load_params();
     let addr = params.addr.clone();
@@ -74,7 +72,6 @@ fn live_agent_version_and_cluster_list() {
 }
 
 #[test]
-#[ignore]
 fn live_infobase_summary_list() {
     let params = load_params();
     let addr = params.addr.clone();

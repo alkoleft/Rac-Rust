@@ -26,7 +26,6 @@ fn load_params() -> TestParams {
 }
 
 #[test]
-#[ignore]
 fn live_infobase_info() {
     let params = load_params();
     let addr = params.addr.clone();

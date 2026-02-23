@@ -85,6 +85,10 @@ impl RacClient {
         Ok(())
     }
 
+    pub fn protocol_name(&self) -> &'static str {
+        self.protocol.name()
+    }
+
     pub fn call(&mut self, request: RacRequest) -> Result<Vec<u8>> {
         let required = self.protocol.required_context(&request);
         if let Some(cluster) = required.cluster {

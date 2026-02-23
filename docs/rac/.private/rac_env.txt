@@ -1,4 +1,4 @@
-rac_path=/opt/1cv8/x86_64/8.5.1.1150
+rac_path=/opt/1cv8/x86_64/8.3.21.1895
 cluster_uuid=1619820a-d36f-4d8a-a716-1516b1dea077
 endpoint=localhost:1545
 agent_user=admin

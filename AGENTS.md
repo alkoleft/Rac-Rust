@@ -15,6 +15,9 @@ These rules apply to all Codex-driven implementation and review work in this rep
 ## Codegen Rules
 - Prefer maximum use of code generation for protocol structures and commands.
 - Keep abstractions, wrappers, and extra data structures to the minimum required for correctness.
+- When possible, define RPC request fields inline under `[rpc.*]` (use `fields` and optional `derive`) instead of separate `[request.*]`.
+- Responses should be described in `[response.*]`; generate response structs only when `body.struct = true`.
+- Response bodies may define `field` to control the response struct field name (e.g., `admins`, `version`).
 
 ## Test Rules
 - Tests must have strict, deterministic assertions.

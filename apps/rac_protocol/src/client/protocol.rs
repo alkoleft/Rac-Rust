@@ -299,7 +299,7 @@ impl RacProtocolImpl {
         let mut body = Vec::with_capacity(16 + 2);
         body.extend_from_slice(&cluster);
         body.extend_from_slice(&[0x00, 0x00]);
-        encode_rpc(crate::rac_wire::METHOD_CLUSTER_CONTEXT, &body)
+        encode_rpc(crate::rac_wire::METHOD_CLUSTER_AUTH, &body)
     }
 
     fn encode_infobase_context(cluster: Uuid16) -> Vec<u8> {
@@ -469,7 +469,7 @@ impl RacProtocol for RacProtocolImpl {
                 body.extend_from_slice(&cluster);
                 body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(user.as_bytes())?);
                 body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(pwd.as_bytes())?);
-                (encode_rpc(METHOD_CLUSTER_CONTEXT, &body), None)
+                (encode_rpc(METHOD_CLUSTER_AUTH, &body), None)
             }
             RacRequest::ClusterAdminList { cluster } => (
                 Self::encode_cluster_scoped(METHOD_CLUSTER_ADMIN_LIST_REQ, cluster),

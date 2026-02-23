@@ -65,14 +65,14 @@ requires_cluster_context = false
 requires_infobase_context = false
 
 [rpc.ClusterList]
-response = "super::ClusterListResp"
+response = "ClusterListResp"
 method_req = 0x0b
 method_resp = 0x0c
 requires_cluster_context = false
 requires_infobase_context = false
 
 [rpc.ClusterInfo]
-response = "super::ClusterInfoResp"
+response = "ClusterInfoResp"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid" },

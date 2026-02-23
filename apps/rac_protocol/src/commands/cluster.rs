@@ -11,6 +11,8 @@ use super::parse_list_u8_tail;
 
 mod generated {
     include!("cluster_generated.rs");
+    pub type ClusterListResp = super::ClusterListResp;
+    pub type ClusterInfoResp = super::ClusterInfoResp;
 }
 
 pub use generated::{

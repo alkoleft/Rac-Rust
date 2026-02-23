@@ -167,7 +167,7 @@ impl crate::rpc::Request for ClusterAdminRegisterRpc {
 pub struct ClusterListRpc;
 
 impl crate::rpc::Request for ClusterListRpc {
-    type Response = super::ClusterListResp;
+    type Response = ClusterListResp;
 
     fn meta(&self) -> crate::rpc::Meta {
         RPC_CLUSTER_LIST_META
@@ -187,7 +187,7 @@ pub struct ClusterInfoRpc {
 }
 
 impl crate::rpc::Request for ClusterInfoRpc {
-    type Response = super::ClusterInfoResp;
+    type Response = ClusterInfoResp;
 
     fn meta(&self) -> crate::rpc::Meta {
         RPC_CLUSTER_INFO_META

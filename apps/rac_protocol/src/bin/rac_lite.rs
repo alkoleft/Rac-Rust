@@ -679,7 +679,7 @@ fn run(cli: Cli) -> Result<()> {
             AgentCmd::Version { addr } => {
                 let mut client = RacClient::connect(&addr, cfg.clone())?;
                 let resp = agent_version(&mut client)?;
-                console::output(cli.json, &resp, console::agent_version(&resp));
+                console::output(cli.json, &resp, console::agent_version(&resp.version));
                 client.close()?;
             }
             AgentCmd::Admin { command } => match command {

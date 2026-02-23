@@ -11,9 +11,7 @@ pub use generated::{
     AgentAdminRecord,
     AgentAuthRpc,
     AgentVersionResp,
-    AgentVersionRecord,
     AgentVersionRpc,
-    parse_agent_version_body,
 };
 
 pub fn agent_admin_list(
@@ -28,9 +26,8 @@ pub fn agent_admin_list(
     client.call_typed(AgentAdminListRpc)
 }
 
-pub fn agent_version(client: &mut RacClient) -> Result<String> {
-    let resp = client.call_typed(AgentVersionRpc)?;
-    Ok(resp.version)
+pub fn agent_version(client: &mut RacClient) -> Result<AgentVersionResp> {
+    client.call_typed(AgentVersionRpc)
 }
 
 #[cfg(test)]
@@ -38,8 +35,7 @@ mod tests {
     use super::*;
     use crate::protocol::ProtocolVersion;
     use crate::rpc::Request;
-    use crate::commands::rpc_body;
-    use crate::commands::parse_list_u8;
+    use crate::rpc::Response;
     use crate::rac_wire::{METHOD_AGENT_ADMIN_LIST_RESP, METHOD_AGENT_VERSION_RESP};
 
     fn decode_hex_str(input: &str) -> Vec<u8> {
@@ -55,8 +51,9 @@ mod tests {
     #[test]
     fn parse_agent_admin_list_from_capture() {
         let payload = decode_hex_str("0100000101010561646d696e0003efbfbd010000");
-        let body = rpc_body(&payload).expect("rpc body");
-        let admins = parse_list_u8(body, AgentAdminRecord::decode).expect("parse list");
+        let resp = AgentAdminListResp::decode(&payload, ProtocolVersion::V16_0.boxed().as_ref())
+            .expect("parse response");
+        let admins = resp.admins;
 
         assert_eq!(admins.len(), 1);
         assert_eq!(admins[0].name, "admin");
@@ -94,8 +91,8 @@ mod tests {
         body.push(0x05);
         body.extend_from_slice(b"1.2.3");
         let payload = rpc_with_body(METHOD_AGENT_VERSION_RESP, &body);
-        let body = rpc_body(&payload).unwrap();
-        let record = parse_agent_version_body(body).unwrap();
-        assert_eq!(record.version, "1.2.3");
+        let resp = AgentVersionResp::decode(&payload, ProtocolVersion::V16_0.boxed().as_ref())
+            .expect("parse response");
+        assert_eq!(resp.version, "1.2.3");
     }
 }

@@ -41,7 +41,7 @@ fn live_infobase_info() {
     let mut client = RacClient::connect(&addr, cfg).expect("connect");
 
     let resp = agent_version(&mut client).expect("agent version");
-    assert_eq!(resp, params.expected_agent_version);
+    assert_eq!(resp.version, params.expected_agent_version);
 
     let cluster_uuid = cluster_uuid_from_params(&params);
     let cluster_user = params.cluster_user.clone();

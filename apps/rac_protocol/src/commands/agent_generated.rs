@@ -72,7 +72,7 @@ impl crate::rpc::Request for AgentAuthRpc {
 pub struct AgentAdminListRpc;
 
 impl crate::rpc::Request for AgentAdminListRpc {
-    type Response = super::AgentAdminListResp;
+    type Response = AgentAdminListResp;
 
     fn meta(&self) -> crate::rpc::Meta {
         RPC_AGENT_ADMIN_LIST_META
@@ -90,7 +90,7 @@ impl crate::rpc::Request for AgentAdminListRpc {
 pub struct AgentVersionRpc;
 
 impl crate::rpc::Request for AgentVersionRpc {
-    type Response = super::AgentVersionResp;
+    type Response = AgentVersionResp;
 
     fn meta(&self) -> crate::rpc::Meta {
         RPC_AGENT_VERSION_META

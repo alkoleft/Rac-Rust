@@ -12,6 +12,10 @@ These rules apply to all Codex-driven implementation and review work in this rep
   - `apps/rac_protocol/src/commands/<mode>.rs`
 - Do not add new command implementations directly into `apps/rac_protocol/src/commands/mod.rs`.
 
+## Codegen Rules
+- Prefer maximum use of code generation for protocol structures and commands.
+- Keep abstractions, wrappers, and extra data structures to the minimum required for correctness.
+
 ## Test Rules
 - Tests must have strict, deterministic assertions.
 - No `if` or conditional branches in tests (no “fitting to implementation”).

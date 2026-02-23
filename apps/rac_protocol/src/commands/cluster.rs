@@ -41,6 +41,8 @@ pub struct ClusterSummary {
     pub port: Option<u16>,
     pub expiration_timeout: Option<u32>,
     pub lifetime_limit: Option<u32>,
+    pub max_memory_size: Option<u32>,
+    pub max_memory_time_limit: Option<u32>,
     pub security_level: Option<u32>,
     pub session_fault_tolerance_level: Option<u32>,
     pub load_balancing_mode: Option<u32>,
@@ -178,7 +180,8 @@ fn parse_cluster_record(
     let host = cursor.take_str8()?;
     let lifetime_limit = cursor.take_u32_be()?;
     let port = cursor.take_u16_be()?;
-    let _unknown_u64 = cursor.take_u64_be()?;
+    let max_memory_size = cursor.take_u32_be()?;
+    let max_memory_time_limit = cursor.take_u32_be()?;
     let display_name = cursor.take_str8()?;
     let (security_level, session_fault_tolerance_level, load_balancing_mode, errors_count_threshold, kill_problem_processes, kill_by_memory_with_dump) =
         if tail_len == 18 {
@@ -207,6 +210,8 @@ fn parse_cluster_record(
         port: Some(port),
         expiration_timeout: Some(expiration_timeout),
         lifetime_limit: Some(lifetime_limit),
+        max_memory_size: Some(max_memory_size),
+        max_memory_time_limit: Some(max_memory_time_limit),
         security_level,
         session_fault_tolerance_level,
         load_balancing_mode,

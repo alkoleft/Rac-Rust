@@ -26,21 +26,21 @@ Observed field names in `rac cluster list` output, with capture mapping status.
 | `cluster` | UUID | yes | 1 | 11.0 |
 | `host` | string | yes | 3 | 11.0 |
 | `port` | u16 | yes | 5 | 11.0 |
-| `name` | string | yes | 6 | 11.0 |
+| `name` | string | yes | 8 | 11.0 |
 | `expiration-timeout` | u32 | yes | 2 | 11.0 |
 | `lifetime-limit` | u32 | yes | 4 | 11.0 |
-| `max-memory-size` | unknown | no | - | 11.0 |
-| `max-memory-time-limit` | unknown | no | - | 11.0 |
-| `security-level` | u32 | yes | 7 | 11.0 |
-| `session-fault-tolerance-level` | u32 | yes | 8 | 11.0 |
-| `load-balancing-mode` | u32 | yes | 9 | 11.0 |
-| `errors-count-threshold` | u32 | hypothesis | 10 | 11.0 |
-| `kill-problem-processes` | u8 | yes | 11 | 11.0 |
-| `kill-by-memory-with-dump` | u8 | yes | 12 | 11.0 |
+| `max-memory-size` | u32 | hypothesis | 6 | 11.0 |
+| `max-memory-time-limit` | u32 | hypothesis | 7 | 11.0 |
+| `security-level` | u32 | yes | 9 | 11.0 |
+| `session-fault-tolerance-level` | u32 | yes | 10 | 11.0 |
+| `load-balancing-mode` | u32 | yes | 11 | 11.0 |
+| `errors-count-threshold` | u32 | hypothesis | 12 | 11.0 |
+| `kill-problem-processes` | u8 | yes | 13 | 11.0 |
+| `kill-by-memory-with-dump` | u8 | yes | 14 | 11.0 |
 | `allow-access-right-audit-events-recording` | unknown | no | - | 11.0 |
-| `restart-schedule` | unknown | no | - | 11.0 |
 | `ping-period` | unknown | no | - | 16.0 |
 | `ping-timeout` | unknown | no | - | 16.0 |
+| `restart-schedule` | unknown | no | - | 11.0 |
 
 ## RPC Envelope
 
@@ -72,7 +72,8 @@ Offsets are relative to the start of a record.
 | `0x15` | `host-len` | `host` | string | UTF-8, observed `alko-home` |
 | `0x15 + host-len` | `4` | `lifetime-limit` | u32_be | observed `0x00000457` -> `1111` |
 | `0x19 + host-len` | `2` | `port` | u16_be | observed `0x0605` -> `1541` |
-| `0x1b + host-len` | `8` | `gap_0` | gap | unknown, observed all zeros |
+| `0x1b + host-len` | `4` | `max-memory-size` | u32_be | hypothesis (remained zero in captures) |
+| `0x1f + host-len` | `4` | `max-memory-time-limit` | u32_be | hypothesis (remained zero in captures) |
 | `0x23 + host-len` | `1` | `name-len` | u8 | |
 | `0x24 + host-len` | `name-len` | `name` | string | UTF-8, observed `Локальный кластер` |
 | `0x24 + host-len + name-len` | `4` | `security-level` | u32_be | observed `0x00000003` |
@@ -115,14 +116,14 @@ From the observed record tail:
 
 ## Open Questions
 
-- Confirm `gap_0` (`u64`) meaning; likely `max-memory-size` + `max-memory-time-limit` (not validated).
+- Confirm `max-memory-size` and `max-memory-time-limit` values by setting non-zero and re-capturing.
 - Confirm `errors-count-threshold` (`u32`) by setting non-zero value.
 - Identify where `allow-access-right-audit-events-recording` and `restart-schedule` are encoded.
 - Confirm `tail[32]` field semantics (8 x `u32`).
 
 ## Gap Analysis (Required)
 
-- `gap_0` at `0x1b + host-len` (8 bytes): candidate types `u64` or two `u32` fields. Likely `max-memory-size` and `max-memory-time-limit`. To confirm, set non-zero values and re-capture.
+- `max-memory-size` at `0x1b + host-len` (4 bytes) and `max-memory-time-limit` at `0x1f + host-len` (4 bytes): candidates `u32_be`. To confirm, set non-zero values and re-capture.
 - `errors-count-threshold` at `0x30 + host-len + name-len` (4 bytes): candidate `u32_be` percentage. To confirm, set `--errors-count-threshold` to a non-zero value and re-capture.
 - Missing fields `allow-access-right-audit-events-recording` and `restart-schedule`: capture with a non-zero audit flag and a non-empty schedule string.
 

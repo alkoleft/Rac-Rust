@@ -58,22 +58,22 @@ impl InfobaseFieldsRecord {
 }
 
 pub const RPC_INFOBASE_SUMMARY_LIST_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: 42,
-    method_resp: Some(43),
+    method_req: crate::rac_wire::METHOD_INFOBASE_SUMMARY_LIST_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_INFOBASE_SUMMARY_LIST_RESP),
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_INFOBASE_SUMMARY_INFO_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: 46,
-    method_resp: Some(47),
+    method_req: crate::rac_wire::METHOD_INFOBASE_SUMMARY_INFO_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_INFOBASE_SUMMARY_INFO_RESP),
     requires_cluster_context: true,
     requires_infobase_context: true,
 };
 
 pub const RPC_INFOBASE_INFO_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: 48,
-    method_resp: Some(49),
+    method_req: crate::rac_wire::METHOD_INFOBASE_INFO_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_INFOBASE_INFO_RESP),
     requires_cluster_context: true,
     requires_infobase_context: true,
 };

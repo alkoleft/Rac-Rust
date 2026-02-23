@@ -1290,21 +1290,16 @@ impl Display for ConnectionInfoDisplay<'_> {
 }
 
 pub struct AgentVersionDisplay<'a> {
-    version: &'a Option<String>,
+    version: &'a str,
 }
 
-pub fn agent_version(version: &Option<String>) -> AgentVersionDisplay<'_> {
+pub fn agent_version(version: &str) -> AgentVersionDisplay<'_> {
     AgentVersionDisplay { version }
 }
 
 impl Display for AgentVersionDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let rendered = self
-            .version
-            .as_ref()
-            .map(|v| format!("version: {v}"))
-            .unwrap_or_else(|| "version: <not found>".to_string());
-        write!(f, "{rendered}")
+        write!(f, "version: {}", self.version)
     }
 }
 

@@ -32,26 +32,49 @@ impl AgentAdminRecord {
     }
 }
 
+#[derive(Debug, Serialize, Clone)]
+pub struct AgentVersionRecord {
+    pub version: String,
+}
+
+impl AgentVersionRecord {
+    pub fn decode(cursor: &mut RecordCursor<'_>) -> Result<Self> {
+        let version = cursor.take_str8()?;
+        Ok(Self {
+            version,
+        })
+    }
+}
+
 pub const RPC_AGENT_AUTH_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: 8,
+    method_req: crate::rac_wire::METHOD_AGENT_AUTH_REQ,
     method_resp: None,
     requires_cluster_context: false,
     requires_infobase_context: false,
 };
 
 pub const RPC_AGENT_ADMIN_LIST_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: 0,
-    method_resp: Some(1),
+    method_req: crate::rac_wire::METHOD_AGENT_ADMIN_LIST_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_AGENT_ADMIN_LIST_RESP),
     requires_cluster_context: false,
     requires_infobase_context: false,
 };
 
 pub const RPC_AGENT_VERSION_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: 135,
-    method_resp: Some(136),
+    method_req: crate::rac_wire::METHOD_AGENT_VERSION_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_AGENT_VERSION_RESP),
     requires_cluster_context: false,
     requires_infobase_context: false,
 };
+
+
+pub fn parse_agent_version_body(body: &[u8]) -> Result<AgentVersionRecord> {
+    if body.is_empty() {
+        return Err(RacError::Decode("agent version empty body"));
+    }
+    let mut cursor = RecordCursor::new(body, 0);
+    AgentVersionRecord::decode(&mut cursor)
+}
 
 #[derive(Debug, Clone)]
 pub struct AgentAuthRequest {
@@ -67,6 +90,20 @@ impl AgentAuthRequest {
     pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
         out.extend_from_slice(&encode_with_len_u8(self.user.as_bytes())?);
         out.extend_from_slice(&encode_with_len_u8(self.pwd.as_bytes())?);
+        Ok(())
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct AgentVersionRequest {
+}
+
+impl AgentVersionRequest {
+    pub fn encoded_len(&self) -> usize {
+        0
+    }
+
+    pub fn encode_body(&self, _out: &mut Vec<u8>) -> Result<()> {
         Ok(())
     }
 }

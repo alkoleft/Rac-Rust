@@ -86,50 +86,50 @@ impl ServiceSettingIdRecord {
 }
 
 pub const RPC_SERVICE_SETTING_INFO_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: 137,
-    method_resp: Some(138),
+    method_req: crate::rac_wire::METHOD_SERVICE_SETTING_INFO_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_SERVICE_SETTING_INFO_RESP),
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_SERVICE_SETTING_LIST_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: 139,
-    method_resp: Some(140),
+    method_req: crate::rac_wire::METHOD_SERVICE_SETTING_LIST_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_SERVICE_SETTING_LIST_RESP),
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_SERVICE_SETTING_INSERT_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: 141,
-    method_resp: Some(142),
+    method_req: crate::rac_wire::METHOD_SERVICE_SETTING_INSERT_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_SERVICE_SETTING_INSERT_RESP),
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_SERVICE_SETTING_UPDATE_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: 141,
-    method_resp: Some(142),
+    method_req: crate::rac_wire::METHOD_SERVICE_SETTING_UPDATE_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_SERVICE_SETTING_UPDATE_RESP),
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_SERVICE_SETTING_REMOVE_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: 143,
+    method_req: crate::rac_wire::METHOD_SERVICE_SETTING_REMOVE_REQ,
     method_resp: None,
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_SERVICE_SETTING_APPLY_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: 144,
+    method_req: crate::rac_wire::METHOD_SERVICE_SETTING_APPLY_REQ,
     method_resp: None,
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_SERVICE_SETTING_GET_DATA_DIRS_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: 145,
-    method_resp: Some(146),
+    method_req: crate::rac_wire::METHOD_SERVICE_SETTING_GET_DATA_DIRS_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_SERVICE_SETTING_GET_DATA_DIRS_RESP),
     requires_cluster_context: true,
     requires_infobase_context: false,
 };

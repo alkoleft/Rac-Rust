@@ -1,15 +1,10 @@
 use serde::Serialize;
 
 use crate::client::RacClient;
-use crate::codec::RecordCursor;
 use crate::error::Result;
 use crate::protocol::ProtocolCodec;
 use crate::rpc::{AckResponse, Meta, Request, Response};
 use crate::rpc::decode_utils::rpc_body;
-use crate::rac_wire::{
-    METHOD_AGENT_ADMIN_LIST_REQ, METHOD_AGENT_ADMIN_LIST_RESP, METHOD_AGENT_AUTH_REQ,
-    METHOD_AGENT_VERSION_REQ, METHOD_AGENT_VERSION_RESP,
-};
 
 use super::parse_list_u8;
 
@@ -17,7 +12,13 @@ mod generated {
     include!("agent_generated.rs");
 }
 
-pub use generated::{AgentAdminRecord, AgentAuthRequest};
+pub use generated::{
+    AgentAdminRecord,
+    AgentAuthRequest,
+    AgentVersionRecord,
+    AgentVersionRequest,
+    parse_agent_version_body,
+};
 
 #[derive(Debug, Serialize)]
 pub struct AgentAdminListResp {
@@ -26,7 +27,7 @@ pub struct AgentAdminListResp {
 
 #[derive(Debug, Serialize)]
 pub struct AgentVersionResp {
-    pub version: Option<String>,
+    pub version: String,
 }
 
 struct AgentAuthRpc {
@@ -38,12 +39,7 @@ impl Request for AgentAuthRpc {
     type Response = AckResponse;
 
     fn meta(&self) -> Meta {
-        Meta {
-            method_req: METHOD_AGENT_AUTH_REQ,
-            method_resp: None,
-            requires_cluster_context: false,
-            requires_infobase_context: false,
-        }
+        generated::RPC_AGENT_AUTH_META
     }
 
     fn cluster(&self) -> Option<crate::Uuid16> {
@@ -67,12 +63,7 @@ impl Request for AgentAdminListRpc {
     type Response = AgentAdminListResp;
 
     fn meta(&self) -> Meta {
-        Meta {
-            method_req: METHOD_AGENT_ADMIN_LIST_REQ,
-            method_resp: Some(METHOD_AGENT_ADMIN_LIST_RESP),
-            requires_cluster_context: false,
-            requires_infobase_context: false,
-        }
+        generated::RPC_AGENT_ADMIN_LIST_META
     }
 
     fn cluster(&self) -> Option<crate::Uuid16> {
@@ -99,12 +90,7 @@ impl Request for AgentVersionRpc {
     type Response = AgentVersionResp;
 
     fn meta(&self) -> Meta {
-        Meta {
-            method_req: METHOD_AGENT_VERSION_REQ,
-            method_resp: Some(METHOD_AGENT_VERSION_RESP),
-            requires_cluster_context: false,
-            requires_infobase_context: false,
-        }
+        generated::RPC_AGENT_VERSION_META
     }
 
     fn cluster(&self) -> Option<crate::Uuid16> {
@@ -112,19 +98,19 @@ impl Request for AgentVersionRpc {
     }
 
     fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
-        Ok(Vec::new())
+        let req = AgentVersionRequest {};
+        let mut out = Vec::with_capacity(req.encoded_len());
+        req.encode_body(&mut out)?;
+        Ok(out)
     }
 }
 
 impl Response for AgentVersionResp {
     fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
         let body = rpc_body(payload)?;
-        if body.is_empty() {
-            return Ok(Self { version: None });
-        }
-        let mut cursor = RecordCursor::new(body, 0);
+        let record = parse_agent_version_body(body)?;
         Ok(Self {
-            version: Some(cursor.take_str8()?),
+            version: record.version,
         })
     }
 }
@@ -141,7 +127,7 @@ pub fn agent_admin_list(
     client.call_typed(AgentAdminListRpc)
 }
 
-pub fn agent_version(client: &mut RacClient) -> Result<Option<String>> {
+pub fn agent_version(client: &mut RacClient) -> Result<String> {
     let resp = client.call_typed(AgentVersionRpc)?;
     Ok(resp.version)
 }
@@ -156,6 +142,7 @@ mod tests {
     use crate::protocol::ProtocolVersion;
     use crate::rpc::Request;
     use crate::commands::rpc_body;
+    use crate::rac_wire::{METHOD_AGENT_ADMIN_LIST_RESP, METHOD_AGENT_VERSION_RESP};
 
     fn decode_hex_str(input: &str) -> Vec<u8> {
         hex::decode(input.trim()).expect("hex decode")
@@ -210,8 +197,7 @@ mod tests {
         body.extend_from_slice(b"1.2.3");
         let payload = rpc_with_body(METHOD_AGENT_VERSION_RESP, &body);
         let body = rpc_body(&payload).unwrap();
-        let mut cursor = RecordCursor::new(body, 0);
-        let version = cursor.take_str8().unwrap();
-        assert_eq!(version, "1.2.3");
+        let record = parse_agent_version_body(body).unwrap();
+        assert_eq!(record.version, "1.2.3");
     }
 }

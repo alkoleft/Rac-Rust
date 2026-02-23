@@ -45,15 +45,15 @@ impl ConnectionRecord {
 }
 
 pub const RPC_CONNECTION_LIST_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: 50,
-    method_resp: Some(51),
+    method_req: crate::rac_wire::METHOD_CONNECTION_LIST_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_CONNECTION_LIST_RESP),
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_CONNECTION_INFO_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: 54,
-    method_resp: Some(55),
+    method_req: crate::rac_wire::METHOD_CONNECTION_INFO_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_CONNECTION_INFO_RESP),
     requires_cluster_context: true,
     requires_infobase_context: false,
 };

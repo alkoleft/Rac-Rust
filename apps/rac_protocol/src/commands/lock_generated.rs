@@ -73,8 +73,8 @@ impl LockRecordRaw {
 }
 
 pub const RPC_LOCK_LIST_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: 72,
-    method_resp: Some(73),
+    method_req: crate::rac_wire::METHOD_LOCK_LIST_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_LOCK_LIST_RESP),
     requires_cluster_context: true,
     requires_infobase_context: false,
 };

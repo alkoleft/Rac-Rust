@@ -275,15 +275,32 @@ def generate_rpc_metadata(rpcs: List[RpcSpec]) -> List[str]:
     lines: List[str] = []
     for rpc in rpcs:
         const_name = f"RPC_{snake_case(rpc.name).upper()}_META"
-        method_resp = "None" if rpc.method_resp is None else f"Some({rpc.method_resp})"
+        method_req = rpc_method_req_const(rpc.name)
+        method_resp = (
+            "None"
+            if rpc.method_resp is None
+            else f"Some({rpc_method_resp_const(rpc.name)})"
+        )
         lines.append(f"pub const {const_name}: RpcMethodMeta = RpcMethodMeta {{")
-        lines.append(f"    method_req: {rpc.method_req},")
+        lines.append(f"    method_req: {method_req},")
         lines.append(f"    method_resp: {method_resp},")
         lines.append(f"    requires_cluster_context: {str(rpc.requires_cluster_context).lower()},")
         lines.append(f"    requires_infobase_context: {str(rpc.requires_infobase_context).lower()},")
         lines.append("};")
         lines.append("")
     return lines
+
+
+def rpc_method_const_base(rpc_name: str) -> str:
+    return f"METHOD_{snake_case(rpc_name).upper()}"
+
+
+def rpc_method_req_const(rpc_name: str) -> str:
+    return f"crate::rac_wire::{rpc_method_const_base(rpc_name)}_REQ"
+
+
+def rpc_method_resp_const(rpc_name: str) -> str:
+    return f"crate::rac_wire::{rpc_method_const_base(rpc_name)}_RESP"
 
 
 def generate_requests(requests: List[RequestSpec], include_uses: bool = True) -> str:
@@ -317,13 +334,16 @@ def generate_requests(requests: List[RequestSpec], include_uses: bool = True) ->
             lines.append("        0")
         lines.append("    }")
         lines.append("")
-        lines.append("    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {")
+        expr_lines: List[str] = []
         for field in req.fields:
             if field.skip:
                 continue
             exprs = request_encode_expr(field)
             for expr in exprs:
-                lines.append(f"        {expr}")
+                expr_lines.append(f"        {expr}")
+        out_name = "out" if expr_lines else "_out"
+        lines.append(f"    pub fn encode_body(&self, {out_name}: &mut Vec<u8>) -> Result<()> {{")
+        lines.extend(expr_lines)
         lines.append("        Ok(())")
         lines.append("    }")
         lines.append("}")

@@ -41,7 +41,7 @@ fn live_agent_version_only() {
     let mut client = RacClient::connect(&addr, client_cfg()).expect("connect");
 
     let resp = agent_version(&mut client).expect("agent version");
-    assert_eq!(resp.as_deref(), Some(params.expected_agent_version.as_str()));
+    assert_eq!(resp, params.expected_agent_version);
 
     client.close().expect("close");
 }
@@ -53,7 +53,7 @@ fn live_agent_version_and_cluster_list() {
     let mut client = RacClient::connect(&addr, client_cfg()).expect("connect");
 
     let resp = agent_version(&mut client).expect("agent version");
-    assert_eq!(resp.as_deref(), Some(params.expected_agent_version.as_str()));
+    assert_eq!(resp, params.expected_agent_version);
 
     let clusters = cluster_list(&mut client).expect("cluster list");
     assert!(!clusters.is_empty(), "cluster list empty");
@@ -73,7 +73,7 @@ fn live_infobase_summary_list() {
     let mut client = RacClient::connect(&addr, client_cfg()).expect("connect");
 
     let resp = agent_version(&mut client).expect("agent version");
-    assert_eq!(resp.as_deref(), Some(params.expected_agent_version.as_str()));
+    assert_eq!(resp, params.expected_agent_version);
     let reply = infobase_summary_list(&mut client, cluster_uuid).expect("infobase summary list");
 
     assert_eq!(reply.summaries.len(), reply.infobases.len());

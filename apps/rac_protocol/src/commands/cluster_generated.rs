@@ -87,36 +87,36 @@ impl ClusterRecord {
 }
 
 pub const RPC_CLUSTER_AUTH_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: 9,
+    method_req: crate::rac_wire::METHOD_CLUSTER_AUTH_REQ,
     method_resp: None,
     requires_cluster_context: false,
     requires_infobase_context: false,
 };
 
 pub const RPC_CLUSTER_ADMIN_LIST_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: 2,
-    method_resp: Some(3),
+    method_req: crate::rac_wire::METHOD_CLUSTER_ADMIN_LIST_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_CLUSTER_ADMIN_LIST_RESP),
     requires_cluster_context: false,
     requires_infobase_context: false,
 };
 
 pub const RPC_CLUSTER_ADMIN_REGISTER_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: 5,
+    method_req: crate::rac_wire::METHOD_CLUSTER_ADMIN_REGISTER_REQ,
     method_resp: None,
     requires_cluster_context: false,
     requires_infobase_context: false,
 };
 
 pub const RPC_CLUSTER_LIST_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: 11,
-    method_resp: Some(12),
+    method_req: crate::rac_wire::METHOD_CLUSTER_LIST_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_CLUSTER_LIST_RESP),
     requires_cluster_context: false,
     requires_infobase_context: false,
 };
 
 pub const RPC_CLUSTER_INFO_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: 13,
-    method_resp: Some(14),
+    method_req: crate::rac_wire::METHOD_CLUSTER_INFO_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_CLUSTER_INFO_RESP),
     requires_cluster_context: false,
     requires_infobase_context: false,
 };

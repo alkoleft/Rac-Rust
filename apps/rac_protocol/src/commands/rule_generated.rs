@@ -50,43 +50,43 @@ impl RuleIdRecord {
 }
 
 pub const RPC_RULE_LIST_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: 85,
-    method_resp: Some(86),
+    method_req: crate::rac_wire::METHOD_RULE_LIST_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_RULE_LIST_RESP),
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_RULE_INFO_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: 87,
-    method_resp: Some(88),
+    method_req: crate::rac_wire::METHOD_RULE_INFO_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_RULE_INFO_RESP),
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_RULE_APPLY_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: 81,
+    method_req: crate::rac_wire::METHOD_RULE_APPLY_REQ,
     method_resp: None,
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_RULE_REMOVE_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: 84,
+    method_req: crate::rac_wire::METHOD_RULE_REMOVE_REQ,
     method_resp: None,
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_RULE_INSERT_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: 82,
-    method_resp: Some(83),
+    method_req: crate::rac_wire::METHOD_RULE_INSERT_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_RULE_INSERT_RESP),
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_RULE_UPDATE_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: 82,
-    method_resp: Some(83),
+    method_req: crate::rac_wire::METHOD_RULE_UPDATE_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_RULE_UPDATE_RESP),
     requires_cluster_context: true,
     requires_infobase_context: false,
 };

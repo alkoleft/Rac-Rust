@@ -7,12 +7,22 @@ fields = [
   { name = "unknown_tail", type = "bytes_fixed", len = 3 },
 ]
 
+[record.AgentVersionRecord]
+derive = ["Debug", "Serialize", "Clone"]
+fields = [
+  { name = "version", type = "str8" },
+]
+
 [request.AgentAuthRequest]
 derive = ["Debug", "Clone"]
 fields = [
   { name = "user", type = "str8" },
   { name = "pwd", type = "str8" },
 ]
+
+[request.AgentVersionRequest]
+derive = ["Debug", "Clone"]
+fields = []
 
 [rpc.AgentAuth]
 request = "AgentAuthRequest"
@@ -35,3 +45,6 @@ requires_infobase_context = false
 [response.AgentAdminList]
 body = { type = "list_u8", item = "AgentAdminRecord" }
 tests = [{ name = "agent_admin_list_response_hex", hex_path = "../../../../artifacts/rac/agent_admin_list_response_rpc.hex", expect_len = 1, asserts = [{ index = 0, field = "name", value = "admin" }, { index = 0, field = "unknown_tag", value = 0 }, { index = 0, field = "unknown_flags", value = 0x03efbfbd }, { index = 0, field = "unknown_tail", value = [0x01, 0x00, 0x00] }] }]
+
+[response.AgentVersion]
+body = { type = "record", item = "AgentVersionRecord" }

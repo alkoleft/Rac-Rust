@@ -123,50 +123,50 @@ impl CounterValuesRecord {
 }
 
 pub const RPC_COUNTER_LIST_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: 118,
-    method_resp: Some(119),
+    method_req: crate::rac_wire::METHOD_COUNTER_LIST_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_COUNTER_LIST_RESP),
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_COUNTER_INFO_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: 120,
-    method_resp: Some(121),
+    method_req: crate::rac_wire::METHOD_COUNTER_INFO_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_COUNTER_INFO_RESP),
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_COUNTER_UPDATE_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: 122,
+    method_req: crate::rac_wire::METHOD_COUNTER_UPDATE_REQ,
     method_resp: None,
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_COUNTER_REMOVE_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: 123,
+    method_req: crate::rac_wire::METHOD_COUNTER_REMOVE_REQ,
     method_resp: None,
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_COUNTER_CLEAR_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: 132,
+    method_req: crate::rac_wire::METHOD_COUNTER_CLEAR_REQ,
     method_resp: None,
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_COUNTER_VALUES_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: 130,
-    method_resp: Some(131),
+    method_req: crate::rac_wire::METHOD_COUNTER_VALUES_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_COUNTER_VALUES_RESP),
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_COUNTER_ACCUMULATED_VALUES_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: 133,
-    method_resp: Some(134),
+    method_req: crate::rac_wire::METHOD_COUNTER_ACCUMULATED_VALUES_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_COUNTER_ACCUMULATED_VALUES_RESP),
     requires_cluster_context: true,
     requires_infobase_context: false,
 };

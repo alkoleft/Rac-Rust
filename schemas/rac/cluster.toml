@@ -26,21 +26,31 @@ fields = [
   { name = "kill_by_memory_with_dump", type = "u8", version = "11.0" },
 ]
 
-[request.ClusterIdRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-]
-
-[request.ClusterAuthRequest]
+[rpc.ClusterAuth]
+response = "AckResponse"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid" },
   { name = "user", type = "str8" },
   { name = "pwd", type = "str8" },
 ]
+method_req = 0x09
+requires_cluster_context = false
+requires_infobase_context = false
 
-[request.ClusterAdminRegisterRequest]
+[rpc.ClusterAdminList]
+response = "ClusterAdminListResp"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid" },
+]
+method_req = 0x02
+method_resp = 0x03
+requires_cluster_context = false
+requires_infobase_context = false
+
+[rpc.ClusterAdminRegister]
+response = "AckResponse"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid" },
@@ -50,41 +60,30 @@ fields = [
   { name = "auth_flags", type = "u8" },
   { name = "padding", type = "bytes_fixed", literal = [0, 0] },
 ]
-
-[rpc.ClusterAuth]
-request = "ClusterAuthRequest"
-method_req = 0x09
-requires_cluster_context = false
-requires_infobase_context = false
-
-[rpc.ClusterAdminList]
-request = "ClusterIdRequest"
-method_req = 0x02
-method_resp = 0x03
-requires_cluster_context = false
-requires_infobase_context = false
-
-[rpc.ClusterAdminRegister]
-request = "ClusterAdminRegisterRequest"
 method_req = 0x05
 requires_cluster_context = false
 requires_infobase_context = false
 
 [rpc.ClusterList]
+response = "super::ClusterListResp"
 method_req = 0x0b
 method_resp = 0x0c
 requires_cluster_context = false
 requires_infobase_context = false
 
 [rpc.ClusterInfo]
-request = "ClusterIdRequest"
+response = "super::ClusterInfoResp"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid" },
+]
 method_req = 0x0d
 method_resp = 0x0e
 requires_cluster_context = false
 requires_infobase_context = false
 
 [response.ClusterAdminList]
-body = { type = "list_u8", item = "ClusterAdminRecord" }
+body = { type = "list_u8", item = "ClusterAdminRecord", field = "admins", struct = true }
 tests = [{ name = "cluster_admin_list_response_hex", hex_path = "../../../../artifacts/rac/cluster_admin_list_response.hex", expect_len = 1, asserts = [{ index = 0, field = "name", value = "cadmin" }, { index = 0, field = "unknown_tag", value = 0 }, { index = 0, field = "unknown_flags", value = 0x03efbfbd }, { index = 0, field = "unknown_tail", value = [0x01, 0x00, 0x00] }] }]
 
 [response.ClusterList]

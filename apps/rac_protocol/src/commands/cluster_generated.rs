@@ -85,44 +85,55 @@ impl ClusterRecord {
     }
 }
 
-#[derive(Debug, Clone)]
-pub struct ClusterAuthRequest {
+pub struct ClusterAuthRpc {
     pub cluster: Uuid16,
     pub user: String,
     pub pwd: String,
 }
 
-impl ClusterAuthRequest {
-    pub fn encoded_len(&self) -> usize {
-        16 + 1 + self.user.len() + 1 + self.pwd.len()
+impl crate::rpc::Request for ClusterAuthRpc {
+    type Response = crate::rpc::AckResponse;
+
+    fn meta(&self) -> crate::rpc::Meta {
+        RPC_CLUSTER_AUTH_META
     }
 
-    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
+    fn cluster(&self) -> Option<crate::Uuid16> {
+        None
+    }
+
+    fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
+        let mut out = Vec::with_capacity(16 + 1 + self.user.len() + 1 + self.pwd.len());
         out.extend_from_slice(&self.cluster);
         out.extend_from_slice(&encode_with_len_u8(self.user.as_bytes())?);
         out.extend_from_slice(&encode_with_len_u8(self.pwd.as_bytes())?);
-        Ok(())
+        Ok(out)
     }
 }
 
-#[derive(Debug, Clone)]
-pub struct ClusterIdRequest {
+pub struct ClusterAdminListRpc {
     pub cluster: Uuid16,
 }
 
-impl ClusterIdRequest {
-    pub fn encoded_len(&self) -> usize {
-        16
+impl crate::rpc::Request for ClusterAdminListRpc {
+    type Response = ClusterAdminListResp;
+
+    fn meta(&self) -> crate::rpc::Meta {
+        RPC_CLUSTER_ADMIN_LIST_META
     }
 
-    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
+    fn cluster(&self) -> Option<crate::Uuid16> {
+        None
+    }
+
+    fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
+        let mut out = Vec::with_capacity(16);
         out.extend_from_slice(&self.cluster);
-        Ok(())
+        Ok(out)
     }
 }
 
-#[derive(Debug, Clone)]
-pub struct ClusterAdminRegisterRequest {
+pub struct ClusterAdminRegisterRpc {
     pub cluster: Uuid16,
     pub name: String,
     pub descr: String,
@@ -130,22 +141,83 @@ pub struct ClusterAdminRegisterRequest {
     pub auth_flags: u8,
 }
 
-impl ClusterAdminRegisterRequest {
-    pub fn encoded_len(&self) -> usize {
-        16 + 1 + self.name.len() + 1 + self.descr.len() + 1 + self.pwd.len() + 1 + 2
+impl crate::rpc::Request for ClusterAdminRegisterRpc {
+    type Response = crate::rpc::AckResponse;
+
+    fn meta(&self) -> crate::rpc::Meta {
+        RPC_CLUSTER_ADMIN_REGISTER_META
     }
 
-    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
+    fn cluster(&self) -> Option<crate::Uuid16> {
+        None
+    }
+
+    fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
+        let mut out = Vec::with_capacity(16 + 1 + self.name.len() + 1 + self.descr.len() + 1 + self.pwd.len() + 1 + 2);
         out.extend_from_slice(&self.cluster);
         out.extend_from_slice(&encode_with_len_u8(self.name.as_bytes())?);
         out.extend_from_slice(&encode_with_len_u8(self.descr.as_bytes())?);
         out.extend_from_slice(&encode_with_len_u8(self.pwd.as_bytes())?);
         out.push(self.auth_flags);
         out.extend_from_slice(&[0, 0]);
-        Ok(())
+        Ok(out)
     }
 }
 
+pub struct ClusterListRpc;
+
+impl crate::rpc::Request for ClusterListRpc {
+    type Response = super::ClusterListResp;
+
+    fn meta(&self) -> crate::rpc::Meta {
+        RPC_CLUSTER_LIST_META
+    }
+
+    fn cluster(&self) -> Option<crate::Uuid16> {
+        None
+    }
+
+    fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
+        Ok(Vec::new())
+    }
+}
+
+pub struct ClusterInfoRpc {
+    pub cluster: Uuid16,
+}
+
+impl crate::rpc::Request for ClusterInfoRpc {
+    type Response = super::ClusterInfoResp;
+
+    fn meta(&self) -> crate::rpc::Meta {
+        RPC_CLUSTER_INFO_META
+    }
+
+    fn cluster(&self) -> Option<crate::Uuid16> {
+        None
+    }
+
+    fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
+        let mut out = Vec::with_capacity(16);
+        out.extend_from_slice(&self.cluster);
+        Ok(out)
+    }
+}
+
+
+#[derive(Debug, Serialize)]
+pub struct ClusterAdminListResp {
+    pub admins: Vec<ClusterAdminRecord>,
+}
+
+impl crate::rpc::Response for ClusterAdminListResp {
+    fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
+        let body = crate::rpc::decode_utils::rpc_body(payload)?;
+        Ok(Self {
+            admins: crate::commands::parse_list_u8(body, ClusterAdminRecord::decode)?,
+        })
+    }
+}
 
 
 pub fn parse_cluster_info_body(body: &[u8], tail_len: usize) -> Result<ClusterRecord> {

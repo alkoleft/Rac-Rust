@@ -3,16 +3,11 @@ use serde::Serialize;
 use crate::client::RacClient;
 use crate::error::Result;
 use crate::protocol::{ProtocolCodec, ProtocolVersion};
-use crate::rpc::{AckResponse, Meta, Request, Response};
+use crate::rpc::Response;
 use crate::rpc::decode_utils::rpc_body;
-use crate::rac_wire::{
-    METHOD_CLUSTER_ADMIN_LIST_REQ, METHOD_CLUSTER_ADMIN_LIST_RESP,
-    METHOD_CLUSTER_ADMIN_REGISTER_REQ, METHOD_CLUSTER_AUTH, METHOD_CLUSTER_INFO_REQ,
-    METHOD_CLUSTER_INFO_RESP, METHOD_CLUSTER_LIST_REQ, METHOD_CLUSTER_LIST_RESP,
-};
 use crate::Uuid16;
 
-use super::{parse_list_u8, parse_list_u8_tail};
+use super::parse_list_u8_tail;
 
 mod generated {
     include!("cluster_generated.rs");
@@ -21,50 +16,14 @@ mod generated {
 pub use generated::{
     parse_cluster_info_body,
     ClusterAdminRecord,
-    ClusterAdminRegisterRequest,
-    ClusterAuthRequest,
-    ClusterIdRequest,
+    ClusterAdminListResp,
+    ClusterAdminListRpc,
+    ClusterAdminRegisterRpc,
+    ClusterAuthRpc,
+    ClusterInfoRpc,
+    ClusterListRpc,
     ClusterRecord,
-    RPC_CLUSTER_ADMIN_LIST_META,
-    RPC_CLUSTER_ADMIN_REGISTER_META,
-    RPC_CLUSTER_AUTH_META,
-    RPC_CLUSTER_INFO_META,
-    RPC_CLUSTER_LIST_META,
 };
-
-struct ClusterAuthRpc {
-    user: String,
-    pwd: String,
-    cluster: Uuid16,
-}
-
-impl Request for ClusterAuthRpc {
-    type Response = AckResponse;
-
-    fn meta(&self) -> Meta {
-        Meta {
-            method_req: METHOD_CLUSTER_AUTH,
-            method_resp: None,
-            requires_cluster_context: false,
-            requires_infobase_context: false,
-        }
-    }
-
-    fn cluster(&self) -> Option<Uuid16> {
-        None
-    }
-
-    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
-        let req = ClusterAuthRequest {
-            cluster: self.cluster,
-            user: self.user.clone(),
-            pwd: self.pwd.clone(),
-        };
-        let mut out = Vec::with_capacity(req.encoded_len());
-        req.encode_body(&mut out)?;
-        Ok(out)
-    }
-}
 
 pub fn cluster_auth(
     client: &mut RacClient,
@@ -80,84 +39,12 @@ pub fn cluster_auth(
     Ok(resp.acknowledged)
 }
 
-struct ClusterAdminListRpc {
-    cluster: Uuid16,
-}
-
-impl Request for ClusterAdminListRpc {
-    type Response = Vec<ClusterAdminRecord>;
-
-    fn meta(&self) -> Meta {
-        Meta {
-            method_req: METHOD_CLUSTER_ADMIN_LIST_REQ,
-            method_resp: Some(METHOD_CLUSTER_ADMIN_LIST_RESP),
-            requires_cluster_context: false,
-            requires_infobase_context: false,
-        }
-    }
-
-    fn cluster(&self) -> Option<Uuid16> {
-        None
-    }
-
-    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
-        let req = ClusterIdRequest { cluster: self.cluster };
-        let mut out = Vec::with_capacity(req.encoded_len());
-        req.encode_body(&mut out)?;
-        Ok(out)
-    }
-}
-
-impl Response for Vec<ClusterAdminRecord> {
-    fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
-        let body = rpc_body(payload)?;
-        parse_list_u8(body, ClusterAdminRecord::decode)
-    }
-}
-
 pub fn cluster_admin_list(
     client: &mut RacClient,
     cluster: Uuid16,
 ) -> Result<Vec<ClusterAdminRecord>> {
-    client.call_typed(ClusterAdminListRpc { cluster })
-}
-
-struct ClusterAdminRegisterRpc {
-    cluster: Uuid16,
-    name: String,
-    descr: String,
-    pwd: String,
-    auth_flags: u8,
-}
-
-impl Request for ClusterAdminRegisterRpc {
-    type Response = AckResponse;
-
-    fn meta(&self) -> Meta {
-        Meta {
-            method_req: METHOD_CLUSTER_ADMIN_REGISTER_REQ,
-            method_resp: None,
-            requires_cluster_context: false,
-            requires_infobase_context: false,
-        }
-    }
-
-    fn cluster(&self) -> Option<Uuid16> {
-        None
-    }
-
-    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
-        let req = ClusterAdminRegisterRequest {
-            cluster: self.cluster,
-            name: self.name.clone(),
-            descr: self.descr.clone(),
-            pwd: self.pwd.clone(),
-            auth_flags: self.auth_flags,
-        };
-        let mut out = Vec::with_capacity(req.encoded_len());
-        req.encode_body(&mut out)?;
-        Ok(out)
-    }
+    let resp = client.call_typed(ClusterAdminListRpc { cluster })?;
+    Ok(resp.admins)
 }
 
 pub fn cluster_admin_register(
@@ -178,32 +65,9 @@ pub fn cluster_admin_register(
     Ok(resp.acknowledged)
 }
 
-struct ClusterListRpc;
-
 #[derive(Debug, Serialize)]
-struct ClusterListResp {
+pub struct ClusterListResp {
     clusters: Vec<ClusterRecord>,
-}
-
-impl Request for ClusterListRpc {
-    type Response = ClusterListResp;
-
-    fn meta(&self) -> Meta {
-        Meta {
-            method_req: METHOD_CLUSTER_LIST_REQ,
-            method_resp: Some(METHOD_CLUSTER_LIST_RESP),
-            requires_cluster_context: false,
-            requires_infobase_context: false,
-        }
-    }
-
-    fn cluster(&self) -> Option<Uuid16> {
-        None
-    }
-
-    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
-        Ok(Vec::new())
-    }
 }
 
 impl Response for ClusterListResp {
@@ -220,37 +84,9 @@ pub fn cluster_list(client: &mut RacClient) -> Result<Vec<ClusterRecord>> {
     Ok(resp.clusters)
 }
 
-struct ClusterInfoRpc {
-    cluster: Uuid16,
-}
-
 #[derive(Debug, Serialize)]
-struct ClusterInfoResp {
+pub struct ClusterInfoResp {
     cluster: ClusterRecord,
-}
-
-impl Request for ClusterInfoRpc {
-    type Response = ClusterInfoResp;
-
-    fn meta(&self) -> Meta {
-        Meta {
-            method_req: METHOD_CLUSTER_INFO_REQ,
-            method_resp: Some(METHOD_CLUSTER_INFO_RESP),
-            requires_cluster_context: false,
-            requires_infobase_context: false,
-        }
-    }
-
-    fn cluster(&self) -> Option<Uuid16> {
-        None
-    }
-
-    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
-        let req = ClusterIdRequest { cluster: self.cluster };
-        let mut out = Vec::with_capacity(req.encoded_len());
-        req.encode_body(&mut out)?;
-        Ok(out)
-    }
 }
 
 impl Response for ClusterInfoResp {
@@ -280,6 +116,7 @@ mod tests {
     use crate::protocol::ProtocolVersion;
     use crate::rpc::Request;
     use crate::commands::rpc_body;
+    use crate::commands::parse_list_u8;
 
     fn decode_hex_str(input: &str) -> Vec<u8> {
         hex::decode(input.trim()).expect("hex decode")

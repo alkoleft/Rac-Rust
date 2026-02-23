@@ -100,6 +100,8 @@ When reporting protocol analysis:
    - Add `version = "<min_version>"` to every field.
    - Version is **minimum supported** RAC protocol version for the field.
    - If the field already has a higher version in the file but you confirm it exists earlier, **lower** it to the correct minimum.
+   - Requests can also be described in schema via `[request.*]` sections. The code generator now emits request encoders into the same `*_generated.rs` as record decoders (no separate `--requests-out`).
+   - Use `literal = [..]` in request fields to encode fixed padding bytes.
 8. When analyzing gaps, infer likely field placements from type sizes and nearby value patterns, and request capture changes if needed to validate (e.g., toggling RAC fields or forcing non-zero values).
 9. Reference known data types and sizes (strings, datetime, boolean, UUID, u32/u64) when proposing hypotheses.
 10. After successful analysis, update `docs/rac/modes/rac_modes_registry.md` with the response method mapping.

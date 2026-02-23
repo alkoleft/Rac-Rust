@@ -6,6 +6,8 @@ use crate::rac_wire::{
 use crate::Uuid16;
 use serde::Serialize;
 
+use super::request_schema::cluster as cluster_schema;
+
 #[derive(Debug, Clone)]
 pub struct SerializedRpc {
     pub payload: Vec<u8>,
@@ -465,16 +467,20 @@ impl RacProtocol for RacProtocolImpl {
                 Some(METHOD_AGENT_VERSION_RESP),
             ),
             RacRequest::ClusterAuth { cluster, user, pwd } => {
-                let mut body = Vec::with_capacity(16 + 2 + user.len() + pwd.len());
-                body.extend_from_slice(&cluster);
-                body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(user.as_bytes())?);
-                body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(pwd.as_bytes())?);
+                let req = cluster_schema::ClusterAuthRequest { cluster, user, pwd };
+                let mut body = Vec::with_capacity(req.encoded_len());
+                req.encode_body(&mut body)?;
                 (encode_rpc(METHOD_CLUSTER_AUTH, &body), None)
             }
-            RacRequest::ClusterAdminList { cluster } => (
-                Self::encode_cluster_scoped(METHOD_CLUSTER_ADMIN_LIST_REQ, cluster),
-                Some(METHOD_CLUSTER_ADMIN_LIST_RESP),
-            ),
+            RacRequest::ClusterAdminList { cluster } => {
+                let req = cluster_schema::ClusterIdRequest { cluster };
+                let mut body = Vec::with_capacity(req.encoded_len());
+                req.encode_body(&mut body);
+                (
+                    encode_rpc(METHOD_CLUSTER_ADMIN_LIST_REQ, &body),
+                    Some(METHOD_CLUSTER_ADMIN_LIST_RESP),
+                )
+            }
             RacRequest::ClusterAdminRegister {
                 cluster,
                 name,
@@ -482,14 +488,15 @@ impl RacProtocol for RacProtocolImpl {
                 pwd,
                 auth_flags,
             } => {
-                let mut body =
-                    Vec::with_capacity(16 + 4 + name.len() + descr.len() + pwd.len());
-                body.extend_from_slice(&cluster);
-                body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(name.as_bytes())?);
-                body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(descr.as_bytes())?);
-                body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(pwd.as_bytes())?);
-                body.push(auth_flags);
-                body.extend_from_slice(&[0x00, 0x00]);
+                let req = cluster_schema::ClusterAdminRegisterRequest {
+                    cluster,
+                    name,
+                    descr,
+                    pwd,
+                    auth_flags,
+                };
+                let mut body = Vec::with_capacity(req.encoded_len());
+                req.encode_body(&mut body)?;
                 (
                     encode_rpc(METHOD_CLUSTER_ADMIN_REGISTER_REQ, &body),
                     None,
@@ -499,10 +506,15 @@ impl RacProtocol for RacProtocolImpl {
                 encode_rpc(METHOD_CLUSTER_LIST_REQ, &[]),
                 Some(METHOD_CLUSTER_LIST_RESP),
             ),
-            RacRequest::ClusterInfo { cluster } => (
-                Self::encode_cluster_scoped(METHOD_CLUSTER_INFO_REQ, cluster),
-                Some(METHOD_CLUSTER_INFO_RESP),
-            ),
+            RacRequest::ClusterInfo { cluster } => {
+                let req = cluster_schema::ClusterIdRequest { cluster };
+                let mut body = Vec::with_capacity(req.encoded_len());
+                req.encode_body(&mut body);
+                (
+                    encode_rpc(METHOD_CLUSTER_INFO_REQ, &body),
+                    Some(METHOD_CLUSTER_INFO_RESP),
+                )
+            }
             RacRequest::ManagerList { cluster } => (
                 Self::encode_cluster_scoped(METHOD_MANAGER_LIST_REQ, cluster),
                 Some(METHOD_MANAGER_LIST_RESP),

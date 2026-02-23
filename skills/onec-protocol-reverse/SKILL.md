@@ -90,14 +90,19 @@ When reporting protocol analysis:
 5. If building replacement behavior, show one verified live command/output.
 6. For message format docs, use this block order and content:
    - `Поля ответа (из rac)`: table with `Field | Type | Found In Capture | Order In Capture`, and preserve on-wire order.
+   - Always include a `Version` column that records the **minimum** RAC protocol version where the field is available.
    - `RPC`: request/response method IDs and payload envelope notes.
    - `Record Layout`: one or more variants; offsets relative to record start; table `Offset | Size | Field | Type | Notes`.
    - Always include unknown/gap regions with sizes and offsets.
    - `Hypotheses` and `Open Questions` blocks.
    - Add a `Gap Analysis` block with candidate field interpretations and capture changes needed to confirm them.
-7. When analyzing gaps, infer likely field placements from type sizes and nearby value patterns, and request capture changes if needed to validate (e.g., toggling RAC fields or forcing non-zero values).
-8. Reference known data types and sizes (strings, datetime, boolean, UUID, u32/u64) when proposing hypotheses.
-9. After successful analysis, update `docs/rac/modes/rac_modes_registry.md` with the response method mapping.
+7. For schema updates (`schemas/rac/*.toml`):
+   - Add `version = "<min_version>"` to every field.
+   - Version is **minimum supported** RAC protocol version for the field.
+   - If the field already has a higher version in the file but you confirm it exists earlier, **lower** it to the correct minimum.
+8. When analyzing gaps, infer likely field placements from type sizes and nearby value patterns, and request capture changes if needed to validate (e.g., toggling RAC fields or forcing non-zero values).
+9. Reference known data types and sizes (strings, datetime, boolean, UUID, u32/u64) when proposing hypotheses.
+10. After successful analysis, update `docs/rac/modes/rac_modes_registry.md` with the response method mapping.
 
 ## Log Hygiene
 

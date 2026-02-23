@@ -9,13 +9,14 @@ use serde::Deserialize;
 #[derive(Debug, Deserialize)]
 struct TestParams {
     addr: String,
+    expected_agent_version: String,
+    cluster_uuid: String,
+    cluster_user: String,
+    cluster_pwd: String,
 }
 
-fn cluster_uuid_from_env_or_first(client: &mut RacClient) -> [u8; 16] {
-    let value = std::env::var("RAC_CLUSTER").expect("RAC_CLUSTER not set");
-    let parsed = parse_uuid(&value).expect("RAC_CLUSTER must be a valid uuid");
-    let _ = cluster_list(client).expect("cluster list");
-    parsed
+fn cluster_uuid_from_params(params: &TestParams) -> [u8; 16] {
+    parse_uuid(&params.cluster_uuid).expect("cluster_uuid must be a valid uuid")
 }
 
 fn load_params() -> TestParams {
@@ -39,11 +40,16 @@ fn live_infobase_info() {
     };
     let mut client = RacClient::connect(&addr, cfg).expect("connect");
 
-    let _ = agent_version(&mut client);
+    let resp = agent_version(&mut client).expect("agent version");
+    assert_eq!(
+        resp.version.as_deref(),
+        Some(params.expected_agent_version.as_str())
+    );
 
-    let cluster_uuid = cluster_uuid_from_env_or_first(&mut client);
-    let cluster_user = std::env::var("RAC_CLUSTER_USER").expect("RAC_CLUSTER_USER not set");
-    let cluster_pwd = std::env::var("RAC_CLUSTER_PWD").expect("RAC_CLUSTER_PWD not set");
+    let cluster_uuid = cluster_uuid_from_params(&params);
+    let cluster_user = params.cluster_user.clone();
+    let cluster_pwd = params.cluster_pwd.clone();
+    let _ = cluster_list(&mut client).expect("cluster list");
     let _ = client
         .call(RacRequest::ClusterAuth {
             cluster: cluster_uuid,

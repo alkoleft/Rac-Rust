@@ -1,3 +1,5 @@
 addr = "127.0.0.1:1545"
-expected_agent_version = "8.5.1.1150"
+expected_agent_version = "8.3.21.1895"
 cluster_uuid = "1619820a-d36f-4d8a-a716-1516b1dea077"
+cluster_user = "cluster_admin"
+cluster_pwd = "cluster_pass"

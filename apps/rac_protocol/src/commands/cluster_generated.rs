@@ -2,8 +2,8 @@ use crate::Uuid16;
 use crate::error::RacError;
 use crate::codec::RecordCursor;
 use crate::error::Result;
-use crate::metadata::RpcMethodMeta;
 use serde::Serialize;
+use crate::metadata::RpcMethodMeta;
 use crate::rac_wire::encode_with_len_u8;
 
 #[derive(Debug, Serialize, Clone)]
@@ -86,19 +86,6 @@ impl ClusterRecord {
     }
 }
 
-pub fn parse_cluster_info_body(body: &[u8], tail_len: usize) -> Result<ClusterRecord> {
-    if body.is_empty() {
-        return Err(RacError::Decode("cluster info empty body"));
-    }
-    let mut cursor = RecordCursor::new(body, 0);
-    let record = ClusterRecord::decode(&mut cursor)?;
-    if tail_len != 0 {
-        let _tail = cursor.take_bytes(tail_len)?;
-    }
-    Ok(record)
-}
-
-
 pub const RPC_CLUSTER_AUTH_META: RpcMethodMeta = RpcMethodMeta {
     method_req: 9,
     method_resp: None,
@@ -133,6 +120,19 @@ pub const RPC_CLUSTER_INFO_META: RpcMethodMeta = RpcMethodMeta {
     requires_cluster_context: false,
     requires_infobase_context: false,
 };
+
+
+pub fn parse_cluster_info_body(body: &[u8], tail_len: usize) -> Result<ClusterRecord> {
+    if body.is_empty() {
+        return Err(RacError::Decode("cluster info empty body"));
+    }
+    let mut cursor = RecordCursor::new(body, 0);
+    let record = ClusterRecord::decode(&mut cursor)?;
+    if tail_len != 0 {
+        let _tail = cursor.take_bytes(tail_len)?;
+    }
+    Ok(record)
+}
 
 #[derive(Debug, Clone)]
 pub struct ClusterIdRequest {

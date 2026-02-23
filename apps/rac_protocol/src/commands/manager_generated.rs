@@ -3,6 +3,7 @@ use crate::error::RacError;
 use crate::codec::RecordCursor;
 use crate::error::Result;
 use serde::Serialize;
+use crate::metadata::RpcMethodMeta;
 
 #[derive(Debug, Serialize, Clone)]
 pub struct ManagerRecord {
@@ -33,12 +34,61 @@ impl ManagerRecord {
     }
 }
 
+pub const RPC_MANAGER_LIST_META: RpcMethodMeta = RpcMethodMeta {
+    method_req: 18,
+    method_resp: Some(19),
+    requires_cluster_context: true,
+    requires_infobase_context: false,
+};
+
+pub const RPC_MANAGER_INFO_META: RpcMethodMeta = RpcMethodMeta {
+    method_req: 20,
+    method_resp: Some(21),
+    requires_cluster_context: true,
+    requires_infobase_context: false,
+};
+
+
 pub fn parse_manager_info_body(body: &[u8]) -> Result<ManagerRecord> {
     if body.is_empty() {
         return Err(RacError::Decode("manager info empty body"));
     }
     let mut cursor = RecordCursor::new(body, 0);
     ManagerRecord::decode(&mut cursor)
+}
+
+#[derive(Debug, Clone)]
+pub struct ManagerListRequest {
+    pub cluster: Uuid16,
+}
+
+impl ManagerListRequest {
+    pub fn encoded_len(&self) -> usize {
+        16
+    }
+
+    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
+        out.extend_from_slice(&self.cluster);
+        Ok(())
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct ManagerInfoRequest {
+    pub cluster: Uuid16,
+    pub manager: Uuid16,
+}
+
+impl ManagerInfoRequest {
+    pub fn encoded_len(&self) -> usize {
+        16 + 16
+    }
+
+    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
+        out.extend_from_slice(&self.cluster);
+        out.extend_from_slice(&self.manager);
+        Ok(())
+    }
 }
 
 #[cfg(test)]

@@ -12,3 +12,53 @@ fields = [
   { name = "infobase", type = "uuid" },
   { name = "fields", type = "list_str8_rest" },
 ]
+
+[request.InfobaseSummaryListRequest]
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid" },
+]
+
+[request.InfobaseSummaryInfoRequest]
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid" },
+  { name = "infobase", type = "uuid" },
+]
+
+[request.InfobaseInfoRequest]
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid" },
+  { name = "infobase", type = "uuid" },
+]
+
+[rpc.InfobaseSummaryList]
+request = "InfobaseSummaryListRequest"
+method_req = 0x2a
+method_resp = 0x2b
+requires_cluster_context = true
+requires_infobase_context = false
+
+[rpc.InfobaseSummaryInfo]
+request = "InfobaseSummaryInfoRequest"
+method_req = 0x2e
+method_resp = 0x2f
+requires_cluster_context = true
+requires_infobase_context = true
+
+[rpc.InfobaseInfo]
+request = "InfobaseInfoRequest"
+method_req = 0x30
+method_resp = 0x31
+requires_cluster_context = true
+requires_infobase_context = true
+
+[response.InfobaseSummaryList]
+body = { type = "list_u8", item = "InfobaseSummary" }
+
+[response.InfobaseSummaryInfo]
+body = { type = "record", item = "InfobaseFieldsRecord" }
+
+[response.InfobaseInfo]
+body = { type = "record", item = "InfobaseFieldsRecord" }

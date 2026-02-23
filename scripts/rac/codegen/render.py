@@ -102,6 +102,10 @@ def generate(
         lines.append("}")
         lines.append("")
 
+    if rpcs:
+        lines.extend(generate_rpc_metadata(rpcs))
+        lines.append("")
+
     if responses:
         lines.extend(generate_response_parsers(responses))
         lines.append("")
@@ -279,21 +283,6 @@ def generate_rpc_metadata(rpcs: List[RpcSpec]) -> List[str]:
         lines.append(f"    requires_infobase_context: {str(rpc.requires_infobase_context).lower()},")
         lines.append("};")
         lines.append("")
-
-    lines.append("#[allow(dead_code)]")
-    lines.append("pub fn rpc_metadata(request: &crate::client::RacRequest) -> Option<RpcMethodMeta> {")
-    lines.append("    match request {")
-    for rpc in rpcs:
-        const_name = f"RPC_{snake_case(rpc.name).upper()}_META"
-        if rpc.request is None:
-            lines.append(f"        crate::client::RacRequest::{rpc.name} => Some({const_name}),")
-        else:
-            lines.append(
-                f"        crate::client::RacRequest::{rpc.name} {{ .. }} => Some({const_name}),"
-            )
-    lines.append("        _ => None,")
-    lines.append("    }")
-    lines.append("}")
     return lines
 
 

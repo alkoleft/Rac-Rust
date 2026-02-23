@@ -1,7 +1,9 @@
 use crate::Uuid16;
+use crate::error::RacError;
 use crate::codec::RecordCursor;
 use crate::error::Result;
 use serde::Serialize;
+use crate::metadata::RpcMethodMeta;
 
 #[derive(Debug, Serialize, Clone)]
 pub struct ServerRecord {
@@ -88,3 +90,62 @@ impl ServerRecord {
         })
     }
 }
+
+pub const RPC_SERVER_LIST_META: RpcMethodMeta = RpcMethodMeta {
+    method_req: 22,
+    method_resp: Some(23),
+    requires_cluster_context: true,
+    requires_infobase_context: false,
+};
+
+pub const RPC_SERVER_INFO_META: RpcMethodMeta = RpcMethodMeta {
+    method_req: 24,
+    method_resp: Some(25),
+    requires_cluster_context: true,
+    requires_infobase_context: false,
+};
+
+
+pub fn parse_server_info_body(body: &[u8]) -> Result<ServerRecord> {
+    if body.is_empty() {
+        return Err(RacError::Decode("server info empty body"));
+    }
+    let mut cursor = RecordCursor::new(body, 0);
+    ServerRecord::decode(&mut cursor)
+}
+
+#[derive(Debug, Clone)]
+pub struct ServerListRequest {
+    pub cluster: Uuid16,
+}
+
+impl ServerListRequest {
+    pub fn encoded_len(&self) -> usize {
+        16
+    }
+
+    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
+        out.extend_from_slice(&self.cluster);
+        Ok(())
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct ServerInfoRequest {
+    pub cluster: Uuid16,
+    pub server: Uuid16,
+}
+
+impl ServerInfoRequest {
+    pub fn encoded_len(&self) -> usize {
+        16 + 16
+    }
+
+    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
+        out.extend_from_slice(&self.cluster);
+        out.extend_from_slice(&self.server);
+        Ok(())
+    }
+}
+
+

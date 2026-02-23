@@ -1,8 +1,10 @@
 use crate::Uuid16;
+use crate::error::RacError;
 use crate::codec::v8_datetime_to_iso;
 use crate::codec::RecordCursor;
 use crate::error::Result;
 use serde::Serialize;
+use crate::metadata::RpcMethodMeta;
 
 #[derive(Debug, Serialize, Clone)]
 pub struct ConnectionRecord {
@@ -41,3 +43,62 @@ impl ConnectionRecord {
         })
     }
 }
+
+pub const RPC_CONNECTION_LIST_META: RpcMethodMeta = RpcMethodMeta {
+    method_req: 50,
+    method_resp: Some(51),
+    requires_cluster_context: true,
+    requires_infobase_context: false,
+};
+
+pub const RPC_CONNECTION_INFO_META: RpcMethodMeta = RpcMethodMeta {
+    method_req: 54,
+    method_resp: Some(55),
+    requires_cluster_context: true,
+    requires_infobase_context: false,
+};
+
+
+pub fn parse_connection_info_body(body: &[u8]) -> Result<ConnectionRecord> {
+    if body.is_empty() {
+        return Err(RacError::Decode("connection info empty body"));
+    }
+    let mut cursor = RecordCursor::new(body, 0);
+    ConnectionRecord::decode(&mut cursor)
+}
+
+#[derive(Debug, Clone)]
+pub struct ConnectionListRequest {
+    pub cluster: Uuid16,
+}
+
+impl ConnectionListRequest {
+    pub fn encoded_len(&self) -> usize {
+        16
+    }
+
+    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
+        out.extend_from_slice(&self.cluster);
+        Ok(())
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct ConnectionInfoRequest {
+    pub cluster: Uuid16,
+    pub connection: Uuid16,
+}
+
+impl ConnectionInfoRequest {
+    pub fn encoded_len(&self) -> usize {
+        16 + 16
+    }
+
+    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
+        out.extend_from_slice(&self.cluster);
+        out.extend_from_slice(&self.connection);
+        Ok(())
+    }
+}
+
+

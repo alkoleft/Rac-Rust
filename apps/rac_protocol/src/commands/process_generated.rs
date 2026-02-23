@@ -1,8 +1,10 @@
 use crate::Uuid16;
+use crate::error::RacError;
 use crate::codec::v8_datetime_to_iso;
 use crate::codec::RecordCursor;
 use crate::error::Result;
 use serde::Serialize;
+use crate::metadata::RpcMethodMeta;
 
 #[derive(Debug, Serialize, Default, Clone)]
 pub struct ProcessLicense {
@@ -140,3 +142,62 @@ impl ProcessRecord {
         })
     }
 }
+
+pub const RPC_PROCESS_LIST_META: RpcMethodMeta = RpcMethodMeta {
+    method_req: 29,
+    method_resp: Some(30),
+    requires_cluster_context: true,
+    requires_infobase_context: false,
+};
+
+pub const RPC_PROCESS_INFO_META: RpcMethodMeta = RpcMethodMeta {
+    method_req: 31,
+    method_resp: Some(32),
+    requires_cluster_context: true,
+    requires_infobase_context: false,
+};
+
+
+pub fn parse_process_info_body(body: &[u8]) -> Result<ProcessRecord> {
+    if body.is_empty() {
+        return Err(RacError::Decode("process info empty body"));
+    }
+    let mut cursor = RecordCursor::new(body, 0);
+    ProcessRecord::decode(&mut cursor)
+}
+
+#[derive(Debug, Clone)]
+pub struct ProcessListRequest {
+    pub cluster: Uuid16,
+}
+
+impl ProcessListRequest {
+    pub fn encoded_len(&self) -> usize {
+        16
+    }
+
+    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
+        out.extend_from_slice(&self.cluster);
+        Ok(())
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct ProcessInfoRequest {
+    pub cluster: Uuid16,
+    pub process: Uuid16,
+}
+
+impl ProcessInfoRequest {
+    pub fn encoded_len(&self) -> usize {
+        16 + 16
+    }
+
+    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
+        out.extend_from_slice(&self.cluster);
+        out.extend_from_slice(&self.process);
+        Ok(())
+    }
+}
+
+

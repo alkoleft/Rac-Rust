@@ -7,3 +7,19 @@ fields = [
   { name = "session", type = "uuid" },
   { name = "object", type = "uuid" },
 ]
+
+[request.LockListRequest]
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid" },
+]
+
+[rpc.LockList]
+request = "LockListRequest"
+method_req = 0x48
+method_resp = 0x49
+requires_cluster_context = true
+requires_infobase_context = false
+
+[response.LockList]
+body = { type = "list_u8", item = "LockRecordRaw" }

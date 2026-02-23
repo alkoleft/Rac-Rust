@@ -69,3 +69,36 @@ fields = [
   { name = "data_separation", type = "str8_opt" },
   { name = "client_ip", type = "str8_opt" },
 ]
+
+[request.SessionListRequest]
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid" },
+]
+
+[request.SessionInfoRequest]
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid" },
+  { name = "session", type = "uuid" },
+]
+
+[rpc.SessionList]
+request = "SessionListRequest"
+method_req = 0x41
+method_resp = 0x42
+requires_cluster_context = true
+requires_infobase_context = false
+
+[rpc.SessionInfo]
+request = "SessionInfoRequest"
+method_req = 0x45
+method_resp = 0x46
+requires_cluster_context = true
+requires_infobase_context = false
+
+[response.SessionList]
+body = { type = "list_u8", item = "SessionRecordRaw" }
+
+[response.SessionInfo]
+body = { type = "record", item = "SessionRecordRaw" }

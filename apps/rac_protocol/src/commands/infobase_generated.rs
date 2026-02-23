@@ -1,7 +1,9 @@
 use crate::Uuid16;
+use crate::error::RacError;
 use crate::codec::RecordCursor;
 use crate::error::Result;
 use serde::Serialize;
+use crate::metadata::RpcMethodMeta;
 
 #[derive(Debug, Serialize, Clone)]
 pub struct InfobaseSummary {
@@ -54,3 +56,95 @@ impl InfobaseFieldsRecord {
         })
     }
 }
+
+pub const RPC_INFOBASE_SUMMARY_LIST_META: RpcMethodMeta = RpcMethodMeta {
+    method_req: 42,
+    method_resp: Some(43),
+    requires_cluster_context: true,
+    requires_infobase_context: false,
+};
+
+pub const RPC_INFOBASE_SUMMARY_INFO_META: RpcMethodMeta = RpcMethodMeta {
+    method_req: 46,
+    method_resp: Some(47),
+    requires_cluster_context: true,
+    requires_infobase_context: true,
+};
+
+pub const RPC_INFOBASE_INFO_META: RpcMethodMeta = RpcMethodMeta {
+    method_req: 48,
+    method_resp: Some(49),
+    requires_cluster_context: true,
+    requires_infobase_context: true,
+};
+
+
+pub fn parse_infobase_summary_info_body(body: &[u8]) -> Result<InfobaseFieldsRecord> {
+    if body.is_empty() {
+        return Err(RacError::Decode("infobase summary info empty body"));
+    }
+    let mut cursor = RecordCursor::new(body, 0);
+    InfobaseFieldsRecord::decode(&mut cursor)
+}
+
+pub fn parse_infobase_info_body(body: &[u8]) -> Result<InfobaseFieldsRecord> {
+    if body.is_empty() {
+        return Err(RacError::Decode("infobase info empty body"));
+    }
+    let mut cursor = RecordCursor::new(body, 0);
+    InfobaseFieldsRecord::decode(&mut cursor)
+}
+
+#[derive(Debug, Clone)]
+pub struct InfobaseSummaryListRequest {
+    pub cluster: Uuid16,
+}
+
+impl InfobaseSummaryListRequest {
+    pub fn encoded_len(&self) -> usize {
+        16
+    }
+
+    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
+        out.extend_from_slice(&self.cluster);
+        Ok(())
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct InfobaseSummaryInfoRequest {
+    pub cluster: Uuid16,
+    pub infobase: Uuid16,
+}
+
+impl InfobaseSummaryInfoRequest {
+    pub fn encoded_len(&self) -> usize {
+        16 + 16
+    }
+
+    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
+        out.extend_from_slice(&self.cluster);
+        out.extend_from_slice(&self.infobase);
+        Ok(())
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct InfobaseInfoRequest {
+    pub cluster: Uuid16,
+    pub infobase: Uuid16,
+}
+
+impl InfobaseInfoRequest {
+    pub fn encoded_len(&self) -> usize {
+        16 + 16
+    }
+
+    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
+        out.extend_from_slice(&self.cluster);
+        out.extend_from_slice(&self.infobase);
+        Ok(())
+    }
+}
+
+

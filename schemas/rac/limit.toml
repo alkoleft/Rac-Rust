@@ -18,3 +18,77 @@ fields = [
   { name = "error_message", type = "str8" },
   { name = "descr", type = "str8" },
 ]
+
+[request.LimitListRequest]
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid" },
+]
+
+[request.LimitInfoRequest]
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid" },
+  { name = "name", type = "str8" },
+]
+
+[request.LimitUpdateRequest]
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid" },
+  { name = "name", type = "str8" },
+  { name = "counter", type = "str8" },
+  { name = "action", type = "u8" },
+  { name = "duration", type = "u64_be" },
+  { name = "cpu_time", type = "u64_be" },
+  { name = "memory", type = "u64_be" },
+  { name = "read", type = "u64_be" },
+  { name = "write", type = "u64_be" },
+  { name = "duration_dbms", type = "u64_be" },
+  { name = "dbms_bytes", type = "u64_be" },
+  { name = "service", type = "u64_be" },
+  { name = "call", type = "u64_be" },
+  { name = "number_of_active_sessions", type = "u64_be" },
+  { name = "number_of_sessions", type = "u64_be" },
+  { name = "error_message", type = "str8" },
+  { name = "descr", type = "str8" },
+]
+
+[request.LimitRemoveRequest]
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid" },
+  { name = "name", type = "str8" },
+]
+
+[rpc.LimitList]
+request = "LimitListRequest"
+method_req = 0x7c
+method_resp = 0x7d
+requires_cluster_context = true
+requires_infobase_context = false
+
+[rpc.LimitInfo]
+request = "LimitInfoRequest"
+method_req = 0x7e
+method_resp = 0x7f
+requires_cluster_context = true
+requires_infobase_context = false
+
+[rpc.LimitUpdate]
+request = "LimitUpdateRequest"
+method_req = 0x80
+requires_cluster_context = true
+requires_infobase_context = false
+
+[rpc.LimitRemove]
+request = "LimitRemoveRequest"
+method_req = 0x81
+requires_cluster_context = true
+requires_infobase_context = false
+
+[response.LimitList]
+body = { type = "list_u8", item = "LimitRecord" }
+
+[response.LimitInfo]
+body = { type = "record", item = "LimitRecord" }

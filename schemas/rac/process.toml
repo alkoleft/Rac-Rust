@@ -42,3 +42,36 @@ fields = [
   { name = "reserve", type = "u8_bool" },
   { name = "turned_on", type = "computed", computed = "ne_zero", source = "use_status", rust_type = "bool" },
 ]
+
+[request.ProcessListRequest]
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid" },
+]
+
+[request.ProcessInfoRequest]
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid" },
+  { name = "process", type = "uuid" },
+]
+
+[rpc.ProcessList]
+request = "ProcessListRequest"
+method_req = 0x1d
+method_resp = 0x1e
+requires_cluster_context = true
+requires_infobase_context = false
+
+[rpc.ProcessInfo]
+request = "ProcessInfoRequest"
+method_req = 0x1f
+method_resp = 0x20
+requires_cluster_context = true
+requires_infobase_context = false
+
+[response.ProcessList]
+body = { type = "list_u8", item = "ProcessRecord" }
+
+[response.ProcessInfo]
+body = { type = "record", item = "ProcessRecord" }

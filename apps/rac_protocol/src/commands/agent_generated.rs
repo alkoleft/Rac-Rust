@@ -70,3 +70,27 @@ impl AgentAuthRequest {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::commands::rpc_body;
+
+    fn decode_hex_str(input: &str) -> Vec<u8> {
+        hex::decode(input.trim()).expect("hex decode")
+    }
+
+    #[test]
+    fn agent_admin_list_response_hex() {
+        let hex = include_str!("../../../../artifacts/rac/agent_admin_list_response_rpc.hex");
+        let payload = decode_hex_str(hex);
+        let body = rpc_body(&payload).expect("rpc body");
+        let items = crate::commands::parse_list_u8(body, AgentAdminRecord::decode).expect("parse body");
+        assert_eq!(items.len(), 1);
+        assert_eq!(items[0].name, "admin");
+        assert_eq!(items[0].unknown_tag, 0);
+        assert_eq!(items[0].unknown_flags, 0x3efbfbd);
+        assert_eq!(items[0].unknown_tail, [1, 0, 0]);
+    }
+
+}

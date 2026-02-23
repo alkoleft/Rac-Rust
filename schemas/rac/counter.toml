@@ -38,3 +38,128 @@ fields = [
   { name = "number_of_sessions", type = "u64_be" },
   { name = "time", type = "datetime_u64_be" },
 ]
+
+[request.CounterListRequest]
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid" },
+]
+
+[request.CounterInfoRequest]
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid" },
+  { name = "counter", type = "str8" },
+]
+
+[request.CounterUpdateRequest]
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid" },
+  { name = "name", type = "str8" },
+  { name = "collection_time", type = "u64_be" },
+  { name = "group", type = "u8" },
+  { name = "filter_type", type = "u8" },
+  { name = "filter", type = "str8" },
+  { name = "duration", type = "u8" },
+  { name = "cpu_time", type = "u8" },
+  { name = "duration_dbms", type = "u8" },
+  { name = "service", type = "u8" },
+  { name = "memory", type = "u8" },
+  { name = "read", type = "u8" },
+  { name = "write", type = "u8" },
+  { name = "dbms_bytes", type = "u8" },
+  { name = "call", type = "u8" },
+  { name = "number_of_active_sessions", type = "u8" },
+  { name = "number_of_sessions", type = "u8" },
+  { name = "descr", type = "str8" },
+]
+
+[request.CounterRemoveRequest]
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid" },
+  { name = "name", type = "str8" },
+]
+
+[request.CounterClearRequest]
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid" },
+  { name = "counter", type = "str8" },
+  { name = "object", type = "str8" },
+]
+
+[request.CounterValuesRequest]
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid" },
+  { name = "counter", type = "str8" },
+  { name = "object", type = "str8" },
+]
+
+[request.CounterAccumulatedValuesRequest]
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid" },
+  { name = "counter", type = "str8" },
+  { name = "object", type = "str8" },
+]
+
+[rpc.CounterList]
+request = "CounterListRequest"
+method_req = 0x76
+method_resp = 0x77
+requires_cluster_context = true
+requires_infobase_context = false
+
+[rpc.CounterInfo]
+request = "CounterInfoRequest"
+method_req = 0x78
+method_resp = 0x79
+requires_cluster_context = true
+requires_infobase_context = false
+
+[rpc.CounterUpdate]
+request = "CounterUpdateRequest"
+method_req = 0x7a
+requires_cluster_context = true
+requires_infobase_context = false
+
+[rpc.CounterRemove]
+request = "CounterRemoveRequest"
+method_req = 0x7b
+requires_cluster_context = true
+requires_infobase_context = false
+
+[rpc.CounterClear]
+request = "CounterClearRequest"
+method_req = 0x84
+requires_cluster_context = true
+requires_infobase_context = false
+
+[rpc.CounterValues]
+request = "CounterValuesRequest"
+method_req = 0x82
+method_resp = 0x83
+requires_cluster_context = true
+requires_infobase_context = false
+
+[rpc.CounterAccumulatedValues]
+request = "CounterAccumulatedValuesRequest"
+method_req = 0x85
+method_resp = 0x86
+requires_cluster_context = true
+requires_infobase_context = false
+
+[response.CounterList]
+body = { type = "list_u8", item = "CounterRecord" }
+
+[response.CounterInfo]
+body = { type = "record", item = "CounterRecord" }
+
+[response.CounterValues]
+body = { type = "list_u8", item = "CounterValuesRecord" }
+
+[response.CounterAccumulatedValues]
+body = { type = "list_u8", item = "CounterValuesRecord" }

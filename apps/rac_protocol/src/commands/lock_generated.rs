@@ -4,6 +4,7 @@ use crate::codec::v8_datetime_to_iso;
 use crate::codec::RecordCursor;
 use crate::error::Result;
 use serde::Serialize;
+use crate::metadata::RpcMethodMeta;
 
 #[derive(Debug, Serialize, Clone)]
 pub struct LockRecordRaw {
@@ -70,3 +71,28 @@ impl LockRecordRaw {
         })
     }
 }
+
+pub const RPC_LOCK_LIST_META: RpcMethodMeta = RpcMethodMeta {
+    method_req: 72,
+    method_resp: Some(73),
+    requires_cluster_context: true,
+    requires_infobase_context: false,
+};
+
+#[derive(Debug, Clone)]
+pub struct LockListRequest {
+    pub cluster: Uuid16,
+}
+
+impl LockListRequest {
+    pub fn encoded_len(&self) -> usize {
+        16
+    }
+
+    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
+        out.extend_from_slice(&self.cluster);
+        Ok(())
+    }
+}
+
+

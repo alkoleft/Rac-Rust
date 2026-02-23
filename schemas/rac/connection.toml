@@ -11,3 +11,36 @@ fields = [
   { name = "process", type = "uuid" },
   { name = "session_number", type = "u32_be" },
 ]
+
+[request.ConnectionListRequest]
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid" },
+]
+
+[request.ConnectionInfoRequest]
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid" },
+  { name = "connection", type = "uuid" },
+]
+
+[rpc.ConnectionList]
+request = "ConnectionListRequest"
+method_req = 0x32
+method_resp = 0x33
+requires_cluster_context = true
+requires_infobase_context = false
+
+[rpc.ConnectionInfo]
+request = "ConnectionInfoRequest"
+method_req = 0x36
+method_resp = 0x37
+requires_cluster_context = true
+requires_infobase_context = false
+
+[response.ConnectionList]
+body = { type = "list_u8", item = "ConnectionRecord" }
+
+[response.ConnectionInfo]
+body = { type = "record", item = "ConnectionRecord" }

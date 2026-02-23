@@ -31,3 +31,7 @@ method_req = 0x87
 method_resp = 0x88
 requires_cluster_context = false
 requires_infobase_context = false
+
+[response.AgentAdminList]
+body = { type = "list_u8", item = "AgentAdminRecord" }
+tests = [{ name = "agent_admin_list_response_hex", hex_path = "../../../../artifacts/rac/agent_admin_list_response_rpc.hex", expect_len = 1, asserts = [{ index = 0, field = "name", value = "admin" }, { index = 0, field = "unknown_tag", value = 0 }, { index = 0, field = "unknown_flags", value = 0x03efbfbd }, { index = 0, field = "unknown_tail", value = [0x01, 0x00, 0x00] }] }]

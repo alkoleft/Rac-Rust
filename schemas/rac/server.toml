@@ -27,3 +27,36 @@ fields = [
   { name = "restart_schedule", type = "str8" },
   { name = "gap_7", type = "u8" },
 ]
+
+[request.ServerListRequest]
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid" },
+]
+
+[request.ServerInfoRequest]
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid" },
+  { name = "server", type = "uuid" },
+]
+
+[rpc.ServerList]
+request = "ServerListRequest"
+method_req = 0x16
+method_resp = 0x17
+requires_cluster_context = true
+requires_infobase_context = false
+
+[rpc.ServerInfo]
+request = "ServerInfoRequest"
+method_req = 0x18
+method_resp = 0x19
+requires_cluster_context = true
+requires_infobase_context = false
+
+[response.ServerList]
+body = { type = "list_u8", item = "ServerRecord" }
+
+[response.ServerInfo]
+body = { type = "record", item = "ServerRecord" }

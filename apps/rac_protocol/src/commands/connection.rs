@@ -1,8 +1,15 @@
 use serde::Serialize;
 
-use crate::client::{RacClient, RacRequest};
+use crate::client::RacClient;
 use crate::codec::RecordCursor;
 use crate::error::{RacError, Result};
+use crate::protocol::ProtocolCodec;
+use crate::rpc::{Meta, Request, Response};
+use crate::rpc::decode_utils::rpc_body;
+use crate::rac_wire::{
+    METHOD_CONNECTION_INFO_REQ, METHOD_CONNECTION_INFO_RESP, METHOD_CONNECTION_LIST_REQ,
+    METHOD_CONNECTION_LIST_RESP,
+};
 use crate::Uuid16;
 
 use super::call_body;
@@ -26,13 +33,73 @@ pub struct ConnectionInfoResp {
     pub fields: Vec<String>,
 }
 
+struct ConnectionListRpc {
+    cluster: Uuid16,
+}
+
+impl Request for ConnectionListRpc {
+    type Response = ConnectionListResp;
+
+    fn meta(&self) -> Meta {
+        Meta {
+            method_req: METHOD_CONNECTION_LIST_REQ,
+            method_resp: Some(METHOD_CONNECTION_LIST_RESP),
+            requires_cluster_context: true,
+            requires_infobase_context: false,
+        }
+    }
+
+    fn cluster(&self) -> Option<Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
+        Ok(self.cluster.to_vec())
+    }
+}
+
+impl Response for ConnectionListResp {
+    fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
+        let body = rpc_body(payload)?;
+        let records = parse_connection_list_records(body)?;
+        Ok(Self {
+            connections: records.iter().map(|record| record.connection).collect(),
+            records,
+        })
+    }
+}
+
 pub fn connection_list(client: &mut RacClient, cluster: Uuid16) -> Result<ConnectionListResp> {
-    let body = call_body(client, RacRequest::ConnectionList { cluster })?;
-    let records = parse_connection_list_records(&body)?;
-    Ok(ConnectionListResp {
-        connections: records.iter().map(|record| record.connection).collect(),
-        records,
-    })
+    client.call_typed(ConnectionListRpc { cluster })
+}
+
+struct ConnectionInfoRpc {
+    cluster: Uuid16,
+    connection: Uuid16,
+}
+
+impl Request for ConnectionInfoRpc {
+    type Response = Vec<u8>;
+
+    fn meta(&self) -> Meta {
+        Meta {
+            method_req: METHOD_CONNECTION_INFO_REQ,
+            method_resp: Some(METHOD_CONNECTION_INFO_RESP),
+            requires_cluster_context: true,
+            requires_infobase_context: false,
+        }
+    }
+
+    fn cluster(&self) -> Option<Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
+        let mut out = Vec::with_capacity(32);
+        out.extend_from_slice(&self.cluster);
+        out.extend_from_slice(&self.connection);
+        Ok(out)
+    }
 }
 
 pub fn connection_info(
@@ -40,13 +107,7 @@ pub fn connection_info(
     cluster: Uuid16,
     connection: Uuid16,
 ) -> Result<ConnectionInfoResp> {
-    let body = call_body(
-        client,
-        RacRequest::ConnectionInfo {
-            cluster,
-            connection,
-        },
-    )?;
+    let body = call_body(client, ConnectionInfoRpc { cluster, connection })?;
     let record = parse_connection_info_body(&body, connection)?;
     let fields = collect_connection_fields(&record);
     Ok(ConnectionInfoResp {

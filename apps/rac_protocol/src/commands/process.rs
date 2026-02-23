@@ -1,11 +1,17 @@
 use serde::Serialize;
 
-use crate::client::{RacClient, RacRequest};
+use crate::client::RacClient;
 use crate::codec::RecordCursor;
 use crate::error::{RacError, Result};
+use crate::protocol::ProtocolCodec;
+use crate::rpc::{Meta, Request, Response};
+use crate::rpc::decode_utils::rpc_body;
+use crate::rac_wire::{
+    METHOD_PROCESS_INFO_REQ, METHOD_PROCESS_INFO_RESP, METHOD_PROCESS_LIST_REQ,
+    METHOD_PROCESS_LIST_RESP,
+};
 use crate::Uuid16;
 
-use super::call_body;
 
 mod generated {
     include!("process_generated.rs");
@@ -25,13 +31,84 @@ pub struct ProcessInfoResp {
     pub record: ProcessRecord,
 }
 
+struct ProcessListRpc {
+    cluster: Uuid16,
+}
+
+impl Request for ProcessListRpc {
+    type Response = ProcessListResp;
+
+    fn meta(&self) -> Meta {
+        Meta {
+            method_req: METHOD_PROCESS_LIST_REQ,
+            method_resp: Some(METHOD_PROCESS_LIST_RESP),
+            requires_cluster_context: true,
+            requires_infobase_context: false,
+        }
+    }
+
+    fn cluster(&self) -> Option<Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
+        Ok(self.cluster.to_vec())
+    }
+}
+
+impl Response for ProcessListResp {
+    fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
+        let body = rpc_body(payload)?;
+        let records = parse_process_list_records(body)?;
+        Ok(Self {
+            processes: records.iter().map(|r| r.process).collect(),
+            records,
+        })
+    }
+}
+
 pub fn process_list(client: &mut RacClient, cluster: Uuid16) -> Result<ProcessListResp> {
-    let body = call_body(client, RacRequest::ProcessList { cluster })?;
-    let records = parse_process_list_records(&body)?;
-    Ok(ProcessListResp {
-        processes: records.iter().map(|r| r.process).collect(),
-        records,
-    })
+    client.call_typed(ProcessListRpc { cluster })
+}
+
+struct ProcessInfoRpc {
+    cluster: Uuid16,
+    process: Uuid16,
+}
+
+impl Request for ProcessInfoRpc {
+    type Response = ProcessInfoResp;
+
+    fn meta(&self) -> Meta {
+        Meta {
+            method_req: METHOD_PROCESS_INFO_REQ,
+            method_resp: Some(METHOD_PROCESS_INFO_RESP),
+            requires_cluster_context: true,
+            requires_infobase_context: false,
+        }
+    }
+
+    fn cluster(&self) -> Option<Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
+        let mut out = Vec::with_capacity(32);
+        out.extend_from_slice(&self.cluster);
+        out.extend_from_slice(&self.process);
+        Ok(out)
+    }
+}
+
+impl Response for ProcessInfoResp {
+    fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
+        let body = rpc_body(payload)?;
+        let record = parse_process_record_1cv8c(body)?;
+        Ok(Self {
+            process: record.process,
+            record,
+        })
+    }
 }
 
 pub fn process_info(
@@ -39,12 +116,7 @@ pub fn process_info(
     cluster: Uuid16,
     process: Uuid16,
 ) -> Result<ProcessInfoResp> {
-    let body = call_body(client, RacRequest::ProcessInfo { cluster, process })?;
-    let record = parse_process_record_1cv8c(&body)?;
-    Ok(ProcessInfoResp {
-        process: record.process,
-        record,
-    })
+    client.call_typed(ProcessInfoRpc { cluster, process })
 }
 
 fn parse_process_list_records(body: &[u8]) -> Result<Vec<ProcessRecord>> {

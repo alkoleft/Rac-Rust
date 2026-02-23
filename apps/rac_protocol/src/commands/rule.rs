@@ -1,11 +1,19 @@
 use serde::Serialize;
 
-use crate::client::{RacClient, RacRequest};
+use crate::client::RacClient;
 use crate::codec::RecordCursor;
 use crate::error::{RacError, Result};
+use crate::protocol::ProtocolCodec;
+use crate::rpc::{Meta, Request, Response};
+use crate::rpc::decode_utils::{parse_ack_payload, rpc_body};
+use crate::rac_wire::{
+    METHOD_RULE_APPLY_REQ, METHOD_RULE_INFO_REQ, METHOD_RULE_INFO_RESP, METHOD_RULE_INSERT_REQ,
+    METHOD_RULE_INSERT_RESP, METHOD_RULE_LIST_REQ, METHOD_RULE_LIST_RESP, METHOD_RULE_REMOVE_REQ,
+};
 use crate::Uuid16;
 
-use super::{call_body, expect_ack, parse_uuid_body};
+use super::parse_uuid_body;
+use crate::commands::cluster_auth;
 
 mod generated {
     include!("rule_generated.rs");
@@ -82,6 +90,244 @@ pub struct RuleInfoResp {
     pub record: RuleRecord,
 }
 
+struct RuleListRpc {
+    cluster: Uuid16,
+    server: Uuid16,
+}
+
+impl Request for RuleListRpc {
+    type Response = RuleListResp;
+
+    fn meta(&self) -> Meta {
+        Meta {
+            method_req: METHOD_RULE_LIST_REQ,
+            method_resp: Some(METHOD_RULE_LIST_RESP),
+            requires_cluster_context: true,
+            requires_infobase_context: false,
+        }
+    }
+
+    fn cluster(&self) -> Option<Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
+        let mut body = Vec::with_capacity(32);
+        body.extend_from_slice(&self.cluster);
+        body.extend_from_slice(&self.server);
+        Ok(body)
+    }
+}
+
+impl Response for RuleListResp {
+    fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
+        let body = rpc_body(payload)?;
+        let records = parse_rule_list_records(body)?;
+        Ok(Self { records })
+    }
+}
+
+struct RuleInfoRpc {
+    cluster: Uuid16,
+    server: Uuid16,
+    rule: Uuid16,
+}
+
+impl Request for RuleInfoRpc {
+    type Response = RuleInfoResp;
+
+    fn meta(&self) -> Meta {
+        Meta {
+            method_req: METHOD_RULE_INFO_REQ,
+            method_resp: Some(METHOD_RULE_INFO_RESP),
+            requires_cluster_context: true,
+            requires_infobase_context: false,
+        }
+    }
+
+    fn cluster(&self) -> Option<Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
+        let mut body = Vec::with_capacity(48);
+        body.extend_from_slice(&self.cluster);
+        body.extend_from_slice(&self.server);
+        body.extend_from_slice(&self.rule);
+        Ok(body)
+    }
+}
+
+impl Response for RuleInfoResp {
+    fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
+        let body = rpc_body(payload)?;
+        let record = parse_rule_info_body(body)?;
+        Ok(Self { record })
+    }
+}
+
+struct RuleApplyRpc {
+    cluster: Uuid16,
+    mode: RuleApplyMode,
+}
+
+impl Request for RuleApplyRpc {
+    type Response = Vec<u8>;
+
+    fn meta(&self) -> Meta {
+        Meta {
+            method_req: METHOD_RULE_APPLY_REQ,
+            method_resp: None,
+            requires_cluster_context: true,
+            requires_infobase_context: false,
+        }
+    }
+
+    fn cluster(&self) -> Option<Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
+        let mut body = Vec::with_capacity(20);
+        body.extend_from_slice(&self.cluster);
+        body.extend_from_slice(&self.mode.as_u32().to_be_bytes());
+        Ok(body)
+    }
+}
+
+struct RuleRemoveRpc {
+    cluster: Uuid16,
+    server: Uuid16,
+    rule: Uuid16,
+}
+
+impl Request for RuleRemoveRpc {
+    type Response = Vec<u8>;
+
+    fn meta(&self) -> Meta {
+        Meta {
+            method_req: METHOD_RULE_REMOVE_REQ,
+            method_resp: None,
+            requires_cluster_context: true,
+            requires_infobase_context: false,
+        }
+    }
+
+    fn cluster(&self) -> Option<Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
+        let mut body = Vec::with_capacity(48);
+        body.extend_from_slice(&self.cluster);
+        body.extend_from_slice(&self.server);
+        body.extend_from_slice(&self.rule);
+        Ok(body)
+    }
+}
+
+struct RuleInsertRpc {
+    cluster: Uuid16,
+    req: RuleInsertReq,
+}
+
+impl Request for RuleInsertRpc {
+    type Response = RuleInsertResp;
+
+    fn meta(&self) -> Meta {
+        Meta {
+            method_req: METHOD_RULE_INSERT_REQ,
+            method_resp: Some(METHOD_RULE_INSERT_RESP),
+            requires_cluster_context: true,
+            requires_infobase_context: false,
+        }
+    }
+
+    fn cluster(&self) -> Option<Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
+        let req = &self.req;
+        let mut body = Vec::with_capacity(
+            16 + 16 + 16 + 4 + 4 + req.infobase_name.len() + req.application_ext.len() + 4 + 3,
+        );
+        body.extend_from_slice(&self.cluster);
+        body.extend_from_slice(&req.server);
+        body.extend_from_slice(&[0u8; 16]);
+        body.extend_from_slice(&req.position.to_be_bytes());
+        body.extend_from_slice(&req.object_type.to_be_bytes());
+        body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(
+            req.infobase_name.as_bytes(),
+        )?);
+        body.push(req.rule_type);
+        body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(
+            req.application_ext.as_bytes(),
+        )?);
+        body.extend_from_slice(&req.priority.to_be_bytes());
+        Ok(body)
+    }
+}
+
+impl Response for RuleInsertResp {
+    fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
+        let body = rpc_body(payload)?;
+        let rule = parse_rule_insert_body(body)?;
+        Ok(Self { rule })
+    }
+}
+
+struct RuleUpdateRpc {
+    cluster: Uuid16,
+    req: RuleUpdateReq,
+}
+
+impl Request for RuleUpdateRpc {
+    type Response = RuleUpdateResp;
+
+    fn meta(&self) -> Meta {
+        Meta {
+            method_req: METHOD_RULE_INSERT_REQ,
+            method_resp: Some(METHOD_RULE_INSERT_RESP),
+            requires_cluster_context: true,
+            requires_infobase_context: false,
+        }
+    }
+
+    fn cluster(&self) -> Option<Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
+        let req = &self.req;
+        let mut body = Vec::with_capacity(
+            16 + 16 + 16 + 4 + 4 + req.infobase_name.len() + req.application_ext.len() + 4 + 3,
+        );
+        body.extend_from_slice(&self.cluster);
+        body.extend_from_slice(&req.server);
+        body.extend_from_slice(&req.rule);
+        body.extend_from_slice(&req.position.to_be_bytes());
+        body.extend_from_slice(&req.object_type.to_be_bytes());
+        body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(
+            req.infobase_name.as_bytes(),
+        )?);
+        body.push(req.rule_type);
+        body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(
+            req.application_ext.as_bytes(),
+        )?);
+        body.extend_from_slice(&req.priority.to_be_bytes());
+        Ok(body)
+    }
+}
+
+impl Response for RuleUpdateResp {
+    fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
+        let body = rpc_body(payload)?;
+        let rule = parse_rule_update_body(body)?;
+        Ok(Self { rule })
+    }
+}
+
 pub fn rule_list(
     client: &mut RacClient,
     cluster: Uuid16,
@@ -89,16 +335,8 @@ pub fn rule_list(
     cluster_pwd: &str,
     server: Uuid16,
 ) -> Result<RuleListResp> {
-    client.call(RacRequest::ClusterAuth {
-        cluster,
-        user: cluster_user.to_string(),
-        pwd: cluster_pwd.to_string(),
-    })?;
-    let body = call_body(client, RacRequest::RuleList { cluster, server })?;
-    let records = parse_rule_list_records(&body)?;
-    Ok(RuleListResp {
-        records,
-    })
+    let _ = cluster_auth(client, cluster, cluster_user, cluster_pwd)?;
+    client.call_typed(RuleListRpc { cluster, server })
 }
 
 pub fn rule_info(
@@ -109,22 +347,11 @@ pub fn rule_info(
     server: Uuid16,
     rule: Uuid16,
 ) -> Result<RuleInfoResp> {
-    client.call(RacRequest::ClusterAuth {
+    let _ = cluster_auth(client, cluster, cluster_user, cluster_pwd)?;
+    client.call_typed(RuleInfoRpc {
         cluster,
-        user: cluster_user.to_string(),
-        pwd: cluster_pwd.to_string(),
-    })?;
-    let body = call_body(
-        client,
-        RacRequest::RuleInfo {
-            cluster,
-            server,
-            rule,
-        },
-    )?;
-    let record = parse_rule_info_body(&body)?;
-    Ok(RuleInfoResp {
-        record,
+        server,
+        rule,
     })
 }
 
@@ -135,19 +362,10 @@ pub fn rule_apply(
     cluster_pwd: &str,
     mode: RuleApplyMode,
 ) -> Result<RuleApplyResp> {
-    client.call(RacRequest::ClusterAuth {
-        cluster,
-        user: cluster_user.to_string(),
-        pwd: cluster_pwd.to_string(),
-    })?;
-    let reply = client.call(RacRequest::RuleApply {
-        cluster,
-        apply_mode: mode.as_u32(),
-    })?;
-    expect_ack(&reply, "rule apply expected ack")?;
-    Ok(RuleApplyResp {
-        acknowledged: true,
-    })
+    let _ = cluster_auth(client, cluster, cluster_user, cluster_pwd)?;
+    let reply = client.call(RuleApplyRpc { cluster, mode })?;
+    let acknowledged = parse_ack_payload(&reply, "rule apply expected ack")?;
+    Ok(RuleApplyResp { acknowledged })
 }
 
 pub fn rule_remove(
@@ -158,20 +376,14 @@ pub fn rule_remove(
     server: Uuid16,
     rule: Uuid16,
 ) -> Result<RuleRemoveResp> {
-    client.call(RacRequest::ClusterAuth {
-        cluster,
-        user: cluster_user.to_string(),
-        pwd: cluster_pwd.to_string(),
-    })?;
-    let reply = client.call(RacRequest::RuleRemove {
+    let _ = cluster_auth(client, cluster, cluster_user, cluster_pwd)?;
+    let reply = client.call(RuleRemoveRpc {
         cluster,
         server,
         rule,
     })?;
-    expect_ack(&reply, "rule remove expected ack")?;
-    Ok(RuleRemoveResp {
-        acknowledged: true,
-    })
+    let acknowledged = parse_ack_payload(&reply, "rule remove expected ack")?;
+    Ok(RuleRemoveResp { acknowledged })
 }
 
 pub fn rule_insert(
@@ -181,28 +393,8 @@ pub fn rule_insert(
     cluster_pwd: &str,
     req: RuleInsertReq,
 ) -> Result<RuleInsertResp> {
-    client.call(RacRequest::ClusterAuth {
-        cluster,
-        user: cluster_user.to_string(),
-        pwd: cluster_pwd.to_string(),
-    })?;
-    let body = call_body(
-        client,
-        RacRequest::RuleInsert {
-            cluster,
-            server: req.server,
-            position: req.position,
-            object_type: req.object_type,
-            infobase_name: req.infobase_name,
-            rule_type: req.rule_type,
-            application_ext: req.application_ext,
-            priority: req.priority,
-        },
-    )?;
-    let rule = parse_rule_insert_body(&body)?;
-    Ok(RuleInsertResp {
-        rule,
-    })
+    let _ = cluster_auth(client, cluster, cluster_user, cluster_pwd)?;
+    client.call_typed(RuleInsertRpc { cluster, req })
 }
 
 pub fn rule_update(
@@ -212,29 +404,8 @@ pub fn rule_update(
     cluster_pwd: &str,
     req: RuleUpdateReq,
 ) -> Result<RuleUpdateResp> {
-    client.call(RacRequest::ClusterAuth {
-        cluster,
-        user: cluster_user.to_string(),
-        pwd: cluster_pwd.to_string(),
-    })?;
-    let body = call_body(
-        client,
-        RacRequest::RuleUpdate {
-            cluster,
-            server: req.server,
-            rule: req.rule,
-            position: req.position,
-            object_type: req.object_type,
-            infobase_name: req.infobase_name,
-            rule_type: req.rule_type,
-            application_ext: req.application_ext,
-            priority: req.priority,
-        },
-    )?;
-    let rule = parse_rule_update_body(&body)?;
-    Ok(RuleUpdateResp {
-        rule,
-    })
+    let _ = cluster_auth(client, cluster, cluster_user, cluster_pwd)?;
+    client.call_typed(RuleUpdateRpc { cluster, req })
 }
 
 fn parse_rule_list_records(body: &[u8]) -> Result<Vec<RuleRecord>> {
@@ -272,18 +443,19 @@ fn parse_rule_update_body(body: &[u8]) -> Result<Uuid16> {
 
 #[cfg(test)]
 fn parse_rule_apply_ack(payload: &[u8]) -> Result<bool> {
-    crate::commands::parse_ack_payload(payload, "rule apply ack truncated")
+    crate::rpc::decode_utils::parse_ack_payload(payload, "rule apply ack truncated")
 }
 
 #[cfg(test)]
 fn parse_rule_remove_ack(payload: &[u8]) -> Result<bool> {
-    crate::commands::parse_ack_payload(payload, "rule remove ack truncated")
+    crate::rpc::decode_utils::parse_ack_payload(payload, "rule remove ack truncated")
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::client::RacProtocolVersion;
+    use crate::protocol::ProtocolVersion;
+    use crate::rpc::Request;
     use crate::rac_wire::parse_frames;
     use crate::rac_wire::parse_uuid;
     use crate::commands::rpc_body;
@@ -303,12 +475,12 @@ mod tests {
     fn encode_rule_apply_request_full() {
         let expected = decode_hex_str("01000001511619820ad36f4d8aa7161516b1dea07700000001");
         let cluster = parse_uuid("1619820a-d36f-4d8a-a716-1516b1dea077").expect("cluster uuid");
-        let req = RacRequest::RuleApply {
+        let req = RuleApplyRpc {
             cluster,
-            apply_mode: RuleApplyMode::Full.as_u32(),
+            mode: RuleApplyMode::Full,
         };
-        let protocol = RacProtocolVersion::V16_0.boxed();
-        let serialized = protocol.serialize(req).expect("serialize");
+        let protocol = ProtocolVersion::V16_0.boxed();
+        let serialized = req.encode(protocol.as_ref()).expect("serialize");
         assert_eq!(serialized.payload, expected);
         assert_eq!(serialized.expect_method, None);
     }
@@ -319,13 +491,13 @@ mod tests {
         let cluster = parse_uuid("1619820a-d36f-4d8a-a716-1516b1dea077").expect("cluster uuid");
         let server = parse_uuid("6aa3a88a-9346-4499-8034-a4a72d7ee8e8").expect("server uuid");
         let rule = parse_uuid("bec00d86-1c93-4eb8-8182-8f26dce197d6").expect("rule uuid");
-        let req = RacRequest::RuleRemove {
+        let req = RuleRemoveRpc {
             cluster,
             server,
             rule,
         };
-        let protocol = RacProtocolVersion::V16_0.boxed();
-        let serialized = protocol.serialize(req).expect("serialize");
+        let protocol = ProtocolVersion::V16_0.boxed();
+        let serialized = req.encode(protocol.as_ref()).expect("serialize");
         assert_eq!(serialized.payload, expected);
         assert_eq!(serialized.expect_method, None);
     }
@@ -337,9 +509,9 @@ mod tests {
         );
         let cluster = parse_uuid("1619820a-d36f-4d8a-a716-1516b1dea077").expect("cluster uuid");
         let server = parse_uuid("6aa3a88a-9346-4499-8034-a4a72d7ee8e8").expect("server uuid");
-        let req = RacRequest::RuleList { cluster, server };
-        let protocol = RacProtocolVersion::V16_0.boxed();
-        let serialized = protocol.serialize(req).expect("serialize");
+        let req = RuleListRpc { cluster, server };
+        let protocol = ProtocolVersion::V16_0.boxed();
+        let serialized = req.encode(protocol.as_ref()).expect("serialize");
         assert_eq!(serialized.payload, expected);
         assert_eq!(serialized.expect_method, Some(0x56));
     }
@@ -350,13 +522,13 @@ mod tests {
         let cluster = parse_uuid("1619820a-d36f-4d8a-a716-1516b1dea077").expect("cluster uuid");
         let server = parse_uuid("6aa3a88a-9346-4499-8034-a4a72d7ee8e8").expect("server uuid");
         let rule = parse_uuid("bec00d86-1c93-4eb8-8182-8f26dce197d6").expect("rule uuid");
-        let req = RacRequest::RuleInfo {
+        let req = RuleInfoRpc {
             cluster,
             server,
             rule,
         };
-        let protocol = RacProtocolVersion::V16_0.boxed();
-        let serialized = protocol.serialize(req).expect("serialize");
+        let protocol = ProtocolVersion::V16_0.boxed();
+        let serialized = req.encode(protocol.as_ref()).expect("serialize");
         assert_eq!(serialized.payload, expected);
         assert_eq!(serialized.expect_method, Some(0x58));
     }
@@ -376,8 +548,7 @@ mod tests {
         expected.push(0);
         expected.push(0);
         expected.extend_from_slice(&0u32.to_be_bytes());
-        let req = RacRequest::RuleInsert {
-            cluster,
+        let req = RuleInsertReq {
             server,
             position: 1,
             object_type: 0,
@@ -386,8 +557,9 @@ mod tests {
             application_ext: String::new(),
             priority: 0,
         };
-        let protocol = RacProtocolVersion::V16_0.boxed();
-        let serialized = protocol.serialize(req).expect("serialize");
+        let rpc = RuleInsertRpc { cluster, req };
+        let protocol = ProtocolVersion::V16_0.boxed();
+        let serialized = rpc.encode(protocol.as_ref()).expect("serialize");
         assert_eq!(serialized.payload, expected);
         assert_eq!(serialized.expect_method, Some(0x53));
     }
@@ -398,8 +570,7 @@ mod tests {
         let cluster = parse_uuid("1619820a-d36f-4d8a-a716-1516b1dea077").expect("cluster uuid");
         let server = parse_uuid("6aa3a88a-9346-4499-8034-a4a72d7ee8e8").expect("server uuid");
         let rule = parse_uuid("bec00d86-1c93-4eb8-8182-8f26dce197d6").expect("rule uuid");
-        let req = RacRequest::RuleUpdate {
-            cluster,
+        let req = RuleUpdateReq {
             server,
             rule,
             position: 0,
@@ -409,8 +580,9 @@ mod tests {
             application_ext: String::new(),
             priority: 0,
         };
-        let protocol = RacProtocolVersion::V16_0.boxed();
-        let serialized = protocol.serialize(req).expect("serialize");
+        let rpc = RuleUpdateRpc { cluster, req };
+        let protocol = ProtocolVersion::V16_0.boxed();
+        let serialized = rpc.encode(protocol.as_ref()).expect("serialize");
         assert_eq!(serialized.payload, expected);
         assert_eq!(serialized.expect_method, Some(0x53));
     }

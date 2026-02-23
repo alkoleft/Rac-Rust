@@ -1,11 +1,17 @@
 use serde::Serialize;
 
-use crate::client::{RacClient, RacRequest};
+use crate::client::RacClient;
 use crate::codec::RecordCursor;
 use crate::error::{RacError, Result};
+use crate::protocol::ProtocolCodec;
+use crate::rpc::{Meta, Request, Response};
+use crate::rpc::decode_utils::rpc_body;
+use crate::rac_wire::{
+    METHOD_SERVER_INFO_REQ, METHOD_SERVER_INFO_RESP, METHOD_SERVER_LIST_REQ,
+    METHOD_SERVER_LIST_RESP,
+};
 use crate::Uuid16;
 
-use super::call_body;
 
 mod generated {
     include!("server_generated.rs");
@@ -23,12 +29,80 @@ pub struct ServerInfoResp {
     pub server: ServerRecord,
 }
 
+struct ServerListRpc {
+    cluster: Uuid16,
+}
+
+impl Request for ServerListRpc {
+    type Response = ServerListResp;
+
+    fn meta(&self) -> Meta {
+        Meta {
+            method_req: METHOD_SERVER_LIST_REQ,
+            method_resp: Some(METHOD_SERVER_LIST_RESP),
+            requires_cluster_context: true,
+            requires_infobase_context: false,
+        }
+    }
+
+    fn cluster(&self) -> Option<Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
+        Ok(self.cluster.to_vec())
+    }
+}
+
+impl Response for ServerListResp {
+    fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
+        let body = rpc_body(payload)?;
+        let servers = parse_server_list(body)?;
+        Ok(Self { servers })
+    }
+}
+
 pub fn server_list(client: &mut RacClient, cluster: Uuid16) -> Result<ServerListResp> {
-    let body = call_body(client, RacRequest::ServerList { cluster })?;
-    let servers = parse_server_list(&body)?;
-    Ok(ServerListResp {
-        servers,
-    })
+    client.call_typed(ServerListRpc { cluster })
+}
+
+struct ServerInfoRpc {
+    cluster: Uuid16,
+    server: Uuid16,
+}
+
+impl Request for ServerInfoRpc {
+    type Response = ServerInfoResp;
+
+    fn meta(&self) -> Meta {
+        Meta {
+            method_req: METHOD_SERVER_INFO_REQ,
+            method_resp: Some(METHOD_SERVER_INFO_RESP),
+            requires_cluster_context: true,
+            requires_infobase_context: false,
+        }
+    }
+
+    fn cluster(&self) -> Option<Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
+        let mut out = Vec::with_capacity(32);
+        out.extend_from_slice(&self.cluster);
+        out.extend_from_slice(&self.server);
+        Ok(out)
+    }
+}
+
+impl Response for ServerInfoResp {
+    fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
+        let body = rpc_body(payload)?;
+        let mut cursor = RecordCursor::new(body, 0);
+        Ok(Self {
+            server: parse_server_record(&mut cursor)?,
+        })
+    }
 }
 
 pub fn server_info(
@@ -36,11 +110,7 @@ pub fn server_info(
     cluster: Uuid16,
     server: Uuid16,
 ) -> Result<ServerInfoResp> {
-    let body = call_body(client, RacRequest::ServerInfo { cluster, server })?;
-    let mut cursor = RecordCursor::new(&body, 0);
-    Ok(ServerInfoResp {
-        server: parse_server_record(&mut cursor)?,
-    })
+    client.call_typed(ServerInfoRpc { cluster, server })
 }
 
 fn parse_server_list(body: &[u8]) -> Result<Vec<ServerRecord>> {

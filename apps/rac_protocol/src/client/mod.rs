@@ -1,6 +1,5 @@
 mod debug;
 mod handshake;
-mod protocol;
 mod transport;
 
 use std::io;
@@ -8,12 +7,37 @@ use std::time::Duration;
 
 use crate::client::debug::{format_payload_head, log_frame};
 use crate::client::handshake::negotiate;
-use crate::client::protocol::RacProtocol;
+use crate::protocol::{ProtocolCodec, ProtocolVersion};
 use crate::client::transport::RacTransport;
 use crate::codec::RecordCursor;
 use crate::error::{RacError, Result};
+use crate::rpc::{Request, Response};
 
-pub use protocol::{RacProtocolVersion, RacRequest};
+#[derive(Debug, Clone, Copy)]
+pub enum ProtocolPreference {
+    Auto,
+    V11_0,
+    V16_0,
+}
+
+impl Default for ProtocolPreference {
+    fn default() -> Self {
+        Self::Auto
+    }
+}
+
+impl ProtocolPreference {
+    pub fn candidates(self) -> &'static [ProtocolVersion] {
+        const AUTO: [ProtocolVersion; 2] = [ProtocolVersion::V16_0, ProtocolVersion::V11_0];
+        const V11: [ProtocolVersion; 1] = [ProtocolVersion::V11_0];
+        const V16: [ProtocolVersion; 1] = [ProtocolVersion::V16_0];
+        match self {
+            ProtocolPreference::Auto => &AUTO,
+            ProtocolPreference::V11_0 => &V11,
+            ProtocolPreference::V16_0 => &V16,
+        }
+    }
+}
 
 #[derive(Debug, Clone)]
 pub struct ClientConfig {
@@ -21,7 +45,7 @@ pub struct ClientConfig {
     pub read_timeout: Duration,
     pub write_timeout: Duration,
     pub debug_raw: bool,
-    pub protocol: RacProtocolVersion,
+    pub protocol: ProtocolPreference,
 }
 
 impl Default for ClientConfig {
@@ -31,15 +55,15 @@ impl Default for ClientConfig {
             read_timeout: Duration::from_secs(5),
             write_timeout: Duration::from_secs(5),
             debug_raw: false,
-            protocol: RacProtocolVersion::default(),
+            protocol: ProtocolPreference::default(),
         }
     }
 }
 
 pub struct RacClient {
     transport: RacTransport,
-    protocol: Box<dyn RacProtocol>,
-    protocol_version: RacProtocolVersion,
+    protocol: Box<dyn ProtocolCodec>,
+    protocol_version: ProtocolVersion,
     current_cluster: Option<crate::Uuid16>,
     current_infobase: Option<crate::Uuid16>,
     debug_raw: bool,
@@ -47,7 +71,7 @@ pub struct RacClient {
 
 impl RacClient {
     pub fn connect(addr: &str, cfg: ClientConfig) -> Result<Self> {
-        for protocol_version in cfg.protocol.negotiation_candidates() {
+        for protocol_version in cfg.protocol.candidates() {
             let protocol = protocol_version.boxed();
             match Self::connect_with_protocol_version(addr, &cfg, protocol, *protocol_version) {
                 Ok(client) => return Ok(client),
@@ -62,20 +86,11 @@ impl RacClient {
         Err(RacError::Protocol("service negotiation failed"))
     }
 
-    pub fn connect_with_protocol(
-        addr: &str,
-        cfg: ClientConfig,
-        protocol: Box<dyn RacProtocol>,
-    ) -> Result<Self> {
-        let protocol_version = protocol.protocol_version();
-        Self::connect_with_protocol_version(addr, &cfg, protocol, protocol_version)
-    }
-
     fn connect_with_protocol_version(
         addr: &str,
         cfg: &ClientConfig,
-        protocol: Box<dyn RacProtocol>,
-        protocol_version: RacProtocolVersion,
+        protocol: Box<dyn ProtocolCodec>,
+        protocol_version: ProtocolVersion,
     ) -> Result<Self> {
         let transport = RacTransport::connect(
             addr,
@@ -112,12 +127,12 @@ impl RacClient {
         self.protocol.name()
     }
 
-    pub fn protocol_version(&self) -> RacProtocolVersion {
+    pub fn protocol_version(&self) -> ProtocolVersion {
         self.protocol_version
     }
 
-    pub fn call(&mut self, request: RacRequest) -> Result<Vec<u8>> {
-        let required = self.protocol.required_context(&request);
+    pub fn call<R: Request>(&mut self, request: R) -> Result<Vec<u8>> {
+        let required = request.required_context();
         if let Some(cluster) = required.cluster {
             self.ensure_cluster_context(cluster)?;
         }
@@ -125,8 +140,13 @@ impl RacClient {
             self.ensure_infobase_context(cluster)?;
         }
 
-        let serialized = self.protocol.serialize(request)?;
+        let serialized = request.encode(self.protocol.as_ref())?;
         self.send_rpc_raw(&serialized.payload, serialized.expect_method)
+    }
+
+    pub fn call_typed<R: Request>(&mut self, request: R) -> Result<R::Response> {
+        let payload = self.call(request)?;
+        R::Response::decode(&payload, self.protocol.as_ref())
     }
 
     fn ensure_cluster_context(&mut self, cluster: crate::Uuid16) -> Result<()> {

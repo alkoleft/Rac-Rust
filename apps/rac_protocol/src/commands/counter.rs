@@ -1,11 +1,20 @@
 use serde::Serialize;
 
-use crate::client::{RacClient, RacRequest};
+use crate::client::RacClient;
 use crate::codec::RecordCursor;
 use crate::error::Result;
+use crate::protocol::ProtocolCodec;
+use crate::rpc::{Meta, Request, Response};
+use crate::rpc::decode_utils::{parse_ack_payload, rpc_body};
+use crate::rac_wire::{
+    METHOD_COUNTER_ACCUMULATED_VALUES_REQ, METHOD_COUNTER_ACCUMULATED_VALUES_RESP,
+    METHOD_COUNTER_CLEAR_REQ, METHOD_COUNTER_INFO_REQ, METHOD_COUNTER_INFO_RESP,
+    METHOD_COUNTER_LIST_REQ, METHOD_COUNTER_LIST_RESP, METHOD_COUNTER_REMOVE_REQ,
+    METHOD_COUNTER_UPDATE_REQ, METHOD_COUNTER_VALUES_REQ, METHOD_COUNTER_VALUES_RESP,
+};
 use crate::rac_wire::encode_with_len_u8;
 
-use super::{call_body, expect_ack};
+use crate::commands::cluster_auth;
 
 mod generated {
     include!("counter_generated.rs");
@@ -69,6 +78,260 @@ pub struct CounterAccumulatedValuesResp {
     pub records: Vec<CounterValuesRecord>,
 }
 
+struct CounterListRpc {
+    cluster: crate::Uuid16,
+}
+
+impl Request for CounterListRpc {
+    type Response = CounterListResp;
+
+    fn meta(&self) -> Meta {
+        Meta {
+            method_req: METHOD_COUNTER_LIST_REQ,
+            method_resp: Some(METHOD_COUNTER_LIST_RESP),
+            requires_cluster_context: true,
+            requires_infobase_context: false,
+        }
+    }
+
+    fn cluster(&self) -> Option<crate::Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
+        Ok(self.cluster.to_vec())
+    }
+}
+
+impl Response for CounterListResp {
+    fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
+        let body = rpc_body(payload)?;
+        let records = parse_counter_list_body(body)?;
+        Ok(Self { records })
+    }
+}
+
+struct CounterInfoRpc {
+    cluster: crate::Uuid16,
+    counter: String,
+}
+
+impl Request for CounterInfoRpc {
+    type Response = CounterInfoResp;
+
+    fn meta(&self) -> Meta {
+        Meta {
+            method_req: METHOD_COUNTER_INFO_REQ,
+            method_resp: Some(METHOD_COUNTER_INFO_RESP),
+            requires_cluster_context: true,
+            requires_infobase_context: false,
+        }
+    }
+
+    fn cluster(&self) -> Option<crate::Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
+        let mut body = Vec::with_capacity(16 + 1 + self.counter.len());
+        body.extend_from_slice(&self.cluster);
+        body.extend_from_slice(&encode_with_len_u8(self.counter.as_bytes())?);
+        Ok(body)
+    }
+}
+
+impl Response for CounterInfoResp {
+    fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
+        let body = rpc_body(payload)?;
+        let record = parse_counter_info_body(body)?;
+        Ok(Self { record })
+    }
+}
+
+struct CounterUpdateRpc {
+    cluster: crate::Uuid16,
+    req: CounterUpdateReq,
+}
+
+impl Request for CounterUpdateRpc {
+    type Response = Vec<u8>;
+
+    fn meta(&self) -> Meta {
+        Meta {
+            method_req: METHOD_COUNTER_UPDATE_REQ,
+            method_resp: None,
+            requires_cluster_context: true,
+            requires_infobase_context: false,
+        }
+    }
+
+    fn cluster(&self) -> Option<crate::Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
+        let req = &self.req;
+        let mut body = Vec::with_capacity(16 + 32 + req.name.len() + req.filter.len() + req.descr.len());
+        body.extend_from_slice(&self.cluster);
+        body.extend_from_slice(&encode_with_len_u8(req.name.as_bytes())?);
+        body.extend_from_slice(&req.collection_time.to_be_bytes());
+        body.push(req.group);
+        body.push(req.filter_type);
+        body.extend_from_slice(&encode_with_len_u8(req.filter.as_bytes())?);
+        body.push(req.duration);
+        body.push(req.cpu_time);
+        body.push(req.duration_dbms);
+        body.push(req.service);
+        body.push(req.memory);
+        body.push(req.read);
+        body.push(req.write);
+        body.push(req.dbms_bytes);
+        body.push(req.call);
+        body.push(req.number_of_active_sessions);
+        body.push(req.number_of_sessions);
+        body.extend_from_slice(&encode_with_len_u8(req.descr.as_bytes())?);
+        Ok(body)
+    }
+}
+
+struct CounterRemoveRpc {
+    cluster: crate::Uuid16,
+    name: String,
+}
+
+impl Request for CounterRemoveRpc {
+    type Response = Vec<u8>;
+
+    fn meta(&self) -> Meta {
+        Meta {
+            method_req: METHOD_COUNTER_REMOVE_REQ,
+            method_resp: None,
+            requires_cluster_context: true,
+            requires_infobase_context: false,
+        }
+    }
+
+    fn cluster(&self) -> Option<crate::Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
+        let mut body = Vec::with_capacity(16 + 1 + self.name.len());
+        body.extend_from_slice(&self.cluster);
+        body.extend_from_slice(&encode_with_len_u8(self.name.as_bytes())?);
+        Ok(body)
+    }
+}
+
+struct CounterClearRpc {
+    cluster: crate::Uuid16,
+    counter: String,
+    object: String,
+}
+
+impl Request for CounterClearRpc {
+    type Response = Vec<u8>;
+
+    fn meta(&self) -> Meta {
+        Meta {
+            method_req: METHOD_COUNTER_CLEAR_REQ,
+            method_resp: None,
+            requires_cluster_context: true,
+            requires_infobase_context: false,
+        }
+    }
+
+    fn cluster(&self) -> Option<crate::Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
+        let mut body = Vec::with_capacity(16 + 2 + self.counter.len() + self.object.len());
+        body.extend_from_slice(&self.cluster);
+        body.extend_from_slice(&encode_with_len_u8(self.counter.as_bytes())?);
+        body.extend_from_slice(&encode_with_len_u8(self.object.as_bytes())?);
+        Ok(body)
+    }
+}
+
+struct CounterValuesRpc {
+    cluster: crate::Uuid16,
+    counter: String,
+    object: String,
+}
+
+impl Request for CounterValuesRpc {
+    type Response = CounterValuesResp;
+
+    fn meta(&self) -> Meta {
+        Meta {
+            method_req: METHOD_COUNTER_VALUES_REQ,
+            method_resp: Some(METHOD_COUNTER_VALUES_RESP),
+            requires_cluster_context: true,
+            requires_infobase_context: false,
+        }
+    }
+
+    fn cluster(&self) -> Option<crate::Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
+        let mut body = Vec::with_capacity(16 + 2 + self.counter.len() + self.object.len());
+        body.extend_from_slice(&self.cluster);
+        body.extend_from_slice(&encode_with_len_u8(self.counter.as_bytes())?);
+        body.extend_from_slice(&encode_with_len_u8(self.object.as_bytes())?);
+        Ok(body)
+    }
+}
+
+impl Response for CounterValuesResp {
+    fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
+        let body = rpc_body(payload)?;
+        let records = parse_counter_values_body(body)?;
+        Ok(Self { records })
+    }
+}
+
+struct CounterAccumulatedValuesRpc {
+    cluster: crate::Uuid16,
+    counter: String,
+    object: String,
+}
+
+impl Request for CounterAccumulatedValuesRpc {
+    type Response = CounterAccumulatedValuesResp;
+
+    fn meta(&self) -> Meta {
+        Meta {
+            method_req: METHOD_COUNTER_ACCUMULATED_VALUES_REQ,
+            method_resp: Some(METHOD_COUNTER_ACCUMULATED_VALUES_RESP),
+            requires_cluster_context: true,
+            requires_infobase_context: false,
+        }
+    }
+
+    fn cluster(&self) -> Option<crate::Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
+        let mut body = Vec::with_capacity(16 + 2 + self.counter.len() + self.object.len());
+        body.extend_from_slice(&self.cluster);
+        body.extend_from_slice(&encode_with_len_u8(self.counter.as_bytes())?);
+        body.extend_from_slice(&encode_with_len_u8(self.object.as_bytes())?);
+        Ok(body)
+    }
+}
+
+impl Response for CounterAccumulatedValuesResp {
+    fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
+        let body = rpc_body(payload)?;
+        let records = parse_counter_accumulated_values_body(body)?;
+        Ok(Self { records })
+    }
+}
+
 impl CounterRecord {
     pub fn encode(&self) -> Result<Vec<u8>> {
         let mut out = Vec::new();
@@ -94,11 +357,7 @@ impl CounterRecord {
 }
 
 pub fn counter_list(client: &mut RacClient, cluster: crate::Uuid16) -> Result<CounterListResp> {
-    let body = call_body(client, RacRequest::CounterList { cluster })?;
-    let records = parse_counter_list_body(&body)?;
-    Ok(CounterListResp {
-        records,
-    })
+    client.call_typed(CounterListRpc { cluster })
 }
 
 pub fn counter_info(
@@ -106,16 +365,9 @@ pub fn counter_info(
     cluster: crate::Uuid16,
     counter: &str,
 ) -> Result<CounterInfoResp> {
-    let body = call_body(
-        client,
-        RacRequest::CounterInfo {
+    client.call_typed(CounterInfoRpc {
         cluster,
         counter: counter.to_string(),
-        },
-    )?;
-    let record = parse_counter_info_body(&body)?;
-    Ok(CounterInfoResp {
-        record,
     })
 }
 
@@ -126,35 +378,10 @@ pub fn counter_update(
     cluster_pwd: &str,
     req: CounterUpdateReq,
 ) -> Result<CounterUpdateResp> {
-    client.call(RacRequest::ClusterAuth {
-        cluster,
-        user: cluster_user.to_string(),
-        pwd: cluster_pwd.to_string(),
-    })?;
-    let reply = client.call(RacRequest::CounterUpdate {
-        cluster,
-        name: req.name,
-        collection_time: req.collection_time,
-        group: req.group,
-        filter_type: req.filter_type,
-        filter: req.filter,
-        duration: req.duration,
-        cpu_time: req.cpu_time,
-        duration_dbms: req.duration_dbms,
-        service: req.service,
-        memory: req.memory,
-        read: req.read,
-        write: req.write,
-        dbms_bytes: req.dbms_bytes,
-        call: req.call,
-        number_of_active_sessions: req.number_of_active_sessions,
-        number_of_sessions: req.number_of_sessions,
-        descr: req.descr,
-    })?;
-    expect_ack(&reply, "counter update expected ack")?;
-    Ok(CounterUpdateResp {
-        acknowledged: true,
-    })
+    let _ = cluster_auth(client, cluster, cluster_user, cluster_pwd)?;
+    let reply = client.call(CounterUpdateRpc { cluster, req })?;
+    let acknowledged = parse_ack_payload(&reply, "counter update expected ack")?;
+    Ok(CounterUpdateResp { acknowledged })
 }
 
 pub fn counter_clear(
@@ -165,20 +392,14 @@ pub fn counter_clear(
     counter: &str,
     object: &str,
 ) -> Result<CounterClearResp> {
-    client.call(RacRequest::ClusterAuth {
-        cluster,
-        user: cluster_user.to_string(),
-        pwd: cluster_pwd.to_string(),
-    })?;
-    let reply = client.call(RacRequest::CounterClear {
+    let _ = cluster_auth(client, cluster, cluster_user, cluster_pwd)?;
+    let reply = client.call(CounterClearRpc {
         cluster,
         counter: counter.to_string(),
         object: object.to_string(),
     })?;
-    expect_ack(&reply, "counter clear expected ack")?;
-    Ok(CounterClearResp {
-        acknowledged: true,
-    })
+    let acknowledged = parse_ack_payload(&reply, "counter clear expected ack")?;
+    Ok(CounterClearResp { acknowledged })
 }
 
 pub fn counter_remove(
@@ -188,19 +409,13 @@ pub fn counter_remove(
     cluster_pwd: &str,
     name: &str,
 ) -> Result<CounterRemoveResp> {
-    client.call(RacRequest::ClusterAuth {
-        cluster,
-        user: cluster_user.to_string(),
-        pwd: cluster_pwd.to_string(),
-    })?;
-    let reply = client.call(RacRequest::CounterRemove {
+    let _ = cluster_auth(client, cluster, cluster_user, cluster_pwd)?;
+    let reply = client.call(CounterRemoveRpc {
         cluster,
         name: name.to_string(),
     })?;
-    expect_ack(&reply, "counter remove expected ack")?;
-    Ok(CounterRemoveResp {
-        acknowledged: true,
-    })
+    let acknowledged = parse_ack_payload(&reply, "counter remove expected ack")?;
+    Ok(CounterRemoveResp { acknowledged })
 }
 
 pub fn counter_values(
@@ -211,22 +426,11 @@ pub fn counter_values(
     counter: &str,
     object: &str,
 ) -> Result<CounterValuesResp> {
-    client.call(RacRequest::ClusterAuth {
+    let _ = cluster_auth(client, cluster, cluster_user, cluster_pwd)?;
+    client.call_typed(CounterValuesRpc {
         cluster,
-        user: cluster_user.to_string(),
-        pwd: cluster_pwd.to_string(),
-    })?;
-    let body = call_body(
-        client,
-        RacRequest::CounterValues {
-            cluster,
-            counter: counter.to_string(),
-            object: object.to_string(),
-        },
-    )?;
-    let records = parse_counter_values_body(&body)?;
-    Ok(CounterValuesResp {
-        records,
+        counter: counter.to_string(),
+        object: object.to_string(),
     })
 }
 
@@ -238,22 +442,11 @@ pub fn counter_accumulated_values(
     counter: &str,
     object: &str,
 ) -> Result<CounterAccumulatedValuesResp> {
-    client.call(RacRequest::ClusterAuth {
+    let _ = cluster_auth(client, cluster, cluster_user, cluster_pwd)?;
+    client.call_typed(CounterAccumulatedValuesRpc {
         cluster,
-        user: cluster_user.to_string(),
-        pwd: cluster_pwd.to_string(),
-    })?;
-    let body = call_body(
-        client,
-        RacRequest::CounterAccumulatedValues {
-            cluster,
-            counter: counter.to_string(),
-            object: object.to_string(),
-        },
-    )?;
-    let records = parse_counter_accumulated_values_body(&body)?;
-    Ok(CounterAccumulatedValuesResp {
-        records,
+        counter: counter.to_string(),
+        object: object.to_string(),
     })
 }
 
@@ -334,7 +527,8 @@ fn parse_counter_remove_ack(payload: &[u8]) -> Result<bool> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::client::RacProtocolVersion;
+    use crate::protocol::ProtocolVersion;
+    use crate::rpc::Request;
     use crate::rac_wire::parse_frames;
     use crate::rac_wire::parse_uuid;
     use crate::commands::rpc_body;
@@ -468,8 +662,7 @@ mod tests {
             "010000017a1619820ad36f4d8aa7161516b1dea07709636f6465785f746d70000000000000000c00020131010000000100010101000109636f6465785f746d70",
         );
         let cluster = parse_uuid("1619820a-d36f-4d8a-a716-1516b1dea077").expect("cluster uuid");
-        let req = RacRequest::CounterUpdate {
-            cluster,
+        let req = CounterUpdateReq {
             name: "codex_tmp".to_string(),
             collection_time: 12,
             group: 0,
@@ -488,8 +681,9 @@ mod tests {
             number_of_sessions: 1,
             descr: "codex_tmp".to_string(),
         };
-        let protocol = RacProtocolVersion::V16_0.boxed();
-        let serialized = protocol.serialize(req).expect("serialize");
+        let rpc = CounterUpdateRpc { cluster, req };
+        let protocol = ProtocolVersion::V16_0.boxed();
+        let serialized = rpc.encode(protocol.as_ref()).expect("serialize");
         assert_eq!(serialized.payload, expected);
         assert_eq!(serialized.expect_method, None);
     }
@@ -500,12 +694,12 @@ mod tests {
             "010000017b1619820ad36f4d8aa7161516b1dea07709636f6465785f746d70",
         );
         let cluster = parse_uuid("1619820a-d36f-4d8a-a716-1516b1dea077").expect("cluster uuid");
-        let req = RacRequest::CounterRemove {
+        let rpc = CounterRemoveRpc {
             cluster,
             name: "codex_tmp".to_string(),
         };
-        let protocol = RacProtocolVersion::V16_0.boxed();
-        let serialized = protocol.serialize(req).expect("serialize");
+        let protocol = ProtocolVersion::V16_0.boxed();
+        let serialized = rpc.encode(protocol.as_ref()).expect("serialize");
         assert_eq!(serialized.payload, expected);
         assert_eq!(serialized.expect_method, None);
     }
@@ -516,13 +710,13 @@ mod tests {
             "01000001841619820ad36f4d8aa7161516b1dea07709636f6465785f746d7000",
         );
         let cluster = parse_uuid("1619820a-d36f-4d8a-a716-1516b1dea077").expect("cluster uuid");
-        let req = RacRequest::CounterClear {
+        let rpc = CounterClearRpc {
             cluster,
             counter: "codex_tmp".to_string(),
             object: "".to_string(),
         };
-        let protocol = RacProtocolVersion::V16_0.boxed();
-        let serialized = protocol.serialize(req).expect("serialize");
+        let protocol = ProtocolVersion::V16_0.boxed();
+        let serialized = rpc.encode(protocol.as_ref()).expect("serialize");
         assert_eq!(serialized.payload, expected);
         assert_eq!(serialized.expect_method, None);
     }
@@ -560,13 +754,13 @@ mod tests {
             "01000001821619820ad36f4d8aa7161516b1dea07709636f6465785f746d7000",
         );
         let cluster = parse_uuid("1619820a-d36f-4d8a-a716-1516b1dea077").expect("cluster uuid");
-        let req = RacRequest::CounterValues {
+        let rpc = CounterValuesRpc {
             cluster,
             counter: "codex_tmp".to_string(),
             object: "".to_string(),
         };
-        let protocol = RacProtocolVersion::V16_0.boxed();
-        let serialized = protocol.serialize(req).expect("serialize");
+        let protocol = ProtocolVersion::V16_0.boxed();
+        let serialized = rpc.encode(protocol.as_ref()).expect("serialize");
         assert_eq!(serialized.payload, expected);
         assert_eq!(serialized.expect_method, Some(0x83));
     }
@@ -605,13 +799,13 @@ mod tests {
             "01000001851619820ad36f4d8aa7161516b1dea07709636f6465785f746d7000",
         );
         let cluster = parse_uuid("1619820a-d36f-4d8a-a716-1516b1dea077").expect("cluster uuid");
-        let req = RacRequest::CounterAccumulatedValues {
+        let rpc = CounterAccumulatedValuesRpc {
             cluster,
             counter: "codex_tmp".to_string(),
             object: "".to_string(),
         };
-        let protocol = RacProtocolVersion::V16_0.boxed();
-        let serialized = protocol.serialize(req).expect("serialize");
+        let protocol = ProtocolVersion::V16_0.boxed();
+        let serialized = rpc.encode(protocol.as_ref()).expect("serialize");
         assert_eq!(serialized.payload, expected);
         assert_eq!(serialized.expect_method, Some(0x86));
     }

@@ -1,11 +1,11 @@
 use crate::client::debug::log_frame;
-use crate::client::protocol::RacProtocol;
 use crate::client::transport::RacTransport;
 use crate::error::{RacError, Result};
+use crate::protocol::ProtocolCodec;
 
 pub(crate) fn negotiate(
     transport: &mut RacTransport,
-    protocol: &dyn RacProtocol,
+    protocol: &dyn ProtocolCodec,
     debug_raw: bool,
 ) -> Result<()> {
     transport.write_raw(protocol.init_packet())?;

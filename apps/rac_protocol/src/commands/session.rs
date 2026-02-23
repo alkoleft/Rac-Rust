@@ -1,8 +1,15 @@
 use serde::Serialize;
 
-use crate::client::{RacClient, RacRequest};
+use crate::client::RacClient;
 use crate::codec::RecordCursor;
 use crate::error::{RacError, Result};
+use crate::protocol::ProtocolCodec;
+use crate::rpc::{Meta, Request, Response};
+use crate::rpc::decode_utils::rpc_body;
+use crate::rac_wire::{
+    METHOD_SESSION_INFO_REQ, METHOD_SESSION_INFO_RESP, METHOD_SESSION_LIST_REQ,
+    METHOD_SESSION_LIST_RESP,
+};
 use crate::Uuid16;
 
 use super::call_body;
@@ -105,13 +112,73 @@ pub struct SessionInfoResp {
     pub fields: Vec<String>,
 }
 
+struct SessionListRpc {
+    cluster: Uuid16,
+}
+
+impl Request for SessionListRpc {
+    type Response = SessionListResp;
+
+    fn meta(&self) -> Meta {
+        Meta {
+            method_req: METHOD_SESSION_LIST_REQ,
+            method_resp: Some(METHOD_SESSION_LIST_RESP),
+            requires_cluster_context: true,
+            requires_infobase_context: false,
+        }
+    }
+
+    fn cluster(&self) -> Option<Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
+        Ok(self.cluster.to_vec())
+    }
+}
+
+impl Response for SessionListResp {
+    fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
+        let body = rpc_body(payload)?;
+        let records = parse_session_list_records(body)?;
+        Ok(Self {
+            sessions: records.iter().map(|r| r.session).collect(),
+            records,
+        })
+    }
+}
+
 pub fn session_list(client: &mut RacClient, cluster: Uuid16) -> Result<SessionListResp> {
-    let body = call_body(client, RacRequest::SessionList { cluster })?;
-    let records = parse_session_list_records(&body)?;
-    Ok(SessionListResp {
-        sessions: records.iter().map(|r| r.session).collect(),
-        records,
-    })
+    client.call_typed(SessionListRpc { cluster })
+}
+
+struct SessionInfoRpc {
+    cluster: Uuid16,
+    session: Uuid16,
+}
+
+impl Request for SessionInfoRpc {
+    type Response = Vec<u8>;
+
+    fn meta(&self) -> Meta {
+        Meta {
+            method_req: METHOD_SESSION_INFO_REQ,
+            method_resp: Some(METHOD_SESSION_INFO_RESP),
+            requires_cluster_context: true,
+            requires_infobase_context: false,
+        }
+    }
+
+    fn cluster(&self) -> Option<Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
+        let mut out = Vec::with_capacity(32);
+        out.extend_from_slice(&self.cluster);
+        out.extend_from_slice(&self.session);
+        Ok(out)
+    }
 }
 
 pub fn session_info(
@@ -119,7 +186,7 @@ pub fn session_info(
     cluster: Uuid16,
     session: Uuid16,
 ) -> Result<SessionInfoResp> {
-    let body = call_body(client, RacRequest::SessionInfo { cluster, session })?;
+    let body = call_body(client, SessionInfoRpc { cluster, session })?;
     let record = match parse_session_record_for_info(&body, session) {
         Ok(record) => record,
         Err(_) => fallback_session_record(&body)?,

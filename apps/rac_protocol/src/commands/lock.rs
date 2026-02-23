@@ -1,6 +1,9 @@
-use crate::client::{RacClient, RacRequest};
+use crate::client::RacClient;
+use crate::protocol::ProtocolCodec;
+use crate::rpc::{Meta, Request, Response};
+use crate::rpc::decode_utils::rpc_body;
+use crate::rac_wire::{METHOD_LOCK_LIST_REQ, METHOD_LOCK_LIST_RESP};
 
-use super::call_body;
 
 #[derive(Debug, serde::Serialize, Clone)]
 pub struct LockDescr {
@@ -26,13 +29,44 @@ pub struct LockListResp {
     pub records: Vec<LockRecord>,
 }
 
+struct LockListRpc {
+    cluster: Uuid16,
+}
+
+impl Request for LockListRpc {
+    type Response = LockListResp;
+
+    fn meta(&self) -> Meta {
+        Meta {
+            method_req: METHOD_LOCK_LIST_REQ,
+            method_resp: Some(METHOD_LOCK_LIST_RESP),
+            requires_cluster_context: true,
+            requires_infobase_context: false,
+        }
+    }
+
+    fn cluster(&self) -> Option<Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
+        Ok(self.cluster.to_vec())
+    }
+}
+
+impl Response for LockListResp {
+    fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
+        let body = rpc_body(payload)?;
+        let records = parse_lock_list_records(body)?;
+        Ok(Self {
+            locks: records.iter().map(|record| record.object).collect(),
+            records,
+        })
+    }
+}
+
 pub fn lock_list(client: &mut RacClient, cluster: Uuid16) -> Result<LockListResp> {
-    let body = call_body(client, RacRequest::LockList { cluster })?;
-    let records = parse_lock_list_records(&body)?;
-    Ok(LockListResp {
-        locks: records.iter().map(|record| record.object).collect(),
-        records,
-    })
+    client.call_typed(LockListRpc { cluster })
 }
 
 fn parse_lock_list_records(body: &[u8]) -> Result<Vec<LockRecord>> {

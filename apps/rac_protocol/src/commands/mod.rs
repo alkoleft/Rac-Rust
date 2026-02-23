@@ -1,7 +1,8 @@
-use crate::client::{RacClient, RacRequest};
+use crate::client::RacClient;
 use crate::codec::RecordCursor;
-use crate::error::{RacError, Result};
-use crate::Uuid16;
+use crate::error::Result;
+use crate::rpc::Request;
+pub(crate) use crate::rpc::decode_utils::{parse_uuid_body, rpc_body};
 
 pub mod agent;
 pub mod cluster;
@@ -70,47 +71,10 @@ pub use self::service_setting::{
     ServiceSettingRemoveResp, ServiceSettingUpdateReq, ServiceSettingUpdateResp,
 };
 
-pub(crate) fn rpc_body(payload: &[u8]) -> Result<&[u8]> {
-    let mut cursor = RecordCursor::new(payload, 0);
-    if cursor.remaining_len() >= 5 {
-        let head = cursor.take_bytes(4)?;
-        if head == [0x01, 0x00, 0x00, 0x01] {
-            let _ = cursor.take_u8()?;
-            return Ok(cursor.remaining_slice());
-        }
-    }
-    Err(RacError::Decode("missing rpc header"))
-}
-
-pub(crate) fn parse_ack_payload(payload: &[u8], context: &'static str) -> Result<bool> {
-    let mut cursor = RecordCursor::new(payload, 0);
-    if cursor.remaining_len() < 4 {
-        return Err(RacError::Decode(context));
-    }
-    let ack = cursor.take_u32_be()?;
-    Ok(ack == 0x01000000)
-}
-
-pub(crate) fn expect_ack(payload: &[u8], context: &'static str) -> Result<()> {
-    let acknowledged = parse_ack_payload(payload, context)?;
-    if !acknowledged {
-        return Err(RacError::Decode(context));
-    }
-    Ok(())
-}
-
-pub(crate) fn call_body(client: &mut RacClient, request: RacRequest) -> Result<Vec<u8>> {
+pub(crate) fn call_body<R: Request>(client: &mut RacClient, request: R) -> Result<Vec<u8>> {
     let reply = client.call(request)?;
     let body = rpc_body(&reply)?;
     Ok(body.to_vec())
-}
-
-pub(crate) fn parse_uuid_body(body: &[u8], context: &'static str) -> Result<Uuid16> {
-    if body.is_empty() {
-        return Err(RacError::Decode(context));
-    }
-    let mut cursor = RecordCursor::new(body, 0);
-    Ok(cursor.take_uuid()?)
 }
 
 pub(crate) fn parse_list_u8<T, F>(body: &[u8], mut decode: F) -> Result<Vec<T>>

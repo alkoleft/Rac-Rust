@@ -1,4 +1,4 @@
-use crate::error::{RacError, Result};
+use crate::error::Result;
 use crate::rac_wire::{
     decode_rpc_method, encode_rpc, OPCODE_CLOSE, OPCODE_INIT_ACK, OPCODE_RPC, OPCODE_SERVICE_ACK,
     OPCODE_SERVICE_NEGOTIATION,

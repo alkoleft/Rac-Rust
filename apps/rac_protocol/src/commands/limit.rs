@@ -1,9 +1,16 @@
 use serde::Serialize;
 
-use crate::client::{RacClient, RacRequest};
+use crate::client::RacClient;
 use crate::codec::RecordCursor;
 use crate::error::{RacError, Result};
-use super::{call_body, expect_ack};
+use crate::protocol::ProtocolCodec;
+use crate::rpc::{Meta, Request, Response};
+use crate::rpc::decode_utils::{parse_ack_payload, rpc_body};
+use crate::rac_wire::{
+    METHOD_LIMIT_INFO_REQ, METHOD_LIMIT_INFO_RESP, METHOD_LIMIT_LIST_REQ, METHOD_LIMIT_LIST_RESP,
+    METHOD_LIMIT_REMOVE_REQ, METHOD_LIMIT_UPDATE_REQ,
+};
+use crate::commands::cluster_auth;
 use crate::Uuid16;
 
 mod generated {
@@ -52,23 +59,160 @@ pub struct LimitRemoveResp {
     pub acknowledged: bool,
 }
 
+struct LimitListRpc {
+    cluster: Uuid16,
+}
+
+impl Request for LimitListRpc {
+    type Response = LimitListResp;
+
+    fn meta(&self) -> Meta {
+        Meta {
+            method_req: METHOD_LIMIT_LIST_REQ,
+            method_resp: Some(METHOD_LIMIT_LIST_RESP),
+            requires_cluster_context: true,
+            requires_infobase_context: false,
+        }
+    }
+
+    fn cluster(&self) -> Option<Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
+        Ok(self.cluster.to_vec())
+    }
+}
+
+impl Response for LimitListResp {
+    fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
+        let body = rpc_body(payload)?;
+        Ok(Self {
+            limits: parse_limit_list_body(body)?,
+        })
+    }
+}
+
+struct LimitInfoRpc {
+    cluster: Uuid16,
+    limit: String,
+}
+
+impl Request for LimitInfoRpc {
+    type Response = LimitInfoResp;
+
+    fn meta(&self) -> Meta {
+        Meta {
+            method_req: METHOD_LIMIT_INFO_REQ,
+            method_resp: Some(METHOD_LIMIT_INFO_RESP),
+            requires_cluster_context: true,
+            requires_infobase_context: false,
+        }
+    }
+
+    fn cluster(&self) -> Option<Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
+        let mut body = Vec::with_capacity(16 + 1 + self.limit.len());
+        body.extend_from_slice(&self.cluster);
+        body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(self.limit.as_bytes())?);
+        Ok(body)
+    }
+}
+
+impl Response for LimitInfoResp {
+    fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
+        let body = rpc_body(payload)?;
+        Ok(Self {
+            record: parse_limit_info_body(body)?,
+        })
+    }
+}
+
+struct LimitUpdateRpc {
+    cluster: Uuid16,
+    req: LimitUpdateReq,
+}
+
+impl Request for LimitUpdateRpc {
+    type Response = Vec<u8>;
+
+    fn meta(&self) -> Meta {
+        Meta {
+            method_req: METHOD_LIMIT_UPDATE_REQ,
+            method_resp: None,
+            requires_cluster_context: true,
+            requires_infobase_context: false,
+        }
+    }
+
+    fn cluster(&self) -> Option<Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
+        let req = &self.req;
+        let mut body = Vec::with_capacity(16 + 120 + req.name.len() + req.counter.len() + req.error_message.len() + req.descr.len());
+        body.extend_from_slice(&self.cluster);
+        body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(req.name.as_bytes())?);
+        body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(req.counter.as_bytes())?);
+        body.push(req.action);
+        body.extend_from_slice(&req.duration.to_be_bytes());
+        body.extend_from_slice(&req.cpu_time.to_be_bytes());
+        body.extend_from_slice(&req.memory.to_be_bytes());
+        body.extend_from_slice(&req.read.to_be_bytes());
+        body.extend_from_slice(&req.write.to_be_bytes());
+        body.extend_from_slice(&req.duration_dbms.to_be_bytes());
+        body.extend_from_slice(&req.dbms_bytes.to_be_bytes());
+        body.extend_from_slice(&req.service.to_be_bytes());
+        body.extend_from_slice(&req.call.to_be_bytes());
+        body.extend_from_slice(&req.number_of_active_sessions.to_be_bytes());
+        body.extend_from_slice(&req.number_of_sessions.to_be_bytes());
+        body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(req.error_message.as_bytes())?);
+        body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(req.descr.as_bytes())?);
+        Ok(body)
+    }
+}
+
+struct LimitRemoveRpc {
+    cluster: Uuid16,
+    name: String,
+}
+
+impl Request for LimitRemoveRpc {
+    type Response = Vec<u8>;
+
+    fn meta(&self) -> Meta {
+        Meta {
+            method_req: METHOD_LIMIT_REMOVE_REQ,
+            method_resp: None,
+            requires_cluster_context: true,
+            requires_infobase_context: false,
+        }
+    }
+
+    fn cluster(&self) -> Option<Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
+        let mut body = Vec::with_capacity(16 + 1 + self.name.len());
+        body.extend_from_slice(&self.cluster);
+        body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(self.name.as_bytes())?);
+        Ok(body)
+    }
+}
+
 pub fn limit_list(client: &mut RacClient, cluster: Uuid16) -> Result<LimitListResp> {
-    let body = call_body(client, RacRequest::LimitList { cluster })?;
-    Ok(LimitListResp {
-        limits: parse_limit_list_body(&body)?,
-    })
+    client.call_typed(LimitListRpc { cluster })
 }
 
 pub fn limit_info(client: &mut RacClient, cluster: Uuid16, limit: &str) -> Result<LimitInfoResp> {
-    let body = call_body(
-        client,
-        RacRequest::LimitInfo {
-            cluster,
-            limit: limit.to_string(),
-        },
-    )?;
-    Ok(LimitInfoResp {
-        record: parse_limit_info_body(&body)?,
+    client.call_typed(LimitInfoRpc {
+        cluster,
+        limit: limit.to_string(),
     })
 }
 
@@ -79,34 +223,10 @@ pub fn limit_update(
     cluster_pwd: &str,
     req: LimitUpdateReq,
 ) -> Result<LimitUpdateResp> {
-    client.call(RacRequest::ClusterAuth {
-        cluster,
-        user: cluster_user.to_string(),
-        pwd: cluster_pwd.to_string(),
-    })?;
-    let reply = client.call(RacRequest::LimitUpdate {
-        cluster,
-        name: req.name,
-        counter: req.counter,
-        action: req.action,
-        duration: req.duration,
-        cpu_time: req.cpu_time,
-        memory: req.memory,
-        read: req.read,
-        write: req.write,
-        duration_dbms: req.duration_dbms,
-        dbms_bytes: req.dbms_bytes,
-        service: req.service,
-        call: req.call,
-        number_of_active_sessions: req.number_of_active_sessions,
-        number_of_sessions: req.number_of_sessions,
-        error_message: req.error_message,
-        descr: req.descr,
-    })?;
-    expect_ack(&reply, "limit update expected ack")?;
-    Ok(LimitUpdateResp {
-        acknowledged: true,
-    })
+    let _ = cluster_auth(client, cluster, cluster_user, cluster_pwd)?;
+    let reply = client.call(LimitUpdateRpc { cluster, req })?;
+    let acknowledged = parse_ack_payload(&reply, "limit update expected ack")?;
+    Ok(LimitUpdateResp { acknowledged })
 }
 
 pub fn limit_remove(
@@ -116,19 +236,13 @@ pub fn limit_remove(
     cluster_pwd: &str,
     name: &str,
 ) -> Result<LimitRemoveResp> {
-    client.call(RacRequest::ClusterAuth {
-        cluster,
-        user: cluster_user.to_string(),
-        pwd: cluster_pwd.to_string(),
-    })?;
-    let reply = client.call(RacRequest::LimitRemove {
+    let _ = cluster_auth(client, cluster, cluster_user, cluster_pwd)?;
+    let reply = client.call(LimitRemoveRpc {
         cluster,
         name: name.to_string(),
     })?;
-    expect_ack(&reply, "limit remove expected ack")?;
-    Ok(LimitRemoveResp {
-        acknowledged: true,
-    })
+    let acknowledged = parse_ack_payload(&reply, "limit remove expected ack")?;
+    Ok(LimitRemoveResp { acknowledged })
 }
 
 fn parse_limit_list_body(body: &[u8]) -> Result<Vec<LimitRecord>> {
@@ -179,7 +293,8 @@ fn parse_limit_remove_ack(payload: &[u8]) -> Result<bool> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::client::RacProtocolVersion;
+    use crate::protocol::ProtocolVersion;
+    use crate::rpc::Request;
     use crate::rac_wire::parse_frames;
     use crate::rac_wire::parse_uuid;
     use crate::commands::rpc_body;
@@ -281,8 +396,7 @@ mod tests {
             "01000001801619820ad36f4d8aa7161516b1dea0770f6c696d69745f636f6465785f746d7003637075020000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000096c696d69745f746d70096c696d69745f746d70",
         );
         let cluster = parse_uuid("1619820a-d36f-4d8a-a716-1516b1dea077").expect("cluster uuid");
-        let req = RacRequest::LimitUpdate {
-            cluster,
+        let req = LimitUpdateReq {
             name: "limit_codex_tmp".to_string(),
             counter: "cpu".to_string(),
             action: 2,
@@ -300,8 +414,9 @@ mod tests {
             error_message: "limit_tmp".to_string(),
             descr: "limit_tmp".to_string(),
         };
-        let protocol = RacProtocolVersion::V16_0.boxed();
-        let serialized = protocol.serialize(req).expect("serialize");
+        let rpc = LimitUpdateRpc { cluster, req };
+        let protocol = ProtocolVersion::V16_0.boxed();
+        let serialized = rpc.encode(protocol.as_ref()).expect("serialize");
         assert_eq!(serialized.payload, expected);
         assert_eq!(serialized.expect_method, None);
     }
@@ -312,12 +427,12 @@ mod tests {
             "01000001811619820ad36f4d8aa7161516b1dea0770f6c696d69745f636f6465785f746d70",
         );
         let cluster = parse_uuid("1619820a-d36f-4d8a-a716-1516b1dea077").expect("cluster uuid");
-        let req = RacRequest::LimitRemove {
+        let rpc = LimitRemoveRpc {
             cluster,
             name: "limit_codex_tmp".to_string(),
         };
-        let protocol = RacProtocolVersion::V16_0.boxed();
-        let serialized = protocol.serialize(req).expect("serialize");
+        let protocol = ProtocolVersion::V16_0.boxed();
+        let serialized = rpc.encode(protocol.as_ref()).expect("serialize");
         assert_eq!(serialized.payload, expected);
         assert_eq!(serialized.expect_method, None);
     }

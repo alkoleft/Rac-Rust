@@ -3,6 +3,7 @@ pub mod decode_utils;
 use crate::error::Result;
 use crate::protocol::{ProtocolCodec, SerializedRpc};
 use crate::Uuid16;
+use serde::Serialize;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct RequiredContext {
@@ -63,5 +64,23 @@ pub trait Request {
 }
 
 pub trait Response: Sized {
-    fn decode(body: &[u8], codec: &dyn ProtocolCodec) -> Result<Self>;
+    fn decode(payload: &[u8], codec: &dyn ProtocolCodec) -> Result<Self>;
+}
+
+#[derive(Debug, Clone, Copy, Serialize)]
+pub struct AckResponse {
+    pub acknowledged: bool,
+}
+
+impl Response for AckResponse {
+    fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
+        let acknowledged = decode_utils::parse_ack_payload(payload, "ack expected")?;
+        Ok(Self { acknowledged })
+    }
+}
+
+impl Response for Vec<u8> {
+    fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
+        Ok(payload.to_vec())
+    }
 }

@@ -1,20 +1,132 @@
 use serde::Serialize;
 
-use crate::client::{RacClient, RacRequest};
+use crate::client::RacClient;
 use crate::codec::RecordCursor;
 use crate::error::Result;
+use crate::protocol::ProtocolCodec;
+use crate::rpc::{AckResponse, Meta, Request, Response};
+use crate::rpc::decode_utils::rpc_body;
+use crate::rac_wire::{
+    METHOD_AGENT_ADMIN_LIST_REQ, METHOD_AGENT_ADMIN_LIST_RESP, METHOD_AGENT_AUTH_REQ,
+    METHOD_AGENT_VERSION_REQ, METHOD_AGENT_VERSION_RESP,
+};
 
-use super::{call_body, parse_list_u8};
+use super::parse_list_u8;
 
 mod generated {
     include!("agent_generated.rs");
 }
 
-pub use generated::{rpc_metadata, AgentAdminRecord, AgentAuthRequest};
+pub use generated::{AgentAdminRecord, AgentAuthRequest};
 
 #[derive(Debug, Serialize)]
 pub struct AgentAdminListResp {
     pub admins: Vec<AgentAdminRecord>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct AgentVersionResp {
+    pub version: Option<String>,
+}
+
+struct AgentAuthRpc {
+    user: String,
+    pwd: String,
+}
+
+impl Request for AgentAuthRpc {
+    type Response = AckResponse;
+
+    fn meta(&self) -> Meta {
+        Meta {
+            method_req: METHOD_AGENT_AUTH_REQ,
+            method_resp: None,
+            requires_cluster_context: false,
+            requires_infobase_context: false,
+        }
+    }
+
+    fn cluster(&self) -> Option<crate::Uuid16> {
+        None
+    }
+
+    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
+        let req = AgentAuthRequest {
+            user: self.user.clone(),
+            pwd: self.pwd.clone(),
+        };
+        let mut out = Vec::with_capacity(req.encoded_len());
+        req.encode_body(&mut out)?;
+        Ok(out)
+    }
+}
+
+struct AgentAdminListRpc;
+
+impl Request for AgentAdminListRpc {
+    type Response = AgentAdminListResp;
+
+    fn meta(&self) -> Meta {
+        Meta {
+            method_req: METHOD_AGENT_ADMIN_LIST_REQ,
+            method_resp: Some(METHOD_AGENT_ADMIN_LIST_RESP),
+            requires_cluster_context: false,
+            requires_infobase_context: false,
+        }
+    }
+
+    fn cluster(&self) -> Option<crate::Uuid16> {
+        None
+    }
+
+    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
+        Ok(Vec::new())
+    }
+}
+
+impl Response for AgentAdminListResp {
+    fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
+        let body = rpc_body(payload)?;
+        Ok(Self {
+            admins: parse_agent_admin_list_body(body)?,
+        })
+    }
+}
+
+struct AgentVersionRpc;
+
+impl Request for AgentVersionRpc {
+    type Response = AgentVersionResp;
+
+    fn meta(&self) -> Meta {
+        Meta {
+            method_req: METHOD_AGENT_VERSION_REQ,
+            method_resp: Some(METHOD_AGENT_VERSION_RESP),
+            requires_cluster_context: false,
+            requires_infobase_context: false,
+        }
+    }
+
+    fn cluster(&self) -> Option<crate::Uuid16> {
+        None
+    }
+
+    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
+        Ok(Vec::new())
+    }
+}
+
+impl Response for AgentVersionResp {
+    fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
+        let body = rpc_body(payload)?;
+        if body.is_empty() {
+            return Ok(Self { version: None });
+        }
+        let mut cursor = RecordCursor::new(body, 0);
+        Ok(Self {
+            version: Some(cursor.take_str8()?),
+        })
+    }
 }
 
 pub fn agent_admin_list(
@@ -22,23 +134,16 @@ pub fn agent_admin_list(
     agent_user: &str,
     agent_pwd: &str,
 ) -> Result<AgentAdminListResp> {
-    client.call(RacRequest::AgentAuth {
+    let _ = client.call_typed(AgentAuthRpc {
         user: agent_user.to_string(),
         pwd: agent_pwd.to_string(),
     })?;
-    let body = call_body(client, RacRequest::AgentAdminList)?;
-    Ok(AgentAdminListResp {
-        admins: parse_agent_admin_list_body(&body)?,
-    })
+    client.call_typed(AgentAdminListRpc)
 }
 
 pub fn agent_version(client: &mut RacClient) -> Result<Option<String>> {
-    let body = call_body(client, RacRequest::AgentVersion)?;
-    if body.is_empty() {
-        return Ok(None);
-    }
-    let mut cursor = RecordCursor::new(&body, 0);
-    Ok(Some(cursor.take_str8()?))
+    let resp = client.call_typed(AgentVersionRpc)?;
+    Ok(resp.version)
 }
 
 fn parse_agent_admin_list_body(body: &[u8]) -> Result<Vec<AgentAdminRecord>> {
@@ -48,8 +153,8 @@ fn parse_agent_admin_list_body(body: &[u8]) -> Result<Vec<AgentAdminRecord>> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::client::RacProtocolVersion;
-    use crate::rac_wire::{METHOD_AGENT_ADMIN_LIST_RESP, METHOD_AGENT_VERSION_RESP};
+    use crate::protocol::ProtocolVersion;
+    use crate::rpc::Request;
     use crate::commands::rpc_body;
 
     fn decode_hex_str(input: &str) -> Vec<u8> {
@@ -78,12 +183,12 @@ mod tests {
     #[test]
     fn encode_agent_auth_request() {
         let expected = decode_hex_str("01000001080561646d696e0470617373");
-        let req = RacRequest::AgentAuth {
+        let req = AgentAuthRpc {
             user: "admin".to_string(),
             pwd: "pass".to_string(),
         };
-        let protocol = RacProtocolVersion::V16_0.boxed();
-        let serialized = protocol.serialize(req).expect("serialize");
+        let protocol = ProtocolVersion::V16_0.boxed();
+        let serialized = req.encode(protocol.as_ref()).expect("serialize");
         assert_eq!(serialized.payload, expected);
         assert_eq!(serialized.expect_method, None);
     }
@@ -91,9 +196,9 @@ mod tests {
     #[test]
     fn encode_agent_admin_list_request() {
         let expected = decode_hex_str("0100000100");
-        let req = RacRequest::AgentAdminList;
-        let protocol = RacProtocolVersion::V16_0.boxed();
-        let serialized = protocol.serialize(req).expect("serialize");
+        let req = AgentAdminListRpc;
+        let protocol = ProtocolVersion::V16_0.boxed();
+        let serialized = req.encode(protocol.as_ref()).expect("serialize");
         assert_eq!(serialized.payload, expected);
         assert_eq!(serialized.expect_method, Some(METHOD_AGENT_ADMIN_LIST_RESP));
     }

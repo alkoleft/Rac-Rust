@@ -1,11 +1,22 @@
 use serde::Serialize;
 
-use crate::client::{RacClient, RacRequest};
+use crate::client::RacClient;
 use crate::codec::RecordCursor;
 use crate::error::{RacError, Result};
+use crate::protocol::ProtocolCodec;
+use crate::rpc::{Meta, Request, Response};
+use crate::rpc::decode_utils::{parse_ack_payload, rpc_body};
+use crate::rac_wire::{
+    METHOD_SERVICE_SETTING_APPLY_REQ, METHOD_SERVICE_SETTING_GET_DATA_DIRS_REQ,
+    METHOD_SERVICE_SETTING_GET_DATA_DIRS_RESP, METHOD_SERVICE_SETTING_INFO_REQ,
+    METHOD_SERVICE_SETTING_INFO_RESP, METHOD_SERVICE_SETTING_INSERT_REQ,
+    METHOD_SERVICE_SETTING_INSERT_RESP, METHOD_SERVICE_SETTING_LIST_REQ,
+    METHOD_SERVICE_SETTING_LIST_RESP, METHOD_SERVICE_SETTING_REMOVE_REQ,
+};
+use crate::commands::cluster_auth;
 use crate::Uuid16;
 
-use super::{call_body, expect_ack, parse_uuid_body};
+use super::parse_uuid_body;
 
 mod generated {
     include!("service_setting_generated.rs");
@@ -67,6 +78,275 @@ pub struct ServiceSettingTransferDataDirsResp {
     pub records: Vec<ServiceSettingTransferDataDirRecord>,
 }
 
+struct ServiceSettingInfoRpc {
+    cluster: Uuid16,
+    server: Uuid16,
+    setting: Uuid16,
+}
+
+impl Request for ServiceSettingInfoRpc {
+    type Response = ServiceSettingInfoResp;
+
+    fn meta(&self) -> Meta {
+        Meta {
+            method_req: METHOD_SERVICE_SETTING_INFO_REQ,
+            method_resp: Some(METHOD_SERVICE_SETTING_INFO_RESP),
+            requires_cluster_context: true,
+            requires_infobase_context: false,
+        }
+    }
+
+    fn cluster(&self) -> Option<Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
+        let mut body = Vec::with_capacity(48);
+        body.extend_from_slice(&self.cluster);
+        body.extend_from_slice(&self.server);
+        body.extend_from_slice(&self.setting);
+        Ok(body)
+    }
+}
+
+impl Response for ServiceSettingInfoResp {
+    fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
+        let body = rpc_body(payload)?;
+        let record = parse_service_setting_info(body)?;
+        Ok(Self { record })
+    }
+}
+
+struct ServiceSettingListRpc {
+    cluster: Uuid16,
+    server: Uuid16,
+}
+
+impl Request for ServiceSettingListRpc {
+    type Response = ServiceSettingListResp;
+
+    fn meta(&self) -> Meta {
+        Meta {
+            method_req: METHOD_SERVICE_SETTING_LIST_REQ,
+            method_resp: Some(METHOD_SERVICE_SETTING_LIST_RESP),
+            requires_cluster_context: true,
+            requires_infobase_context: false,
+        }
+    }
+
+    fn cluster(&self) -> Option<Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
+        let mut body = Vec::with_capacity(32);
+        body.extend_from_slice(&self.cluster);
+        body.extend_from_slice(&self.server);
+        Ok(body)
+    }
+}
+
+impl Response for ServiceSettingListResp {
+    fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
+        let body = rpc_body(payload)?;
+        let records = parse_service_setting_list(body)?;
+        Ok(Self { records })
+    }
+}
+
+struct ServiceSettingInsertRpc {
+    cluster: Uuid16,
+    req: ServiceSettingInsertReq,
+}
+
+impl Request for ServiceSettingInsertRpc {
+    type Response = ServiceSettingInsertResp;
+
+    fn meta(&self) -> Meta {
+        Meta {
+            method_req: METHOD_SERVICE_SETTING_INSERT_REQ,
+            method_resp: Some(METHOD_SERVICE_SETTING_INSERT_RESP),
+            requires_cluster_context: true,
+            requires_infobase_context: false,
+        }
+    }
+
+    fn cluster(&self) -> Option<Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
+        let req = &self.req;
+        let mut body = Vec::with_capacity(
+            16 + 16 + 16 + 5 + req.service_name.len() + req.infobase_name.len() + req.service_data_dir.len(),
+        );
+        body.extend_from_slice(&self.cluster);
+        body.extend_from_slice(&req.server);
+        body.extend_from_slice(&[0u8; 16]);
+        body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(req.service_name.as_bytes())?);
+        body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(req.infobase_name.as_bytes())?);
+        body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(req.service_data_dir.as_bytes())?);
+        let active = if req.active { 1u16 } else { 0u16 };
+        body.extend_from_slice(&active.to_be_bytes());
+        Ok(body)
+    }
+}
+
+impl Response for ServiceSettingInsertResp {
+    fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
+        let body = rpc_body(payload)?;
+        let setting = parse_service_setting_insert_body(body)?;
+        Ok(Self { setting })
+    }
+}
+
+struct ServiceSettingUpdateRpc {
+    cluster: Uuid16,
+    req: ServiceSettingUpdateReq,
+}
+
+impl Request for ServiceSettingUpdateRpc {
+    type Response = ServiceSettingUpdateResp;
+
+    fn meta(&self) -> Meta {
+        Meta {
+            method_req: METHOD_SERVICE_SETTING_INSERT_REQ,
+            method_resp: Some(METHOD_SERVICE_SETTING_INSERT_RESP),
+            requires_cluster_context: true,
+            requires_infobase_context: false,
+        }
+    }
+
+    fn cluster(&self) -> Option<Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
+        let req = &self.req;
+        let mut body = Vec::with_capacity(
+            16 + 16 + 16 + 5 + req.service_name.len() + req.infobase_name.len() + req.service_data_dir.len(),
+        );
+        body.extend_from_slice(&self.cluster);
+        body.extend_from_slice(&req.server);
+        body.extend_from_slice(&req.setting);
+        body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(req.service_name.as_bytes())?);
+        body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(req.infobase_name.as_bytes())?);
+        body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(req.service_data_dir.as_bytes())?);
+        let active = if req.active { 1u16 } else { 0u16 };
+        body.extend_from_slice(&active.to_be_bytes());
+        Ok(body)
+    }
+}
+
+impl Response for ServiceSettingUpdateResp {
+    fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
+        let body = rpc_body(payload)?;
+        let setting = parse_service_setting_update_body(body)?;
+        Ok(Self { setting })
+    }
+}
+
+struct ServiceSettingRemoveRpc {
+    cluster: Uuid16,
+    server: Uuid16,
+    setting: Uuid16,
+}
+
+impl Request for ServiceSettingRemoveRpc {
+    type Response = Vec<u8>;
+
+    fn meta(&self) -> Meta {
+        Meta {
+            method_req: METHOD_SERVICE_SETTING_REMOVE_REQ,
+            method_resp: None,
+            requires_cluster_context: true,
+            requires_infobase_context: false,
+        }
+    }
+
+    fn cluster(&self) -> Option<Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
+        let mut body = Vec::with_capacity(48);
+        body.extend_from_slice(&self.cluster);
+        body.extend_from_slice(&self.server);
+        body.extend_from_slice(&self.setting);
+        Ok(body)
+    }
+}
+
+struct ServiceSettingApplyRpc {
+    cluster: Uuid16,
+    server: Uuid16,
+}
+
+impl Request for ServiceSettingApplyRpc {
+    type Response = Vec<u8>;
+
+    fn meta(&self) -> Meta {
+        Meta {
+            method_req: METHOD_SERVICE_SETTING_APPLY_REQ,
+            method_resp: None,
+            requires_cluster_context: true,
+            requires_infobase_context: false,
+        }
+    }
+
+    fn cluster(&self) -> Option<Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
+        let mut body = Vec::with_capacity(32);
+        body.extend_from_slice(&self.cluster);
+        body.extend_from_slice(&self.server);
+        Ok(body)
+    }
+}
+
+struct ServiceSettingTransferDirsRpc {
+    cluster: Uuid16,
+    server: Uuid16,
+    service_name: String,
+}
+
+impl Request for ServiceSettingTransferDirsRpc {
+    type Response = ServiceSettingTransferDataDirsResp;
+
+    fn meta(&self) -> Meta {
+        Meta {
+            method_req: METHOD_SERVICE_SETTING_GET_DATA_DIRS_REQ,
+            method_resp: Some(METHOD_SERVICE_SETTING_GET_DATA_DIRS_RESP),
+            requires_cluster_context: true,
+            requires_infobase_context: false,
+        }
+    }
+
+    fn cluster(&self) -> Option<Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
+        let mut body = Vec::with_capacity(32 + 1 + self.service_name.len());
+        body.extend_from_slice(&self.cluster);
+        body.extend_from_slice(&self.server);
+        if !self.service_name.is_empty() {
+            body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(self.service_name.as_bytes())?);
+        }
+        Ok(body)
+    }
+}
+
+impl Response for ServiceSettingTransferDataDirsResp {
+    fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
+        let body = rpc_body(payload)?;
+        let records = parse_service_setting_transfer_data_dirs(body)?;
+        Ok(Self { records })
+    }
+}
+
 pub fn service_setting_info(
     client: &mut RacClient,
     cluster: Uuid16,
@@ -75,11 +355,7 @@ pub fn service_setting_info(
     server: Uuid16,
     setting: Uuid16,
 ) -> Result<ServiceSettingInfoResp> {
-    client.call(RacRequest::ClusterAuth {
-        cluster,
-        user: cluster_user.to_string(),
-        pwd: cluster_pwd.to_string(),
-    })?;
+    let _ = cluster_auth(client, cluster, cluster_user, cluster_pwd)?;
     service_setting_info_no_auth(client, cluster, server, setting)
 }
 
@@ -89,17 +365,10 @@ pub fn service_setting_info_no_auth(
     server: Uuid16,
     setting: Uuid16,
 ) -> Result<ServiceSettingInfoResp> {
-    let body = call_body(
-        client,
-        RacRequest::ServiceSettingInfo {
-            cluster,
-            server,
-            setting,
-        },
-    )?;
-    let record = parse_service_setting_info(&body)?;
-    Ok(ServiceSettingInfoResp {
-        record,
+    client.call_typed(ServiceSettingInfoRpc {
+        cluster,
+        server,
+        setting,
     })
 }
 
@@ -110,16 +379,8 @@ pub fn service_setting_list(
     cluster_pwd: &str,
     server: Uuid16,
 ) -> Result<ServiceSettingListResp> {
-    client.call(RacRequest::ClusterAuth {
-        cluster,
-        user: cluster_user.to_string(),
-        pwd: cluster_pwd.to_string(),
-    })?;
-    let body = call_body(client, RacRequest::ServiceSettingList { cluster, server })?;
-    let records = parse_service_setting_list(&body)?;
-    Ok(ServiceSettingListResp {
-        records,
-    })
+    let _ = cluster_auth(client, cluster, cluster_user, cluster_pwd)?;
+    client.call_typed(ServiceSettingListRpc { cluster, server })
 }
 
 pub fn service_setting_insert(
@@ -129,26 +390,8 @@ pub fn service_setting_insert(
     cluster_pwd: &str,
     req: ServiceSettingInsertReq,
 ) -> Result<ServiceSettingInsertResp> {
-    client.call(RacRequest::ClusterAuth {
-        cluster,
-        user: cluster_user.to_string(),
-        pwd: cluster_pwd.to_string(),
-    })?;
-    let body = call_body(
-        client,
-        RacRequest::ServiceSettingInsert {
-            cluster,
-            server: req.server,
-            service_name: req.service_name,
-            infobase_name: req.infobase_name,
-            service_data_dir: req.service_data_dir,
-            active: req.active,
-        },
-    )?;
-    let setting = parse_service_setting_insert_body(&body)?;
-    Ok(ServiceSettingInsertResp {
-        setting,
-    })
+    let _ = cluster_auth(client, cluster, cluster_user, cluster_pwd)?;
+    client.call_typed(ServiceSettingInsertRpc { cluster, req })
 }
 
 pub fn service_setting_update(
@@ -158,11 +401,7 @@ pub fn service_setting_update(
     cluster_pwd: &str,
     req: ServiceSettingUpdateReq,
 ) -> Result<ServiceSettingUpdateResp> {
-    client.call(RacRequest::ClusterAuth {
-        cluster,
-        user: cluster_user.to_string(),
-        pwd: cluster_pwd.to_string(),
-    })?;
+    let _ = cluster_auth(client, cluster, cluster_user, cluster_pwd)?;
     service_setting_update_no_auth(client, cluster, req)
 }
 
@@ -171,22 +410,7 @@ pub fn service_setting_update_no_auth(
     cluster: Uuid16,
     req: ServiceSettingUpdateReq,
 ) -> Result<ServiceSettingUpdateResp> {
-    let body = call_body(
-        client,
-        RacRequest::ServiceSettingUpdate {
-            cluster,
-            server: req.server,
-            setting: req.setting,
-            service_name: req.service_name,
-            infobase_name: req.infobase_name,
-            service_data_dir: req.service_data_dir,
-            active: req.active,
-        },
-    )?;
-    let setting = parse_service_setting_update_body(&body)?;
-    Ok(ServiceSettingUpdateResp {
-        setting,
-    })
+    client.call_typed(ServiceSettingUpdateRpc { cluster, req })
 }
 
 pub fn service_setting_remove(
@@ -197,20 +421,14 @@ pub fn service_setting_remove(
     server: Uuid16,
     setting: Uuid16,
 ) -> Result<ServiceSettingRemoveResp> {
-    client.call(RacRequest::ClusterAuth {
-        cluster,
-        user: cluster_user.to_string(),
-        pwd: cluster_pwd.to_string(),
-    })?;
-    let reply = client.call(RacRequest::ServiceSettingRemove {
+    let _ = cluster_auth(client, cluster, cluster_user, cluster_pwd)?;
+    let reply = client.call(ServiceSettingRemoveRpc {
         cluster,
         server,
         setting,
     })?;
-    expect_ack(&reply, "service-setting remove expected ack")?;
-    Ok(ServiceSettingRemoveResp {
-        acknowledged: true,
-    })
+    let acknowledged = parse_ack_payload(&reply, "service-setting remove expected ack")?;
+    Ok(ServiceSettingRemoveResp { acknowledged })
 }
 
 pub fn service_setting_apply(
@@ -220,16 +438,10 @@ pub fn service_setting_apply(
     cluster_pwd: &str,
     server: Uuid16,
 ) -> Result<ServiceSettingApplyResp> {
-    client.call(RacRequest::ClusterAuth {
-        cluster,
-        user: cluster_user.to_string(),
-        pwd: cluster_pwd.to_string(),
-    })?;
-    let reply = client.call(RacRequest::ServiceSettingApply { cluster, server })?;
-    expect_ack(&reply, "service-setting apply expected ack")?;
-    Ok(ServiceSettingApplyResp {
-        acknowledged: true,
-    })
+    let _ = cluster_auth(client, cluster, cluster_user, cluster_pwd)?;
+    let reply = client.call(ServiceSettingApplyRpc { cluster, server })?;
+    let acknowledged = parse_ack_payload(&reply, "service-setting apply expected ack")?;
+    Ok(ServiceSettingApplyResp { acknowledged })
 }
 
 pub fn service_setting_get_service_data_dirs_for_transfer(
@@ -240,22 +452,11 @@ pub fn service_setting_get_service_data_dirs_for_transfer(
     server: Uuid16,
     service_name: &str,
 ) -> Result<ServiceSettingTransferDataDirsResp> {
-    client.call(RacRequest::ClusterAuth {
+    let _ = cluster_auth(client, cluster, cluster_user, cluster_pwd)?;
+    client.call_typed(ServiceSettingTransferDirsRpc {
         cluster,
-        user: cluster_user.to_string(),
-        pwd: cluster_pwd.to_string(),
-    })?;
-    let body = call_body(
-        client,
-        RacRequest::ServiceSettingGetServiceDataDirsForTransfer {
-            cluster,
-            server,
-            service_name: service_name.to_string(),
-        },
-    )?;
-    let records = parse_service_setting_transfer_data_dirs(&body)?;
-    Ok(ServiceSettingTransferDataDirsResp {
-        records,
+        server,
+        service_name: service_name.to_string(),
     })
 }
 
@@ -290,12 +491,12 @@ fn parse_service_setting_update_body(body: &[u8]) -> Result<Uuid16> {
 
 #[cfg(test)]
 fn parse_service_setting_remove_ack(payload: &[u8]) -> Result<bool> {
-    crate::commands::parse_ack_payload(payload, "service-setting remove ack truncated")
+    crate::rpc::decode_utils::parse_ack_payload(payload, "service-setting remove ack truncated")
 }
 
 #[cfg(test)]
 fn parse_service_setting_apply_ack(payload: &[u8]) -> Result<bool> {
-    crate::commands::parse_ack_payload(payload, "service-setting apply ack truncated")
+    crate::rpc::decode_utils::parse_ack_payload(payload, "service-setting apply ack truncated")
 }
 
 fn parse_service_setting_transfer_data_dirs(
@@ -329,7 +530,8 @@ fn parse_service_setting_transfer_data_dir_record(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::client::RacProtocolVersion;
+    use crate::protocol::ProtocolVersion;
+    use crate::rpc::Request;
     use crate::rac_wire::parse_frames;
     use crate::rac_wire::parse_uuid;
     use crate::commands::rpc_body;
@@ -415,9 +617,9 @@ mod tests {
         );
         let cluster = parse_uuid("1619820a-d36f-4d8a-a716-1516b1dea077").expect("cluster uuid");
         let server = parse_uuid("6aa3a88a-9346-4499-8034-a4a72d7ee8e8").expect("server uuid");
-        let req = RacRequest::ServiceSettingList { cluster, server };
-        let protocol = RacProtocolVersion::V16_0.boxed();
-        let serialized = protocol.serialize(req).expect("serialize");
+        let req = ServiceSettingListRpc { cluster, server };
+        let protocol = ProtocolVersion::V16_0.boxed();
+        let serialized = req.encode(protocol.as_ref()).expect("serialize");
         assert_eq!(serialized.payload, expected);
         assert_eq!(serialized.expect_method, Some(0x8c));
     }
@@ -430,13 +632,13 @@ mod tests {
         let cluster = parse_uuid("1619820a-d36f-4d8a-a716-1516b1dea077").expect("cluster uuid");
         let server = parse_uuid("6aa3a88a-9346-4499-8034-a4a72d7ee8e8").expect("server uuid");
         let setting = parse_uuid("1496c164-a9f5-446e-a021-16a127b06a11").expect("setting uuid");
-        let req = RacRequest::ServiceSettingInfo {
+        let req = ServiceSettingInfoRpc {
             cluster,
             server,
             setting,
         };
-        let protocol = RacProtocolVersion::V16_0.boxed();
-        let serialized = protocol.serialize(req).expect("serialize");
+        let protocol = ProtocolVersion::V16_0.boxed();
+        let serialized = req.encode(protocol.as_ref()).expect("serialize");
         assert_eq!(serialized.payload, expected);
         assert_eq!(serialized.expect_method, Some(0x8a));
     }
@@ -448,16 +650,16 @@ mod tests {
         );
         let cluster = parse_uuid("1619820a-d36f-4d8a-a716-1516b1dea077").expect("cluster uuid");
         let server = parse_uuid("6aa3a88a-9346-4499-8034-a4a72d7ee8e8").expect("server uuid");
-        let req = RacRequest::ServiceSettingInsert {
-            cluster,
+        let req = ServiceSettingInsertReq {
             server,
             service_name: "EventLogService".to_string(),
             infobase_name: "".to_string(),
             service_data_dir: "/tmp/codex_service_setting".to_string(),
             active: false,
         };
-        let protocol = RacProtocolVersion::V16_0.boxed();
-        let serialized = protocol.serialize(req).expect("serialize");
+        let rpc = ServiceSettingInsertRpc { cluster, req };
+        let protocol = ProtocolVersion::V16_0.boxed();
+        let serialized = rpc.encode(protocol.as_ref()).expect("serialize");
         assert_eq!(serialized.payload, expected);
         assert_eq!(serialized.expect_method, Some(0x8e));
     }
@@ -470,8 +672,7 @@ mod tests {
         let cluster = parse_uuid("1619820a-d36f-4d8a-a716-1516b1dea077").expect("cluster uuid");
         let server = parse_uuid("6aa3a88a-9346-4499-8034-a4a72d7ee8e8").expect("server uuid");
         let setting = parse_uuid("1496c164-a9f5-446e-a021-16a127b06a11").expect("setting uuid");
-        let req = RacRequest::ServiceSettingUpdate {
-            cluster,
+        let req = ServiceSettingUpdateReq {
             server,
             setting,
             service_name: "EventLogService".to_string(),
@@ -479,8 +680,9 @@ mod tests {
             service_data_dir: "/tmp/codex_service_setting_updated".to_string(),
             active: false,
         };
-        let protocol = RacProtocolVersion::V16_0.boxed();
-        let serialized = protocol.serialize(req).expect("serialize");
+        let rpc = ServiceSettingUpdateRpc { cluster, req };
+        let protocol = ProtocolVersion::V16_0.boxed();
+        let serialized = rpc.encode(protocol.as_ref()).expect("serialize");
         assert_eq!(serialized.payload, expected);
         assert_eq!(serialized.expect_method, Some(0x8e));
     }
@@ -523,13 +725,13 @@ mod tests {
         let cluster = parse_uuid("1619820a-d36f-4d8a-a716-1516b1dea077").expect("cluster uuid");
         let server = parse_uuid("6aa3a88a-9346-4499-8034-a4a72d7ee8e8").expect("server uuid");
         let setting = parse_uuid("1496c164-a9f5-446e-a021-16a127b06a11").expect("setting uuid");
-        let req = RacRequest::ServiceSettingRemove {
+        let req = ServiceSettingRemoveRpc {
             cluster,
             server,
             setting,
         };
-        let protocol = RacProtocolVersion::V16_0.boxed();
-        let serialized = protocol.serialize(req).expect("serialize");
+        let protocol = ProtocolVersion::V16_0.boxed();
+        let serialized = req.encode(protocol.as_ref()).expect("serialize");
         assert_eq!(serialized.payload, expected);
         assert_eq!(serialized.expect_method, None);
     }
@@ -541,9 +743,9 @@ mod tests {
         );
         let cluster = parse_uuid("1619820a-d36f-4d8a-a716-1516b1dea077").expect("cluster uuid");
         let server = parse_uuid("6aa3a88a-9346-4499-8034-a4a72d7ee8e8").expect("server uuid");
-        let req = RacRequest::ServiceSettingApply { cluster, server };
-        let protocol = RacProtocolVersion::V16_0.boxed();
-        let serialized = protocol.serialize(req).expect("serialize");
+        let req = ServiceSettingApplyRpc { cluster, server };
+        let protocol = ProtocolVersion::V16_0.boxed();
+        let serialized = req.encode(protocol.as_ref()).expect("serialize");
         assert_eq!(serialized.payload, expected);
         assert_eq!(serialized.expect_method, None);
     }
@@ -581,13 +783,13 @@ mod tests {
         );
         let cluster = parse_uuid("1619820a-d36f-4d8a-a716-1516b1dea077").expect("cluster uuid");
         let server = parse_uuid("6aa3a88a-9346-4499-8034-a4a72d7ee8e8").expect("server uuid");
-        let req = RacRequest::ServiceSettingGetServiceDataDirsForTransfer {
+        let req = ServiceSettingTransferDirsRpc {
             cluster,
             server,
             service_name: "EventLogService".to_string(),
         };
-        let protocol = RacProtocolVersion::V16_0.boxed();
-        let serialized = protocol.serialize(req).expect("serialize");
+        let protocol = ProtocolVersion::V16_0.boxed();
+        let serialized = req.encode(protocol.as_ref()).expect("serialize");
         assert_eq!(serialized.payload, expected);
         assert_eq!(serialized.expect_method, Some(0x92));
     }

@@ -10,6 +10,7 @@ use serde::Deserialize;
 struct TestParams {
     addr: String,
     expected_agent_version: String,
+    cluster_uuid: String,
 }
 
 fn load_params() -> TestParams {
@@ -19,9 +20,8 @@ fn load_params() -> TestParams {
     toml::from_str(&data).expect("parse tests/params.toml")
 }
 
-fn require_cluster_uuid() -> [u8; 16] {
-    let value = std::env::var("RAC_CLUSTER").expect("RAC_CLUSTER not set");
-    parse_uuid(&value).expect("RAC_CLUSTER must be a valid uuid")
+fn require_cluster_uuid(params: &TestParams) -> [u8; 16] {
+    parse_uuid(&params.cluster_uuid).expect("cluster_uuid must be a valid uuid")
 }
 
 fn client_cfg() -> ClientConfig {
@@ -75,10 +75,14 @@ fn live_agent_version_and_cluster_list() {
 fn live_infobase_summary_list() {
     let params = load_params();
     let addr = params.addr.clone();
-    let cluster_uuid = require_cluster_uuid();
+    let cluster_uuid = require_cluster_uuid(&params);
     let mut client = RacClient::connect(&addr, client_cfg()).expect("connect");
 
-    let _ = agent_version(&mut client);
+    let resp = agent_version(&mut client).expect("agent version");
+    assert_eq!(
+        resp.version.as_deref(),
+        Some(params.expected_agent_version.as_str())
+    );
     let reply = infobase_summary_list(&mut client, cluster_uuid).expect("infobase summary list");
 
     assert_eq!(reply.summaries.len(), reply.infobases.len());

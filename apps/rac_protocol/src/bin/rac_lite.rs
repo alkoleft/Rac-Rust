@@ -720,7 +720,7 @@ fn run(cli: Cli) -> Result<()> {
                     let mut client = RacClient::connect(&addr, cfg.clone())?;
                     cluster_auth(&mut client, cluster, &cluster_user, &cluster_pwd)?;
                     let resp = cluster_admin_list(&mut client, cluster)?;
-                    console::output(cli.json, &resp, console::cluster_admin_list(&resp.admins));
+                    console::output(cli.json, &resp, console::cluster_admin_list(&resp));
                     client.close()?;
                 }
                 ClusterAdminCmd::Register {
@@ -739,7 +739,7 @@ fn run(cli: Cli) -> Result<()> {
                     cluster_auth(&mut client, cluster, &cluster_user, &cluster_pwd)?;
                     let resp =
                         cluster_admin_register(&mut client, cluster, name, descr, pwd, auth_flags)?;
-                    console::output(cli.json, &resp, console::cluster_admin_register(&resp));
+                    console::output(cli.json, &resp, console::cluster_admin_register(resp));
                     client.close()?;
                 }
             },

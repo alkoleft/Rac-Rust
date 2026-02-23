@@ -1,5 +1,3 @@
-use serde::Serialize;
-
 use crate::client::{RacClient, RacProtocolVersion, RacRequest};
 use crate::error::{RacError, Result};
 use crate::Uuid16;
@@ -11,12 +9,12 @@ mod generated {
 }
 
 pub use generated::{
+    parse_cluster_info_body,
     ClusterAdminRecord,
     ClusterAdminRegisterRequest,
     ClusterAuthRequest,
     ClusterIdRequest,
     ClusterRecord,
-    parse_cluster_info_body,
     RpcMethodMeta,
     RPC_CLUSTER_ADMIN_LIST_META,
     RPC_CLUSTER_ADMIN_REGISTER_META,
@@ -25,37 +23,12 @@ pub use generated::{
     RPC_CLUSTER_LIST_META,
 };
 
-#[derive(Debug, Serialize)]
-pub struct ClusterAdminListResp {
-    pub admins: Vec<ClusterAdminRecord>,
-}
-
-#[derive(Debug, Serialize)]
-pub struct ClusterAuthResp {
-    pub acknowledged: bool,
-}
-
-#[derive(Debug, Serialize)]
-pub struct ClusterAdminRegisterResp {
-    pub acknowledged: bool,
-}
-
-#[derive(Debug, Serialize)]
-pub struct ClusterListResp {
-    pub clusters: Vec<ClusterRecord>,
-}
-
-#[derive(Debug, Serialize)]
-pub struct ClusterInfoResp {
-    pub cluster: ClusterRecord,
-}
-
 pub fn cluster_auth(
     client: &mut RacClient,
     cluster: Uuid16,
     user: &str,
     pwd: &str,
-) -> Result<ClusterAuthResp> {
+) -> Result<bool> {
     let reply = client.call(RacRequest::ClusterAuth {
         cluster,
         user: user.to_string(),
@@ -65,19 +38,15 @@ pub fn cluster_auth(
     if !acknowledged {
         return Err(RacError::Decode("cluster auth expected ack"));
     }
-    Ok(ClusterAuthResp {
-        acknowledged,
-    })
+    Ok(acknowledged)
 }
 
 pub fn cluster_admin_list(
     client: &mut RacClient,
     cluster: Uuid16,
-) -> Result<ClusterAdminListResp> {
+) -> Result<Vec<ClusterAdminRecord>> {
     let reply = client.call(RacRequest::ClusterAdminList { cluster })?;
-    Ok(ClusterAdminListResp {
-        admins: parse_list_u8(rpc_body(&reply)?, ClusterAdminRecord::decode)?,
-    })
+    parse_list_u8(rpc_body(&reply)?, ClusterAdminRecord::decode)
 }
 
 pub fn cluster_admin_register(
@@ -87,7 +56,7 @@ pub fn cluster_admin_register(
     descr: String,
     pwd: String,
     auth_flags: u8,
-) -> Result<ClusterAdminRegisterResp> {
+) -> Result<bool> {
     let reply = client.call(RacRequest::ClusterAdminRegister {
         cluster,
         name,
@@ -99,31 +68,23 @@ pub fn cluster_admin_register(
     if !acknowledged {
         return Err(RacError::Decode("cluster admin register expected ack"));
     }
-    Ok(ClusterAdminRegisterResp {
-        acknowledged,
-    })
+    Ok(acknowledged)
 }
 
-pub fn cluster_list(client: &mut RacClient) -> Result<ClusterListResp> {
+pub fn cluster_list(client: &mut RacClient) -> Result<Vec<ClusterRecord>> {
     let reply = client.call(RacRequest::ClusterList)?;
     let body = rpc_body(&reply)?;
     let protocol_version = client.protocol_version();
     let tail_len = cluster_tail_len(protocol_version);
-    let clusters = parse_list_u8_tail(body, tail_len, ClusterRecord::decode)?;
-    Ok(ClusterListResp {
-        clusters,
-    })
+    parse_list_u8_tail(body, tail_len, ClusterRecord::decode)
 }
 
-pub fn cluster_info(client: &mut RacClient, cluster: Uuid16) -> Result<ClusterInfoResp> {
+pub fn cluster_info(client: &mut RacClient, cluster: Uuid16) -> Result<ClusterRecord> {
     let reply = client.call(RacRequest::ClusterInfo { cluster })?;
     let body = rpc_body(&reply)?;
     let protocol_version = client.protocol_version();
     let tail_len = cluster_tail_len(protocol_version);
-    let summary = parse_cluster_info_body(body, tail_len)?;
-    Ok(ClusterInfoResp {
-        cluster: summary,
-    })
+    parse_cluster_info_body(body, tail_len)
 }
 
 fn cluster_tail_len(protocol_version: RacProtocolVersion) -> usize {

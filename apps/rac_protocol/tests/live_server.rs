@@ -61,7 +61,7 @@ fn live_agent_version_and_cluster_list() {
         Some(params.expected_agent_version.as_str())
     );
 
-    let clusters = cluster_list(&mut client).expect("cluster list").clusters;
+    let clusters = cluster_list(&mut client).expect("cluster list");
     assert!(!clusters.is_empty(), "cluster list empty");
 
     let cluster = clusters[0].uuid;

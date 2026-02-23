@@ -3,14 +3,13 @@ use std::fmt::{self, Display, Write as _};
 use serde::Serialize;
 
 use rac_protocol::commands::{
-    AgentAdminRecord, AgentVersionResp, ClusterAdminRecord, ClusterAdminRegisterResp, ClusterInfoResp,
-    ClusterListResp, ConnectionRecord, CounterClearResp, CounterRecord, CounterUpdateResp,
-    CounterValuesRecord, CounterRemoveResp, InfobaseSummary, LimitRecord, LimitRemoveResp,
-    LimitUpdateResp, LockRecord, ManagerRecord, ProcessLicense, ProcessRecord, RuleApplyResp,
-    RuleInsertResp, RuleRecord, RuleRemoveResp, RuleUpdateResp, ServerRecord,
-    ServiceSettingApplyResp, ServiceSettingInsertResp, ServiceSettingRecord,
-    ServiceSettingTransferDataDirRecord, ServiceSettingUpdateResp, ServiceSettingRemoveResp,
-    SessionCounters, SessionLicense, SessionRecord,
+    AgentAdminRecord, AgentVersionResp, ClusterAdminRecord, ClusterRecord, ConnectionRecord,
+    CounterClearResp, CounterRecord, CounterRemoveResp, CounterUpdateResp, CounterValuesRecord,
+    InfobaseSummary, LimitRecord, LimitRemoveResp, LimitUpdateResp, LockRecord, ManagerRecord,
+    ProcessLicense, ProcessRecord, RuleApplyResp, RuleInsertResp, RuleRecord, RuleRemoveResp,
+    RuleUpdateResp, ServerRecord, ServiceSettingApplyResp, ServiceSettingInsertResp,
+    ServiceSettingRecord, ServiceSettingRemoveResp, ServiceSettingTransferDataDirRecord,
+    ServiceSettingUpdateResp, SessionCounters, SessionLicense, SessionRecord,
 };
 use rac_protocol::rac_wire::format_uuid;
 use rac_protocol::Uuid16;
@@ -425,12 +424,12 @@ pub fn cluster_admin_list(items: &[ClusterAdminRecord]) -> ClusterAdminListDispl
     ClusterAdminListDisplay { items }
 }
 
-pub struct ClusterAdminRegisterDisplay<'a> {
-    resp: &'a ClusterAdminRegisterResp,
+pub struct ClusterAdminRegisterDisplay {
+    acknowledged: bool,
 }
 
-pub fn cluster_admin_register(resp: &ClusterAdminRegisterResp) -> ClusterAdminRegisterDisplay<'_> {
-    ClusterAdminRegisterDisplay { resp }
+pub fn cluster_admin_register(acknowledged: bool) -> ClusterAdminRegisterDisplay {
+    ClusterAdminRegisterDisplay { acknowledged }
 }
 
 pub struct RuleApplyDisplay<'a> {
@@ -501,9 +500,9 @@ impl Display for AgentAdminListDisplay<'_> {
     }
 }
 
-impl Display for ClusterAdminRegisterDisplay<'_> {
+impl Display for ClusterAdminRegisterDisplay {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let rendered = if self.resp.acknowledged {
+        let rendered = if self.acknowledged {
             "cluster-admin-register: ok"
         } else {
             "cluster-admin-register: failed"
@@ -1311,16 +1310,16 @@ impl Display for AgentVersionDisplay<'_> {
 }
 
 pub struct ClusterListDisplay<'a> {
-    resp: &'a ClusterListResp,
+    clusters: &'a [ClusterRecord],
 }
 
-pub fn cluster_list(resp: &ClusterListResp) -> ClusterListDisplay<'_> {
-    ClusterListDisplay { resp }
+pub fn cluster_list(clusters: &[ClusterRecord]) -> ClusterListDisplay<'_> {
+    ClusterListDisplay { clusters }
 }
 
 impl Display for ClusterListDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let out = list_to_string("clusters", &self.resp.clusters, 5, MoreLabel::Default, |out, idx, cluster| {
+        let out = list_to_string("clusters", self.clusters, 5, MoreLabel::Default, |out, idx, cluster| {
             outln!(
                 out,
                 "cluster_uuid[{idx}]: {}",
@@ -1340,11 +1339,11 @@ impl Display for ClusterListDisplay<'_> {
 }
 
 pub struct ClusterInfoDisplay<'a> {
-    resp: &'a ClusterInfoResp,
+    cluster: &'a ClusterRecord,
 }
 
-pub fn cluster_info(resp: &ClusterInfoResp) -> ClusterInfoDisplay<'_> {
-    ClusterInfoDisplay { resp }
+pub fn cluster_info(cluster: &ClusterRecord) -> ClusterInfoDisplay<'_> {
+    ClusterInfoDisplay { cluster }
 }
 
 impl Display for ClusterInfoDisplay<'_> {
@@ -1353,15 +1352,15 @@ impl Display for ClusterInfoDisplay<'_> {
         outln!(
             &mut out,
             "cluster_uuid: {}",
-            format_uuid(&self.resp.cluster.uuid)
+            format_uuid(&self.cluster.uuid)
         );
-        outln!(&mut out, "host: {}", self.resp.cluster.host);
-        outln!(&mut out, "port: {}", self.resp.cluster.port);
-        outln!(&mut out, "display_name: {}", self.resp.cluster.display_name);
+        outln!(&mut out, "host: {}", self.cluster.host);
+        outln!(&mut out, "port: {}", self.cluster.port);
+        outln!(&mut out, "display_name: {}", self.cluster.display_name);
         outln!(
             &mut out,
             "expiration_timeout: {}",
-            self.resp.cluster.expiration_timeout
+            self.cluster.expiration_timeout
         );
         write_trimmed(f, &out)
     }

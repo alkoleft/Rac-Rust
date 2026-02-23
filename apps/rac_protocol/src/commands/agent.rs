@@ -15,10 +15,8 @@ mod generated {
 pub use generated::{
     AgentAdminListRpc,
     AgentAdminRecord,
-    AgentAuthRequest,
     AgentAuthRpc,
     AgentVersionRecord,
-    AgentVersionRequest,
     AgentVersionRpc,
     parse_agent_version_body,
 };

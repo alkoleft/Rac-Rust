@@ -25,14 +25,14 @@ requires_cluster_context = false
 requires_infobase_context = false
 
 [rpc.AgentAdminList]
-response = "super::AgentAdminListResp"
+response = "AgentAdminList"
 method_req = 0x00
 method_resp = 0x01
 requires_cluster_context = false
 requires_infobase_context = false
 
 [rpc.AgentVersion]
-response = "super::AgentVersionResp"
+response = "AgentVersion"
 derive = ["Debug", "Clone"]
 fields = []
 method_req = 0x87

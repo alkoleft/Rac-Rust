@@ -374,7 +374,7 @@ def generate_rpc_section(rpcs: List[RpcSpec], requests: List[RequestSpec]) -> Li
             req_spec = rpc.request_inline
         elif rpc.request:
             req_spec = request_map.get(rpc.request)
-        if req_spec and req_spec.name not in emitted_requests:
+        if req_spec and rpc.request_inline is None and req_spec.name not in emitted_requests:
             lines.extend(render_request(req_spec))
             lines.append("")
             emitted_requests.add(req_spec.name)
@@ -420,13 +420,26 @@ def generate_rpc_section(rpcs: List[RpcSpec], requests: List[RequestSpec]) -> Li
             "    fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {"
         )
         if req_spec:
-            lines.append(f"        let req = {req_spec.name} {{")
-            for name, _ in fields:
-                lines.append(f"            {name}: self.{name}.clone(),")
-            lines.append("        };")
-            lines.append("        let mut out = Vec::with_capacity(req.encoded_len());")
-            lines.append("        req.encode_body(&mut out)?;")
-            lines.append("        Ok(out)")
+            if rpc.request_inline is not None:
+                len_expr = request_len_expr(req_spec)
+                lines.append(f"        let mut out = Vec::with_capacity({len_expr});")
+                for field in req_spec.fields:
+                    if field.skip:
+                        continue
+                    exprs = request_encode_expr(field)
+                    for expr in exprs:
+                        lines.append(f"        {expr}")
+                if not req_spec.fields:
+                    lines.append("        let _ = &mut out;")
+                lines.append("        Ok(out)")
+            else:
+                lines.append(f"        let req = {req_spec.name} {{")
+                for name, _ in fields:
+                    lines.append(f"            {name}: self.{name}.clone(),")
+                lines.append("        };")
+                lines.append("        let mut out = Vec::with_capacity(req.encoded_len());")
+                lines.append("        req.encode_body(&mut out)?;")
+                lines.append("        Ok(out)")
         else:
             lines.append("        Ok(Vec::new())")
         lines.append("    }")
@@ -476,6 +489,18 @@ def render_request(req: RequestSpec) -> List[str]:
     lines.append("    }")
     lines.append("}")
     return lines
+
+
+def request_len_expr(req: RequestSpec) -> str:
+    len_parts: List[str] = []
+    for field in req.fields:
+        if field.type_name == "str8":
+            len_parts.append(f"1 + self.{field.name}.len()")
+        else:
+            len_parts.append(str(request_encoded_len(field)))
+    if len_parts:
+        return " + ".join(len_parts)
+    return "0"
 
 
 def collect_request_specs(rpcs: List[RpcSpec], requests: List[RequestSpec]) -> List[RequestSpec]:

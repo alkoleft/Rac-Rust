@@ -45,24 +45,6 @@ impl AgentVersionRecord {
     }
 }
 
-#[derive(Debug, Clone)]
-pub struct AgentAuthRequest {
-    pub user: String,
-    pub pwd: String,
-}
-
-impl AgentAuthRequest {
-    pub fn encoded_len(&self) -> usize {
-        1 + self.user.len() + 1 + self.pwd.len()
-    }
-
-    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
-        out.extend_from_slice(&encode_with_len_u8(self.user.as_bytes())?);
-        out.extend_from_slice(&encode_with_len_u8(self.pwd.as_bytes())?);
-        Ok(())
-    }
-}
-
 pub struct AgentAuthRpc {
     pub user: String,
     pub pwd: String,
@@ -80,12 +62,9 @@ impl crate::rpc::Request for AgentAuthRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let req = AgentAuthRequest {
-            user: self.user.clone(),
-            pwd: self.pwd.clone(),
-        };
-        let mut out = Vec::with_capacity(req.encoded_len());
-        req.encode_body(&mut out)?;
+        let mut out = Vec::with_capacity(1 + self.user.len() + 1 + self.pwd.len());
+        out.extend_from_slice(&encode_with_len_u8(self.user.as_bytes())?);
+        out.extend_from_slice(&encode_with_len_u8(self.pwd.as_bytes())?);
         Ok(out)
     }
 }
@@ -108,20 +87,6 @@ impl crate::rpc::Request for AgentAdminListRpc {
     }
 }
 
-#[derive(Debug, Clone)]
-pub struct AgentVersionRequest {
-}
-
-impl AgentVersionRequest {
-    pub fn encoded_len(&self) -> usize {
-        0
-    }
-
-    pub fn encode_body(&self, _out: &mut Vec<u8>) -> Result<()> {
-        Ok(())
-    }
-}
-
 pub struct AgentVersionRpc;
 
 impl crate::rpc::Request for AgentVersionRpc {
@@ -136,10 +101,8 @@ impl crate::rpc::Request for AgentVersionRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let req = AgentVersionRequest {
-        };
-        let mut out = Vec::with_capacity(req.encoded_len());
-        req.encode_body(&mut out)?;
+        let mut out = Vec::with_capacity(0);
+        let _ = &mut out;
         Ok(out)
     }
 }

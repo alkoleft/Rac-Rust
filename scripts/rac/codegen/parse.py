@@ -88,11 +88,34 @@ def parse_schema_payload(
                     protocol=str(raw.get("protocol", "v16.0")),
                 )
             )
+        request_inline = None
+        fields_present = "fields" in spec or spec.get("fields_present", False)
+        if fields_present:
+            derives = [str(v) for v in spec.get("derive", ["Debug", "Clone"])]
+            fields = []
+            for raw in spec.get("fields", []):
+                fields.append(
+                    FieldSpec(
+                        name=str(raw.get("name", "")),
+                        type_name=str(raw.get("type", "")),
+                        item=raw.get("item"),
+                        length=raw.get("len"),
+                        len_source=raw.get("len_source"),
+                        skip=bool(raw.get("skip", False)),
+                        computed=raw.get("computed"),
+                        source=raw.get("source"),
+                        rust_type=raw.get("rust_type"),
+                        literal=raw.get("literal"),
+                    )
+                )
+            req_name = spec.get("request") or f"{name}Request"
+            request_inline = RequestSpec(name=req_name, derives=derives, fields=fields)
         rpcs.append(
             RpcSpec(
                 name=name,
                 request=spec.get("request"),
                 response=spec.get("response"),
+                request_inline=request_inline,
                 method_req=int(spec.get("method_req")),
                 method_resp=spec.get("method_resp"),
                 requires_cluster_context=bool(spec.get("requires_cluster_context", False)),
@@ -144,6 +167,7 @@ def parse_schema_minimal(
     current_name: Optional[str] = None
     current_kind: Optional[str] = None
     in_fields = False
+    fields_present = False
     fields_buf: List[Dict[str, Any]] = []
 
     i = 0
@@ -164,7 +188,8 @@ def parse_schema_minimal(
             and line.endswith("]")
         ):
             if current_name and current is not None and current_kind:
-                current["fields"] = fields_buf
+                if fields_present:
+                    current["fields"] = fields_buf
                 if current_kind == "record":
                     records[current_name] = current
                 elif current_kind == "request":
@@ -188,6 +213,7 @@ def parse_schema_minimal(
             current = {}
             fields_buf = []
             in_fields = False
+            fields_present = current_kind in {"record", "request"}
             continue
         if current is None:
             continue
@@ -195,6 +221,8 @@ def parse_schema_minimal(
             current["derive"] = parse_list_value(line.split("=", 1)[1].strip())
             continue
         if line.startswith("fields"):
+            fields_present = True
+            current["fields_present"] = True
             in_fields = True
             if line.endswith("]"):
                 in_fields = False
@@ -230,7 +258,8 @@ def parse_schema_minimal(
             continue
 
     if current_name and current is not None and current_kind:
-        current["fields"] = fields_buf
+        if fields_present:
+            current["fields"] = fields_buf
         if current_kind == "record":
             records[current_name] = current
         elif current_kind == "request":

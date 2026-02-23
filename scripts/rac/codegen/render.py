@@ -11,6 +11,7 @@ from .rust_types import (
     request_encoded_len,
     request_encode_expr,
     request_rust_type,
+    request_uses,
 )
 
 
@@ -33,6 +34,11 @@ def generate(
         uses.insert(0, "use crate::client::RacProtocolVersion;")
     uses.append("use serde::Serialize;")
     if rpcs:
+        req_specs = collect_request_specs(rpcs, requests)
+        extra_req_uses = request_uses(req_specs)
+        for item in extra_req_uses:
+            if item not in uses:
+                uses.append(item)
         if any(rpc.response for rpc in rpcs):
             pass
     if extra_uses:
@@ -363,7 +369,11 @@ def generate_rpc_section(rpcs: List[RpcSpec], requests: List[RequestSpec]) -> Li
     emitted_requests = set()
 
     for rpc in rpcs:
-        req_spec = request_map.get(rpc.request) if rpc.request else None
+        req_spec = None
+        if rpc.request_inline is not None:
+            req_spec = rpc.request_inline
+        elif rpc.request:
+            req_spec = request_map.get(rpc.request)
         if req_spec and req_spec.name not in emitted_requests:
             lines.extend(render_request(req_spec))
             lines.append("")
@@ -466,3 +476,17 @@ def render_request(req: RequestSpec) -> List[str]:
     lines.append("    }")
     lines.append("}")
     return lines
+
+
+def collect_request_specs(rpcs: List[RpcSpec], requests: List[RequestSpec]) -> List[RequestSpec]:
+    request_map = {req.name: req for req in requests}
+    out: List[RequestSpec] = list(requests)
+    seen = {req.name for req in out}
+    for rpc in rpcs:
+        if rpc.request_inline is not None and rpc.request_inline.name not in seen:
+            out.append(rpc.request_inline)
+            seen.add(rpc.request_inline.name)
+        elif rpc.request and rpc.request in request_map and rpc.request not in seen:
+            out.append(request_map[rpc.request])
+            seen.add(rpc.request)
+    return out

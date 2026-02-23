@@ -13,20 +13,13 @@ fields = [
   { name = "version", type = "str8" },
 ]
 
-[request.AgentAuthRequest]
+[rpc.AgentAuth]
+response = "AckResponse"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "user", type = "str8" },
   { name = "pwd", type = "str8" },
 ]
-
-[request.AgentVersionRequest]
-derive = ["Debug", "Clone"]
-fields = []
-
-[rpc.AgentAuth]
-request = "AgentAuthRequest"
-response = "AckResponse"
 method_req = 0x08
 requires_cluster_context = false
 requires_infobase_context = false
@@ -39,8 +32,9 @@ requires_cluster_context = false
 requires_infobase_context = false
 
 [rpc.AgentVersion]
-request = "AgentVersionRequest"
 response = "super::AgentVersionResp"
+derive = ["Debug", "Clone"]
+fields = []
 method_req = 0x87
 method_resp = 0x88
 requires_cluster_context = false

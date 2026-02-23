@@ -437,6 +437,16 @@ def needs_rac_error(records: List[RecordSpec]) -> bool:
     return False
 
 
+def needs_protocol_version(records: List[RecordSpec]) -> bool:
+    for record in records:
+        for field in record.fields:
+            if field.rust_type == "RacProtocolVersion":
+                return True
+            if field.source and "RacProtocolVersion" in field.source:
+                return True
+    return False
+
+
 def generate(records: List[RecordSpec]) -> str:
     lines: List[str] = []
     uses = ["use crate::codec::RecordCursor;", "use crate::error::Result;"]
@@ -446,6 +456,8 @@ def generate(records: List[RecordSpec]) -> str:
         uses.insert(0, "use crate::error::RacError;")
     if needs_uuid(records):
         uses.insert(0, "use crate::Uuid16;")
+    if needs_protocol_version(records):
+        uses.insert(0, "use crate::client::RacProtocolVersion;")
     uses.append("use serde::Serialize;")
     lines.extend(uses)
     lines.append("")
@@ -472,9 +484,14 @@ def generate(records: List[RecordSpec]) -> str:
         var_map: Dict[str, str] = {}
         for field in record.fields:
             if field.computed:
-                if field.computed != "ne_zero" or not field.source:
-                    raise ValueError("computed fields must use computed='ne_zero' with source")
-                computed_lines.append(f"        let {field.name} = {field.source} != 0;")
+                if not field.source:
+                    raise ValueError("computed fields require source")
+                if field.computed == "ne_zero":
+                    computed_lines.append(f"        let {field.name} = {field.source} != 0;")
+                elif field.computed == "literal":
+                    computed_lines.append(f"        let {field.name} = {field.source};")
+                else:
+                    raise ValueError("computed fields must use computed='ne_zero' or computed='literal'")
                 continue
             var_name = field.name
             if field.skip:

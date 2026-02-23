@@ -4,6 +4,7 @@ use crate::rac_wire::{
     OPCODE_SERVICE_NEGOTIATION,
 };
 use crate::Uuid16;
+use serde::Serialize;
 
 #[derive(Debug, Clone)]
 pub struct SerializedRpc {
@@ -214,9 +215,11 @@ pub trait RacProtocol: Send + Sync {
     fn serialize(&self, request: RacRequest) -> Result<SerializedRpc>;
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Serialize, Clone, Copy, PartialEq, Eq)]
 pub enum RacProtocolVersion {
+    #[serde(rename = "v11.0")]
     V11_0,
+    #[serde(rename = "v16.0")]
     V16_0,
 }
 

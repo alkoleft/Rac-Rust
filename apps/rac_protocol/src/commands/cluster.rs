@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use crate::client::{RacClient, RacRequest};
+use crate::client::{RacClient, RacProtocolVersion, RacRequest};
 use crate::codec::RecordCursor;
 use crate::error::{RacError, Result};
 use crate::Uuid16;
@@ -47,6 +47,7 @@ pub struct ClusterSummary {
     pub errors_count_threshold: Option<u32>,
     pub kill_problem_processes: Option<u8>,
     pub kill_by_memory_with_dump: Option<u8>,
+    pub version: RacProtocolVersion,
 }
 
 #[derive(Debug, Serialize)]
@@ -111,8 +112,9 @@ pub fn cluster_admin_register(
 pub fn cluster_list(client: &mut RacClient) -> Result<ClusterListResp> {
     let reply = client.call(RacRequest::ClusterList)?;
     let body = rpc_body(&reply)?;
-    let tail_len = cluster_tail_len(client.protocol_name());
-    let clusters = parse_cluster_list_body(body, tail_len)?;
+    let protocol_version = client.protocol_version();
+    let tail_len = cluster_tail_len(protocol_version);
+    let clusters = parse_cluster_list_body(body, tail_len, protocol_version)?;
     Ok(ClusterListResp {
         clusters,
         raw_payload: Some(reply),
@@ -123,8 +125,9 @@ pub fn cluster_info(client: &mut RacClient, cluster: Uuid16) -> Result<ClusterIn
     let reply = client.call(RacRequest::ClusterInfo { cluster })?;
     let body = rpc_body(&reply)?;
     let mut cursor = RecordCursor::new(body, 0);
-    let tail_len = cluster_tail_len(client.protocol_name());
-    let summary = parse_cluster_record(&mut cursor, tail_len)?;
+    let protocol_version = client.protocol_version();
+    let tail_len = cluster_tail_len(protocol_version);
+    let summary = parse_cluster_record(&mut cursor, tail_len, protocol_version)?;
     Ok(ClusterInfoResp {
         cluster: summary,
         raw_payload: Some(reply),
@@ -148,7 +151,11 @@ fn is_ack(payload: &[u8]) -> bool {
     payload == [0x01, 0x00, 0x00, 0x00]
 }
 
-fn parse_cluster_list_body(body: &[u8], tail_len: usize) -> Result<Vec<ClusterSummary>> {
+fn parse_cluster_list_body(
+    body: &[u8],
+    tail_len: usize,
+    protocol_version: RacProtocolVersion,
+) -> Result<Vec<ClusterSummary>> {
     if body.is_empty() {
         return Ok(Vec::new());
     }
@@ -156,12 +163,16 @@ fn parse_cluster_list_body(body: &[u8], tail_len: usize) -> Result<Vec<ClusterSu
     let count = cursor.take_u8()? as usize;
     let mut clusters = Vec::with_capacity(count);
     for _ in 0..count {
-        clusters.push(parse_cluster_record(&mut cursor, tail_len)?);
+        clusters.push(parse_cluster_record(&mut cursor, tail_len, protocol_version)?);
     }
     Ok(clusters)
 }
 
-fn parse_cluster_record(cursor: &mut RecordCursor<'_>, tail_len: usize) -> Result<ClusterSummary> {
+fn parse_cluster_record(
+    cursor: &mut RecordCursor<'_>,
+    tail_len: usize,
+    protocol_version: RacProtocolVersion,
+) -> Result<ClusterSummary> {
     let uuid = cursor.take_uuid()?;
     let expiration_timeout = cursor.take_u32_be()?;
     let host = cursor.take_str8()?;
@@ -202,13 +213,14 @@ fn parse_cluster_record(cursor: &mut RecordCursor<'_>, tail_len: usize) -> Resul
         errors_count_threshold,
         kill_problem_processes,
         kill_by_memory_with_dump,
+        version: protocol_version,
     })
 }
 
-fn cluster_tail_len(protocol_name: &str) -> usize {
-    match protocol_name {
-        "v11.0" => 18,
-        _ => 32,
+fn cluster_tail_len(protocol_version: RacProtocolVersion) -> usize {
+    match protocol_version {
+        RacProtocolVersion::V11_0 => 18,
+        RacProtocolVersion::V16_0 => 32,
     }
 }
 
@@ -274,7 +286,8 @@ mod tests {
         let hex = include_str!("../../../../artifacts/rac/cluster_list_response_custom.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
-        let clusters = parse_cluster_list_body(body, 18).expect("parse list");
+        let clusters =
+            parse_cluster_list_body(body, 18, RacProtocolVersion::V11_0).expect("parse list");
 
         assert_eq!(clusters.len(), 1);
         assert_eq!(clusters[0].lifetime_limit, Some(1111));
@@ -291,7 +304,8 @@ mod tests {
         let hex = include_str!("../../../../artifacts/rac/cluster_list_response_flags.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
-        let clusters = parse_cluster_list_body(body, 18).expect("parse list");
+        let clusters =
+            parse_cluster_list_body(body, 18, RacProtocolVersion::V11_0).expect("parse list");
 
         assert_eq!(clusters.len(), 1);
         assert_eq!(clusters[0].kill_problem_processes, Some(1));

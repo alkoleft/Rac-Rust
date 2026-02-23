@@ -39,6 +39,7 @@ impl Default for ClientConfig {
 pub struct RacClient {
     transport: RacTransport,
     protocol: Box<dyn RacProtocol>,
+    protocol_version: RacProtocolVersion,
     current_cluster: Option<crate::Uuid16>,
     current_infobase: Option<crate::Uuid16>,
     debug_raw: bool,
@@ -65,6 +66,7 @@ impl RacClient {
         let mut client = Self {
             transport,
             protocol,
+            protocol_version: cfg.protocol,
             current_cluster: None,
             current_infobase: None,
             debug_raw: cfg.debug_raw,
@@ -87,6 +89,10 @@ impl RacClient {
 
     pub fn protocol_name(&self) -> &'static str {
         self.protocol.name()
+    }
+
+    pub fn protocol_version(&self) -> RacProtocolVersion {
+        self.protocol_version
     }
 
     pub fn call(&mut self, request: RacRequest) -> Result<Vec<u8>> {

@@ -4,13 +4,13 @@ use crate::client::{RacClient, RacRequest};
 use crate::codec::RecordCursor;
 use crate::error::Result;
 
-use super::rpc_body;
+use super::{parse_list_u8, rpc_body};
 
 mod generated {
     include!("agent_generated.rs");
 }
 
-pub use generated::AgentAdminRecord;
+pub use generated::{rpc_metadata, AgentAdminRecord, AgentAuthRequest};
 
 #[derive(Debug, Serialize)]
 pub struct AgentAdminListResp {
@@ -52,16 +52,7 @@ pub fn agent_version(client: &mut RacClient) -> Result<AgentVersionResp> {
 }
 
 fn parse_agent_admin_list_body(body: &[u8]) -> Result<Vec<AgentAdminRecord>> {
-    if body.is_empty() {
-        return Ok(Vec::new());
-    }
-    let mut cursor = RecordCursor::new(body, 0);
-    let count = cursor.take_u8()? as usize;
-    let mut admins = Vec::with_capacity(count);
-    for _ in 0..count {
-        admins.push(AgentAdminRecord::decode(&mut cursor)?);
-    }
-    Ok(admins)
+    parse_list_u8(body, AgentAdminRecord::decode)
 }
 
 #[cfg(test)]

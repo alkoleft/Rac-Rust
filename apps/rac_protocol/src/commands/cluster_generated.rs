@@ -2,6 +2,7 @@ use crate::Uuid16;
 use crate::error::RacError;
 use crate::codec::RecordCursor;
 use crate::error::Result;
+use crate::metadata::RpcMethodMeta;
 use serde::Serialize;
 use crate::rac_wire::encode_with_len_u8;
 
@@ -97,14 +98,6 @@ pub fn parse_cluster_info_body(body: &[u8], tail_len: usize) -> Result<ClusterRe
     Ok(record)
 }
 
-
-#[derive(Debug, Clone, Copy)]
-pub struct RpcMethodMeta {
-    pub method_req: u8,
-    pub method_resp: Option<u8>,
-    pub requires_cluster_context: bool,
-    pub requires_infobase_context: bool,
-}
 
 pub const RPC_CLUSTER_AUTH_META: RpcMethodMeta = RpcMethodMeta {
     method_req: 9,

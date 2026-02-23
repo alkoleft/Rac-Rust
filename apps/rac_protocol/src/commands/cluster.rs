@@ -15,12 +15,12 @@ pub use generated::{
     ClusterAuthRequest,
     ClusterIdRequest,
     ClusterRecord,
-    RpcMethodMeta,
     RPC_CLUSTER_ADMIN_LIST_META,
     RPC_CLUSTER_ADMIN_REGISTER_META,
     RPC_CLUSTER_AUTH_META,
     RPC_CLUSTER_INFO_META,
     RPC_CLUSTER_LIST_META,
+    rpc_metadata,
 };
 
 pub fn cluster_auth(

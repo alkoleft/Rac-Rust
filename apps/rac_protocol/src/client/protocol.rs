@@ -6,16 +6,11 @@ use crate::rac_wire::{
 use crate::Uuid16;
 use serde::Serialize;
 
+use crate::commands::agent::AgentAuthRequest;
 use crate::commands::cluster::{
-    ClusterAdminRegisterRequest,
-    ClusterAuthRequest,
-    ClusterIdRequest,
-    RPC_CLUSTER_ADMIN_LIST_META,
-    RPC_CLUSTER_ADMIN_REGISTER_META,
-    RPC_CLUSTER_AUTH_META,
-    RPC_CLUSTER_INFO_META,
-    RPC_CLUSTER_LIST_META,
+    ClusterAdminRegisterRequest, ClusterAuthRequest, ClusterIdRequest,
 };
+use crate::metadata::{agent_rpc_meta, cluster_rpc_meta};
 
 #[derive(Debug, Clone)]
 pub struct SerializedRpc {
@@ -460,37 +455,42 @@ impl RacProtocol for RacProtocolImpl {
     fn serialize(&self, request: RacRequest) -> Result<SerializedRpc> {
         use crate::rac_wire::*;
 
+        let cluster_meta = cluster_rpc_meta(&request);
+        let agent_meta = agent_rpc_meta(&request);
         let (payload, expect_method) = match request {
             RacRequest::AgentAuth { user, pwd } => {
-                let mut body = Vec::with_capacity(2 + user.len() + pwd.len());
-                body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(user.as_bytes())?);
-                body.extend_from_slice(&crate::rac_wire::encode_with_len_u8(pwd.as_bytes())?);
-                (encode_rpc(METHOD_AGENT_AUTH_REQ, &body), None)
+                let meta = agent_meta.ok_or(RacError::Unsupported("agent meta missing"))?;
+                let req = AgentAuthRequest { user, pwd };
+                let mut body = Vec::with_capacity(req.encoded_len());
+                req.encode_body(&mut body)?;
+                (encode_rpc(meta.method_req, &body), meta.method_resp)
             }
-            RacRequest::AgentAdminList => (
-                encode_rpc(METHOD_AGENT_ADMIN_LIST_REQ, &[]),
-                Some(METHOD_AGENT_ADMIN_LIST_RESP),
-            ),
-            RacRequest::AgentVersion => (
-                encode_rpc(METHOD_AGENT_VERSION_REQ, &[]),
-                Some(METHOD_AGENT_VERSION_RESP),
-            ),
+            RacRequest::AgentAdminList => {
+                let meta = agent_meta.ok_or(RacError::Unsupported("agent meta missing"))?;
+                (encode_rpc(meta.method_req, &[]), meta.method_resp)
+            }
+            RacRequest::AgentVersion => {
+                let meta = agent_meta.ok_or(RacError::Unsupported("agent meta missing"))?;
+                (encode_rpc(meta.method_req, &[]), meta.method_resp)
+            }
             RacRequest::ClusterAuth { cluster, user, pwd } => {
+                let meta = cluster_meta.ok_or(RacError::Unsupported("cluster meta missing"))?;
                 let req = ClusterAuthRequest { cluster, user, pwd };
                 let mut body = Vec::with_capacity(req.encoded_len());
                 req.encode_body(&mut body)?;
                 (
-                    encode_rpc(RPC_CLUSTER_AUTH_META.method_req, &body),
-                    RPC_CLUSTER_AUTH_META.method_resp,
+                    encode_rpc(meta.method_req, &body),
+                    meta.method_resp,
                 )
             }
             RacRequest::ClusterAdminList { cluster } => {
+                let meta = cluster_meta.ok_or(RacError::Unsupported("cluster meta missing"))?;
                 let req = ClusterIdRequest { cluster };
                 let mut body = Vec::with_capacity(req.encoded_len());
                 req.encode_body(&mut body)?;
                 (
-                    encode_rpc(RPC_CLUSTER_ADMIN_LIST_META.method_req, &body),
-                    RPC_CLUSTER_ADMIN_LIST_META.method_resp,
+                    encode_rpc(meta.method_req, &body),
+                    meta.method_resp,
                 )
             }
             RacRequest::ClusterAdminRegister {
@@ -500,6 +500,7 @@ impl RacProtocol for RacProtocolImpl {
                 pwd,
                 auth_flags,
             } => {
+                let meta = cluster_meta.ok_or(RacError::Unsupported("cluster meta missing"))?;
                 let req = ClusterAdminRegisterRequest {
                     cluster,
                     name,
@@ -510,22 +511,20 @@ impl RacProtocol for RacProtocolImpl {
                 let mut body = Vec::with_capacity(req.encoded_len());
                 req.encode_body(&mut body)?;
                 (
-                    encode_rpc(RPC_CLUSTER_ADMIN_REGISTER_META.method_req, &body),
-                    RPC_CLUSTER_ADMIN_REGISTER_META.method_resp,
+                    encode_rpc(meta.method_req, &body),
+                    meta.method_resp,
                 )
             }
-            RacRequest::ClusterList => (
-                encode_rpc(RPC_CLUSTER_LIST_META.method_req, &[]),
-                RPC_CLUSTER_LIST_META.method_resp,
-            ),
+            RacRequest::ClusterList => {
+                let meta = cluster_meta.ok_or(RacError::Unsupported("cluster meta missing"))?;
+                (encode_rpc(meta.method_req, &[]), meta.method_resp)
+            }
             RacRequest::ClusterInfo { cluster } => {
+                let meta = cluster_meta.ok_or(RacError::Unsupported("cluster meta missing"))?;
                 let req = ClusterIdRequest { cluster };
                 let mut body = Vec::with_capacity(req.encoded_len());
                 req.encode_body(&mut body)?;
-                (
-                    encode_rpc(RPC_CLUSTER_INFO_META.method_req, &body),
-                    RPC_CLUSTER_INFO_META.method_resp,
-                )
+                (encode_rpc(meta.method_req, &body), meta.method_resp)
             }
             RacRequest::ManagerList { cluster } => (
                 Self::encode_cluster_scoped(METHOD_MANAGER_LIST_REQ, cluster),

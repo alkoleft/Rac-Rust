@@ -6,3 +6,28 @@ fields = [
   { name = "unknown_flags", type = "u32_be" },
   { name = "unknown_tail", type = "bytes_fixed", len = 3 },
 ]
+
+[request.AgentAuthRequest]
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "user", type = "str8" },
+  { name = "pwd", type = "str8" },
+]
+
+[rpc.AgentAuth]
+request = "AgentAuthRequest"
+method_req = 0x08
+requires_cluster_context = false
+requires_infobase_context = false
+
+[rpc.AgentAdminList]
+method_req = 0x00
+method_resp = 0x01
+requires_cluster_context = false
+requires_infobase_context = false
+
+[rpc.AgentVersion]
+method_req = 0x87
+method_resp = 0x88
+requires_cluster_context = false
+requires_infobase_context = false

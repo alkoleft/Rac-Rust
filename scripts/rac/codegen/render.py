@@ -32,6 +32,8 @@ def generate(
     if needs_protocol_version(records):
         uses.insert(0, "use crate::client::RacProtocolVersion;")
     uses.append("use serde::Serialize;")
+    if rpcs:
+        uses.append("use crate::metadata::RpcMethodMeta;")
     if extra_uses:
         for item in extra_uses:
             if item not in uses:
@@ -271,14 +273,6 @@ def generate_response_tests(responses: List[ResponseSpec]) -> List[str]:
 
 def generate_rpc_metadata(rpcs: List[RpcSpec]) -> List[str]:
     lines: List[str] = []
-    lines.append("#[derive(Debug, Clone, Copy)]")
-    lines.append("pub struct RpcMethodMeta {")
-    lines.append("    pub method_req: u8,")
-    lines.append("    pub method_resp: Option<u8>,")
-    lines.append("    pub requires_cluster_context: bool,")
-    lines.append("    pub requires_infobase_context: bool,")
-    lines.append("}")
-    lines.append("")
     for rpc in rpcs:
         const_name = f"RPC_{snake_case(rpc.name).upper()}_META"
         method_resp = "None" if rpc.method_resp is None else f"Some({rpc.method_resp})"

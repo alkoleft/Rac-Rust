@@ -5,7 +5,7 @@ use crate::codec::RecordCursor;
 use crate::error::Result;
 use crate::rac_wire::encode_with_len_u8;
 
-use super::rpc_body;
+use super::{call_body, expect_ack};
 
 mod generated {
     include!("counter_generated.rs");
@@ -94,9 +94,8 @@ impl CounterRecord {
 }
 
 pub fn counter_list(client: &mut RacClient, cluster: crate::Uuid16) -> Result<CounterListResp> {
-    let reply = client.call(RacRequest::CounterList { cluster })?;
-    let body = rpc_body(&reply)?;
-    let records = parse_counter_list_body(body)?;
+    let body = call_body(client, RacRequest::CounterList { cluster })?;
+    let records = parse_counter_list_body(&body)?;
     Ok(CounterListResp {
         records,
     })
@@ -107,12 +106,14 @@ pub fn counter_info(
     cluster: crate::Uuid16,
     counter: &str,
 ) -> Result<CounterInfoResp> {
-    let reply = client.call(RacRequest::CounterInfo {
+    let body = call_body(
+        client,
+        RacRequest::CounterInfo {
         cluster,
         counter: counter.to_string(),
-    })?;
-    let body = rpc_body(&reply)?;
-    let record = parse_counter_info_body(body)?;
+        },
+    )?;
+    let record = parse_counter_info_body(&body)?;
     Ok(CounterInfoResp {
         record,
     })
@@ -150,12 +151,9 @@ pub fn counter_update(
         number_of_sessions: req.number_of_sessions,
         descr: req.descr,
     })?;
-    let acknowledged = parse_counter_update_ack(&reply)?;
-    if !acknowledged {
-        return Err(crate::error::RacError::Decode("counter update expected ack"));
-    }
+    expect_ack(&reply, "counter update expected ack")?;
     Ok(CounterUpdateResp {
-        acknowledged,
+        acknowledged: true,
     })
 }
 
@@ -177,12 +175,9 @@ pub fn counter_clear(
         counter: counter.to_string(),
         object: object.to_string(),
     })?;
-    let acknowledged = parse_counter_clear_ack(&reply)?;
-    if !acknowledged {
-        return Err(crate::error::RacError::Decode("counter clear expected ack"));
-    }
+    expect_ack(&reply, "counter clear expected ack")?;
     Ok(CounterClearResp {
-        acknowledged,
+        acknowledged: true,
     })
 }
 
@@ -202,12 +197,9 @@ pub fn counter_remove(
         cluster,
         name: name.to_string(),
     })?;
-    let acknowledged = parse_counter_remove_ack(&reply)?;
-    if !acknowledged {
-        return Err(crate::error::RacError::Decode("counter remove expected ack"));
-    }
+    expect_ack(&reply, "counter remove expected ack")?;
     Ok(CounterRemoveResp {
-        acknowledged,
+        acknowledged: true,
     })
 }
 
@@ -224,13 +216,15 @@ pub fn counter_values(
         user: cluster_user.to_string(),
         pwd: cluster_pwd.to_string(),
     })?;
-    let reply = client.call(RacRequest::CounterValues {
-        cluster,
-        counter: counter.to_string(),
-        object: object.to_string(),
-    })?;
-    let body = rpc_body(&reply)?;
-    let records = parse_counter_values_body(body)?;
+    let body = call_body(
+        client,
+        RacRequest::CounterValues {
+            cluster,
+            counter: counter.to_string(),
+            object: object.to_string(),
+        },
+    )?;
+    let records = parse_counter_values_body(&body)?;
     Ok(CounterValuesResp {
         records,
     })
@@ -249,13 +243,15 @@ pub fn counter_accumulated_values(
         user: cluster_user.to_string(),
         pwd: cluster_pwd.to_string(),
     })?;
-    let reply = client.call(RacRequest::CounterAccumulatedValues {
-        cluster,
-        counter: counter.to_string(),
-        object: object.to_string(),
-    })?;
-    let body = rpc_body(&reply)?;
-    let records = parse_counter_accumulated_values_body(body)?;
+    let body = call_body(
+        client,
+        RacRequest::CounterAccumulatedValues {
+            cluster,
+            counter: counter.to_string(),
+            object: object.to_string(),
+        },
+    )?;
+    let records = parse_counter_accumulated_values_body(&body)?;
     Ok(CounterAccumulatedValuesResp {
         records,
     })
@@ -305,6 +301,7 @@ fn parse_counter_accumulated_values_body(body: &[u8]) -> Result<Vec<CounterValue
     Ok(records)
 }
 
+#[cfg(test)]
 fn parse_counter_update_ack(payload: &[u8]) -> Result<bool> {
     let mut cursor = RecordCursor::new(payload, 0);
     if cursor.remaining_len() < 4 {
@@ -314,6 +311,7 @@ fn parse_counter_update_ack(payload: &[u8]) -> Result<bool> {
     Ok(ack == 0x01000000)
 }
 
+#[cfg(test)]
 fn parse_counter_clear_ack(payload: &[u8]) -> Result<bool> {
     let mut cursor = RecordCursor::new(payload, 0);
     if cursor.remaining_len() < 4 {
@@ -323,6 +321,7 @@ fn parse_counter_clear_ack(payload: &[u8]) -> Result<bool> {
     Ok(ack == 0x01000000)
 }
 
+#[cfg(test)]
 fn parse_counter_remove_ack(payload: &[u8]) -> Result<bool> {
     let mut cursor = RecordCursor::new(payload, 0);
     if cursor.remaining_len() < 4 {
@@ -338,6 +337,7 @@ mod tests {
     use crate::client::RacProtocolVersion;
     use crate::rac_wire::parse_frames;
     use crate::rac_wire::parse_uuid;
+    use crate::commands::rpc_body;
 
     fn decode_hex_str(input: &str) -> Vec<u8> {
         hex::decode(input.trim()).expect("hex decode")

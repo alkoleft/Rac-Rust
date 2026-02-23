@@ -5,7 +5,7 @@ use crate::codec::RecordCursor;
 use crate::error::{RacError, Result};
 use crate::Uuid16;
 
-use super::rpc_body;
+use super::call_body;
 
 mod generated {
     include!("process_generated.rs");
@@ -26,9 +26,8 @@ pub struct ProcessInfoResp {
 }
 
 pub fn process_list(client: &mut RacClient, cluster: Uuid16) -> Result<ProcessListResp> {
-    let reply = client.call(RacRequest::ProcessList { cluster })?;
-    let body = rpc_body(&reply)?;
-    let records = parse_process_list_records(body)?;
+    let body = call_body(client, RacRequest::ProcessList { cluster })?;
+    let records = parse_process_list_records(&body)?;
     Ok(ProcessListResp {
         processes: records.iter().map(|r| r.process).collect(),
         records,
@@ -40,9 +39,8 @@ pub fn process_info(
     cluster: Uuid16,
     process: Uuid16,
 ) -> Result<ProcessInfoResp> {
-    let reply = client.call(RacRequest::ProcessInfo { cluster, process })?;
-    let body = rpc_body(&reply)?;
-    let record = parse_process_record_1cv8c(body)?;
+    let body = call_body(client, RacRequest::ProcessInfo { cluster, process })?;
+    let record = parse_process_record_1cv8c(&body)?;
     Ok(ProcessInfoResp {
         process: record.process,
         record,

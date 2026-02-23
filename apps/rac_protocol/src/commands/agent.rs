@@ -4,7 +4,7 @@ use crate::client::{RacClient, RacRequest};
 use crate::codec::RecordCursor;
 use crate::error::Result;
 
-use super::{parse_list_u8, rpc_body};
+use super::{call_body, parse_list_u8};
 
 mod generated {
     include!("agent_generated.rs");
@@ -17,11 +17,6 @@ pub struct AgentAdminListResp {
     pub admins: Vec<AgentAdminRecord>,
 }
 
-#[derive(Debug, Serialize)]
-pub struct AgentVersionResp {
-    pub version: Option<String>,
-}
-
 pub fn agent_admin_list(
     client: &mut RacClient,
     agent_user: &str,
@@ -31,24 +26,19 @@ pub fn agent_admin_list(
         user: agent_user.to_string(),
         pwd: agent_pwd.to_string(),
     })?;
-    let reply = client.call(RacRequest::AgentAdminList)?;
+    let body = call_body(client, RacRequest::AgentAdminList)?;
     Ok(AgentAdminListResp {
-        admins: parse_agent_admin_list_body(rpc_body(&reply)?)?,
+        admins: parse_agent_admin_list_body(&body)?,
     })
 }
 
-pub fn agent_version(client: &mut RacClient) -> Result<AgentVersionResp> {
-    let reply = client.call(RacRequest::AgentVersion)?;
-    let body = rpc_body(&reply)?;
-    let mut cursor = RecordCursor::new(body, 0);
-    let version = if cursor.remaining_len() == 0 {
-        None
-    } else {
-        Some(cursor.take_str8()?)
-    };
-    Ok(AgentVersionResp {
-        version,
-    })
+pub fn agent_version(client: &mut RacClient) -> Result<Option<String>> {
+    let body = call_body(client, RacRequest::AgentVersion)?;
+    if body.is_empty() {
+        return Ok(None);
+    }
+    let mut cursor = RecordCursor::new(&body, 0);
+    Ok(Some(cursor.take_str8()?))
 }
 
 fn parse_agent_admin_list_body(body: &[u8]) -> Result<Vec<AgentAdminRecord>> {
@@ -60,6 +50,7 @@ mod tests {
     use super::*;
     use crate::client::RacProtocolVersion;
     use crate::rac_wire::{METHOD_AGENT_ADMIN_LIST_RESP, METHOD_AGENT_VERSION_RESP};
+    use crate::commands::rpc_body;
 
     fn decode_hex_str(input: &str) -> Vec<u8> {
         hex::decode(input.trim()).expect("hex decode")

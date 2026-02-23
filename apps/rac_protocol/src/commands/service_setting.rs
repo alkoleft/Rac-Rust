@@ -5,7 +5,7 @@ use crate::codec::RecordCursor;
 use crate::error::{RacError, Result};
 use crate::Uuid16;
 
-use super::{parse_ack_payload, parse_uuid_body, rpc_body};
+use super::{call_body, expect_ack, parse_uuid_body};
 
 mod generated {
     include!("service_setting_generated.rs");
@@ -89,13 +89,15 @@ pub fn service_setting_info_no_auth(
     server: Uuid16,
     setting: Uuid16,
 ) -> Result<ServiceSettingInfoResp> {
-    let reply = client.call(RacRequest::ServiceSettingInfo {
-        cluster,
-        server,
-        setting,
-    })?;
-    let body = rpc_body(&reply)?;
-    let record = parse_service_setting_info(body)?;
+    let body = call_body(
+        client,
+        RacRequest::ServiceSettingInfo {
+            cluster,
+            server,
+            setting,
+        },
+    )?;
+    let record = parse_service_setting_info(&body)?;
     Ok(ServiceSettingInfoResp {
         record,
     })
@@ -113,9 +115,8 @@ pub fn service_setting_list(
         user: cluster_user.to_string(),
         pwd: cluster_pwd.to_string(),
     })?;
-    let reply = client.call(RacRequest::ServiceSettingList { cluster, server })?;
-    let body = rpc_body(&reply)?;
-    let records = parse_service_setting_list(body)?;
+    let body = call_body(client, RacRequest::ServiceSettingList { cluster, server })?;
+    let records = parse_service_setting_list(&body)?;
     Ok(ServiceSettingListResp {
         records,
     })
@@ -133,16 +134,18 @@ pub fn service_setting_insert(
         user: cluster_user.to_string(),
         pwd: cluster_pwd.to_string(),
     })?;
-    let reply = client.call(RacRequest::ServiceSettingInsert {
-        cluster,
-        server: req.server,
-        service_name: req.service_name,
-        infobase_name: req.infobase_name,
-        service_data_dir: req.service_data_dir,
-        active: req.active,
-    })?;
-    let body = rpc_body(&reply)?;
-    let setting = parse_service_setting_insert_body(body)?;
+    let body = call_body(
+        client,
+        RacRequest::ServiceSettingInsert {
+            cluster,
+            server: req.server,
+            service_name: req.service_name,
+            infobase_name: req.infobase_name,
+            service_data_dir: req.service_data_dir,
+            active: req.active,
+        },
+    )?;
+    let setting = parse_service_setting_insert_body(&body)?;
     Ok(ServiceSettingInsertResp {
         setting,
     })
@@ -168,17 +171,19 @@ pub fn service_setting_update_no_auth(
     cluster: Uuid16,
     req: ServiceSettingUpdateReq,
 ) -> Result<ServiceSettingUpdateResp> {
-    let reply = client.call(RacRequest::ServiceSettingUpdate {
-        cluster,
-        server: req.server,
-        setting: req.setting,
-        service_name: req.service_name,
-        infobase_name: req.infobase_name,
-        service_data_dir: req.service_data_dir,
-        active: req.active,
-    })?;
-    let body = rpc_body(&reply)?;
-    let setting = parse_service_setting_update_body(body)?;
+    let body = call_body(
+        client,
+        RacRequest::ServiceSettingUpdate {
+            cluster,
+            server: req.server,
+            setting: req.setting,
+            service_name: req.service_name,
+            infobase_name: req.infobase_name,
+            service_data_dir: req.service_data_dir,
+            active: req.active,
+        },
+    )?;
+    let setting = parse_service_setting_update_body(&body)?;
     Ok(ServiceSettingUpdateResp {
         setting,
     })
@@ -202,12 +207,9 @@ pub fn service_setting_remove(
         server,
         setting,
     })?;
-    let acknowledged = parse_service_setting_remove_ack(&reply)?;
-    if !acknowledged {
-        return Err(RacError::Decode("service-setting remove expected ack"));
-    }
+    expect_ack(&reply, "service-setting remove expected ack")?;
     Ok(ServiceSettingRemoveResp {
-        acknowledged,
+        acknowledged: true,
     })
 }
 
@@ -224,12 +226,9 @@ pub fn service_setting_apply(
         pwd: cluster_pwd.to_string(),
     })?;
     let reply = client.call(RacRequest::ServiceSettingApply { cluster, server })?;
-    let acknowledged = parse_service_setting_apply_ack(&reply)?;
-    if !acknowledged {
-        return Err(RacError::Decode("service-setting apply expected ack"));
-    }
+    expect_ack(&reply, "service-setting apply expected ack")?;
     Ok(ServiceSettingApplyResp {
-        acknowledged,
+        acknowledged: true,
     })
 }
 
@@ -246,13 +245,15 @@ pub fn service_setting_get_service_data_dirs_for_transfer(
         user: cluster_user.to_string(),
         pwd: cluster_pwd.to_string(),
     })?;
-    let reply = client.call(RacRequest::ServiceSettingGetServiceDataDirsForTransfer {
-        cluster,
-        server,
-        service_name: service_name.to_string(),
-    })?;
-    let body = rpc_body(&reply)?;
-    let records = parse_service_setting_transfer_data_dirs(body)?;
+    let body = call_body(
+        client,
+        RacRequest::ServiceSettingGetServiceDataDirsForTransfer {
+            cluster,
+            server,
+            service_name: service_name.to_string(),
+        },
+    )?;
+    let records = parse_service_setting_transfer_data_dirs(&body)?;
     Ok(ServiceSettingTransferDataDirsResp {
         records,
     })
@@ -287,12 +288,14 @@ fn parse_service_setting_update_body(body: &[u8]) -> Result<Uuid16> {
     parse_uuid_body(body, "service-setting update empty body")
 }
 
+#[cfg(test)]
 fn parse_service_setting_remove_ack(payload: &[u8]) -> Result<bool> {
-    parse_ack_payload(payload, "service-setting remove ack truncated")
+    crate::commands::parse_ack_payload(payload, "service-setting remove ack truncated")
 }
 
+#[cfg(test)]
 fn parse_service_setting_apply_ack(payload: &[u8]) -> Result<bool> {
-    parse_ack_payload(payload, "service-setting apply ack truncated")
+    crate::commands::parse_ack_payload(payload, "service-setting apply ack truncated")
 }
 
 fn parse_service_setting_transfer_data_dirs(
@@ -329,6 +332,7 @@ mod tests {
     use crate::client::RacProtocolVersion;
     use crate::rac_wire::parse_frames;
     use crate::rac_wire::parse_uuid;
+    use crate::commands::rpc_body;
 
     fn decode_hex_str(input: &str) -> Vec<u8> {
         hex::decode(input.trim()).expect("hex decode")

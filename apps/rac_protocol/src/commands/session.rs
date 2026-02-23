@@ -5,7 +5,7 @@ use crate::codec::RecordCursor;
 use crate::error::{RacError, Result};
 use crate::Uuid16;
 
-use super::rpc_body;
+use super::call_body;
 
 mod generated {
     include!("session_generated.rs");
@@ -106,9 +106,8 @@ pub struct SessionInfoResp {
 }
 
 pub fn session_list(client: &mut RacClient, cluster: Uuid16) -> Result<SessionListResp> {
-    let reply = client.call(RacRequest::SessionList { cluster })?;
-    let body = rpc_body(&reply)?;
-    let records = parse_session_list_records(body)?;
+    let body = call_body(client, RacRequest::SessionList { cluster })?;
+    let records = parse_session_list_records(&body)?;
     Ok(SessionListResp {
         sessions: records.iter().map(|r| r.session).collect(),
         records,
@@ -120,11 +119,10 @@ pub fn session_info(
     cluster: Uuid16,
     session: Uuid16,
 ) -> Result<SessionInfoResp> {
-    let reply = client.call(RacRequest::SessionInfo { cluster, session })?;
-    let body = rpc_body(&reply)?;
-    let record = match parse_session_record_for_info(body, session) {
+    let body = call_body(client, RacRequest::SessionInfo { cluster, session })?;
+    let record = match parse_session_record_for_info(&body, session) {
         Ok(record) => record,
-        Err(_) => fallback_session_record(body)?,
+        Err(_) => fallback_session_record(&body)?,
     };
     let fields = collect_session_fields(&record);
     Ok(SessionInfoResp {
@@ -316,6 +314,7 @@ fn push_if_nonempty(out: &mut Vec<String>, value: &str) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::commands::rpc_body;
 
     fn decode_hex_str(input: &str) -> Vec<u8> {
         hex::decode(input.trim()).expect("hex decode")

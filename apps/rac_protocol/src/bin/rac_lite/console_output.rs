@@ -3,13 +3,13 @@ use std::fmt::{self, Display, Write as _};
 use serde::Serialize;
 
 use rac_protocol::commands::{
-    AgentAdminRecord, AgentVersionResp, ClusterAdminRecord, ClusterRecord, ConnectionRecord,
-    CounterClearResp, CounterRecord, CounterRemoveResp, CounterUpdateResp, CounterValuesRecord,
-    InfobaseSummary, LimitRecord, LimitRemoveResp, LimitUpdateResp, LockRecord, ManagerRecord,
-    ProcessLicense, ProcessRecord, RuleApplyResp, RuleInsertResp, RuleRecord, RuleRemoveResp,
-    RuleUpdateResp, ServerRecord, ServiceSettingApplyResp, ServiceSettingInsertResp,
-    ServiceSettingRecord, ServiceSettingRemoveResp, ServiceSettingTransferDataDirRecord,
-    ServiceSettingUpdateResp, SessionCounters, SessionLicense, SessionRecord,
+    AgentAdminRecord, ClusterAdminRecord, ClusterRecord, ConnectionRecord, CounterClearResp,
+    CounterRecord, CounterRemoveResp, CounterUpdateResp, CounterValuesRecord, InfobaseSummary,
+    LimitRecord, LimitRemoveResp, LimitUpdateResp, LockRecord, ManagerRecord, ProcessLicense,
+    ProcessRecord, RuleApplyResp, RuleInsertResp, RuleRecord, RuleRemoveResp, RuleUpdateResp,
+    ServerRecord, ServiceSettingApplyResp, ServiceSettingInsertResp, ServiceSettingRecord,
+    ServiceSettingRemoveResp, ServiceSettingTransferDataDirRecord, ServiceSettingUpdateResp,
+    SessionCounters, SessionLicense, SessionRecord,
 };
 use rac_protocol::rac_wire::format_uuid;
 use rac_protocol::Uuid16;
@@ -1290,17 +1290,16 @@ impl Display for ConnectionInfoDisplay<'_> {
 }
 
 pub struct AgentVersionDisplay<'a> {
-    resp: &'a AgentVersionResp,
+    version: &'a Option<String>,
 }
 
-pub fn agent_version(resp: &AgentVersionResp) -> AgentVersionDisplay<'_> {
-    AgentVersionDisplay { resp }
+pub fn agent_version(version: &Option<String>) -> AgentVersionDisplay<'_> {
+    AgentVersionDisplay { version }
 }
 
 impl Display for AgentVersionDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let rendered = self
-            .resp
             .version
             .as_ref()
             .map(|v| format!("version: {v}"))

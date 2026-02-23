@@ -1,3 +1,4 @@
+use crate::client::{RacClient, RacRequest};
 use crate::codec::RecordCursor;
 use crate::error::{RacError, Result};
 use crate::Uuid16;
@@ -18,7 +19,7 @@ pub mod session;
 pub mod service_setting;
 
 pub use self::agent::{
-    agent_admin_list, agent_version, AgentAdminListResp, AgentAdminRecord, AgentVersionResp,
+    agent_admin_list, agent_version, AgentAdminListResp, AgentAdminRecord,
 };
 pub use self::cluster::{
     cluster_admin_list, cluster_admin_register, cluster_auth, cluster_info, cluster_list,
@@ -88,6 +89,20 @@ pub(crate) fn parse_ack_payload(payload: &[u8], context: &'static str) -> Result
     }
     let ack = cursor.take_u32_be()?;
     Ok(ack == 0x01000000)
+}
+
+pub(crate) fn expect_ack(payload: &[u8], context: &'static str) -> Result<()> {
+    let acknowledged = parse_ack_payload(payload, context)?;
+    if !acknowledged {
+        return Err(RacError::Decode(context));
+    }
+    Ok(())
+}
+
+pub(crate) fn call_body(client: &mut RacClient, request: RacRequest) -> Result<Vec<u8>> {
+    let reply = client.call(request)?;
+    let body = rpc_body(&reply)?;
+    Ok(body.to_vec())
 }
 
 pub(crate) fn parse_uuid_body(body: &[u8], context: &'static str) -> Result<Uuid16> {

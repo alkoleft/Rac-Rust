@@ -1,6 +1,6 @@
 use crate::client::{RacClient, RacRequest};
 
-use super::rpc_body;
+use super::call_body;
 
 #[derive(Debug, serde::Serialize, Clone)]
 pub struct LockDescr {
@@ -27,9 +27,8 @@ pub struct LockListResp {
 }
 
 pub fn lock_list(client: &mut RacClient, cluster: Uuid16) -> Result<LockListResp> {
-    let reply = client.call(RacRequest::LockList { cluster })?;
-    let body = rpc_body(&reply)?;
-    let records = parse_lock_list_records(body)?;
+    let body = call_body(client, RacRequest::LockList { cluster })?;
+    let records = parse_lock_list_records(&body)?;
     Ok(LockListResp {
         locks: records.iter().map(|record| record.object).collect(),
         records,

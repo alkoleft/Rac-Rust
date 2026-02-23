@@ -5,7 +5,7 @@ use crate::codec::RecordCursor;
 use crate::error::Result;
 use crate::Uuid16;
 
-use super::rpc_body;
+use super::call_body;
 
 #[derive(Debug, Serialize)]
 pub struct ProfileListResp {
@@ -13,9 +13,8 @@ pub struct ProfileListResp {
 }
 
 pub fn profile_list(client: &mut RacClient, cluster: Uuid16) -> Result<ProfileListResp> {
-    let reply = client.call(RacRequest::ProfileList { cluster })?;
-    let body = rpc_body(&reply)?;
-    let profiles = parse_profile_list(body)?;
+    let body = call_body(client, RacRequest::ProfileList { cluster })?;
+    let profiles = parse_profile_list(&body)?;
     Ok(ProfileListResp {
         profiles,
     })

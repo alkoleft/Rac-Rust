@@ -5,7 +5,7 @@ use crate::codec::RecordCursor;
 use crate::error::{RacError, Result};
 use crate::Uuid16;
 
-use super::rpc_body;
+use super::call_body;
 
 mod generated {
     include!("connection_generated.rs");
@@ -27,9 +27,8 @@ pub struct ConnectionInfoResp {
 }
 
 pub fn connection_list(client: &mut RacClient, cluster: Uuid16) -> Result<ConnectionListResp> {
-    let reply = client.call(RacRequest::ConnectionList { cluster })?;
-    let body = rpc_body(&reply)?;
-    let records = parse_connection_list_records(body)?;
+    let body = call_body(client, RacRequest::ConnectionList { cluster })?;
+    let records = parse_connection_list_records(&body)?;
     Ok(ConnectionListResp {
         connections: records.iter().map(|record| record.connection).collect(),
         records,
@@ -41,12 +40,14 @@ pub fn connection_info(
     cluster: Uuid16,
     connection: Uuid16,
 ) -> Result<ConnectionInfoResp> {
-    let reply = client.call(RacRequest::ConnectionInfo {
-        cluster,
-        connection,
-    })?;
-    let body = rpc_body(&reply)?;
-    let record = parse_connection_info_body(body, connection)?;
+    let body = call_body(
+        client,
+        RacRequest::ConnectionInfo {
+            cluster,
+            connection,
+        },
+    )?;
+    let record = parse_connection_info_body(&body, connection)?;
     let fields = collect_connection_fields(&record);
     Ok(ConnectionInfoResp {
         connection: record.connection,

@@ -3,7 +3,7 @@ use serde::Serialize;
 use crate::client::{RacClient, RacRequest};
 use crate::codec::RecordCursor;
 use crate::error::{RacError, Result};
-use super::rpc_body;
+use super::{call_body, expect_ack};
 use crate::Uuid16;
 
 mod generated {
@@ -53,19 +53,22 @@ pub struct LimitRemoveResp {
 }
 
 pub fn limit_list(client: &mut RacClient, cluster: Uuid16) -> Result<LimitListResp> {
-    let reply = client.call(RacRequest::LimitList { cluster })?;
+    let body = call_body(client, RacRequest::LimitList { cluster })?;
     Ok(LimitListResp {
-        limits: parse_limit_list_body(rpc_body(&reply)?)?,
+        limits: parse_limit_list_body(&body)?,
     })
 }
 
 pub fn limit_info(client: &mut RacClient, cluster: Uuid16, limit: &str) -> Result<LimitInfoResp> {
-    let reply = client.call(RacRequest::LimitInfo {
-        cluster,
-        limit: limit.to_string(),
-    })?;
+    let body = call_body(
+        client,
+        RacRequest::LimitInfo {
+            cluster,
+            limit: limit.to_string(),
+        },
+    )?;
     Ok(LimitInfoResp {
-        record: parse_limit_info_body(rpc_body(&reply)?)?,
+        record: parse_limit_info_body(&body)?,
     })
 }
 
@@ -100,12 +103,9 @@ pub fn limit_update(
         error_message: req.error_message,
         descr: req.descr,
     })?;
-    let acknowledged = parse_limit_update_ack(&reply)?;
-    if !acknowledged {
-        return Err(crate::error::RacError::Decode("limit update expected ack"));
-    }
+    expect_ack(&reply, "limit update expected ack")?;
     Ok(LimitUpdateResp {
-        acknowledged,
+        acknowledged: true,
     })
 }
 
@@ -125,12 +125,9 @@ pub fn limit_remove(
         cluster,
         name: name.to_string(),
     })?;
-    let acknowledged = parse_limit_remove_ack(&reply)?;
-    if !acknowledged {
-        return Err(crate::error::RacError::Decode("limit remove expected ack"));
-    }
+    expect_ack(&reply, "limit remove expected ack")?;
     Ok(LimitRemoveResp {
-        acknowledged,
+        acknowledged: true,
     })
 }
 
@@ -159,6 +156,7 @@ fn parse_limit_record(cursor: &mut RecordCursor<'_>) -> Result<LimitRecord> {
     LimitRecord::decode(cursor).map_err(|_| RacError::Decode("limit record truncated"))
 }
 
+#[cfg(test)]
 fn parse_limit_update_ack(payload: &[u8]) -> Result<bool> {
     let mut cursor = RecordCursor::new(payload, 0);
     if cursor.remaining_len() < 4 {
@@ -168,6 +166,7 @@ fn parse_limit_update_ack(payload: &[u8]) -> Result<bool> {
     Ok(ack == 0x01000000)
 }
 
+#[cfg(test)]
 fn parse_limit_remove_ack(payload: &[u8]) -> Result<bool> {
     let mut cursor = RecordCursor::new(payload, 0);
     if cursor.remaining_len() < 4 {
@@ -183,6 +182,7 @@ mod tests {
     use crate::client::RacProtocolVersion;
     use crate::rac_wire::parse_frames;
     use crate::rac_wire::parse_uuid;
+    use crate::commands::rpc_body;
 
     fn decode_hex_str(input: &str) -> Vec<u8> {
         hex::decode(input.trim()).expect("hex decode")

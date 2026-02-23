@@ -10,7 +10,7 @@ use crate::commands::agent::AgentAuthRequest;
 use crate::commands::cluster::{
     ClusterAdminRegisterRequest, ClusterAuthRequest, ClusterIdRequest,
 };
-use crate::metadata::{agent_rpc_meta, cluster_rpc_meta};
+use crate::metadata::rpc_meta;
 
 #[derive(Debug, Clone)]
 pub struct SerializedRpc {
@@ -455,26 +455,25 @@ impl RacProtocol for RacProtocolImpl {
     fn serialize(&self, request: RacRequest) -> Result<SerializedRpc> {
         use crate::rac_wire::*;
 
-        let cluster_meta = cluster_rpc_meta(&request);
-        let agent_meta = agent_rpc_meta(&request);
+        let meta = rpc_meta(&request);
         let (payload, expect_method) = match request {
             RacRequest::AgentAuth { user, pwd } => {
-                let meta = agent_meta.ok_or(RacError::Unsupported("agent meta missing"))?;
+                let meta = meta.ok_or(RacError::Unsupported("agent meta missing"))?;
                 let req = AgentAuthRequest { user, pwd };
                 let mut body = Vec::with_capacity(req.encoded_len());
                 req.encode_body(&mut body)?;
                 (encode_rpc(meta.method_req, &body), meta.method_resp)
             }
             RacRequest::AgentAdminList => {
-                let meta = agent_meta.ok_or(RacError::Unsupported("agent meta missing"))?;
+                let meta = meta.ok_or(RacError::Unsupported("agent meta missing"))?;
                 (encode_rpc(meta.method_req, &[]), meta.method_resp)
             }
             RacRequest::AgentVersion => {
-                let meta = agent_meta.ok_or(RacError::Unsupported("agent meta missing"))?;
+                let meta = meta.ok_or(RacError::Unsupported("agent meta missing"))?;
                 (encode_rpc(meta.method_req, &[]), meta.method_resp)
             }
             RacRequest::ClusterAuth { cluster, user, pwd } => {
-                let meta = cluster_meta.ok_or(RacError::Unsupported("cluster meta missing"))?;
+                let meta = meta.ok_or(RacError::Unsupported("cluster meta missing"))?;
                 let req = ClusterAuthRequest { cluster, user, pwd };
                 let mut body = Vec::with_capacity(req.encoded_len());
                 req.encode_body(&mut body)?;
@@ -484,7 +483,7 @@ impl RacProtocol for RacProtocolImpl {
                 )
             }
             RacRequest::ClusterAdminList { cluster } => {
-                let meta = cluster_meta.ok_or(RacError::Unsupported("cluster meta missing"))?;
+                let meta = meta.ok_or(RacError::Unsupported("cluster meta missing"))?;
                 let req = ClusterIdRequest { cluster };
                 let mut body = Vec::with_capacity(req.encoded_len());
                 req.encode_body(&mut body)?;
@@ -500,7 +499,7 @@ impl RacProtocol for RacProtocolImpl {
                 pwd,
                 auth_flags,
             } => {
-                let meta = cluster_meta.ok_or(RacError::Unsupported("cluster meta missing"))?;
+                let meta = meta.ok_or(RacError::Unsupported("cluster meta missing"))?;
                 let req = ClusterAdminRegisterRequest {
                     cluster,
                     name,
@@ -516,11 +515,11 @@ impl RacProtocol for RacProtocolImpl {
                 )
             }
             RacRequest::ClusterList => {
-                let meta = cluster_meta.ok_or(RacError::Unsupported("cluster meta missing"))?;
+                let meta = meta.ok_or(RacError::Unsupported("cluster meta missing"))?;
                 (encode_rpc(meta.method_req, &[]), meta.method_resp)
             }
             RacRequest::ClusterInfo { cluster } => {
-                let meta = cluster_meta.ok_or(RacError::Unsupported("cluster meta missing"))?;
+                let meta = meta.ok_or(RacError::Unsupported("cluster meta missing"))?;
                 let req = ClusterIdRequest { cluster };
                 let mut body = Vec::with_capacity(req.encoded_len());
                 req.encode_body(&mut body)?;

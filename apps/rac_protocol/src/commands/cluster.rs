@@ -1,8 +1,8 @@
 use crate::client::{RacClient, RacProtocolVersion, RacRequest};
-use crate::error::{RacError, Result};
+use crate::error::Result;
 use crate::Uuid16;
 
-use super::{parse_ack_payload, parse_list_u8, parse_list_u8_tail, rpc_body};
+use super::{call_body, expect_ack, parse_list_u8, parse_list_u8_tail};
 
 mod generated {
     include!("cluster_generated.rs");
@@ -34,19 +34,16 @@ pub fn cluster_auth(
         user: user.to_string(),
         pwd: pwd.to_string(),
     })?;
-    let acknowledged = parse_ack_payload(&reply, "cluster auth expected ack")?;
-    if !acknowledged {
-        return Err(RacError::Decode("cluster auth expected ack"));
-    }
-    Ok(acknowledged)
+    expect_ack(&reply, "cluster auth expected ack")?;
+    Ok(true)
 }
 
 pub fn cluster_admin_list(
     client: &mut RacClient,
     cluster: Uuid16,
 ) -> Result<Vec<ClusterAdminRecord>> {
-    let reply = client.call(RacRequest::ClusterAdminList { cluster })?;
-    parse_list_u8(rpc_body(&reply)?, ClusterAdminRecord::decode)
+    let body = call_body(client, RacRequest::ClusterAdminList { cluster })?;
+    parse_list_u8(&body, ClusterAdminRecord::decode)
 }
 
 pub fn cluster_admin_register(
@@ -64,27 +61,22 @@ pub fn cluster_admin_register(
         pwd,
         auth_flags,
     })?;
-    let acknowledged = parse_ack_payload(&reply, "cluster admin register expected ack")?;
-    if !acknowledged {
-        return Err(RacError::Decode("cluster admin register expected ack"));
-    }
-    Ok(acknowledged)
+    expect_ack(&reply, "cluster admin register expected ack")?;
+    Ok(true)
 }
 
 pub fn cluster_list(client: &mut RacClient) -> Result<Vec<ClusterRecord>> {
-    let reply = client.call(RacRequest::ClusterList)?;
-    let body = rpc_body(&reply)?;
+    let body = call_body(client, RacRequest::ClusterList)?;
     let protocol_version = client.protocol_version();
     let tail_len = cluster_tail_len(protocol_version);
-    parse_list_u8_tail(body, tail_len, ClusterRecord::decode)
+    parse_list_u8_tail(&body, tail_len, ClusterRecord::decode)
 }
 
 pub fn cluster_info(client: &mut RacClient, cluster: Uuid16) -> Result<ClusterRecord> {
-    let reply = client.call(RacRequest::ClusterInfo { cluster })?;
-    let body = rpc_body(&reply)?;
+    let body = call_body(client, RacRequest::ClusterInfo { cluster })?;
     let protocol_version = client.protocol_version();
     let tail_len = cluster_tail_len(protocol_version);
-    parse_cluster_info_body(body, tail_len)
+    parse_cluster_info_body(&body, tail_len)
 }
 
 fn cluster_tail_len(protocol_version: RacProtocolVersion) -> usize {
@@ -99,6 +91,7 @@ fn cluster_tail_len(protocol_version: RacProtocolVersion) -> usize {
 mod tests {
     use super::*;
     use crate::client::RacProtocolVersion;
+    use crate::commands::rpc_body;
 
     fn decode_hex_str(input: &str) -> Vec<u8> {
         hex::decode(input.trim()).expect("hex decode")

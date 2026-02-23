@@ -5,7 +5,7 @@ use crate::codec::RecordCursor;
 use crate::error::{RacError, Result};
 use crate::Uuid16;
 
-use super::rpc_body;
+use super::call_body;
 
 mod generated {
     include!("server_generated.rs");
@@ -24,9 +24,8 @@ pub struct ServerInfoResp {
 }
 
 pub fn server_list(client: &mut RacClient, cluster: Uuid16) -> Result<ServerListResp> {
-    let reply = client.call(RacRequest::ServerList { cluster })?;
-    let body = rpc_body(&reply)?;
-    let servers = parse_server_list(body)?;
+    let body = call_body(client, RacRequest::ServerList { cluster })?;
+    let servers = parse_server_list(&body)?;
     Ok(ServerListResp {
         servers,
     })
@@ -37,9 +36,8 @@ pub fn server_info(
     cluster: Uuid16,
     server: Uuid16,
 ) -> Result<ServerInfoResp> {
-    let reply = client.call(RacRequest::ServerInfo { cluster, server })?;
-    let body = rpc_body(&reply)?;
-    let mut cursor = RecordCursor::new(body, 0);
+    let body = call_body(client, RacRequest::ServerInfo { cluster, server })?;
+    let mut cursor = RecordCursor::new(&body, 0);
     Ok(ServerInfoResp {
         server: parse_server_record(&mut cursor)?,
     })
@@ -68,6 +66,7 @@ fn parse_server_record(cursor: &mut RecordCursor<'_>) -> Result<ServerRecord> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::commands::rpc_body;
 
     fn decode_hex_str(input: &str) -> Vec<u8> {
         hex::decode(input.trim()).expect("hex decode")

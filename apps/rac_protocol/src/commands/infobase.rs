@@ -5,7 +5,7 @@ use crate::codec::RecordCursor;
 use crate::error::Result;
 use crate::Uuid16;
 
-use super::rpc_body;
+use super::call_body;
 
 mod generated {
     include!("infobase_generated.rs");
@@ -36,9 +36,8 @@ pub fn infobase_summary_list(
     client: &mut RacClient,
     cluster: Uuid16,
 ) -> Result<InfobaseSummaryListResp> {
-    let reply = client.call(RacRequest::InfobaseSummaryList { cluster })?;
-    let body = rpc_body(&reply)?;
-    let summaries = parse_infobase_summary_list_body(body)?;
+    let body = call_body(client, RacRequest::InfobaseSummaryList { cluster })?;
+    let summaries = parse_infobase_summary_list_body(&body)?;
     Ok(InfobaseSummaryListResp {
         infobases: summaries.iter().map(|s| s.infobase).collect(),
         summaries,
@@ -50,9 +49,8 @@ pub fn infobase_summary_info(
     cluster: Uuid16,
     infobase: Uuid16,
 ) -> Result<InfobaseSummaryInfoResp> {
-    let reply = client.call(RacRequest::InfobaseSummaryInfo { cluster, infobase })?;
-    let body = rpc_body(&reply)?;
-    let mut cursor = RecordCursor::new(body, 0);
+    let body = call_body(client, RacRequest::InfobaseSummaryInfo { cluster, infobase })?;
+    let mut cursor = RecordCursor::new(&body, 0);
     let record = InfobaseFieldsRecord::decode(&mut cursor)?;
     Ok(InfobaseSummaryInfoResp {
         infobase: record.infobase,
@@ -65,9 +63,8 @@ pub fn infobase_info(
     cluster: Uuid16,
     infobase: Uuid16,
 ) -> Result<InfobaseInfoResp> {
-    let reply = client.call(RacRequest::InfobaseInfo { cluster, infobase })?;
-    let body = rpc_body(&reply)?;
-    let mut cursor = RecordCursor::new(body, 0);
+    let body = call_body(client, RacRequest::InfobaseInfo { cluster, infobase })?;
+    let mut cursor = RecordCursor::new(&body, 0);
     let record = InfobaseFieldsRecord::decode(&mut cursor)?;
     Ok(InfobaseInfoResp {
         infobase: record.infobase,

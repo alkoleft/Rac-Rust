@@ -5,7 +5,7 @@ use crate::codec::RecordCursor;
 use crate::error::{RacError, Result};
 use crate::Uuid16;
 
-use super::{parse_ack_payload, parse_uuid_body, rpc_body};
+use super::{call_body, expect_ack, parse_uuid_body};
 
 mod generated {
     include!("rule_generated.rs");
@@ -94,9 +94,8 @@ pub fn rule_list(
         user: cluster_user.to_string(),
         pwd: cluster_pwd.to_string(),
     })?;
-    let reply = client.call(RacRequest::RuleList { cluster, server })?;
-    let body = rpc_body(&reply)?;
-    let records = parse_rule_list_records(body)?;
+    let body = call_body(client, RacRequest::RuleList { cluster, server })?;
+    let records = parse_rule_list_records(&body)?;
     Ok(RuleListResp {
         records,
     })
@@ -115,13 +114,15 @@ pub fn rule_info(
         user: cluster_user.to_string(),
         pwd: cluster_pwd.to_string(),
     })?;
-    let reply = client.call(RacRequest::RuleInfo {
-        cluster,
-        server,
-        rule,
-    })?;
-    let body = rpc_body(&reply)?;
-    let record = parse_rule_info_body(body)?;
+    let body = call_body(
+        client,
+        RacRequest::RuleInfo {
+            cluster,
+            server,
+            rule,
+        },
+    )?;
+    let record = parse_rule_info_body(&body)?;
     Ok(RuleInfoResp {
         record,
     })
@@ -143,12 +144,9 @@ pub fn rule_apply(
         cluster,
         apply_mode: mode.as_u32(),
     })?;
-    let acknowledged = parse_rule_apply_ack(&reply)?;
-    if !acknowledged {
-        return Err(RacError::Decode("rule apply expected ack"));
-    }
+    expect_ack(&reply, "rule apply expected ack")?;
     Ok(RuleApplyResp {
-        acknowledged,
+        acknowledged: true,
     })
 }
 
@@ -170,12 +168,9 @@ pub fn rule_remove(
         server,
         rule,
     })?;
-    let acknowledged = parse_rule_remove_ack(&reply)?;
-    if !acknowledged {
-        return Err(RacError::Decode("rule remove expected ack"));
-    }
+    expect_ack(&reply, "rule remove expected ack")?;
     Ok(RuleRemoveResp {
-        acknowledged,
+        acknowledged: true,
     })
 }
 
@@ -191,18 +186,20 @@ pub fn rule_insert(
         user: cluster_user.to_string(),
         pwd: cluster_pwd.to_string(),
     })?;
-    let reply = client.call(RacRequest::RuleInsert {
-        cluster,
-        server: req.server,
-        position: req.position,
-        object_type: req.object_type,
-        infobase_name: req.infobase_name,
-        rule_type: req.rule_type,
-        application_ext: req.application_ext,
-        priority: req.priority,
-    })?;
-    let body = rpc_body(&reply)?;
-    let rule = parse_rule_insert_body(body)?;
+    let body = call_body(
+        client,
+        RacRequest::RuleInsert {
+            cluster,
+            server: req.server,
+            position: req.position,
+            object_type: req.object_type,
+            infobase_name: req.infobase_name,
+            rule_type: req.rule_type,
+            application_ext: req.application_ext,
+            priority: req.priority,
+        },
+    )?;
+    let rule = parse_rule_insert_body(&body)?;
     Ok(RuleInsertResp {
         rule,
     })
@@ -220,19 +217,21 @@ pub fn rule_update(
         user: cluster_user.to_string(),
         pwd: cluster_pwd.to_string(),
     })?;
-    let reply = client.call(RacRequest::RuleUpdate {
-        cluster,
-        server: req.server,
-        rule: req.rule,
-        position: req.position,
-        object_type: req.object_type,
-        infobase_name: req.infobase_name,
-        rule_type: req.rule_type,
-        application_ext: req.application_ext,
-        priority: req.priority,
-    })?;
-    let body = rpc_body(&reply)?;
-    let rule = parse_rule_update_body(body)?;
+    let body = call_body(
+        client,
+        RacRequest::RuleUpdate {
+            cluster,
+            server: req.server,
+            rule: req.rule,
+            position: req.position,
+            object_type: req.object_type,
+            infobase_name: req.infobase_name,
+            rule_type: req.rule_type,
+            application_ext: req.application_ext,
+            priority: req.priority,
+        },
+    )?;
+    let rule = parse_rule_update_body(&body)?;
     Ok(RuleUpdateResp {
         rule,
     })
@@ -271,12 +270,14 @@ fn parse_rule_update_body(body: &[u8]) -> Result<Uuid16> {
     parse_uuid_body(body, "rule update empty body")
 }
 
+#[cfg(test)]
 fn parse_rule_apply_ack(payload: &[u8]) -> Result<bool> {
-    parse_ack_payload(payload, "rule apply ack truncated")
+    crate::commands::parse_ack_payload(payload, "rule apply ack truncated")
 }
 
+#[cfg(test)]
 fn parse_rule_remove_ack(payload: &[u8]) -> Result<bool> {
-    parse_ack_payload(payload, "rule remove ack truncated")
+    crate::commands::parse_ack_payload(payload, "rule remove ack truncated")
 }
 
 #[cfg(test)]
@@ -285,6 +286,7 @@ mod tests {
     use crate::client::RacProtocolVersion;
     use crate::rac_wire::parse_frames;
     use crate::rac_wire::parse_uuid;
+    use crate::commands::rpc_body;
 
     fn decode_hex_str(input: &str) -> Vec<u8> {
         hex::decode(input.trim()).expect("hex decode")

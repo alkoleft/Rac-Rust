@@ -4,7 +4,7 @@ use crate::client::{RacClient, RacRequest};
 use crate::error::Result;
 use crate::Uuid16;
 
-use super::{parse_list_u8, rpc_body};
+use super::{call_body, parse_list_u8};
 
 mod generated {
     include!("manager_generated.rs");
@@ -24,9 +24,9 @@ pub struct ManagerInfoResp {
 }
 
 pub fn manager_list(client: &mut RacClient, cluster: Uuid16) -> Result<ManagerListResp> {
-    let reply = client.call(RacRequest::ManagerList { cluster })?;
+    let body = call_body(client, RacRequest::ManagerList { cluster })?;
     Ok(ManagerListResp {
-        managers: parse_list_u8(rpc_body(&reply)?, ManagerRecord::decode)?,
+        managers: parse_list_u8(&body, ManagerRecord::decode)?,
     })
 }
 
@@ -35,15 +35,16 @@ pub fn manager_info(
     cluster: Uuid16,
     manager: Uuid16,
 ) -> Result<ManagerInfoResp> {
-    let reply = client.call(RacRequest::ManagerInfo { cluster, manager })?;
+    let body = call_body(client, RacRequest::ManagerInfo { cluster, manager })?;
     Ok(ManagerInfoResp {
-        manager: parse_manager_info_body(rpc_body(&reply)?)?,
+        manager: parse_manager_info_body(&body)?,
     })
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::commands::rpc_body;
 
     fn decode_hex_str(input: &str) -> Vec<u8> {
         hex::decode(input.trim()).expect("hex decode")

@@ -17,3 +17,7 @@ pub fn cluster_rpc_meta(request: &RacRequest) -> Option<RpcMethodMeta> {
 pub fn agent_rpc_meta(request: &RacRequest) -> Option<RpcMethodMeta> {
     agent_rpc_metadata(request)
 }
+
+pub fn rpc_meta(request: &RacRequest) -> Option<RpcMethodMeta> {
+    agent_rpc_metadata(request).or_else(|| cluster_rpc_metadata(request))
+}

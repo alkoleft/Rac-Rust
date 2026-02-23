@@ -53,16 +53,6 @@ pub const RPC_AGENT_VERSION_META: RpcMethodMeta = RpcMethodMeta {
     requires_infobase_context: false,
 };
 
-#[allow(dead_code)]
-pub fn rpc_metadata(request: &crate::client::RacRequest) -> Option<RpcMethodMeta> {
-    match request {
-        crate::client::RacRequest::AgentAuth { .. } => Some(RPC_AGENT_AUTH_META),
-        crate::client::RacRequest::AgentAdminList => Some(RPC_AGENT_ADMIN_LIST_META),
-        crate::client::RacRequest::AgentVersion => Some(RPC_AGENT_VERSION_META),
-        _ => None,
-    }
-}
-
 #[derive(Debug, Clone)]
 pub struct AgentAuthRequest {
     pub user: String,

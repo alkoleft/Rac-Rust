@@ -6,7 +6,7 @@ mod console_output;
 mod format;
 
 use console_output as console;
-use rac_protocol::client::{ClientConfig, RacClient, RacRequest};
+use rac_protocol::client::{ClientConfig, RacClient};
 use rac_protocol::commands::{
     agent_admin_list, agent_version, cluster_admin_list, cluster_admin_register, cluster_auth,
     cluster_info, cluster_list, connection_info, connection_list, counter_accumulated_values,
@@ -1468,11 +1468,7 @@ fn run(cli: Cli) -> Result<()> {
                 let server = parse_uuid_arg(&server)?;
                 let setting = parse_uuid_arg(&setting)?;
                 let mut client = RacClient::connect(&addr, cfg.clone())?;
-                client.call(RacRequest::ClusterAuth {
-                    cluster,
-                    user: cluster_user.to_string(),
-                    pwd: cluster_pwd.to_string(),
-                })?;
+                cluster_auth(&mut client, cluster, &cluster_user, &cluster_pwd)?;
                 let info = service_setting_info_no_auth(
                     &mut client,
                     cluster,

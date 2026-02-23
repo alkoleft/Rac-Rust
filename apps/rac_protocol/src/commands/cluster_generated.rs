@@ -134,18 +134,6 @@ pub const RPC_CLUSTER_INFO_META: RpcMethodMeta = RpcMethodMeta {
     requires_infobase_context: false,
 };
 
-#[allow(dead_code)]
-pub fn rpc_metadata(request: &crate::client::RacRequest) -> Option<RpcMethodMeta> {
-    match request {
-        crate::client::RacRequest::ClusterAuth { .. } => Some(RPC_CLUSTER_AUTH_META),
-        crate::client::RacRequest::ClusterAdminList { .. } => Some(RPC_CLUSTER_ADMIN_LIST_META),
-        crate::client::RacRequest::ClusterAdminRegister { .. } => Some(RPC_CLUSTER_ADMIN_REGISTER_META),
-        crate::client::RacRequest::ClusterList => Some(RPC_CLUSTER_LIST_META),
-        crate::client::RacRequest::ClusterInfo { .. } => Some(RPC_CLUSTER_INFO_META),
-        _ => None,
-    }
-}
-
 #[derive(Debug, Clone)]
 pub struct ClusterIdRequest {
     pub cluster: Uuid16,

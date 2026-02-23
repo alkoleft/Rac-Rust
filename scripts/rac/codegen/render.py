@@ -106,10 +106,6 @@ def generate(
         lines.extend(generate_response_parsers(responses))
         lines.append("")
 
-    if rpcs:
-        lines.extend(generate_rpc_metadata(rpcs))
-        lines.append("")
-
     return "\n".join(lines).rstrip() + "\n"
 
 

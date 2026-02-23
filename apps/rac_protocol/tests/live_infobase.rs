@@ -1,8 +1,8 @@
 use std::fs;
 use std::time::Duration;
 
-use rac_protocol::client::{ClientConfig, RacClient, RacRequest};
-use rac_protocol::commands::{agent_version, cluster_list, infobase_info, infobase_summary_list};
+use rac_protocol::client::{ClientConfig, RacClient};
+use rac_protocol::commands::{agent_version, cluster_auth, cluster_list, infobase_info, infobase_summary_list};
 use rac_protocol::rac_wire::{format_uuid, parse_uuid};
 use serde::Deserialize;
 
@@ -47,12 +47,7 @@ fn live_infobase_info() {
     let cluster_user = params.cluster_user.clone();
     let cluster_pwd = params.cluster_pwd.clone();
     let _ = cluster_list(&mut client).expect("cluster list");
-    let _ = client
-        .call(RacRequest::ClusterAuth {
-            cluster: cluster_uuid,
-            user: cluster_user,
-            pwd: cluster_pwd,
-        })
+    let _ = cluster_auth(&mut client, cluster_uuid, &cluster_user, &cluster_pwd)
         .expect("cluster auth");
 
     let list = infobase_summary_list(&mut client, cluster_uuid)

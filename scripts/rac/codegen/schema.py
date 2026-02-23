@@ -68,6 +68,7 @@ class ResponseTestSpec:
 class ResponseBodySpec:
     type_name: str
     item: Optional[str]
+    tail_len_param: Optional[str] = None
 
 
 @dataclass

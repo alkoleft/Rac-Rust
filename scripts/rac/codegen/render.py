@@ -143,6 +143,32 @@ def generate_response_parsers(responses: List[ResponseSpec]) -> List[str]:
             lines.append("    Ok(out)")
             lines.append("}")
             lines.append("")
+        elif resp.body.type_name == "list_u8_tail":
+            if not resp.body.item:
+                raise ValueError("list_u8_tail response requires item")
+            if not resp.body.tail_len_param:
+                raise ValueError("list_u8_tail response requires tail_len_param")
+            item = resp.body.item
+            param = resp.body.tail_len_param
+            lines.append(
+                f"pub fn {func_name}(body: &[u8], {param}: usize) -> Result<Vec<{item}>> {{"
+            )
+            lines.append("    if body.is_empty() {")
+            lines.append("        return Ok(Vec::new());")
+            lines.append("    }")
+            lines.append("    let mut cursor = RecordCursor::new(body, 0);")
+            lines.append("    let count = cursor.take_u8()? as usize;")
+            lines.append("    let mut out = Vec::with_capacity(count);")
+            lines.append("    for _ in 0..count {")
+            lines.append(f"        let record = {item}::decode(&mut cursor)?;")
+            lines.append("        if " + param + " != 0 {")
+            lines.append("            let _tail = cursor.take_bytes(" + param + ")?;")
+            lines.append("        }")
+            lines.append("        out.push(record);")
+            lines.append("    }")
+            lines.append("    Ok(out)")
+            lines.append("}")
+            lines.append("")
         elif resp.body.type_name == "record":
             if not resp.body.item:
                 raise ValueError("record response requires item")
@@ -154,6 +180,28 @@ def generate_response_parsers(responses: List[ResponseSpec]) -> List[str]:
             lines.append("    }")
             lines.append("    let mut cursor = RecordCursor::new(body, 0);")
             lines.append(f"    {item}::decode(&mut cursor)")
+            lines.append("}")
+            lines.append("")
+        elif resp.body.type_name == "record_tail":
+            if not resp.body.item:
+                raise ValueError("record_tail response requires item")
+            if not resp.body.tail_len_param:
+                raise ValueError("record_tail response requires tail_len_param")
+            item = resp.body.item
+            param = resp.body.tail_len_param
+            error_ctx = snake_case(resp.name).replace("_", " ")
+            lines.append(
+                f"pub fn {func_name}(body: &[u8], {param}: usize) -> Result<{item}> {{"
+            )
+            lines.append("    if body.is_empty() {")
+            lines.append(f"        return Err(RacError::Decode(\"{error_ctx} empty body\"));")
+            lines.append("    }")
+            lines.append("    let mut cursor = RecordCursor::new(body, 0);")
+            lines.append(f"    let record = {item}::decode(&mut cursor)?;")
+            lines.append("    if " + param + " != 0 {")
+            lines.append("        let _tail = cursor.take_bytes(" + param + ")?;")
+            lines.append("    }")
+            lines.append("    Ok(record)")
             lines.append("}")
             lines.append("")
         else:

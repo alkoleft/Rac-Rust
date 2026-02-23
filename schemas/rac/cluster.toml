@@ -86,3 +86,9 @@ requires_infobase_context = false
 [response.ClusterAdminList]
 body = { type = "list_u8", item = "ClusterAdminRecord" }
 tests = [{ name = "cluster_admin_list_response_hex", hex_path = "../../../../artifacts/rac/cluster_admin_list_response.hex", expect_len = 1, asserts = [{ index = 0, field = "name", value = "cadmin" }, { index = 0, field = "unknown_tag", value = 0 }, { index = 0, field = "unknown_flags", value = 0x03efbfbd }, { index = 0, field = "unknown_tail", value = [0x01, 0x00, 0x00] }] }]
+
+[response.ClusterList]
+body = { type = "list_u8_tail", item = "ClusterRecord", tail_len_param = "tail_len" }
+
+[response.ClusterInfo]
+body = { type = "record_tail", item = "ClusterRecord", tail_len_param = "tail_len" }

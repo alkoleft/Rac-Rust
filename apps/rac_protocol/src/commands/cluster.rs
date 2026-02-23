@@ -1,7 +1,6 @@
 use serde::Serialize;
 
 use crate::client::{RacClient, RacProtocolVersion, RacRequest};
-use crate::codec::RecordCursor;
 use crate::error::{RacError, Result};
 use crate::Uuid16;
 
@@ -18,6 +17,8 @@ pub use generated::{
     ClusterIdRequest,
     ClusterRecord,
     parse_cluster_admin_list_body,
+    parse_cluster_info_body,
+    parse_cluster_list_body,
     RpcMethodMeta,
     RPC_CLUSTER_ADMIN_LIST_META,
     RPC_CLUSTER_ADMIN_REGISTER_META,
@@ -120,10 +121,9 @@ pub fn cluster_list(client: &mut RacClient) -> Result<ClusterListResp> {
 pub fn cluster_info(client: &mut RacClient, cluster: Uuid16) -> Result<ClusterInfoResp> {
     let reply = client.call(RacRequest::ClusterInfo { cluster })?;
     let body = rpc_body(&reply)?;
-    let mut cursor = RecordCursor::new(body, 0);
     let protocol_version = client.protocol_version();
     let tail_len = cluster_tail_len(protocol_version);
-    let summary = parse_cluster_record(&mut cursor, tail_len)?;
+    let summary = parse_cluster_info_body(body, tail_len)?;
     Ok(ClusterInfoResp {
         cluster: summary,
         raw_payload: Some(reply),
@@ -132,30 +132,6 @@ pub fn cluster_info(client: &mut RacClient, cluster: Uuid16) -> Result<ClusterIn
 
 fn is_ack(payload: &[u8]) -> bool {
     payload == [0x01, 0x00, 0x00, 0x00]
-}
-
-fn parse_cluster_list_body(
-    body: &[u8],
-    tail_len: usize,
-) -> Result<Vec<ClusterRecord>> {
-    if body.is_empty() {
-        return Ok(Vec::new());
-    }
-    let mut cursor = RecordCursor::new(body, 0);
-    let count = cursor.take_u8()? as usize;
-    let mut clusters = Vec::with_capacity(count);
-    for _ in 0..count {
-        clusters.push(parse_cluster_record(&mut cursor, tail_len)?);
-    }
-    Ok(clusters)
-}
-
-fn parse_cluster_record(cursor: &mut RecordCursor<'_>, tail_len: usize) -> Result<ClusterRecord> {
-    let record = ClusterRecord::decode(cursor)?;
-    if tail_len != 0 {
-        let _tail = cursor.take_bytes(tail_len)?;
-    }
-    Ok(record)
 }
 
 fn cluster_tail_len(protocol_version: RacProtocolVersion) -> usize {

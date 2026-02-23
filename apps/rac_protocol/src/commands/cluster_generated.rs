@@ -98,6 +98,35 @@ pub fn parse_cluster_admin_list_body(body: &[u8]) -> Result<Vec<ClusterAdminReco
     Ok(out)
 }
 
+pub fn parse_cluster_list_body(body: &[u8], tail_len: usize) -> Result<Vec<ClusterRecord>> {
+    if body.is_empty() {
+        return Ok(Vec::new());
+    }
+    let mut cursor = RecordCursor::new(body, 0);
+    let count = cursor.take_u8()? as usize;
+    let mut out = Vec::with_capacity(count);
+    for _ in 0..count {
+        let record = ClusterRecord::decode(&mut cursor)?;
+        if tail_len != 0 {
+            let _tail = cursor.take_bytes(tail_len)?;
+        }
+        out.push(record);
+    }
+    Ok(out)
+}
+
+pub fn parse_cluster_info_body(body: &[u8], tail_len: usize) -> Result<ClusterRecord> {
+    if body.is_empty() {
+        return Err(RacError::Decode("cluster info empty body"));
+    }
+    let mut cursor = RecordCursor::new(body, 0);
+    let record = ClusterRecord::decode(&mut cursor)?;
+    if tail_len != 0 {
+        let _tail = cursor.take_bytes(tail_len)?;
+    }
+    Ok(record)
+}
+
 
 #[derive(Debug, Clone, Copy)]
 pub struct RpcMethodMeta {

@@ -105,6 +105,7 @@ def parse_schema_payload(
         body = ResponseBodySpec(
             type_name=str(body_spec.get("type", "")),
             item=body_spec.get("item"),
+            tail_len_param=body_spec.get("tail_len_param"),
         )
         tests = []
         for raw in spec.get("tests", []):

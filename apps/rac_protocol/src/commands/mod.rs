@@ -98,3 +98,43 @@ pub(crate) fn parse_uuid_body(body: &[u8], context: &'static str) -> Result<Uuid
     let mut cursor = RecordCursor::new(body, 0);
     Ok(cursor.take_uuid()?)
 }
+
+pub(crate) fn parse_list_u8<T, F>(body: &[u8], mut decode: F) -> Result<Vec<T>>
+where
+    F: FnMut(&mut RecordCursor<'_>) -> Result<T>,
+{
+    if body.is_empty() {
+        return Ok(Vec::new());
+    }
+    let mut cursor = RecordCursor::new(body, 0);
+    let count = cursor.take_u8()? as usize;
+    let mut out = Vec::with_capacity(count);
+    for _ in 0..count {
+        out.push(decode(&mut cursor)?);
+    }
+    Ok(out)
+}
+
+pub(crate) fn parse_list_u8_tail<T, F>(
+    body: &[u8],
+    tail_len: usize,
+    mut decode: F,
+) -> Result<Vec<T>>
+where
+    F: FnMut(&mut RecordCursor<'_>) -> Result<T>,
+{
+    if body.is_empty() {
+        return Ok(Vec::new());
+    }
+    let mut cursor = RecordCursor::new(body, 0);
+    let count = cursor.take_u8()? as usize;
+    let mut out = Vec::with_capacity(count);
+    for _ in 0..count {
+        let record = decode(&mut cursor)?;
+        if tail_len != 0 {
+            let _tail = cursor.take_bytes(tail_len)?;
+        }
+        out.push(record);
+    }
+    Ok(out)
+}

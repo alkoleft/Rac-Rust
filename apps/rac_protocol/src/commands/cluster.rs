@@ -4,7 +4,7 @@ use crate::client::{RacClient, RacProtocolVersion, RacRequest};
 use crate::error::{RacError, Result};
 use crate::Uuid16;
 
-use super::rpc_body;
+use super::{parse_list_u8, parse_list_u8_tail, rpc_body};
 
 mod generated {
     include!("cluster_generated.rs");
@@ -16,9 +16,7 @@ pub use generated::{
     ClusterAuthRequest,
     ClusterIdRequest,
     ClusterRecord,
-    parse_cluster_admin_list_body,
     parse_cluster_info_body,
-    parse_cluster_list_body,
     RpcMethodMeta,
     RPC_CLUSTER_ADMIN_LIST_META,
     RPC_CLUSTER_ADMIN_REGISTER_META,
@@ -72,7 +70,7 @@ pub fn cluster_admin_list(
     })?;
     let reply = client.call(RacRequest::ClusterAdminList { cluster })?;
     Ok(ClusterAdminListResp {
-        admins: parse_cluster_admin_list_body(rpc_body(&reply)?)?,
+        admins: parse_list_u8(rpc_body(&reply)?, ClusterAdminRecord::decode)?,
         raw_payload: Some(reply),
     })
 }
@@ -111,7 +109,7 @@ pub fn cluster_list(client: &mut RacClient) -> Result<ClusterListResp> {
     let body = rpc_body(&reply)?;
     let protocol_version = client.protocol_version();
     let tail_len = cluster_tail_len(protocol_version);
-    let clusters = parse_cluster_list_body(body, tail_len)?;
+    let clusters = parse_list_u8_tail(body, tail_len, ClusterRecord::decode)?;
     Ok(ClusterListResp {
         clusters,
         raw_payload: Some(reply),
@@ -156,7 +154,7 @@ mod tests {
         let hex = include_str!("../../../../artifacts/rac/cluster_admin_list_response.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
-        let admins = parse_cluster_admin_list_body(body).expect("parse list");
+        let admins = parse_list_u8(body, ClusterAdminRecord::decode).expect("parse list");
 
         assert_eq!(admins.len(), 1);
         assert_eq!(admins[0].name, "cadmin");
@@ -224,7 +222,7 @@ mod tests {
         let hex = include_str!("../../../../artifacts/rac/cluster_list_response_custom.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
-        let clusters = parse_cluster_list_body(body, 0).expect("parse list");
+        let clusters = parse_list_u8_tail(body, 0, ClusterRecord::decode).expect("parse list");
 
         assert_eq!(clusters.len(), 1);
         assert_eq!(clusters[0].lifetime_limit, 1111);
@@ -241,7 +239,7 @@ mod tests {
         let hex = include_str!("../../../../artifacts/rac/cluster_list_response_flags.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
-        let clusters = parse_cluster_list_body(body, 0).expect("parse list");
+        let clusters = parse_list_u8_tail(body, 0, ClusterRecord::decode).expect("parse list");
 
         assert_eq!(clusters.len(), 1);
         assert_eq!(clusters[0].kill_problem_processes, 1);

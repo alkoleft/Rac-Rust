@@ -33,19 +33,6 @@ impl ManagerRecord {
     }
 }
 
-pub fn parse_manager_list_body(body: &[u8]) -> Result<Vec<ManagerRecord>> {
-    if body.is_empty() {
-        return Ok(Vec::new());
-    }
-    let mut cursor = RecordCursor::new(body, 0);
-    let count = cursor.take_u8()? as usize;
-    let mut out = Vec::with_capacity(count);
-    for _ in 0..count {
-        out.push(ManagerRecord::decode(&mut cursor)?);
-    }
-    Ok(out)
-}
-
 pub fn parse_manager_info_body(body: &[u8]) -> Result<ManagerRecord> {
     if body.is_empty() {
         return Err(RacError::Decode("manager info empty body"));
@@ -68,7 +55,7 @@ mod tests {
         let hex = include_str!("../../../../artifacts/rac/manager_list_response.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
-        let items = parse_manager_list_body(body).expect("parse body");
+        let items = crate::commands::parse_list_u8(body, ManagerRecord::decode).expect("parse body");
         assert_eq!(items.len(), 1);
         assert_eq!(items[0].host, "alko-home");
         assert_eq!(items[0].using, 1);

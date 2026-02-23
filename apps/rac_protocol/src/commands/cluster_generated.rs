@@ -85,36 +85,6 @@ impl ClusterRecord {
     }
 }
 
-pub fn parse_cluster_admin_list_body(body: &[u8]) -> Result<Vec<ClusterAdminRecord>> {
-    if body.is_empty() {
-        return Ok(Vec::new());
-    }
-    let mut cursor = RecordCursor::new(body, 0);
-    let count = cursor.take_u8()? as usize;
-    let mut out = Vec::with_capacity(count);
-    for _ in 0..count {
-        out.push(ClusterAdminRecord::decode(&mut cursor)?);
-    }
-    Ok(out)
-}
-
-pub fn parse_cluster_list_body(body: &[u8], tail_len: usize) -> Result<Vec<ClusterRecord>> {
-    if body.is_empty() {
-        return Ok(Vec::new());
-    }
-    let mut cursor = RecordCursor::new(body, 0);
-    let count = cursor.take_u8()? as usize;
-    let mut out = Vec::with_capacity(count);
-    for _ in 0..count {
-        let record = ClusterRecord::decode(&mut cursor)?;
-        if tail_len != 0 {
-            let _tail = cursor.take_bytes(tail_len)?;
-        }
-        out.push(record);
-    }
-    Ok(out)
-}
-
 pub fn parse_cluster_info_body(body: &[u8], tail_len: usize) -> Result<ClusterRecord> {
     if body.is_empty() {
         return Err(RacError::Decode("cluster info empty body"));
@@ -258,7 +228,7 @@ mod tests {
         let hex = include_str!("../../../../artifacts/rac/cluster_admin_list_response.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
-        let items = parse_cluster_admin_list_body(body).expect("parse body");
+        let items = crate::commands::parse_list_u8(body, ClusterAdminRecord::decode).expect("parse body");
         assert_eq!(items.len(), 1);
         assert_eq!(items[0].name, "cadmin");
         assert_eq!(items[0].unknown_tag, 0);

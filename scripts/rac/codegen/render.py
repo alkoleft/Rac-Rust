@@ -126,50 +126,7 @@ def generate_response_parsers(responses: List[ResponseSpec]) -> List[str]:
     lines: List[str] = []
     for resp in responses:
         func_name = f"parse_{snake_case(resp.name)}_body"
-        if resp.body.type_name == "list_u8":
-            if not resp.body.item:
-                raise ValueError("list_u8 response requires item")
-            item = resp.body.item
-            lines.append(f"pub fn {func_name}(body: &[u8]) -> Result<Vec<{item}>> {{")
-            lines.append("    if body.is_empty() {")
-            lines.append("        return Ok(Vec::new());")
-            lines.append("    }")
-            lines.append("    let mut cursor = RecordCursor::new(body, 0);")
-            lines.append("    let count = cursor.take_u8()? as usize;")
-            lines.append("    let mut out = Vec::with_capacity(count);")
-            lines.append("    for _ in 0..count {")
-            lines.append(f"        out.push({item}::decode(&mut cursor)?);")
-            lines.append("    }")
-            lines.append("    Ok(out)")
-            lines.append("}")
-            lines.append("")
-        elif resp.body.type_name == "list_u8_tail":
-            if not resp.body.item:
-                raise ValueError("list_u8_tail response requires item")
-            if not resp.body.tail_len_param:
-                raise ValueError("list_u8_tail response requires tail_len_param")
-            item = resp.body.item
-            param = resp.body.tail_len_param
-            lines.append(
-                f"pub fn {func_name}(body: &[u8], {param}: usize) -> Result<Vec<{item}>> {{"
-            )
-            lines.append("    if body.is_empty() {")
-            lines.append("        return Ok(Vec::new());")
-            lines.append("    }")
-            lines.append("    let mut cursor = RecordCursor::new(body, 0);")
-            lines.append("    let count = cursor.take_u8()? as usize;")
-            lines.append("    let mut out = Vec::with_capacity(count);")
-            lines.append("    for _ in 0..count {")
-            lines.append(f"        let record = {item}::decode(&mut cursor)?;")
-            lines.append("        if " + param + " != 0 {")
-            lines.append("            let _tail = cursor.take_bytes(" + param + ")?;")
-            lines.append("        }")
-            lines.append("        out.push(record);")
-            lines.append("    }")
-            lines.append("    Ok(out)")
-            lines.append("}")
-            lines.append("")
-        elif resp.body.type_name == "record":
+        if resp.body.type_name == "record":
             if not resp.body.item:
                 raise ValueError("record response requires item")
             item = resp.body.item
@@ -204,6 +161,8 @@ def generate_response_parsers(responses: List[ResponseSpec]) -> List[str]:
             lines.append("    Ok(record)")
             lines.append("}")
             lines.append("")
+        elif resp.body.type_name in {"list_u8", "list_u8_tail"}:
+            continue
         else:
             raise ValueError(f"unknown response body type: {resp.body.type_name}")
     return lines
@@ -251,7 +210,32 @@ def generate_response_tests(responses: List[ResponseSpec]) -> List[str]:
             lines.append("        let payload = decode_hex_str(hex);")
             lines.append("        let body = rpc_body(&payload).expect(\"rpc body\");")
             if resp.body.type_name == "list_u8":
-                lines.append(f"        let items = {func_name}(body).expect(\"parse body\");")
+                if not resp.body.item:
+                    raise ValueError("list_u8 response requires item")
+                item = resp.body.item
+                lines.append(
+                    f"        let items = crate::commands::parse_list_u8(body, {item}::decode)"
+                    ".expect(\"parse body\");"
+                )
+                if test.expect_len is not None:
+                    lines.append(f"        assert_eq!(items.len(), {test.expect_len});")
+                for assertion in test.asserts:
+                    if assertion.index is None:
+                        raise ValueError("list response asserts require index")
+                    rendered = render_value(assertion.value)
+                    lines.append(
+                        f"        assert_eq!(items[{assertion.index}].{assertion.field}, {rendered});"
+                    )
+            elif resp.body.type_name == "list_u8_tail":
+                if not resp.body.item:
+                    raise ValueError("list_u8_tail response requires item")
+                if not resp.body.tail_len_param:
+                    raise ValueError("list_u8_tail response requires tail_len_param")
+                item = resp.body.item
+                lines.append(
+                    f"        let items = crate::commands::parse_list_u8_tail(body, 0, {item}::decode)"
+                    ".expect(\"parse body\");"
+                )
                 if test.expect_len is not None:
                     lines.append(f"        assert_eq!(items.len(), {test.expect_len});")
                 for assertion in test.asserts:

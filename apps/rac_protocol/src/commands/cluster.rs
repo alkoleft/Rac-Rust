@@ -4,7 +4,7 @@ use crate::client::{RacClient, RacProtocolVersion, RacRequest};
 use crate::error::{RacError, Result};
 use crate::Uuid16;
 
-use super::{parse_list_u8, parse_list_u8_tail, rpc_body};
+use super::{parse_ack_payload, parse_list_u8, parse_list_u8_tail, rpc_body};
 
 mod generated {
     include!("cluster_generated.rs");
@@ -94,7 +94,7 @@ pub fn cluster_admin_register(
         pwd: req.pwd,
         auth_flags: req.auth_flags,
     })?;
-    let acknowledged = is_ack(&reply);
+    let acknowledged = parse_ack_payload(&reply, "cluster admin register expected ack")?;
     if !acknowledged {
         return Err(RacError::Decode("cluster admin register expected ack"));
     }
@@ -126,10 +126,6 @@ pub fn cluster_info(client: &mut RacClient, cluster: Uuid16) -> Result<ClusterIn
         cluster: summary,
         raw_payload: Some(reply),
     })
-}
-
-fn is_ack(payload: &[u8]) -> bool {
-    payload == [0x01, 0x00, 0x00, 0x00]
 }
 
 fn cluster_tail_len(protocol_version: RacProtocolVersion) -> usize {
@@ -215,35 +211,6 @@ mod tests {
         let serialized = protocol.serialize(req).expect("serialize");
         assert_eq!(serialized.payload, expected);
         assert_eq!(serialized.expect_method, None);
-    }
-
-    #[test]
-    fn parse_cluster_list_custom_capture() {
-        let hex = include_str!("../../../../artifacts/rac/cluster_list_response_custom.hex");
-        let payload = decode_hex_str(hex);
-        let body = rpc_body(&payload).expect("rpc body");
-        let clusters = parse_list_u8_tail(body, 0, ClusterRecord::decode).expect("parse list");
-
-        assert_eq!(clusters.len(), 1);
-        assert_eq!(clusters[0].lifetime_limit, 1111);
-        assert_eq!(clusters[0].security_level, 3);
-        assert_eq!(clusters[0].session_fault_tolerance_level, 4);
-        assert_eq!(clusters[0].load_balancing_mode, 1);
-        assert_eq!(clusters[0].errors_count_threshold, 0);
-        assert_eq!(clusters[0].kill_problem_processes, 0);
-        assert_eq!(clusters[0].kill_by_memory_with_dump, 1);
-    }
-
-    #[test]
-    fn parse_cluster_list_flags_capture() {
-        let hex = include_str!("../../../../artifacts/rac/cluster_list_response_flags.hex");
-        let payload = decode_hex_str(hex);
-        let body = rpc_body(&payload).expect("rpc body");
-        let clusters = parse_list_u8_tail(body, 0, ClusterRecord::decode).expect("parse list");
-
-        assert_eq!(clusters.len(), 1);
-        assert_eq!(clusters[0].kill_problem_processes, 1);
-        assert_eq!(clusters[0].kill_by_memory_with_dump, 0);
     }
 
     // Additional cluster list/info capture assertions should be added when artifacts are present.

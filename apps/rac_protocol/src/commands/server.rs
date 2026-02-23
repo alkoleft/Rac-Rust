@@ -16,13 +16,11 @@ pub use generated::ServerRecord;
 #[derive(Debug, Serialize)]
 pub struct ServerListResp {
     pub servers: Vec<ServerRecord>,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 #[derive(Debug, Serialize)]
 pub struct ServerInfoResp {
     pub server: ServerRecord,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 pub fn server_list(client: &mut RacClient, cluster: Uuid16) -> Result<ServerListResp> {
@@ -31,7 +29,6 @@ pub fn server_list(client: &mut RacClient, cluster: Uuid16) -> Result<ServerList
     let servers = parse_server_list(body)?;
     Ok(ServerListResp {
         servers,
-        raw_payload: Some(reply),
     })
 }
 
@@ -45,7 +42,6 @@ pub fn server_info(
     let mut cursor = RecordCursor::new(body, 0);
     Ok(ServerInfoResp {
         server: parse_server_record(&mut cursor)?,
-        raw_payload: Some(reply),
     })
 }
 

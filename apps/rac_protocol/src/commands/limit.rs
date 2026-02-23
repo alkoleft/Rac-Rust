@@ -15,13 +15,11 @@ pub use generated::LimitRecord;
 #[derive(Debug, Serialize)]
 pub struct LimitListResp {
     pub limits: Vec<LimitRecord>,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 #[derive(Debug, Serialize)]
 pub struct LimitInfoResp {
     pub record: LimitRecord,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 #[derive(Debug, Serialize, Clone)]
@@ -47,20 +45,17 @@ pub struct LimitUpdateReq {
 #[derive(Debug, Serialize)]
 pub struct LimitUpdateResp {
     pub acknowledged: bool,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 #[derive(Debug, Serialize)]
 pub struct LimitRemoveResp {
     pub acknowledged: bool,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 pub fn limit_list(client: &mut RacClient, cluster: Uuid16) -> Result<LimitListResp> {
     let reply = client.call(RacRequest::LimitList { cluster })?;
     Ok(LimitListResp {
         limits: parse_limit_list_body(rpc_body(&reply)?)?,
-        raw_payload: Some(reply),
     })
 }
 
@@ -71,7 +66,6 @@ pub fn limit_info(client: &mut RacClient, cluster: Uuid16, limit: &str) -> Resul
     })?;
     Ok(LimitInfoResp {
         record: parse_limit_info_body(rpc_body(&reply)?)?,
-        raw_payload: Some(reply),
     })
 }
 
@@ -112,7 +106,6 @@ pub fn limit_update(
     }
     Ok(LimitUpdateResp {
         acknowledged,
-        raw_payload: Some(reply),
     })
 }
 
@@ -138,7 +131,6 @@ pub fn limit_remove(
     }
     Ok(LimitRemoveResp {
         acknowledged,
-        raw_payload: Some(reply),
     })
 }
 

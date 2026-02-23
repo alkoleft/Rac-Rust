@@ -96,7 +96,6 @@ pub struct SessionRecord {
 pub struct SessionListResp {
     pub sessions: Vec<Uuid16>,
     pub records: Vec<SessionRecord>,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 #[derive(Debug, Serialize)]
@@ -104,7 +103,6 @@ pub struct SessionInfoResp {
     pub session: Uuid16,
     pub record: SessionRecord,
     pub fields: Vec<String>,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 pub fn session_list(client: &mut RacClient, cluster: Uuid16) -> Result<SessionListResp> {
@@ -114,7 +112,6 @@ pub fn session_list(client: &mut RacClient, cluster: Uuid16) -> Result<SessionLi
     Ok(SessionListResp {
         sessions: records.iter().map(|r| r.session).collect(),
         records,
-        raw_payload: Some(reply),
     })
 }
 
@@ -134,7 +131,6 @@ pub fn session_info(
         session: record.session,
         record,
         fields,
-        raw_payload: Some(reply),
     })
 }
 

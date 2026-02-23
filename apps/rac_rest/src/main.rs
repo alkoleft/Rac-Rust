@@ -28,7 +28,6 @@ struct Cli {
 #[derive(Clone)]
 struct AppState {
     pool: Arc<Pool<SystemClock>>,
-    include_raw_payload: bool,
 }
 
 #[tokio::main]
@@ -51,7 +50,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let state = AppState {
         pool,
-        include_raw_payload: cfg.include_raw_payload,
     };
 
     let app = Router::new()
@@ -105,8 +103,7 @@ async fn rpc_handler(
     let command_label = command_name(&command).to_string();
 
     let pool = state.pool.clone();
-    let include_raw = state.include_raw_payload;
-    let result = task::spawn_blocking(move || exec_command(pool, command, include_raw)).await;
+    let result = task::spawn_blocking(move || exec_command(pool, command)).await;
 
     match result {
         Ok(Ok(payload)) => Ok(Json(RpcResponse {
@@ -308,8 +305,7 @@ async fn exec_command_json(
     command: Command,
 ) -> Result<Json<Value>, (StatusCode, Json<Value>)> {
     let pool = state.pool.clone();
-    let include_raw = state.include_raw_payload;
-    let result = task::spawn_blocking(move || exec_command(pool, command, include_raw)).await;
+    let result = task::spawn_blocking(move || exec_command(pool, command)).await;
 
     match result {
         Ok(Ok(payload)) => Ok(Json(payload)),
@@ -324,10 +320,9 @@ async fn exec_command_json(
 fn exec_command(
     pool: Arc<Pool<SystemClock>>,
     command: Command,
-    include_raw_payload: bool,
 ) -> Result<serde_json::Value, RpcError> {
     let mut client = pool.checkout()?;
-    let result = dispatch_command(&mut client, command, include_raw_payload);
+    let result = dispatch_command(&mut client, command);
     let ok = result.is_ok();
     pool.release(client, ok)?;
     result

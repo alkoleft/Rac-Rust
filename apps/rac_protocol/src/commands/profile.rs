@@ -10,7 +10,6 @@ use super::rpc_body;
 #[derive(Debug, Serialize)]
 pub struct ProfileListResp {
     pub profiles: Vec<Uuid16>,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 pub fn profile_list(client: &mut RacClient, cluster: Uuid16) -> Result<ProfileListResp> {
@@ -19,7 +18,6 @@ pub fn profile_list(client: &mut RacClient, cluster: Uuid16) -> Result<ProfileLi
     let profiles = parse_profile_list(body)?;
     Ok(ProfileListResp {
         profiles,
-        raw_payload: Some(reply),
     })
 }
 

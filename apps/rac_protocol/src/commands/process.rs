@@ -17,14 +17,12 @@ pub use generated::{ProcessLicense, ProcessRecord};
 pub struct ProcessListResp {
     pub processes: Vec<Uuid16>,
     pub records: Vec<ProcessRecord>,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 #[derive(Debug, Serialize)]
 pub struct ProcessInfoResp {
     pub process: Uuid16,
     pub record: ProcessRecord,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 pub fn process_list(client: &mut RacClient, cluster: Uuid16) -> Result<ProcessListResp> {
@@ -34,7 +32,6 @@ pub fn process_list(client: &mut RacClient, cluster: Uuid16) -> Result<ProcessLi
     Ok(ProcessListResp {
         processes: records.iter().map(|r| r.process).collect(),
         records,
-        raw_payload: Some(reply),
     })
 }
 
@@ -49,7 +46,6 @@ pub fn process_info(
     Ok(ProcessInfoResp {
         process: record.process,
         record,
-        raw_payload: Some(reply),
     })
 }
 

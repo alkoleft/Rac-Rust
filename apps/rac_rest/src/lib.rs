@@ -24,7 +24,6 @@ const DEFAULT_READ_TIMEOUT_MS: u64 = 5_000;
 const DEFAULT_WRITE_TIMEOUT_MS: u64 = 5_000;
 const DEFAULT_POOL_MAX: usize = 4;
 const DEFAULT_IDLE_TTL_SECS: u64 = 60;
-const DEFAULT_INCLUDE_RAW_PAYLOAD: bool = false;
 
 #[derive(Debug, Clone)]
 pub struct Config {
@@ -35,7 +34,6 @@ pub struct Config {
     pub write_timeout_ms: u64,
     pub pool_max: usize,
     pub idle_ttl_secs: u64,
-    pub include_raw_payload: bool,
 }
 
 impl Default for Config {
@@ -48,7 +46,6 @@ impl Default for Config {
             write_timeout_ms: DEFAULT_WRITE_TIMEOUT_MS,
             pool_max: DEFAULT_POOL_MAX,
             idle_ttl_secs: DEFAULT_IDLE_TTL_SECS,
-            include_raw_payload: DEFAULT_INCLUDE_RAW_PAYLOAD,
         }
     }
 }
@@ -62,7 +59,6 @@ struct ConfigFile {
     write_timeout_ms: Option<u64>,
     pool_max: Option<usize>,
     idle_ttl_secs: Option<u64>,
-    include_raw_payload: Option<bool>,
 }
 
 pub fn load_config(path: &str) -> Result<Config, RpcError> {
@@ -91,9 +87,6 @@ pub fn load_config(path: &str) -> Result<Config, RpcError> {
     }
     if let Some(value) = file.idle_ttl_secs {
         cfg.idle_ttl_secs = value;
-    }
-    if let Some(value) = file.include_raw_payload {
-        cfg.include_raw_payload = value;
     }
     Ok(cfg)
 }
@@ -322,110 +315,104 @@ pub fn parse_command(req: RpcRequest) -> Result<Command, RpcError> {
 pub fn dispatch_command(
     client: &mut RacClient,
     cmd: Command,
-    include_raw_payload: bool,
 ) -> Result<Value, RpcError> {
     let value = match cmd {
         Command::AgentVersion => {
             let resp = agent_version(client).map_err(map_rac_error)?;
-            response_value(resp, include_raw_payload)?
+            response_value(resp)?
         }
         Command::ClusterList => {
             let resp = cluster_list(client).map_err(map_rac_error)?;
-            response_value(resp, include_raw_payload)?
+            response_value(resp)?
         }
         Command::ClusterInfo { cluster } => {
             let resp = cluster_info(client, cluster).map_err(map_rac_error)?;
-            response_value(resp, include_raw_payload)?
+            response_value(resp)?
         }
         Command::ManagerList { cluster } => {
             let resp = manager_list(client, cluster).map_err(map_rac_error)?;
-            response_value(resp, include_raw_payload)?
+            response_value(resp)?
         }
         Command::ManagerInfo { cluster, manager } => {
             let resp = manager_info(client, cluster, manager).map_err(map_rac_error)?;
-            response_value(resp, include_raw_payload)?
+            response_value(resp)?
         }
         Command::ServerList { cluster } => {
             let resp = server_list(client, cluster).map_err(map_rac_error)?;
-            response_value(resp, include_raw_payload)?
+            response_value(resp)?
         }
         Command::ServerInfo { cluster, server } => {
             let resp = server_info(client, cluster, server).map_err(map_rac_error)?;
-            response_value(resp, include_raw_payload)?
+            response_value(resp)?
         }
         Command::ProcessList { cluster } => {
             let resp = process_list(client, cluster).map_err(map_rac_error)?;
-            response_value(resp, include_raw_payload)?
+            response_value(resp)?
         }
         Command::ProcessInfo { cluster, process } => {
             let resp = process_info(client, cluster, process).map_err(map_rac_error)?;
-            response_value(resp, include_raw_payload)?
+            response_value(resp)?
         }
         Command::InfobaseSummaryList { cluster } => {
             let resp = infobase_summary_list(client, cluster).map_err(map_rac_error)?;
-            response_value(resp, include_raw_payload)?
+            response_value(resp)?
         }
         Command::InfobaseSummaryInfo { cluster, infobase } => {
             let resp = infobase_summary_info(client, cluster, infobase).map_err(map_rac_error)?;
-            response_value(resp, include_raw_payload)?
+            response_value(resp)?
         }
         Command::InfobaseInfo { cluster, infobase } => {
             let resp = infobase_info(client, cluster, infobase).map_err(map_rac_error)?;
-            response_value(resp, include_raw_payload)?
+            response_value(resp)?
         }
         Command::ConnectionList { cluster } => {
             let resp = connection_list(client, cluster).map_err(map_rac_error)?;
-            response_value(resp, include_raw_payload)?
+            response_value(resp)?
         }
         Command::ConnectionInfo { cluster, connection } => {
             let resp = connection_info(client, cluster, connection).map_err(map_rac_error)?;
-            response_value(resp, include_raw_payload)?
+            response_value(resp)?
         }
         Command::SessionList { cluster } => {
             let resp = session_list(client, cluster).map_err(map_rac_error)?;
-            response_value(resp, include_raw_payload)?
+            response_value(resp)?
         }
         Command::SessionInfo { cluster, session } => {
             let resp = session_info(client, cluster, session).map_err(map_rac_error)?;
-            response_value(resp, include_raw_payload)?
+            response_value(resp)?
         }
         Command::LockList { cluster } => {
             let resp = lock_list(client, cluster).map_err(map_rac_error)?;
-            response_value(resp, include_raw_payload)?
+            response_value(resp)?
         }
         Command::ProfileList { cluster } => {
             let resp = profile_list(client, cluster).map_err(map_rac_error)?;
-            response_value(resp, include_raw_payload)?
+            response_value(resp)?
         }
         Command::CounterList { cluster } => {
             let resp = counter_list(client, cluster).map_err(map_rac_error)?;
-            response_value(resp, include_raw_payload)?
+            response_value(resp)?
         }
         Command::CounterInfo { cluster, counter } => {
             let resp = counter_info(client, cluster, &counter).map_err(map_rac_error)?;
-            response_value(resp, include_raw_payload)?
+            response_value(resp)?
         }
         Command::LimitList { cluster } => {
             let resp = limit_list(client, cluster).map_err(map_rac_error)?;
-            response_value(resp, include_raw_payload)?
+            response_value(resp)?
         }
         Command::LimitInfo { cluster, limit } => {
             let resp = limit_info(client, cluster, &limit).map_err(map_rac_error)?;
-            response_value(resp, include_raw_payload)?
+            response_value(resp)?
         }
     };
     Ok(value)
 }
 
-fn response_value<T: Serialize>(resp: T, include_raw_payload: bool) -> Result<Value, RpcError> {
+fn response_value<T: Serialize>(resp: T) -> Result<Value, RpcError> {
     let mut value =
         serde_json::to_value(resp).map_err(|err| RpcError::new("internal", err.to_string()))?;
-    if !include_raw_payload {
-        if let Value::Object(map) = &mut value {
-            map.remove("raw_payload");
-        }
-    }
-    Ok(normalize_uuid_value(value, false))
+    Ok(normalize_uuid_value(value))
 }
 
 fn map_rac_error(err: RacError) -> RpcError {
@@ -459,10 +446,7 @@ fn parse_uuid_arg(input: &str) -> Result<Uuid16, RpcError> {
     parse_uuid(input).map_err(|err| RpcError::new("bad_request", err.to_string()))
 }
 
-fn normalize_uuid_value(value: Value, in_raw_payload: bool) -> Value {
-    if in_raw_payload {
-        return value;
-    }
+fn normalize_uuid_value(value: Value) -> Value {
     match value {
         Value::Array(items) => {
             if let Some(uuid) = uuid_from_json_array(&items) {
@@ -471,7 +455,7 @@ fn normalize_uuid_value(value: Value, in_raw_payload: bool) -> Value {
                 Value::Array(
                     items
                         .into_iter()
-                        .map(|item| normalize_uuid_value(item, false))
+                        .map(normalize_uuid_value)
                         .collect(),
                 )
             }
@@ -479,11 +463,7 @@ fn normalize_uuid_value(value: Value, in_raw_payload: bool) -> Value {
         Value::Object(map) => {
             let mut out = serde_json::Map::with_capacity(map.len());
             for (key, value) in map {
-                if key == "raw_payload" {
-                    out.insert(key, value);
-                } else {
-                    out.insert(key, normalize_uuid_value(value, false));
-                }
+                out.insert(key, normalize_uuid_value(value));
             }
             Value::Object(out)
         }
@@ -755,31 +735,15 @@ mod tests {
     }
 
     #[test]
-    fn response_value_strips_raw_payload() {
-        let resp = rac_protocol::commands::ClusterListResp {
-            clusters: Vec::new(),
-            raw_payload: Some(vec![1, 2, 3]),
-        };
-        let value = response_value(resp, false).expect("value");
-        assert!(value.get("raw_payload").is_none());
-    }
-
-    #[test]
     fn response_value_formats_uuid_as_string() {
         let uuid = parse_uuid("550e8400-e29b-41d4-a716-446655440000").expect("uuid");
-        let resp = rac_protocol::commands::ClusterListResp {
-            clusters: vec![rac_protocol::commands::ClusterSummary {
-                uuid,
-                host: Some("127.0.0.1".to_string()),
-                display_name: Some("cluster".to_string()),
-                port: Some(1545),
-                expiration_timeout: Some(600),
-            }],
-            raw_payload: None,
-        };
-        let value = response_value(resp, false).expect("value");
-        let clusters = value.get("clusters").expect("clusters");
-        let first = clusters.get(0).expect("cluster");
+        #[derive(Debug, Serialize)]
+        struct TestRecord {
+            uuid: Uuid16,
+        }
+        let resp = vec![TestRecord { uuid }];
+        let value = response_value(resp).expect("value");
+        let first = value.get(0).expect("record");
         let uuid_value = first.get("uuid").expect("uuid");
         let expected = Value::String("550e8400-e29b-41d4-a716-446655440000".to_string());
         assert_eq!(uuid_value, &expected);

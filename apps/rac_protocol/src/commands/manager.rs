@@ -16,20 +16,17 @@ use generated::parse_manager_info_body;
 #[derive(Debug, Serialize)]
 pub struct ManagerListResp {
     pub managers: Vec<ManagerRecord>,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 #[derive(Debug, Serialize)]
 pub struct ManagerInfoResp {
     pub manager: ManagerRecord,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 pub fn manager_list(client: &mut RacClient, cluster: Uuid16) -> Result<ManagerListResp> {
     let reply = client.call(RacRequest::ManagerList { cluster })?;
     Ok(ManagerListResp {
         managers: parse_list_u8(rpc_body(&reply)?, ManagerRecord::decode)?,
-        raw_payload: Some(reply),
     })
 }
 
@@ -41,7 +38,6 @@ pub fn manager_info(
     let reply = client.call(RacRequest::ManagerInfo { cluster, manager })?;
     Ok(ManagerInfoResp {
         manager: parse_manager_info_body(rpc_body(&reply)?)?,
-        raw_payload: Some(reply),
     })
 }
 

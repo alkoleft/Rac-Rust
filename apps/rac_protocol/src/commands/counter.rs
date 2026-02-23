@@ -16,13 +16,11 @@ pub use generated::{CounterRecord, CounterValuesRecord};
 #[derive(Debug, Serialize)]
 pub struct CounterListResp {
     pub records: Vec<CounterRecord>,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 #[derive(Debug, Serialize)]
 pub struct CounterInfoResp {
     pub record: CounterRecord,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 #[derive(Debug, Serialize, Clone)]
@@ -49,31 +47,26 @@ pub struct CounterUpdateReq {
 #[derive(Debug, Serialize)]
 pub struct CounterUpdateResp {
     pub acknowledged: bool,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 #[derive(Debug, Serialize)]
 pub struct CounterRemoveResp {
     pub acknowledged: bool,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 #[derive(Debug, Serialize)]
 pub struct CounterClearResp {
     pub acknowledged: bool,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 #[derive(Debug, Serialize)]
 pub struct CounterValuesResp {
     pub records: Vec<CounterValuesRecord>,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 #[derive(Debug, Serialize)]
 pub struct CounterAccumulatedValuesResp {
     pub records: Vec<CounterValuesRecord>,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 impl CounterRecord {
@@ -106,7 +99,6 @@ pub fn counter_list(client: &mut RacClient, cluster: crate::Uuid16) -> Result<Co
     let records = parse_counter_list_body(body)?;
     Ok(CounterListResp {
         records,
-        raw_payload: Some(reply),
     })
 }
 
@@ -123,7 +115,6 @@ pub fn counter_info(
     let record = parse_counter_info_body(body)?;
     Ok(CounterInfoResp {
         record,
-        raw_payload: Some(reply),
     })
 }
 
@@ -165,7 +156,6 @@ pub fn counter_update(
     }
     Ok(CounterUpdateResp {
         acknowledged,
-        raw_payload: Some(reply),
     })
 }
 
@@ -193,7 +183,6 @@ pub fn counter_clear(
     }
     Ok(CounterClearResp {
         acknowledged,
-        raw_payload: Some(reply),
     })
 }
 
@@ -219,7 +208,6 @@ pub fn counter_remove(
     }
     Ok(CounterRemoveResp {
         acknowledged,
-        raw_payload: Some(reply),
     })
 }
 
@@ -245,7 +233,6 @@ pub fn counter_values(
     let records = parse_counter_values_body(body)?;
     Ok(CounterValuesResp {
         records,
-        raw_payload: Some(reply),
     })
 }
 
@@ -271,7 +258,6 @@ pub fn counter_accumulated_values(
     let records = parse_counter_accumulated_values_body(body)?;
     Ok(CounterAccumulatedValuesResp {
         records,
-        raw_payload: Some(reply),
     })
 }
 

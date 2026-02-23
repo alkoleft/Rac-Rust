@@ -15,13 +15,11 @@ pub use generated::AgentAdminRecord;
 #[derive(Debug, Serialize)]
 pub struct AgentAdminListResp {
     pub admins: Vec<AgentAdminRecord>,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 #[derive(Debug, Serialize)]
 pub struct AgentVersionResp {
     pub version: Option<String>,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 pub fn agent_admin_list(
@@ -36,7 +34,6 @@ pub fn agent_admin_list(
     let reply = client.call(RacRequest::AgentAdminList)?;
     Ok(AgentAdminListResp {
         admins: parse_agent_admin_list_body(rpc_body(&reply)?)?,
-        raw_payload: Some(reply),
     })
 }
 
@@ -51,7 +48,6 @@ pub fn agent_version(client: &mut RacClient) -> Result<AgentVersionResp> {
     };
     Ok(AgentVersionResp {
         version,
-        raw_payload: Some(reply),
     })
 }
 

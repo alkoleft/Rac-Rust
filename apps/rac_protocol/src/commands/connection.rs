@@ -17,7 +17,6 @@ pub use generated::ConnectionRecord;
 pub struct ConnectionListResp {
     pub connections: Vec<Uuid16>,
     pub records: Vec<ConnectionRecord>,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 #[derive(Debug, Serialize)]
@@ -25,7 +24,6 @@ pub struct ConnectionInfoResp {
     pub connection: Uuid16,
     pub record: ConnectionRecord,
     pub fields: Vec<String>,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 pub fn connection_list(client: &mut RacClient, cluster: Uuid16) -> Result<ConnectionListResp> {
@@ -35,7 +33,6 @@ pub fn connection_list(client: &mut RacClient, cluster: Uuid16) -> Result<Connec
     Ok(ConnectionListResp {
         connections: records.iter().map(|record| record.connection).collect(),
         records,
-        raw_payload: Some(reply),
     })
 }
 
@@ -55,7 +52,6 @@ pub fn connection_info(
         connection: record.connection,
         record,
         fields,
-        raw_payload: Some(reply),
     })
 }
 

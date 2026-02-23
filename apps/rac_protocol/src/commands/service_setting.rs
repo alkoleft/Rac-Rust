@@ -16,13 +16,11 @@ pub use generated::{ServiceSettingRecord, ServiceSettingTransferDataDirRecord};
 #[derive(Debug, Serialize)]
 pub struct ServiceSettingListResp {
     pub records: Vec<ServiceSettingRecord>,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 #[derive(Debug, Serialize)]
 pub struct ServiceSettingInfoResp {
     pub record: ServiceSettingRecord,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 #[derive(Debug, Serialize, Clone)]
@@ -37,7 +35,6 @@ pub struct ServiceSettingInsertReq {
 #[derive(Debug, Serialize)]
 pub struct ServiceSettingInsertResp {
     pub setting: Uuid16,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 #[derive(Debug, Serialize, Clone)]
@@ -53,25 +50,21 @@ pub struct ServiceSettingUpdateReq {
 #[derive(Debug, Serialize)]
 pub struct ServiceSettingUpdateResp {
     pub setting: Uuid16,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 #[derive(Debug, Serialize)]
 pub struct ServiceSettingRemoveResp {
     pub acknowledged: bool,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 #[derive(Debug, Serialize)]
 pub struct ServiceSettingApplyResp {
     pub acknowledged: bool,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 #[derive(Debug, Serialize)]
 pub struct ServiceSettingTransferDataDirsResp {
     pub records: Vec<ServiceSettingTransferDataDirRecord>,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 pub fn service_setting_info(
@@ -105,7 +98,6 @@ pub fn service_setting_info_no_auth(
     let record = parse_service_setting_info(body)?;
     Ok(ServiceSettingInfoResp {
         record,
-        raw_payload: Some(reply),
     })
 }
 
@@ -126,7 +118,6 @@ pub fn service_setting_list(
     let records = parse_service_setting_list(body)?;
     Ok(ServiceSettingListResp {
         records,
-        raw_payload: Some(reply),
     })
 }
 
@@ -154,7 +145,6 @@ pub fn service_setting_insert(
     let setting = parse_service_setting_insert_body(body)?;
     Ok(ServiceSettingInsertResp {
         setting,
-        raw_payload: Some(reply),
     })
 }
 
@@ -191,7 +181,6 @@ pub fn service_setting_update_no_auth(
     let setting = parse_service_setting_update_body(body)?;
     Ok(ServiceSettingUpdateResp {
         setting,
-        raw_payload: Some(reply),
     })
 }
 
@@ -219,7 +208,6 @@ pub fn service_setting_remove(
     }
     Ok(ServiceSettingRemoveResp {
         acknowledged,
-        raw_payload: Some(reply),
     })
 }
 
@@ -242,7 +230,6 @@ pub fn service_setting_apply(
     }
     Ok(ServiceSettingApplyResp {
         acknowledged,
-        raw_payload: Some(reply),
     })
 }
 
@@ -268,7 +255,6 @@ pub fn service_setting_get_service_data_dirs_for_transfer(
     let records = parse_service_setting_transfer_data_dirs(body)?;
     Ok(ServiceSettingTransferDataDirsResp {
         records,
-        raw_payload: Some(reply),
     })
 }
 

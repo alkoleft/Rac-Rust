@@ -32,13 +32,11 @@ impl RuleApplyMode {
 #[derive(Debug, Serialize)]
 pub struct RuleApplyResp {
     pub acknowledged: bool,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 #[derive(Debug, Serialize)]
 pub struct RuleRemoveResp {
     pub acknowledged: bool,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 #[derive(Debug, Serialize, Clone)]
@@ -55,7 +53,6 @@ pub struct RuleInsertReq {
 #[derive(Debug, Serialize)]
 pub struct RuleInsertResp {
     pub rule: Uuid16,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 #[derive(Debug, Serialize, Clone)]
@@ -73,19 +70,16 @@ pub struct RuleUpdateReq {
 #[derive(Debug, Serialize)]
 pub struct RuleUpdateResp {
     pub rule: Uuid16,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 #[derive(Debug, Serialize)]
 pub struct RuleListResp {
     pub records: Vec<RuleRecord>,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 #[derive(Debug, Serialize)]
 pub struct RuleInfoResp {
     pub record: RuleRecord,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 pub fn rule_list(
@@ -105,7 +99,6 @@ pub fn rule_list(
     let records = parse_rule_list_records(body)?;
     Ok(RuleListResp {
         records,
-        raw_payload: Some(reply),
     })
 }
 
@@ -131,7 +124,6 @@ pub fn rule_info(
     let record = parse_rule_info_body(body)?;
     Ok(RuleInfoResp {
         record,
-        raw_payload: Some(reply),
     })
 }
 
@@ -157,7 +149,6 @@ pub fn rule_apply(
     }
     Ok(RuleApplyResp {
         acknowledged,
-        raw_payload: Some(reply),
     })
 }
 
@@ -185,7 +176,6 @@ pub fn rule_remove(
     }
     Ok(RuleRemoveResp {
         acknowledged,
-        raw_payload: Some(reply),
     })
 }
 
@@ -215,7 +205,6 @@ pub fn rule_insert(
     let rule = parse_rule_insert_body(body)?;
     Ok(RuleInsertResp {
         rule,
-        raw_payload: Some(reply),
     })
 }
 
@@ -246,7 +235,6 @@ pub fn rule_update(
     let rule = parse_rule_update_body(body)?;
     Ok(RuleUpdateResp {
         rule,
-        raw_payload: Some(reply),
     })
 }
 

@@ -28,31 +28,26 @@ pub use generated::{
 #[derive(Debug, Serialize)]
 pub struct ClusterAdminListResp {
     pub admins: Vec<ClusterAdminRecord>,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 #[derive(Debug, Serialize)]
 pub struct ClusterAuthResp {
     pub acknowledged: bool,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 #[derive(Debug, Serialize)]
 pub struct ClusterAdminRegisterResp {
     pub acknowledged: bool,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 #[derive(Debug, Serialize)]
 pub struct ClusterListResp {
     pub clusters: Vec<ClusterRecord>,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 #[derive(Debug, Serialize)]
 pub struct ClusterInfoResp {
     pub cluster: ClusterRecord,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 pub fn cluster_auth(
@@ -72,7 +67,6 @@ pub fn cluster_auth(
     }
     Ok(ClusterAuthResp {
         acknowledged,
-        raw_payload: Some(reply),
     })
 }
 
@@ -83,7 +77,6 @@ pub fn cluster_admin_list(
     let reply = client.call(RacRequest::ClusterAdminList { cluster })?;
     Ok(ClusterAdminListResp {
         admins: parse_list_u8(rpc_body(&reply)?, ClusterAdminRecord::decode)?,
-        raw_payload: Some(reply),
     })
 }
 
@@ -108,7 +101,6 @@ pub fn cluster_admin_register(
     }
     Ok(ClusterAdminRegisterResp {
         acknowledged,
-        raw_payload: Some(reply),
     })
 }
 
@@ -120,7 +112,6 @@ pub fn cluster_list(client: &mut RacClient) -> Result<ClusterListResp> {
     let clusters = parse_list_u8_tail(body, tail_len, ClusterRecord::decode)?;
     Ok(ClusterListResp {
         clusters,
-        raw_payload: Some(reply),
     })
 }
 
@@ -132,7 +123,6 @@ pub fn cluster_info(client: &mut RacClient, cluster: Uuid16) -> Result<ClusterIn
     let summary = parse_cluster_info_body(body, tail_len)?;
     Ok(ClusterInfoResp {
         cluster: summary,
-        raw_payload: Some(reply),
     })
 }
 

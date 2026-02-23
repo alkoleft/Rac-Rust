@@ -18,21 +18,18 @@ use generated::InfobaseFieldsRecord;
 pub struct InfobaseSummaryListResp {
     pub infobases: Vec<Uuid16>,
     pub summaries: Vec<InfobaseSummary>,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 #[derive(Debug, Serialize)]
 pub struct InfobaseSummaryInfoResp {
     pub infobase: Uuid16,
     pub fields: Vec<String>,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 #[derive(Debug, Serialize)]
 pub struct InfobaseInfoResp {
     pub infobase: Uuid16,
     pub fields: Vec<String>,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 pub fn infobase_summary_list(
@@ -45,7 +42,6 @@ pub fn infobase_summary_list(
     Ok(InfobaseSummaryListResp {
         infobases: summaries.iter().map(|s| s.infobase).collect(),
         summaries,
-        raw_payload: Some(reply),
     })
 }
 
@@ -61,7 +57,6 @@ pub fn infobase_summary_info(
     Ok(InfobaseSummaryInfoResp {
         infobase: record.infobase,
         fields: record.fields,
-        raw_payload: Some(reply),
     })
 }
 
@@ -77,7 +72,6 @@ pub fn infobase_info(
     Ok(InfobaseInfoResp {
         infobase: record.infobase,
         fields: record.fields,
-        raw_payload: Some(reply),
     })
 }
 

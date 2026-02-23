@@ -8,4 +8,3 @@ write_timeout_ms = 5000
 pool_max = 4
 idle_ttl_secs = 60
 
-include_raw_payload = false

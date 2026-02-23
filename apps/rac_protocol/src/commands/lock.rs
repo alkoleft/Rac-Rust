@@ -24,7 +24,6 @@ pub struct LockRecord {
 pub struct LockListResp {
     pub locks: Vec<Uuid16>,
     pub records: Vec<LockRecord>,
-    pub raw_payload: Option<Vec<u8>>,
 }
 
 pub fn lock_list(client: &mut RacClient, cluster: Uuid16) -> Result<LockListResp> {
@@ -34,7 +33,6 @@ pub fn lock_list(client: &mut RacClient, cluster: Uuid16) -> Result<LockListResp
     Ok(LockListResp {
         locks: records.iter().map(|record| record.object).collect(),
         records,
-        raw_payload: Some(reply),
     })
 }
 

@@ -89,6 +89,7 @@ impl LockListRequest {
 
 
 
+
 pub const RPC_LOCK_LIST_META: crate::rpc::Meta = crate::rpc::Meta {
     method_req: crate::rac_wire::METHOD_LOCK_LIST_REQ,
     method_resp: Some(crate::rac_wire::METHOD_LOCK_LIST_RESP),

@@ -236,6 +236,7 @@ impl ServiceSettingGetDataDirsRequest {
 }
 
 
+
 pub fn parse_service_setting_info_body(body: &[u8]) -> Result<ServiceSettingRecord> {
     if body.is_empty() {
         return Err(RacError::Decode("service setting info empty body"));

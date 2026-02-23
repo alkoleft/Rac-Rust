@@ -114,6 +114,8 @@ def generate(
         lines.append("")
 
     if responses:
+        lines.extend(generate_response_structs(responses, records))
+        lines.append("")
         lines.extend(generate_response_parsers(responses))
         lines.append("")
 
@@ -178,6 +180,81 @@ def generate_response_parsers(responses: List[ResponseSpec]) -> List[str]:
             continue
         else:
             raise ValueError(f"unknown response body type: {resp.body.type_name}")
+    return lines
+
+
+def generate_response_structs(
+    responses: List[ResponseSpec], records: List[RecordSpec]
+) -> List[str]:
+    lines: List[str] = []
+    record_map = {record.name: record for record in records}
+    for resp in responses:
+        if not resp.body.make_struct:
+            continue
+        if resp.body.type_name not in {"list_u8", "record"}:
+            continue
+        resp_name = f"{resp.name}Resp"
+        if resp.body.type_name == "list_u8":
+            if not resp.body.item:
+                raise ValueError("list_u8 response requires item")
+            item = resp.body.item
+            field_name = resp.body.field_name or "items"
+            lines.append("#[derive(Debug, Serialize)]")
+            lines.append(f"pub struct {resp_name} {{")
+            lines.append(f"    pub {field_name}: Vec<{item}>,")
+            lines.append("}")
+            lines.append("")
+            lines.append(f"impl crate::rpc::Response for {resp_name} {{")
+            lines.append(
+                "    fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {"
+            )
+            lines.append("        let body = crate::rpc::decode_utils::rpc_body(payload)?;")
+            lines.append("        Ok(Self {")
+            lines.append(
+                f"            {field_name}: crate::commands::parse_list_u8(body, {item}::decode)?,"
+            )
+            lines.append("        })")
+            lines.append("    }")
+            lines.append("}")
+            lines.append("")
+            continue
+
+        if resp.body.type_name == "record":
+            if not resp.body.item:
+                raise ValueError("record response requires item")
+            item = resp.body.item
+            field_name = resp.body.field_name or "record"
+            record_spec = record_map.get(item)
+            field_spec = None
+            if record_spec:
+                for field in record_spec.fields:
+                    if field.skip:
+                        continue
+                    if field.name == field_name:
+                        field_spec = field
+                        break
+            field_type = item if field_spec is None else request_rust_type(field_spec)
+            lines.append("#[derive(Debug, Serialize)]")
+            lines.append(f"pub struct {resp_name} {{")
+            lines.append(f"    pub {field_name}: {field_type},")
+            lines.append("}")
+            lines.append("")
+            lines.append(f"impl crate::rpc::Response for {resp_name} {{")
+            lines.append(
+                "    fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {"
+            )
+            lines.append("        let body = crate::rpc::decode_utils::rpc_body(payload)?;")
+            lines.append(f"        let record = parse_{snake_case(resp.name)}_body(body)?;")
+            lines.append("        Ok(Self {")
+            if field_spec is None:
+                lines.append(f"            {field_name}: record,")
+            else:
+                lines.append(f"            {field_name}: record.{field_name},")
+            lines.append("        })")
+            lines.append("    }")
+            lines.append("}")
+            lines.append("")
+            continue
     return lines
 
 

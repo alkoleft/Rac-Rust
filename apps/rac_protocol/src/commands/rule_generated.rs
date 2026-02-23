@@ -188,6 +188,7 @@ impl RuleUpdateRequest {
 }
 
 
+
 pub fn parse_rule_info_body(body: &[u8]) -> Result<RuleRecord> {
     if body.is_empty() {
         return Err(RacError::Decode("rule info empty body"));

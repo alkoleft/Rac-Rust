@@ -177,6 +177,7 @@ impl ProcessInfoRequest {
 }
 
 
+
 pub fn parse_process_info_body(body: &[u8]) -> Result<ProcessRecord> {
     if body.is_empty() {
         return Err(RacError::Decode("process info empty body"));

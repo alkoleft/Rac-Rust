@@ -147,6 +147,7 @@ impl ClusterAdminRegisterRequest {
 }
 
 
+
 pub fn parse_cluster_info_body(body: &[u8], tail_len: usize) -> Result<ClusterRecord> {
     if body.is_empty() {
         return Err(RacError::Decode("cluster info empty body"));

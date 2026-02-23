@@ -250,6 +250,7 @@ impl SessionInfoRequest {
 }
 
 
+
 pub fn parse_session_info_body(body: &[u8]) -> Result<SessionRecordRaw> {
     if body.is_empty() {
         return Err(RacError::Decode("session info empty body"));

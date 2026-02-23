@@ -108,6 +108,36 @@ impl crate::rpc::Request for AgentVersionRpc {
 }
 
 
+#[derive(Debug, Serialize)]
+pub struct AgentAdminListResp {
+    pub admins: Vec<AgentAdminRecord>,
+}
+
+impl crate::rpc::Response for AgentAdminListResp {
+    fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
+        let body = crate::rpc::decode_utils::rpc_body(payload)?;
+        Ok(Self {
+            admins: crate::commands::parse_list_u8(body, AgentAdminRecord::decode)?,
+        })
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct AgentVersionResp {
+    pub version: String,
+}
+
+impl crate::rpc::Response for AgentVersionResp {
+    fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
+        let body = crate::rpc::decode_utils::rpc_body(payload)?;
+        let record = parse_agent_version_body(body)?;
+        Ok(Self {
+            version: record.version,
+        })
+    }
+}
+
+
 pub fn parse_agent_version_body(body: &[u8]) -> Result<AgentVersionRecord> {
     if body.is_empty() {
         return Err(RacError::Decode("agent version empty body"));

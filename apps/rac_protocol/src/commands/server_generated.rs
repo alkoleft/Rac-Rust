@@ -125,6 +125,7 @@ impl ServerInfoRequest {
 }
 
 
+
 pub fn parse_server_info_body(body: &[u8]) -> Result<ServerRecord> {
     if body.is_empty() {
         return Err(RacError::Decode("server info empty body"));

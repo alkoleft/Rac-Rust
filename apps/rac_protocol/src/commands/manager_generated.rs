@@ -68,6 +68,7 @@ impl ManagerInfoRequest {
 }
 
 
+
 pub fn parse_manager_info_body(body: &[u8]) -> Result<ManagerRecord> {
     if body.is_empty() {
         return Err(RacError::Decode("manager info empty body"));

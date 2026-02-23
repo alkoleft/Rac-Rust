@@ -130,6 +130,8 @@ def parse_schema_payload(
             type_name=str(body_spec.get("type", "")),
             item=body_spec.get("item"),
             tail_len_param=body_spec.get("tail_len_param"),
+            field_name=body_spec.get("field"),
+            make_struct=body_spec.get("struct"),
         )
         tests = []
         for raw in spec.get("tests", []):

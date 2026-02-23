@@ -78,6 +78,7 @@ impl ConnectionInfoRequest {
 }
 
 
+
 pub fn parse_connection_info_body(body: &[u8]) -> Result<ConnectionRecord> {
     if body.is_empty() {
         return Err(RacError::Decode("connection info empty body"));

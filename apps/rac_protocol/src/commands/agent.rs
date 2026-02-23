@@ -1,12 +1,5 @@
-use serde::Serialize;
-
 use crate::client::RacClient;
 use crate::error::Result;
-use crate::protocol::ProtocolCodec;
-use crate::rpc::Response;
-use crate::rpc::decode_utils::rpc_body;
-
-use super::parse_list_u8;
 
 mod generated {
     include!("agent_generated.rs");
@@ -14,41 +7,14 @@ mod generated {
 
 pub use generated::{
     AgentAdminListRpc,
+    AgentAdminListResp,
     AgentAdminRecord,
     AgentAuthRpc,
+    AgentVersionResp,
     AgentVersionRecord,
     AgentVersionRpc,
     parse_agent_version_body,
 };
-
-#[derive(Debug, Serialize)]
-pub struct AgentAdminListResp {
-    pub admins: Vec<AgentAdminRecord>,
-}
-
-#[derive(Debug, Serialize)]
-pub struct AgentVersionResp {
-    pub version: String,
-}
-
-impl Response for AgentAdminListResp {
-    fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
-        let body = rpc_body(payload)?;
-        Ok(Self {
-            admins: parse_agent_admin_list_body(body)?,
-        })
-    }
-}
-
-impl Response for AgentVersionResp {
-    fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
-        let body = rpc_body(payload)?;
-        let record = parse_agent_version_body(body)?;
-        Ok(Self {
-            version: record.version,
-        })
-    }
-}
 
 pub fn agent_admin_list(
     client: &mut RacClient,
@@ -67,16 +33,13 @@ pub fn agent_version(client: &mut RacClient) -> Result<String> {
     Ok(resp.version)
 }
 
-fn parse_agent_admin_list_body(body: &[u8]) -> Result<Vec<AgentAdminRecord>> {
-    parse_list_u8(body, AgentAdminRecord::decode)
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::protocol::ProtocolVersion;
     use crate::rpc::Request;
     use crate::commands::rpc_body;
+    use crate::commands::parse_list_u8;
     use crate::rac_wire::{METHOD_AGENT_ADMIN_LIST_RESP, METHOD_AGENT_VERSION_RESP};
 
     fn decode_hex_str(input: &str) -> Vec<u8> {
@@ -93,7 +56,7 @@ mod tests {
     fn parse_agent_admin_list_from_capture() {
         let payload = decode_hex_str("0100000101010561646d696e0003efbfbd010000");
         let body = rpc_body(&payload).expect("rpc body");
-        let admins = parse_agent_admin_list_body(body).expect("parse list");
+        let admins = parse_list_u8(body, AgentAdminRecord::decode).expect("parse list");
 
         assert_eq!(admins.len(), 1);
         assert_eq!(admins[0].name, "admin");

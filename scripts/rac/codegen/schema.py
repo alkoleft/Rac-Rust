@@ -72,6 +72,8 @@ class ResponseBodySpec:
     type_name: str
     item: Optional[str]
     tail_len_param: Optional[str] = None
+    field_name: Optional[str] = None
+    make_struct: Optional[bool] = None
 
 
 @dataclass

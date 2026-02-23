@@ -109,6 +109,7 @@ impl InfobaseInfoRequest {
 }
 
 
+
 pub fn parse_infobase_summary_info_body(body: &[u8]) -> Result<InfobaseFieldsRecord> {
     if body.is_empty() {
         return Err(RacError::Decode("infobase summary info empty body"));

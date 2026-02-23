@@ -284,6 +284,7 @@ impl CounterAccumulatedValuesRequest {
 }
 
 
+
 pub fn parse_counter_info_body(body: &[u8]) -> Result<CounterRecord> {
     if body.is_empty() {
         return Err(RacError::Decode("counter info empty body"));

@@ -8,19 +8,17 @@ mod format;
 use console_output as console;
 use rac_protocol::client::{ClientConfig, RacClient, RacRequest};
 use rac_protocol::commands::{
-    agent_admin_list, agent_version, cluster_admin_list, cluster_admin_register, cluster_info, cluster_list,
-    connection_info, connection_list, counter_accumulated_values, counter_clear, counter_info,
-    counter_list, counter_remove, counter_update, counter_values, infobase_info,
-    infobase_summary_info,
-    infobase_summary_list, limit_info, limit_list, limit_remove, limit_update, lock_list,
-    manager_info,
-    manager_list, process_info, process_list, profile_list, rule_apply, rule_info, rule_insert,
-    rule_list, rule_update, rule_remove, server_info, server_list, session_info, session_list,
-    service_setting_apply, service_setting_get_service_data_dirs_for_transfer,
-    service_setting_info, service_setting_info_no_auth, service_setting_insert,
-    service_setting_list, service_setting_remove, service_setting_update_no_auth,
-    ClusterAdminRegisterReq, CounterUpdateReq, LimitUpdateReq, RuleApplyMode, RuleInsertReq,
-    RuleUpdateReq, ServiceSettingInsertReq, ServiceSettingUpdateReq,
+    agent_admin_list, agent_version, cluster_admin_list, cluster_admin_register, cluster_auth,
+    cluster_info, cluster_list, connection_info, connection_list, counter_accumulated_values,
+    counter_clear, counter_info, counter_list, counter_remove, counter_update, counter_values,
+    infobase_info, infobase_summary_info, infobase_summary_list, limit_info, limit_list,
+    limit_remove, limit_update, lock_list, manager_info, manager_list, process_info, process_list,
+    profile_list, rule_apply, rule_info, rule_insert, rule_list, rule_remove, rule_update,
+    server_info, server_list, session_info, session_list, service_setting_apply,
+    service_setting_get_service_data_dirs_for_transfer, service_setting_info,
+    service_setting_info_no_auth, service_setting_insert, service_setting_list,
+    service_setting_remove, service_setting_update_no_auth, CounterUpdateReq, LimitUpdateReq,
+    RuleApplyMode, RuleInsertReq, RuleUpdateReq, ServiceSettingInsertReq, ServiceSettingUpdateReq,
 };
 use rac_protocol::error::{RacError, Result};
 use rac_protocol::rac_wire::parse_uuid;
@@ -720,8 +718,8 @@ fn run(cli: Cli) -> Result<()> {
                 } => {
                     let cluster = parse_uuid_arg(&cluster)?;
                     let mut client = RacClient::connect(&addr, cfg.clone())?;
-                    let resp =
-                        cluster_admin_list(&mut client, cluster, &cluster_user, &cluster_pwd)?;
+                    cluster_auth(&mut client, cluster, &cluster_user, &cluster_pwd)?;
+                    let resp = cluster_admin_list(&mut client, cluster)?;
                     console::output(cli.json, &resp, console::cluster_admin_list(&resp.admins));
                     client.close()?;
                 }
@@ -738,19 +736,9 @@ fn run(cli: Cli) -> Result<()> {
                     let cluster = parse_uuid_arg(&cluster)?;
                     let auth_flags = parse_auth_flags(&auth)?;
                     let mut client = RacClient::connect(&addr, cfg.clone())?;
-                    let req = ClusterAdminRegisterReq {
-                        name,
-                        descr,
-                        pwd,
-                        auth_flags,
-                    };
-                    let resp = cluster_admin_register(
-                        &mut client,
-                        cluster,
-                        &cluster_user,
-                        &cluster_pwd,
-                        req,
-                    )?;
+                    cluster_auth(&mut client, cluster, &cluster_user, &cluster_pwd)?;
+                    let resp =
+                        cluster_admin_register(&mut client, cluster, name, descr, pwd, auth_flags)?;
                     console::output(cli.json, &resp, console::cluster_admin_register(&resp));
                     client.close()?;
                 }

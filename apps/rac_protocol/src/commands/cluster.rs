@@ -31,12 +31,10 @@ pub struct ClusterAdminListResp {
     pub raw_payload: Option<Vec<u8>>,
 }
 
-#[derive(Debug, Serialize, Clone)]
-pub struct ClusterAdminRegisterReq {
-    pub name: String,
-    pub descr: String,
-    pub pwd: String,
-    pub auth_flags: u8,
+#[derive(Debug, Serialize)]
+pub struct ClusterAuthResp {
+    pub acknowledged: bool,
+    pub raw_payload: Option<Vec<u8>>,
 }
 
 #[derive(Debug, Serialize)]
@@ -57,17 +55,31 @@ pub struct ClusterInfoResp {
     pub raw_payload: Option<Vec<u8>>,
 }
 
+pub fn cluster_auth(
+    client: &mut RacClient,
+    cluster: Uuid16,
+    user: &str,
+    pwd: &str,
+) -> Result<ClusterAuthResp> {
+    let reply = client.call(RacRequest::ClusterAuth {
+        cluster,
+        user: user.to_string(),
+        pwd: pwd.to_string(),
+    })?;
+    let acknowledged = parse_ack_payload(&reply, "cluster auth expected ack")?;
+    if !acknowledged {
+        return Err(RacError::Decode("cluster auth expected ack"));
+    }
+    Ok(ClusterAuthResp {
+        acknowledged,
+        raw_payload: Some(reply),
+    })
+}
+
 pub fn cluster_admin_list(
     client: &mut RacClient,
     cluster: Uuid16,
-    cluster_user: &str,
-    cluster_pwd: &str,
 ) -> Result<ClusterAdminListResp> {
-    client.call(RacRequest::ClusterAuth {
-        cluster,
-        user: cluster_user.to_string(),
-        pwd: cluster_pwd.to_string(),
-    })?;
     let reply = client.call(RacRequest::ClusterAdminList { cluster })?;
     Ok(ClusterAdminListResp {
         admins: parse_list_u8(rpc_body(&reply)?, ClusterAdminRecord::decode)?,
@@ -78,21 +90,17 @@ pub fn cluster_admin_list(
 pub fn cluster_admin_register(
     client: &mut RacClient,
     cluster: Uuid16,
-    cluster_user: &str,
-    cluster_pwd: &str,
-    req: ClusterAdminRegisterReq,
+    name: String,
+    descr: String,
+    pwd: String,
+    auth_flags: u8,
 ) -> Result<ClusterAdminRegisterResp> {
-    client.call(RacRequest::ClusterAuth {
-        cluster,
-        user: cluster_user.to_string(),
-        pwd: cluster_pwd.to_string(),
-    })?;
     let reply = client.call(RacRequest::ClusterAdminRegister {
         cluster,
-        name: req.name,
-        descr: req.descr,
-        pwd: req.pwd,
-        auth_flags: req.auth_flags,
+        name,
+        descr,
+        pwd,
+        auth_flags,
     })?;
     let acknowledged = parse_ack_payload(&reply, "cluster admin register expected ack")?;
     if !acknowledged {

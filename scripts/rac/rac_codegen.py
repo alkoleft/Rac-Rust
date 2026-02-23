@@ -24,6 +24,7 @@ class FieldSpec:
     computed: Optional[str] = None
     source: Optional[str] = None
     rust_type: Optional[str] = None
+    literal: Optional[List[int]] = None
 
 
 @dataclass
@@ -33,15 +34,23 @@ class RecordSpec:
     fields: List[FieldSpec]
 
 
-def parse_schema(path: Path) -> List[RecordSpec]:
+@dataclass
+class RequestSpec:
+    name: str
+    derives: List[str]
+    fields: List[FieldSpec]
+
+
+def parse_schema(path: Path) -> tuple[List[RecordSpec], List[RequestSpec]]:
     if _TOML_AVAILABLE:
         payload = tomllib.loads(path.read_text())
         return parse_schema_payload(payload)
     return parse_schema_minimal(path)
 
 
-def parse_schema_payload(payload: Dict[str, Any]) -> List[RecordSpec]:
+def parse_schema_payload(payload: Dict[str, Any]) -> tuple[List[RecordSpec], List[RequestSpec]]:
     records: List[RecordSpec] = []
+    requests: List[RequestSpec] = []
     record_table: Dict[str, Any] = payload.get("record", {})
     for name, spec in record_table.items():
         derives = [str(v) for v in spec.get("derive", ["Debug", "Serialize", "Clone"])]
@@ -58,17 +67,40 @@ def parse_schema_payload(payload: Dict[str, Any]) -> List[RecordSpec]:
                     computed=raw.get("computed"),
                     source=raw.get("source"),
                     rust_type=raw.get("rust_type"),
+                    literal=raw.get("literal"),
                 )
             )
         records.append(RecordSpec(name=name, derives=derives, fields=fields))
-    return records
+    request_table: Dict[str, Any] = payload.get("request", {})
+    for name, spec in request_table.items():
+        derives = [str(v) for v in spec.get("derive", ["Debug", "Clone"])]
+        fields = []
+        for raw in spec.get("fields", []):
+            fields.append(
+                FieldSpec(
+                    name=str(raw.get("name", "")),
+                    type_name=str(raw.get("type", "")),
+                    item=raw.get("item"),
+                    length=raw.get("len"),
+                    len_source=raw.get("len_source"),
+                    skip=bool(raw.get("skip", False)),
+                    computed=raw.get("computed"),
+                    source=raw.get("source"),
+                    rust_type=raw.get("rust_type"),
+                    literal=raw.get("literal"),
+                )
+            )
+        requests.append(RequestSpec(name=name, derives=derives, fields=fields))
+    return records, requests
 
 
-def parse_schema_minimal(path: Path) -> List[RecordSpec]:
+def parse_schema_minimal(path: Path) -> tuple[List[RecordSpec], List[RequestSpec]]:
     lines = path.read_text().splitlines()
     records: Dict[str, Dict[str, Any]] = {}
+    requests: Dict[str, Dict[str, Any]] = {}
     current: Optional[Dict[str, Any]] = None
     current_name: Optional[str] = None
+    current_kind: Optional[str] = None
     in_fields = False
     fields_buf: List[Dict[str, Any]] = []
 
@@ -76,11 +108,19 @@ def parse_schema_minimal(path: Path) -> List[RecordSpec]:
         line = raw.strip()
         if not line or line.startswith("#"):
             continue
-        if line.startswith("[record.") and line.endswith("]"):
-            if current_name:
+        if line.startswith("[record.") and line.endswith("]") or line.startswith("[request.") and line.endswith("]"):
+            if current_name and current is not None and current_kind:
                 current["fields"] = fields_buf
-                records[current_name] = current
-            current_name = line[len("[record.") : -1]
+                if current_kind == "record":
+                    records[current_name] = current
+                else:
+                    requests[current_name] = current
+            if line.startswith("[record."):
+                current_kind = "record"
+                current_name = line[len("[record.") : -1]
+            else:
+                current_kind = "request"
+                current_name = line[len("[request.") : -1]
             current = {}
             fields_buf = []
             in_fields = False
@@ -105,11 +145,14 @@ def parse_schema_minimal(path: Path) -> List[RecordSpec]:
                 fields_buf.append(parse_inline_table(line))
             continue
 
-    if current_name and current is not None:
+    if current_name and current is not None and current_kind:
         current["fields"] = fields_buf
-        records[current_name] = current
+        if current_kind == "record":
+            records[current_name] = current
+        else:
+            requests[current_name] = current
 
-    return parse_schema_payload({"record": records})
+    return parse_schema_payload({"record": records, "request": requests})
 
 
 def parse_list_value(value: str) -> List[str]:
@@ -140,6 +183,12 @@ def parse_inline_table(value: str) -> Dict[str, Any]:
 def parse_value(raw_val: str) -> Any:
     if raw_val.startswith("\"") and raw_val.endswith("\""):
         return strip_quotes(raw_val)
+    if raw_val.startswith("[") and raw_val.endswith("]"):
+        inner = raw_val[1:-1].strip()
+        if not inner:
+            return []
+        parts = split_top_level(inner, ",")
+        return [parse_value(p.strip()) for p in parts if p.strip()]
     if raw_val in {"true", "false"}:
         return raw_val == "true"
     if raw_val.isdigit():
@@ -158,6 +207,7 @@ def split_top_level(value: str, sep: str) -> List[str]:
     buf: List[str] = []
     in_str = False
     escaped = False
+    depth = 0
     for ch in value:
         if escaped:
             buf.append(ch)
@@ -171,7 +221,16 @@ def split_top_level(value: str, sep: str) -> List[str]:
             in_str = not in_str
             buf.append(ch)
             continue
-        if ch == sep and not in_str:
+        if ch in "[{":
+            depth += 1
+            buf.append(ch)
+            continue
+        if ch in "]}":
+            if depth > 0:
+                depth -= 1
+            buf.append(ch)
+            continue
+        if ch == sep and not in_str and depth == 0:
             parts.append("".join(buf))
             buf = []
             continue
@@ -524,17 +583,165 @@ def generate(records: List[RecordSpec]) -> str:
     return "\n".join(lines).rstrip() + "\n"
 
 
+def request_rust_type(field: FieldSpec) -> str:
+    return rust_type(field)
+
+
+def request_literal_bytes(field: FieldSpec) -> List[int]:
+    if field.literal is None:
+        return []
+    if not isinstance(field.literal, list):
+        raise ValueError("literal must be a list")
+    out: List[int] = []
+    for val in field.literal:
+        if not isinstance(val, int):
+            raise ValueError("literal list must contain integers")
+        if val < 0 or val > 255:
+            raise ValueError("literal byte out of range")
+        out.append(val)
+    return out
+
+
+def request_encoded_len(field: FieldSpec) -> int:
+    if field.literal is not None:
+        if field.type_name == "bytes_fixed":
+            return len(request_literal_bytes(field))
+        if field.type_name == "u8":
+            return 1
+        raise ValueError("literal supported only for bytes_fixed and u8")
+    t = field.type_name
+    if t == "uuid":
+        return 16
+    if t == "u8":
+        return 1
+    if t == "u16_be":
+        return 2
+    if t == "u32_be":
+        return 4
+    if t == "u64_be":
+        return 8
+    if t == "bytes_fixed":
+        if field.length is None:
+            raise ValueError("bytes_fixed requires len")
+        return field.length
+    raise ValueError(f"unknown type for encoded_len: {t}")
+
+
+def request_needs_uuid(requests: List[RequestSpec]) -> bool:
+    for req in requests:
+        for field in req.fields:
+            if field.type_name == "uuid":
+                return True
+    return False
+
+
+def request_needs_serde(requests: List[RequestSpec]) -> bool:
+    for req in requests:
+        if any(derive == "Serialize" for derive in req.derives):
+            return True
+    return False
+
+
+def request_needs_encode_with_len_u8(requests: List[RequestSpec]) -> bool:
+    for req in requests:
+        for field in req.fields:
+            if field.type_name == "str8":
+                return True
+    return False
+
+
+def request_encode_expr(field: FieldSpec) -> List[str]:
+    t = field.type_name
+    if field.literal is not None:
+        literal_bytes = request_literal_bytes(field)
+        if t == "bytes_fixed":
+            return [f"out.extend_from_slice(&{literal_bytes});"]
+        if t == "u8":
+            if len(literal_bytes) != 1:
+                raise ValueError("u8 literal must have length 1")
+            return [f"out.push({literal_bytes[0]});"]
+        raise ValueError("literal supported only for bytes_fixed and u8")
+    if t == "uuid":
+        return [f"out.extend_from_slice(&self.{field.name});"]
+    if t == "str8":
+        return [f"out.extend_from_slice(&encode_with_len_u8(self.{field.name}.as_bytes())?);"]
+    if t == "u8":
+        return [f"out.push(self.{field.name});"]
+    if t == "u16_be":
+        return [f"out.extend_from_slice(&self.{field.name}.to_be_bytes());"]
+    if t == "u32_be":
+        return [f"out.extend_from_slice(&self.{field.name}.to_be_bytes());"]
+    if t == "u64_be":
+        return [f"out.extend_from_slice(&self.{field.name}.to_be_bytes());"]
+    if t == "bytes_fixed":
+        return [f"out.extend_from_slice(&self.{field.name});"]
+    raise ValueError(f"unknown type for encode: {t}")
+
+
+def generate_requests(requests: List[RequestSpec]) -> str:
+    lines: List[str] = []
+    uses = ["use crate::error::Result;"]
+    if request_needs_encode_with_len_u8(requests):
+        uses.insert(0, "use crate::rac_wire::encode_with_len_u8;")
+    if request_needs_uuid(requests):
+        uses.insert(0, "use crate::Uuid16;")
+    if request_needs_serde(requests):
+        uses.append("use serde::Serialize;")
+    lines.extend(uses)
+    lines.append("")
+
+    for req in requests:
+        derive = ", ".join(req.derives)
+        lines.append(f"#[derive({derive})]")
+        lines.append(f"pub struct {req.name} {{")
+        for field in req.fields:
+            if field.skip or field.literal is not None:
+                continue
+            rust_ty = request_rust_type(field)
+            lines.append(f"    pub {field.name}: {rust_ty},")
+        lines.append("}")
+        lines.append("")
+        lines.append(f"impl {req.name} {{")
+        lines.append("    pub fn encoded_len(&self) -> usize {")
+        len_parts: List[str] = []
+        for field in req.fields:
+            if field.type_name == "str8":
+                len_parts.append(f"1 + self.{field.name}.len()")
+            else:
+                len_parts.append(str(request_encoded_len(field)))
+        if len_parts:
+            lines.append(f"        { ' + '.join(len_parts) }")
+        else:
+            lines.append("        0")
+        lines.append("    }")
+        lines.append("")
+        lines.append("    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {")
+        for field in req.fields:
+            if field.skip:
+                continue
+            exprs = request_encode_expr(field)
+            for expr in exprs:
+                lines.append(f"        {expr}")
+        lines.append("        Ok(())")
+        lines.append("    }")
+        lines.append("}")
+        lines.append("")
+
+    return "\n".join(lines).rstrip() + "\n"
+
+
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Generate RAC record decoders from TOML schema")
+    parser = argparse.ArgumentParser(description="Generate RAC schema code from TOML schema")
     parser.add_argument("schema", help="Path to TOML schema")
     parser.add_argument("--out", help="Output .rs file path")
+    parser.add_argument("--requests-out", help="Output .rs file path for request encoders")
     args = parser.parse_args()
 
     schema_path = Path(args.schema)
     if not schema_path.is_absolute():
         schema_path = (ROOT / schema_path).resolve()
 
-    records = parse_schema(schema_path)
+    records, requests = parse_schema(schema_path)
     output = generate(records)
 
     out_path: Path
@@ -547,6 +754,14 @@ def main() -> int:
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(output)
+
+    if args.requests_out:
+        requests_path = Path(args.requests_out)
+        if not requests_path.is_absolute():
+            requests_path = (ROOT / requests_path).resolve()
+        requests_output = generate_requests(requests)
+        requests_path.parent.mkdir(parents=True, exist_ok=True)
+        requests_path.write_text(requests_output)
     return 0
 
 

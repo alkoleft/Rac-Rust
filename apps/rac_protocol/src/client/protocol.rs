@@ -475,7 +475,7 @@ impl RacProtocol for RacProtocolImpl {
             RacRequest::ClusterAdminList { cluster } => {
                 let req = cluster_schema::ClusterIdRequest { cluster };
                 let mut body = Vec::with_capacity(req.encoded_len());
-                req.encode_body(&mut body);
+                req.encode_body(&mut body)?;
                 (
                     encode_rpc(METHOD_CLUSTER_ADMIN_LIST_REQ, &body),
                     Some(METHOD_CLUSTER_ADMIN_LIST_RESP),
@@ -509,7 +509,7 @@ impl RacProtocol for RacProtocolImpl {
             RacRequest::ClusterInfo { cluster } => {
                 let req = cluster_schema::ClusterIdRequest { cluster };
                 let mut body = Vec::with_capacity(req.encoded_len());
-                req.encode_body(&mut body);
+                req.encode_body(&mut body)?;
                 (
                     encode_rpc(METHOD_CLUSTER_INFO_REQ, &body),
                     Some(METHOD_CLUSTER_INFO_RESP),

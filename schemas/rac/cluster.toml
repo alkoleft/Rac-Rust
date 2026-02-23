@@ -25,3 +25,28 @@ fields = [
   { name = "kill_problem_processes", type = "u8", version = "11.0" },
   { name = "kill_by_memory_with_dump", type = "u8", version = "11.0" },
 ]
+
+[request.ClusterIdRequest]
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid" },
+]
+
+[request.ClusterAuthRequest]
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid" },
+  { name = "user", type = "str8" },
+  { name = "pwd", type = "str8" },
+]
+
+[request.ClusterAdminRegisterRequest]
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid" },
+  { name = "name", type = "str8" },
+  { name = "descr", type = "str8" },
+  { name = "pwd", type = "str8" },
+  { name = "auth_flags", type = "u8" },
+  { name = "padding", type = "bytes_fixed", literal = [0, 0] },
+]

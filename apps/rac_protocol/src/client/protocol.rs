@@ -10,6 +10,11 @@ use crate::commands::cluster::{
     ClusterAdminRegisterRequest,
     ClusterAuthRequest,
     ClusterIdRequest,
+    RPC_CLUSTER_ADMIN_LIST_META,
+    RPC_CLUSTER_ADMIN_REGISTER_META,
+    RPC_CLUSTER_AUTH_META,
+    RPC_CLUSTER_INFO_META,
+    RPC_CLUSTER_LIST_META,
 };
 
 #[derive(Debug, Clone)]
@@ -474,15 +479,18 @@ impl RacProtocol for RacProtocolImpl {
                 let req = ClusterAuthRequest { cluster, user, pwd };
                 let mut body = Vec::with_capacity(req.encoded_len());
                 req.encode_body(&mut body)?;
-                (encode_rpc(METHOD_CLUSTER_AUTH, &body), None)
+                (
+                    encode_rpc(RPC_CLUSTER_AUTH_META.method_req, &body),
+                    RPC_CLUSTER_AUTH_META.method_resp,
+                )
             }
             RacRequest::ClusterAdminList { cluster } => {
                 let req = ClusterIdRequest { cluster };
                 let mut body = Vec::with_capacity(req.encoded_len());
                 req.encode_body(&mut body)?;
                 (
-                    encode_rpc(METHOD_CLUSTER_ADMIN_LIST_REQ, &body),
-                    Some(METHOD_CLUSTER_ADMIN_LIST_RESP),
+                    encode_rpc(RPC_CLUSTER_ADMIN_LIST_META.method_req, &body),
+                    RPC_CLUSTER_ADMIN_LIST_META.method_resp,
                 )
             }
             RacRequest::ClusterAdminRegister {
@@ -502,21 +510,21 @@ impl RacProtocol for RacProtocolImpl {
                 let mut body = Vec::with_capacity(req.encoded_len());
                 req.encode_body(&mut body)?;
                 (
-                    encode_rpc(METHOD_CLUSTER_ADMIN_REGISTER_REQ, &body),
-                    None,
+                    encode_rpc(RPC_CLUSTER_ADMIN_REGISTER_META.method_req, &body),
+                    RPC_CLUSTER_ADMIN_REGISTER_META.method_resp,
                 )
             }
             RacRequest::ClusterList => (
-                encode_rpc(METHOD_CLUSTER_LIST_REQ, &[]),
-                Some(METHOD_CLUSTER_LIST_RESP),
+                encode_rpc(RPC_CLUSTER_LIST_META.method_req, &[]),
+                RPC_CLUSTER_LIST_META.method_resp,
             ),
             RacRequest::ClusterInfo { cluster } => {
                 let req = ClusterIdRequest { cluster };
                 let mut body = Vec::with_capacity(req.encoded_len());
                 req.encode_body(&mut body)?;
                 (
-                    encode_rpc(METHOD_CLUSTER_INFO_REQ, &body),
-                    Some(METHOD_CLUSTER_INFO_RESP),
+                    encode_rpc(RPC_CLUSTER_INFO_META.method_req, &body),
+                    RPC_CLUSTER_INFO_META.method_resp,
                 )
             }
             RacRequest::ManagerList { cluster } => (

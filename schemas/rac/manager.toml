@@ -8,3 +8,11 @@ fields = [
   { name = "port", type = "u16_be" },
   { name = "pid", type = "str8" },
 ]
+
+[response.ManagerList]
+body = { type = "list_u8", item = "ManagerRecord" }
+tests = [{ name = "manager_list_response_hex", hex_path = "../../../../artifacts/rac/manager_list_response.hex", expect_len = 1, asserts = [{ index = 0, field = "host", value = "alko-home" }, { index = 0, field = "using", value = 1 }, { index = 0, field = "port", value = 0x0605 }, { index = 0, field = "pid", value = "314037" }] }]
+
+[response.ManagerInfo]
+body = { type = "record", item = "ManagerRecord" }
+tests = [{ name = "manager_info_response_hex", hex_path = "../../../../artifacts/rac/manager_info_response.hex", asserts = [{ field = "host", value = "alko-home" }, { field = "using", value = 1 }, { field = "port", value = 0x0605 }, { field = "pid", value = "314037" }] }]

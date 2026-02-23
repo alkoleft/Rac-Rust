@@ -50,3 +50,39 @@ fields = [
   { name = "auth_flags", type = "u8" },
   { name = "padding", type = "bytes_fixed", literal = [0, 0] },
 ]
+
+[rpc.ClusterAuth]
+request = "ClusterAuthRequest"
+method_req = 0x09
+requires_cluster_context = false
+requires_infobase_context = false
+
+[rpc.ClusterAdminList]
+request = "ClusterIdRequest"
+method_req = 0x02
+method_resp = 0x03
+requires_cluster_context = false
+requires_infobase_context = false
+
+[rpc.ClusterAdminRegister]
+request = "ClusterAdminRegisterRequest"
+method_req = 0x05
+requires_cluster_context = false
+requires_infobase_context = false
+
+[rpc.ClusterList]
+method_req = 0x0b
+method_resp = 0x0c
+requires_cluster_context = false
+requires_infobase_context = false
+
+[rpc.ClusterInfo]
+request = "ClusterIdRequest"
+method_req = 0x0d
+method_resp = 0x0e
+requires_cluster_context = false
+requires_infobase_context = false
+
+[response.ClusterAdminList]
+body = { type = "list_u8", item = "ClusterAdminRecord" }
+tests = [{ name = "cluster_admin_list_response_hex", hex_path = "../../../../artifacts/rac/cluster_admin_list_response.hex", expect_len = 1, asserts = [{ index = 0, field = "name", value = "cadmin" }, { index = 0, field = "unknown_tag", value = 0 }, { index = 0, field = "unknown_flags", value = 0x03efbfbd }, { index = 0, field = "unknown_tail", value = [0x01, 0x00, 0x00] }] }]

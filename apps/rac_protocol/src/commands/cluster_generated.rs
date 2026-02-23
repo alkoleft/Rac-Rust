@@ -85,6 +85,75 @@ impl ClusterRecord {
     }
 }
 
+pub fn parse_cluster_admin_list_body(body: &[u8]) -> Result<Vec<ClusterAdminRecord>> {
+    if body.is_empty() {
+        return Ok(Vec::new());
+    }
+    let mut cursor = RecordCursor::new(body, 0);
+    let count = cursor.take_u8()? as usize;
+    let mut out = Vec::with_capacity(count);
+    for _ in 0..count {
+        out.push(ClusterAdminRecord::decode(&mut cursor)?);
+    }
+    Ok(out)
+}
+
+
+#[derive(Debug, Clone, Copy)]
+pub struct RpcMethodMeta {
+    pub method_req: u8,
+    pub method_resp: Option<u8>,
+    pub requires_cluster_context: bool,
+    pub requires_infobase_context: bool,
+}
+
+pub const RPC_CLUSTER_AUTH_META: RpcMethodMeta = RpcMethodMeta {
+    method_req: 9,
+    method_resp: None,
+    requires_cluster_context: false,
+    requires_infobase_context: false,
+};
+
+pub const RPC_CLUSTER_ADMIN_LIST_META: RpcMethodMeta = RpcMethodMeta {
+    method_req: 2,
+    method_resp: Some(3),
+    requires_cluster_context: false,
+    requires_infobase_context: false,
+};
+
+pub const RPC_CLUSTER_ADMIN_REGISTER_META: RpcMethodMeta = RpcMethodMeta {
+    method_req: 5,
+    method_resp: None,
+    requires_cluster_context: false,
+    requires_infobase_context: false,
+};
+
+pub const RPC_CLUSTER_LIST_META: RpcMethodMeta = RpcMethodMeta {
+    method_req: 11,
+    method_resp: Some(12),
+    requires_cluster_context: false,
+    requires_infobase_context: false,
+};
+
+pub const RPC_CLUSTER_INFO_META: RpcMethodMeta = RpcMethodMeta {
+    method_req: 13,
+    method_resp: Some(14),
+    requires_cluster_context: false,
+    requires_infobase_context: false,
+};
+
+#[allow(dead_code)]
+pub fn rpc_metadata(request: &crate::client::RacRequest) -> Option<RpcMethodMeta> {
+    match request {
+        crate::client::RacRequest::ClusterAuth { .. } => Some(RPC_CLUSTER_AUTH_META),
+        crate::client::RacRequest::ClusterAdminList { .. } => Some(RPC_CLUSTER_ADMIN_LIST_META),
+        crate::client::RacRequest::ClusterAdminRegister { .. } => Some(RPC_CLUSTER_ADMIN_REGISTER_META),
+        crate::client::RacRequest::ClusterList => Some(RPC_CLUSTER_LIST_META),
+        crate::client::RacRequest::ClusterInfo { .. } => Some(RPC_CLUSTER_INFO_META),
+        _ => None,
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct ClusterIdRequest {
     pub cluster: Uuid16,
@@ -144,4 +213,28 @@ impl ClusterAdminRegisterRequest {
         out.extend_from_slice(&[0, 0]);
         Ok(())
     }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::commands::rpc_body;
+
+    fn decode_hex_str(input: &str) -> Vec<u8> {
+        hex::decode(input.trim()).expect("hex decode")
+    }
+
+    #[test]
+    fn cluster_admin_list_response_hex() {
+        let hex = include_str!("../../../../artifacts/rac/cluster_admin_list_response.hex");
+        let payload = decode_hex_str(hex);
+        let body = rpc_body(&payload).expect("rpc body");
+        let items = parse_cluster_admin_list_body(body).expect("parse body");
+        assert_eq!(items.len(), 1);
+        assert_eq!(items[0].name, "cadmin");
+        assert_eq!(items[0].unknown_tag, 0);
+        assert_eq!(items[0].unknown_flags, 0x3efbfbd);
+        assert_eq!(items[0].unknown_tail, [1, 0, 0]);
+    }
+
 }

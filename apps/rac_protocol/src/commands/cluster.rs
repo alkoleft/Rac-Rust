@@ -17,6 +17,13 @@ pub use generated::{
     ClusterAuthRequest,
     ClusterIdRequest,
     ClusterRecord,
+    parse_cluster_admin_list_body,
+    RpcMethodMeta,
+    RPC_CLUSTER_ADMIN_LIST_META,
+    RPC_CLUSTER_ADMIN_REGISTER_META,
+    RPC_CLUSTER_AUTH_META,
+    RPC_CLUSTER_INFO_META,
+    RPC_CLUSTER_LIST_META,
 };
 
 #[derive(Debug, Serialize)]
@@ -121,19 +128,6 @@ pub fn cluster_info(client: &mut RacClient, cluster: Uuid16) -> Result<ClusterIn
         cluster: summary,
         raw_payload: Some(reply),
     })
-}
-
-fn parse_cluster_admin_list_body(body: &[u8]) -> Result<Vec<ClusterAdminRecord>> {
-    if body.is_empty() {
-        return Ok(Vec::new());
-    }
-    let mut cursor = RecordCursor::new(body, 0);
-    let count = cursor.take_u8()? as usize;
-    let mut admins = Vec::with_capacity(count);
-    for _ in 0..count {
-        admins.push(ClusterAdminRecord::decode(&mut cursor)?);
-    }
-    Ok(admins)
 }
 
 fn is_ack(payload: &[u8]) -> bool {

@@ -224,6 +224,26 @@ mod tests {
     }
 
     #[test]
+    fn encode_cluster_auth_request() {
+        let expected = decode_hex_str(
+            "01000001091619820ad36f4d8aa7161516b1dea0770561646d696e0470617373",
+        );
+        let cluster = [
+            0x16, 0x19, 0x82, 0x0a, 0xd3, 0x6f, 0x4d, 0x8a, 0xa7, 0x16, 0x15, 0x16, 0xb1,
+            0xde, 0xa0, 0x77,
+        ];
+        let req = RacRequest::ClusterAuth {
+            cluster,
+            user: "admin".to_string(),
+            pwd: "pass".to_string(),
+        };
+        let protocol = RacProtocolVersion::V16_0.boxed();
+        let serialized = protocol.serialize(req).expect("serialize");
+        assert_eq!(serialized.payload, expected);
+        assert_eq!(serialized.expect_method, None);
+    }
+
+    #[test]
     fn parse_cluster_list_custom_capture() {
         let hex = include_str!("../../../../artifacts/rac/cluster_list_response_custom.hex");
         let payload = decode_hex_str(hex);

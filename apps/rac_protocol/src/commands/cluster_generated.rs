@@ -236,4 +236,31 @@ mod tests {
         assert_eq!(items[0].unknown_tail, [1, 0, 0]);
     }
 
+    #[test]
+    fn cluster_list_response_custom_hex() {
+        let hex = include_str!("../../../../artifacts/rac/cluster_list_response_custom.hex");
+        let payload = decode_hex_str(hex);
+        let body = rpc_body(&payload).expect("rpc body");
+        let items = crate::commands::parse_list_u8_tail(body, 0, ClusterRecord::decode).expect("parse body");
+        assert_eq!(items.len(), 1);
+        assert_eq!(items[0].lifetime_limit, 0x457);
+        assert_eq!(items[0].security_level, 3);
+        assert_eq!(items[0].session_fault_tolerance_level, 4);
+        assert_eq!(items[0].load_balancing_mode, 1);
+        assert_eq!(items[0].errors_count_threshold, 0);
+        assert_eq!(items[0].kill_problem_processes, 0);
+        assert_eq!(items[0].kill_by_memory_with_dump, 1);
+    }
+
+    #[test]
+    fn cluster_list_response_flags_hex() {
+        let hex = include_str!("../../../../artifacts/rac/cluster_list_response_flags.hex");
+        let payload = decode_hex_str(hex);
+        let body = rpc_body(&payload).expect("rpc body");
+        let items = crate::commands::parse_list_u8_tail(body, 0, ClusterRecord::decode).expect("parse body");
+        assert_eq!(items.len(), 1);
+        assert_eq!(items[0].kill_problem_processes, 1);
+        assert_eq!(items[0].kill_by_memory_with_dump, 0);
+    }
+
 }

@@ -89,6 +89,21 @@ tests = [{ name = "cluster_admin_list_response_hex", hex_path = "../../../../art
 
 [response.ClusterList]
 body = { type = "list_u8_tail", item = "ClusterRecord", tail_len_param = "tail_len" }
+tests = [
+  { name = "cluster_list_response_custom_hex", hex_path = "../../../../artifacts/rac/cluster_list_response_custom.hex", tail_len = 0, expect_len = 1, asserts = [
+    { index = 0, field = "lifetime_limit", value = 1111 },
+    { index = 0, field = "security_level", value = 3 },
+    { index = 0, field = "session_fault_tolerance_level", value = 4 },
+    { index = 0, field = "load_balancing_mode", value = 1 },
+    { index = 0, field = "errors_count_threshold", value = 0 },
+    { index = 0, field = "kill_problem_processes", value = 0 },
+    { index = 0, field = "kill_by_memory_with_dump", value = 1 },
+  ] },
+  { name = "cluster_list_response_flags_hex", hex_path = "../../../../artifacts/rac/cluster_list_response_flags.hex", tail_len = 0, expect_len = 1, asserts = [
+    { index = 0, field = "kill_problem_processes", value = 1 },
+    { index = 0, field = "kill_by_memory_with_dump", value = 0 },
+  ] },
+]
 
 [response.ClusterInfo]
 body = { type = "record_tail", item = "ClusterRecord", tail_len_param = "tail_len" }

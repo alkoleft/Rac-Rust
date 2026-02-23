@@ -62,6 +62,7 @@ class ResponseTestSpec:
     hex_path: str
     expect_len: Optional[int]
     asserts: List[ResponseAssertSpec]
+    tail_len: Optional[int] = None
 
 
 @dataclass

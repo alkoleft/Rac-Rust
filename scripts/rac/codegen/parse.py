@@ -124,6 +124,7 @@ def parse_schema_payload(
                     hex_path=str(raw.get("hex_path", "")),
                     expect_len=raw.get("expect_len"),
                     asserts=asserts,
+                    tail_len=raw.get("tail_len"),
                 )
             )
         responses.append(ResponseSpec(name=name, body=body, tests=tests))
@@ -144,8 +145,11 @@ def parse_schema_minimal(
     in_fields = False
     fields_buf: List[Dict[str, Any]] = []
 
-    for raw in lines:
+    i = 0
+    while i < len(lines):
+        raw = lines[i]
         line = raw.strip()
+        i += 1
         if not line or line.startswith("#"):
             continue
         if (
@@ -196,7 +200,23 @@ def parse_schema_minimal(
             continue
         if "=" in line and not in_fields:
             key, raw_val = line.split("=", 1)
-            current[key.strip()] = parse_value(raw_val.strip())
+            key = key.strip()
+            raw_val = raw_val.strip()
+            if not is_value_complete(raw_val) and raw_val.startswith(("[", "{")):
+                parts = [raw_val]
+                while i < len(lines):
+                    next_line = lines[i].strip()
+                    i += 1
+                    if not next_line or next_line.startswith("#"):
+                        continue
+                    parts.append(next_line)
+                    candidate = " ".join(parts)
+                    if is_value_complete(candidate):
+                        raw_val = candidate
+                        break
+                else:
+                    raw_val = " ".join(parts)
+            current[key] = parse_value(raw_val)
             continue
         if in_fields:
             if line.startswith("]"):
@@ -222,6 +242,32 @@ def parse_schema_minimal(
     return parse_schema_payload(
         {"record": records, "request": requests, "rpc": rpcs, "response": responses}
     )
+
+
+def is_value_complete(value: str) -> bool:
+    in_str = False
+    escaped = False
+    depth = 0
+    for ch in value:
+        if escaped:
+            escaped = False
+            continue
+        if ch == "\\" and in_str:
+            escaped = True
+            continue
+        if ch == "\"":
+            in_str = not in_str
+            continue
+        if in_str:
+            continue
+        if ch in "[{":
+            depth += 1
+            continue
+        if ch in "]}":
+            if depth > 0:
+                depth -= 1
+            continue
+    return depth == 0 and not in_str
 
 
 def parse_list_value(value: str) -> List[str]:

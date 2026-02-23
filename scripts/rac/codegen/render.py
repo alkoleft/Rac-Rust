@@ -232,8 +232,9 @@ def generate_response_tests(responses: List[ResponseSpec]) -> List[str]:
                 if not resp.body.tail_len_param:
                     raise ValueError("list_u8_tail response requires tail_len_param")
                 item = resp.body.item
+                tail_len = 0 if test.tail_len is None else test.tail_len
                 lines.append(
-                    f"        let items = crate::commands::parse_list_u8_tail(body, 0, {item}::decode)"
+                    f"        let items = crate::commands::parse_list_u8_tail(body, {tail_len}, {item}::decode)"
                     ".expect(\"parse body\");"
                 )
                 if test.expect_len is not None:
@@ -245,6 +246,16 @@ def generate_response_tests(responses: List[ResponseSpec]) -> List[str]:
                     lines.append(
                         f"        assert_eq!(items[{assertion.index}].{assertion.field}, {rendered});"
                     )
+            elif resp.body.type_name == "record_tail":
+                tail_len = 0 if test.tail_len is None else test.tail_len
+                lines.append(
+                    f"        let record = {func_name}(body, {tail_len}).expect(\"parse body\");"
+                )
+                for assertion in test.asserts:
+                    if assertion.index is not None:
+                        raise ValueError("record response asserts must not use index")
+                    rendered = render_value(assertion.value)
+                    lines.append(f"        assert_eq!(record.{assertion.field}, {rendered});")
             else:
                 lines.append(f"        let record = {func_name}(body).expect(\"parse body\");")
                 for assertion in test.asserts:

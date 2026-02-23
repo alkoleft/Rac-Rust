@@ -4,7 +4,16 @@ Generated from local captures in `logs/` and method map in `docs/rac/documentati
 
 ## Transport Framing (Confirmed)
 
-- **Init packet**: special pre-frame blob starting with `1c 53 57 50` (`SWP`) and containing `connect.timeout`.
+- **Init packet**: special pre-frame blob starting with `1c 53 57 50` (`SWP`) and containing connection parameters (e.g. `connect.timeout`).
+- **Init packet fields (observed)**:
+  - `magic`: `1c 53 57 50`
+  - `version:u8`
+  - `header_a:u16_be`
+  - `header_b:u16_be`
+  - `tag:u8`
+  - `param_count:u8`
+  - `params[param_count]`: `key_len:u8 + key[key_len] + value_type:u8 + value`
+  - `value_type=0x04` => `u32_be` (example: `connect.timeout = 2000`)
 - **Framed packets**: `opcode:u8 + len:varuint + payload[len]`.
 - **Varuint**: LEB128-like, e.g. `0x84 0x01` => 132.
 
@@ -12,7 +21,9 @@ Generated from local captures in `logs/` and method map in `docs/rac/documentati
 
 1. `client -> server` init packet (raw, not framed)
 2. `server -> client` frame `opcode=0x02 len=1 payload=80`
-3. `client -> server` service negotiation (frame `opcode=0x0b`, payload includes `v8.service.Admin.Cluster` + `16.0`)
+3. `client -> server` service negotiation (frame `opcode=0x0b`, payload includes `v8.service.Admin.Cluster` + service version string)
+   - Observed `16.0` in earlier captures, `11.0` in newer captures.
+   - Treat as service interface version, not transport framing version.
 4. `server -> client` service ack (frame `opcode=0x0c`)
 5. RPC frames (frame `opcode=0x0e`, payload begins with `01 00 00 01 <method_id>`)
 6. Close (frame `opcode=0x0d len=1 payload=01`)

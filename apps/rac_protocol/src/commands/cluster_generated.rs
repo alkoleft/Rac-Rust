@@ -3,7 +3,6 @@ use crate::error::RacError;
 use crate::codec::RecordCursor;
 use crate::error::Result;
 use serde::Serialize;
-use crate::metadata::RpcMethodMeta;
 use crate::rac_wire::encode_with_len_u8;
 
 #[derive(Debug, Serialize, Clone)]
@@ -86,70 +85,6 @@ impl ClusterRecord {
     }
 }
 
-pub const RPC_CLUSTER_AUTH_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: crate::rac_wire::METHOD_CLUSTER_AUTH_REQ,
-    method_resp: None,
-    requires_cluster_context: false,
-    requires_infobase_context: false,
-};
-
-pub const RPC_CLUSTER_ADMIN_LIST_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: crate::rac_wire::METHOD_CLUSTER_ADMIN_LIST_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_CLUSTER_ADMIN_LIST_RESP),
-    requires_cluster_context: false,
-    requires_infobase_context: false,
-};
-
-pub const RPC_CLUSTER_ADMIN_REGISTER_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: crate::rac_wire::METHOD_CLUSTER_ADMIN_REGISTER_REQ,
-    method_resp: None,
-    requires_cluster_context: false,
-    requires_infobase_context: false,
-};
-
-pub const RPC_CLUSTER_LIST_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: crate::rac_wire::METHOD_CLUSTER_LIST_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_CLUSTER_LIST_RESP),
-    requires_cluster_context: false,
-    requires_infobase_context: false,
-};
-
-pub const RPC_CLUSTER_INFO_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: crate::rac_wire::METHOD_CLUSTER_INFO_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_CLUSTER_INFO_RESP),
-    requires_cluster_context: false,
-    requires_infobase_context: false,
-};
-
-
-pub fn parse_cluster_info_body(body: &[u8], tail_len: usize) -> Result<ClusterRecord> {
-    if body.is_empty() {
-        return Err(RacError::Decode("cluster info empty body"));
-    }
-    let mut cursor = RecordCursor::new(body, 0);
-    let record = ClusterRecord::decode(&mut cursor)?;
-    if tail_len != 0 {
-        let _tail = cursor.take_bytes(tail_len)?;
-    }
-    Ok(record)
-}
-
-#[derive(Debug, Clone)]
-pub struct ClusterIdRequest {
-    pub cluster: Uuid16,
-}
-
-impl ClusterIdRequest {
-    pub fn encoded_len(&self) -> usize {
-        16
-    }
-
-    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
-        out.extend_from_slice(&self.cluster);
-        Ok(())
-    }
-}
-
 #[derive(Debug, Clone)]
 pub struct ClusterAuthRequest {
     pub cluster: Uuid16,
@@ -166,6 +101,22 @@ impl ClusterAuthRequest {
         out.extend_from_slice(&self.cluster);
         out.extend_from_slice(&encode_with_len_u8(self.user.as_bytes())?);
         out.extend_from_slice(&encode_with_len_u8(self.pwd.as_bytes())?);
+        Ok(())
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct ClusterIdRequest {
+    pub cluster: Uuid16,
+}
+
+impl ClusterIdRequest {
+    pub fn encoded_len(&self) -> usize {
+        16
+    }
+
+    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
+        out.extend_from_slice(&self.cluster);
         Ok(())
     }
 }
@@ -196,6 +147,53 @@ impl ClusterAdminRegisterRequest {
 }
 
 
+pub fn parse_cluster_info_body(body: &[u8], tail_len: usize) -> Result<ClusterRecord> {
+    if body.is_empty() {
+        return Err(RacError::Decode("cluster info empty body"));
+    }
+    let mut cursor = RecordCursor::new(body, 0);
+    let record = ClusterRecord::decode(&mut cursor)?;
+    if tail_len != 0 {
+        let _tail = cursor.take_bytes(tail_len)?;
+    }
+    Ok(record)
+}
+
+
+pub const RPC_CLUSTER_AUTH_META: crate::rpc::Meta = crate::rpc::Meta {
+    method_req: crate::rac_wire::METHOD_CLUSTER_AUTH_REQ,
+    method_resp: None,
+    requires_cluster_context: false,
+    requires_infobase_context: false,
+};
+
+pub const RPC_CLUSTER_ADMIN_LIST_META: crate::rpc::Meta = crate::rpc::Meta {
+    method_req: crate::rac_wire::METHOD_CLUSTER_ADMIN_LIST_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_CLUSTER_ADMIN_LIST_RESP),
+    requires_cluster_context: false,
+    requires_infobase_context: false,
+};
+
+pub const RPC_CLUSTER_ADMIN_REGISTER_META: crate::rpc::Meta = crate::rpc::Meta {
+    method_req: crate::rac_wire::METHOD_CLUSTER_ADMIN_REGISTER_REQ,
+    method_resp: None,
+    requires_cluster_context: false,
+    requires_infobase_context: false,
+};
+
+pub const RPC_CLUSTER_LIST_META: crate::rpc::Meta = crate::rpc::Meta {
+    method_req: crate::rac_wire::METHOD_CLUSTER_LIST_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_CLUSTER_LIST_RESP),
+    requires_cluster_context: false,
+    requires_infobase_context: false,
+};
+
+pub const RPC_CLUSTER_INFO_META: crate::rpc::Meta = crate::rpc::Meta {
+    method_req: crate::rac_wire::METHOD_CLUSTER_INFO_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_CLUSTER_INFO_RESP),
+    requires_cluster_context: false,
+    requires_infobase_context: false,
+};
 
 #[cfg(test)]
 mod tests {

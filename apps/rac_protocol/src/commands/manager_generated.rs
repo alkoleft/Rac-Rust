@@ -3,7 +3,6 @@ use crate::error::RacError;
 use crate::codec::RecordCursor;
 use crate::error::Result;
 use serde::Serialize;
-use crate::metadata::RpcMethodMeta;
 
 #[derive(Debug, Serialize, Clone)]
 pub struct ManagerRecord {
@@ -32,29 +31,6 @@ impl ManagerRecord {
             pid,
         })
     }
-}
-
-pub const RPC_MANAGER_LIST_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: crate::rac_wire::METHOD_MANAGER_LIST_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_MANAGER_LIST_RESP),
-    requires_cluster_context: true,
-    requires_infobase_context: false,
-};
-
-pub const RPC_MANAGER_INFO_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: crate::rac_wire::METHOD_MANAGER_INFO_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_MANAGER_INFO_RESP),
-    requires_cluster_context: true,
-    requires_infobase_context: false,
-};
-
-
-pub fn parse_manager_info_body(body: &[u8]) -> Result<ManagerRecord> {
-    if body.is_empty() {
-        return Err(RacError::Decode("manager info empty body"));
-    }
-    let mut cursor = RecordCursor::new(body, 0);
-    ManagerRecord::decode(&mut cursor)
 }
 
 #[derive(Debug, Clone)]
@@ -92,6 +68,28 @@ impl ManagerInfoRequest {
 }
 
 
+pub fn parse_manager_info_body(body: &[u8]) -> Result<ManagerRecord> {
+    if body.is_empty() {
+        return Err(RacError::Decode("manager info empty body"));
+    }
+    let mut cursor = RecordCursor::new(body, 0);
+    ManagerRecord::decode(&mut cursor)
+}
+
+
+pub const RPC_MANAGER_LIST_META: crate::rpc::Meta = crate::rpc::Meta {
+    method_req: crate::rac_wire::METHOD_MANAGER_LIST_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_MANAGER_LIST_RESP),
+    requires_cluster_context: true,
+    requires_infobase_context: false,
+};
+
+pub const RPC_MANAGER_INFO_META: crate::rpc::Meta = crate::rpc::Meta {
+    method_req: crate::rac_wire::METHOD_MANAGER_INFO_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_MANAGER_INFO_RESP),
+    requires_cluster_context: true,
+    requires_infobase_context: false,
+};
 
 #[cfg(test)]
 mod tests {

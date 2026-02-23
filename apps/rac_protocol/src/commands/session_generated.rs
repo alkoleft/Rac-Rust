@@ -3,7 +3,6 @@ use crate::error::RacError;
 use crate::codec::RecordCursor;
 use crate::error::Result;
 use serde::Serialize;
-use crate::metadata::RpcMethodMeta;
 
 #[derive(Debug, Serialize, Default, Clone)]
 pub struct SessionLicenseRecord {
@@ -216,29 +215,6 @@ impl SessionRecordRaw {
     }
 }
 
-pub const RPC_SESSION_LIST_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: crate::rac_wire::METHOD_SESSION_LIST_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_SESSION_LIST_RESP),
-    requires_cluster_context: true,
-    requires_infobase_context: false,
-};
-
-pub const RPC_SESSION_INFO_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: crate::rac_wire::METHOD_SESSION_INFO_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_SESSION_INFO_RESP),
-    requires_cluster_context: true,
-    requires_infobase_context: false,
-};
-
-
-pub fn parse_session_info_body(body: &[u8]) -> Result<SessionRecordRaw> {
-    if body.is_empty() {
-        return Err(RacError::Decode("session info empty body"));
-    }
-    let mut cursor = RecordCursor::new(body, 0);
-    SessionRecordRaw::decode(&mut cursor)
-}
-
 #[derive(Debug, Clone)]
 pub struct SessionListRequest {
     pub cluster: Uuid16,
@@ -274,5 +250,27 @@ impl SessionInfoRequest {
 }
 
 
+pub fn parse_session_info_body(body: &[u8]) -> Result<SessionRecordRaw> {
+    if body.is_empty() {
+        return Err(RacError::Decode("session info empty body"));
+    }
+    let mut cursor = RecordCursor::new(body, 0);
+    SessionRecordRaw::decode(&mut cursor)
+}
+
+
+pub const RPC_SESSION_LIST_META: crate::rpc::Meta = crate::rpc::Meta {
+    method_req: crate::rac_wire::METHOD_SESSION_LIST_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_SESSION_LIST_RESP),
+    requires_cluster_context: true,
+    requires_infobase_context: false,
+};
+
+pub const RPC_SESSION_INFO_META: crate::rpc::Meta = crate::rpc::Meta {
+    method_req: crate::rac_wire::METHOD_SESSION_INFO_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_SESSION_INFO_RESP),
+    requires_cluster_context: true,
+    requires_infobase_context: false,
+};
 
 

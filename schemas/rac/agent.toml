@@ -39,6 +39,7 @@ requires_cluster_context = false
 requires_infobase_context = false
 
 [rpc.AgentVersion]
+request = "AgentVersionRequest"
 response = "super::AgentVersionResp"
 method_req = 0x87
 method_resp = 0x88

@@ -3,7 +3,6 @@ use crate::error::RacError;
 use crate::codec::RecordCursor;
 use crate::error::Result;
 use serde::Serialize;
-use crate::metadata::RpcMethodMeta;
 use crate::rac_wire::encode_with_len_u8;
 
 #[derive(Debug, Serialize, Clone)]
@@ -47,73 +46,6 @@ impl RuleIdRecord {
             rule,
         })
     }
-}
-
-pub const RPC_RULE_LIST_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: crate::rac_wire::METHOD_RULE_LIST_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_RULE_LIST_RESP),
-    requires_cluster_context: true,
-    requires_infobase_context: false,
-};
-
-pub const RPC_RULE_INFO_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: crate::rac_wire::METHOD_RULE_INFO_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_RULE_INFO_RESP),
-    requires_cluster_context: true,
-    requires_infobase_context: false,
-};
-
-pub const RPC_RULE_APPLY_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: crate::rac_wire::METHOD_RULE_APPLY_REQ,
-    method_resp: None,
-    requires_cluster_context: true,
-    requires_infobase_context: false,
-};
-
-pub const RPC_RULE_REMOVE_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: crate::rac_wire::METHOD_RULE_REMOVE_REQ,
-    method_resp: None,
-    requires_cluster_context: true,
-    requires_infobase_context: false,
-};
-
-pub const RPC_RULE_INSERT_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: crate::rac_wire::METHOD_RULE_INSERT_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_RULE_INSERT_RESP),
-    requires_cluster_context: true,
-    requires_infobase_context: false,
-};
-
-pub const RPC_RULE_UPDATE_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: crate::rac_wire::METHOD_RULE_UPDATE_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_RULE_UPDATE_RESP),
-    requires_cluster_context: true,
-    requires_infobase_context: false,
-};
-
-
-pub fn parse_rule_info_body(body: &[u8]) -> Result<RuleRecord> {
-    if body.is_empty() {
-        return Err(RacError::Decode("rule info empty body"));
-    }
-    let mut cursor = RecordCursor::new(body, 0);
-    RuleRecord::decode(&mut cursor)
-}
-
-pub fn parse_rule_insert_body(body: &[u8]) -> Result<RuleIdRecord> {
-    if body.is_empty() {
-        return Err(RacError::Decode("rule insert empty body"));
-    }
-    let mut cursor = RecordCursor::new(body, 0);
-    RuleIdRecord::decode(&mut cursor)
-}
-
-pub fn parse_rule_update_body(body: &[u8]) -> Result<RuleIdRecord> {
-    if body.is_empty() {
-        return Err(RacError::Decode("rule update empty body"));
-    }
-    let mut cursor = RecordCursor::new(body, 0);
-    RuleIdRecord::decode(&mut cursor)
 }
 
 #[derive(Debug, Clone)]
@@ -256,5 +188,71 @@ impl RuleUpdateRequest {
 }
 
 
+pub fn parse_rule_info_body(body: &[u8]) -> Result<RuleRecord> {
+    if body.is_empty() {
+        return Err(RacError::Decode("rule info empty body"));
+    }
+    let mut cursor = RecordCursor::new(body, 0);
+    RuleRecord::decode(&mut cursor)
+}
+
+pub fn parse_rule_insert_body(body: &[u8]) -> Result<RuleIdRecord> {
+    if body.is_empty() {
+        return Err(RacError::Decode("rule insert empty body"));
+    }
+    let mut cursor = RecordCursor::new(body, 0);
+    RuleIdRecord::decode(&mut cursor)
+}
+
+pub fn parse_rule_update_body(body: &[u8]) -> Result<RuleIdRecord> {
+    if body.is_empty() {
+        return Err(RacError::Decode("rule update empty body"));
+    }
+    let mut cursor = RecordCursor::new(body, 0);
+    RuleIdRecord::decode(&mut cursor)
+}
+
+
+pub const RPC_RULE_LIST_META: crate::rpc::Meta = crate::rpc::Meta {
+    method_req: crate::rac_wire::METHOD_RULE_LIST_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_RULE_LIST_RESP),
+    requires_cluster_context: true,
+    requires_infobase_context: false,
+};
+
+pub const RPC_RULE_INFO_META: crate::rpc::Meta = crate::rpc::Meta {
+    method_req: crate::rac_wire::METHOD_RULE_INFO_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_RULE_INFO_RESP),
+    requires_cluster_context: true,
+    requires_infobase_context: false,
+};
+
+pub const RPC_RULE_APPLY_META: crate::rpc::Meta = crate::rpc::Meta {
+    method_req: crate::rac_wire::METHOD_RULE_APPLY_REQ,
+    method_resp: None,
+    requires_cluster_context: true,
+    requires_infobase_context: false,
+};
+
+pub const RPC_RULE_REMOVE_META: crate::rpc::Meta = crate::rpc::Meta {
+    method_req: crate::rac_wire::METHOD_RULE_REMOVE_REQ,
+    method_resp: None,
+    requires_cluster_context: true,
+    requires_infobase_context: false,
+};
+
+pub const RPC_RULE_INSERT_META: crate::rpc::Meta = crate::rpc::Meta {
+    method_req: crate::rac_wire::METHOD_RULE_INSERT_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_RULE_INSERT_RESP),
+    requires_cluster_context: true,
+    requires_infobase_context: false,
+};
+
+pub const RPC_RULE_UPDATE_META: crate::rpc::Meta = crate::rpc::Meta {
+    method_req: crate::rac_wire::METHOD_RULE_UPDATE_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_RULE_UPDATE_RESP),
+    requires_cluster_context: true,
+    requires_infobase_context: false,
+};
 
 

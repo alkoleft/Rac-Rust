@@ -4,7 +4,6 @@ use crate::codec::v8_datetime_to_iso;
 use crate::codec::RecordCursor;
 use crate::error::Result;
 use serde::Serialize;
-use crate::metadata::RpcMethodMeta;
 
 #[derive(Debug, Serialize, Default, Clone)]
 pub struct ProcessLicense {
@@ -143,29 +142,6 @@ impl ProcessRecord {
     }
 }
 
-pub const RPC_PROCESS_LIST_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: crate::rac_wire::METHOD_PROCESS_LIST_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_PROCESS_LIST_RESP),
-    requires_cluster_context: true,
-    requires_infobase_context: false,
-};
-
-pub const RPC_PROCESS_INFO_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: crate::rac_wire::METHOD_PROCESS_INFO_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_PROCESS_INFO_RESP),
-    requires_cluster_context: true,
-    requires_infobase_context: false,
-};
-
-
-pub fn parse_process_info_body(body: &[u8]) -> Result<ProcessRecord> {
-    if body.is_empty() {
-        return Err(RacError::Decode("process info empty body"));
-    }
-    let mut cursor = RecordCursor::new(body, 0);
-    ProcessRecord::decode(&mut cursor)
-}
-
 #[derive(Debug, Clone)]
 pub struct ProcessListRequest {
     pub cluster: Uuid16,
@@ -201,5 +177,27 @@ impl ProcessInfoRequest {
 }
 
 
+pub fn parse_process_info_body(body: &[u8]) -> Result<ProcessRecord> {
+    if body.is_empty() {
+        return Err(RacError::Decode("process info empty body"));
+    }
+    let mut cursor = RecordCursor::new(body, 0);
+    ProcessRecord::decode(&mut cursor)
+}
+
+
+pub const RPC_PROCESS_LIST_META: crate::rpc::Meta = crate::rpc::Meta {
+    method_req: crate::rac_wire::METHOD_PROCESS_LIST_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_PROCESS_LIST_RESP),
+    requires_cluster_context: true,
+    requires_infobase_context: false,
+};
+
+pub const RPC_PROCESS_INFO_META: crate::rpc::Meta = crate::rpc::Meta {
+    method_req: crate::rac_wire::METHOD_PROCESS_INFO_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_PROCESS_INFO_RESP),
+    requires_cluster_context: true,
+    requires_infobase_context: false,
+};
 
 

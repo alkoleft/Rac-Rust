@@ -2,10 +2,6 @@ use crate::error::RacError;
 use crate::codec::RecordCursor;
 use crate::error::Result;
 use serde::Serialize;
-use crate::metadata::RpcMethodMeta;
-use crate::protocol::ProtocolCodec;
-use crate::rpc::{Meta, Request};
-use crate::rpc::AckResponse;
 use crate::rac_wire::encode_with_len_u8;
 
 #[derive(Debug, Serialize, Clone)]
@@ -49,36 +45,6 @@ impl AgentVersionRecord {
     }
 }
 
-pub const RPC_AGENT_AUTH_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: crate::rac_wire::METHOD_AGENT_AUTH_REQ,
-    method_resp: None,
-    requires_cluster_context: false,
-    requires_infobase_context: false,
-};
-
-pub const RPC_AGENT_ADMIN_LIST_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: crate::rac_wire::METHOD_AGENT_ADMIN_LIST_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_AGENT_ADMIN_LIST_RESP),
-    requires_cluster_context: false,
-    requires_infobase_context: false,
-};
-
-pub const RPC_AGENT_VERSION_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: crate::rac_wire::METHOD_AGENT_VERSION_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_AGENT_VERSION_RESP),
-    requires_cluster_context: false,
-    requires_infobase_context: false,
-};
-
-
-pub fn parse_agent_version_body(body: &[u8]) -> Result<AgentVersionRecord> {
-    if body.is_empty() {
-        return Err(RacError::Decode("agent version empty body"));
-    }
-    let mut cursor = RecordCursor::new(body, 0);
-    AgentVersionRecord::decode(&mut cursor)
-}
-
 #[derive(Debug, Clone)]
 pub struct AgentAuthRequest {
     pub user: String,
@@ -97,6 +63,51 @@ impl AgentAuthRequest {
     }
 }
 
+pub struct AgentAuthRpc {
+    pub user: String,
+    pub pwd: String,
+}
+
+impl crate::rpc::Request for AgentAuthRpc {
+    type Response = crate::rpc::AckResponse;
+
+    fn meta(&self) -> crate::rpc::Meta {
+        RPC_AGENT_AUTH_META
+    }
+
+    fn cluster(&self) -> Option<crate::Uuid16> {
+        None
+    }
+
+    fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
+        let req = AgentAuthRequest {
+            user: self.user.clone(),
+            pwd: self.pwd.clone(),
+        };
+        let mut out = Vec::with_capacity(req.encoded_len());
+        req.encode_body(&mut out)?;
+        Ok(out)
+    }
+}
+
+pub struct AgentAdminListRpc;
+
+impl crate::rpc::Request for AgentAdminListRpc {
+    type Response = super::AgentAdminListResp;
+
+    fn meta(&self) -> crate::rpc::Meta {
+        RPC_AGENT_ADMIN_LIST_META
+    }
+
+    fn cluster(&self) -> Option<crate::Uuid16> {
+        None
+    }
+
+    fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
+        Ok(Vec::new())
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct AgentVersionRequest {
 }
@@ -111,57 +122,12 @@ impl AgentVersionRequest {
     }
 }
 
-pub struct AgentAuthRpc {
-    pub user: String,
-    pub pwd: String,
-}
-
-impl Request for AgentAuthRpc {
-    type Response = AckResponse;
-
-    fn meta(&self) -> Meta {
-        RPC_AGENT_AUTH_META
-    }
-
-    fn cluster(&self) -> Option<crate::Uuid16> {
-        None
-    }
-
-    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
-        let req = AgentAuthRequest {
-            user: self.user.clone(),
-            pwd: self.pwd.clone(),
-        };
-        let mut out = Vec::with_capacity(req.encoded_len());
-        req.encode_body(&mut out)?;
-        Ok(out)
-    }
-}
-
-pub struct AgentAdminListRpc;
-
-impl Request for AgentAdminListRpc {
-    type Response = super::AgentAdminListResp;
-
-    fn meta(&self) -> Meta {
-        RPC_AGENT_ADMIN_LIST_META
-    }
-
-    fn cluster(&self) -> Option<crate::Uuid16> {
-        None
-    }
-
-    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
-        Ok(Vec::new())
-    }
-}
-
 pub struct AgentVersionRpc;
 
-impl Request for AgentVersionRpc {
+impl crate::rpc::Request for AgentVersionRpc {
     type Response = super::AgentVersionResp;
 
-    fn meta(&self) -> Meta {
+    fn meta(&self) -> crate::rpc::Meta {
         RPC_AGENT_VERSION_META
     }
 
@@ -169,10 +135,45 @@ impl Request for AgentVersionRpc {
         None
     }
 
-    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
-        Ok(Vec::new())
+    fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
+        let req = AgentVersionRequest {
+        };
+        let mut out = Vec::with_capacity(req.encoded_len());
+        req.encode_body(&mut out)?;
+        Ok(out)
     }
 }
+
+
+pub fn parse_agent_version_body(body: &[u8]) -> Result<AgentVersionRecord> {
+    if body.is_empty() {
+        return Err(RacError::Decode("agent version empty body"));
+    }
+    let mut cursor = RecordCursor::new(body, 0);
+    AgentVersionRecord::decode(&mut cursor)
+}
+
+
+pub const RPC_AGENT_AUTH_META: crate::rpc::Meta = crate::rpc::Meta {
+    method_req: crate::rac_wire::METHOD_AGENT_AUTH_REQ,
+    method_resp: None,
+    requires_cluster_context: false,
+    requires_infobase_context: false,
+};
+
+pub const RPC_AGENT_ADMIN_LIST_META: crate::rpc::Meta = crate::rpc::Meta {
+    method_req: crate::rac_wire::METHOD_AGENT_ADMIN_LIST_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_AGENT_ADMIN_LIST_RESP),
+    requires_cluster_context: false,
+    requires_infobase_context: false,
+};
+
+pub const RPC_AGENT_VERSION_META: crate::rpc::Meta = crate::rpc::Meta {
+    method_req: crate::rac_wire::METHOD_AGENT_VERSION_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_AGENT_VERSION_RESP),
+    requires_cluster_context: false,
+    requires_infobase_context: false,
+};
 
 #[cfg(test)]
 mod tests {

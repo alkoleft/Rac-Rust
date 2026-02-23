@@ -11,12 +11,12 @@ from .rust_types import (
     request_encoded_len,
     request_encode_expr,
     request_rust_type,
-    request_uses,
 )
 
 
 def generate(
     records: List[RecordSpec],
+    requests: List[RequestSpec],
     responses: List[ResponseSpec],
     rpcs: List[RpcSpec],
     extra_uses: Optional[List[str]] = None,
@@ -33,12 +33,8 @@ def generate(
         uses.insert(0, "use crate::client::RacProtocolVersion;")
     uses.append("use serde::Serialize;")
     if rpcs:
-        uses.append("use crate::metadata::RpcMethodMeta;")
         if any(rpc.response for rpc in rpcs):
-            uses.append("use crate::protocol::ProtocolCodec;")
-            uses.append("use crate::rpc::{Meta, Request};")
-            if any(rpc.response == "AckResponse" for rpc in rpcs if rpc.response):
-                uses.append("use crate::rpc::AckResponse;")
+            pass
     if extra_uses:
         for item in extra_uses:
             if item not in uses:
@@ -108,11 +104,15 @@ def generate(
         lines.append("")
 
     if rpcs:
-        lines.extend(generate_rpc_metadata(rpcs))
+        lines.extend(generate_rpc_section(rpcs, requests))
         lines.append("")
 
     if responses:
         lines.extend(generate_response_parsers(responses))
+        lines.append("")
+
+    if rpcs:
+        lines.extend(generate_rpc_metadata(rpcs))
         lines.append("")
 
     return "\n".join(lines).rstrip() + "\n"
@@ -286,7 +286,7 @@ def generate_rpc_metadata(rpcs: List[RpcSpec]) -> List[str]:
             if rpc.method_resp is None
             else f"Some({rpc_method_resp_const(rpc.name)})"
         )
-        lines.append(f"pub const {const_name}: RpcMethodMeta = RpcMethodMeta {{")
+        lines.append(f"pub const {const_name}: crate::rpc::Meta = crate::rpc::Meta {{")
         lines.append(f"    method_req: {method_req},")
         lines.append(f"    method_resp: {method_resp},")
         lines.append(f"    requires_cluster_context: {str(rpc.requires_cluster_context).lower()},")
@@ -357,15 +357,20 @@ def generate_requests(requests: List[RequestSpec], include_uses: bool = True) ->
     return "\n".join(lines).rstrip() + "\n"
 
 
-def generate_rpc_requests(rpcs: List[RpcSpec], requests: List[RequestSpec]) -> str:
+def generate_rpc_section(rpcs: List[RpcSpec], requests: List[RequestSpec]) -> List[str]:
     request_map = {req.name: req for req in requests}
     lines: List[str] = []
+    emitted_requests = set()
 
     for rpc in rpcs:
+        req_spec = request_map.get(rpc.request) if rpc.request else None
+        if req_spec and req_spec.name not in emitted_requests:
+            lines.extend(render_request(req_spec))
+            lines.append("")
+            emitted_requests.add(req_spec.name)
         if not rpc.response:
             continue
         struct_name = f"{rpc.name}Rpc"
-        req_spec = request_map.get(rpc.request) if rpc.request else None
         fields = []
         if req_spec:
             for field in req_spec.fields:
@@ -381,10 +386,13 @@ def generate_rpc_requests(rpcs: List[RpcSpec], requests: List[RequestSpec]) -> s
         else:
             lines.append(f"pub struct {struct_name};")
         lines.append("")
-        lines.append(f"impl Request for {struct_name} {{")
-        lines.append(f"    type Response = {rpc.response};")
+        response_ty = rpc.response
+        if response_ty == "AckResponse":
+            response_ty = "crate::rpc::AckResponse"
+        lines.append(f"impl crate::rpc::Request for {struct_name} {{")
+        lines.append(f"    type Response = {response_ty};")
         lines.append("")
-        lines.append("    fn meta(&self) -> Meta {")
+        lines.append("    fn meta(&self) -> crate::rpc::Meta {")
         lines.append(f"        RPC_{snake_case(rpc.name).upper()}_META")
         lines.append("    }")
         lines.append("")
@@ -398,7 +406,9 @@ def generate_rpc_requests(rpcs: List[RpcSpec], requests: List[RequestSpec]) -> s
             lines.append("        None")
         lines.append("    }")
         lines.append("")
-        lines.append("    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {")
+        lines.append(
+            "    fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {"
+        )
         if req_spec:
             lines.append(f"        let req = {req_spec.name} {{")
             for name, _ in fields:
@@ -413,4 +423,46 @@ def generate_rpc_requests(rpcs: List[RpcSpec], requests: List[RequestSpec]) -> s
         lines.append("}")
         lines.append("")
 
-    return "\n".join(lines).rstrip() + "\n"
+    return lines
+
+
+def render_request(req: RequestSpec) -> List[str]:
+    lines: List[str] = []
+    derive = ", ".join(req.derives)
+    lines.append(f"#[derive({derive})]")
+    lines.append(f"pub struct {req.name} {{")
+    for field in req.fields:
+        if field.skip or field.literal is not None:
+            continue
+        rust_ty = request_rust_type(field)
+        lines.append(f"    pub {field.name}: {rust_ty},")
+    lines.append("}")
+    lines.append("")
+    lines.append(f"impl {req.name} {{")
+    lines.append("    pub fn encoded_len(&self) -> usize {")
+    len_parts: List[str] = []
+    for field in req.fields:
+        if field.type_name == "str8":
+            len_parts.append(f"1 + self.{field.name}.len()")
+        else:
+            len_parts.append(str(request_encoded_len(field)))
+    if len_parts:
+        lines.append(f"        { ' + '.join(len_parts) }")
+    else:
+        lines.append("        0")
+    lines.append("    }")
+    lines.append("")
+    expr_lines: List[str] = []
+    for field in req.fields:
+        if field.skip:
+            continue
+        exprs = request_encode_expr(field)
+        for expr in exprs:
+            expr_lines.append(f"        {expr}")
+    out_name = "out" if expr_lines else "_out"
+    lines.append(f"    pub fn encode_body(&self, {out_name}: &mut Vec<u8>) -> Result<()> {{")
+    lines.extend(expr_lines)
+    lines.append("        Ok(())")
+    lines.append("    }")
+    lines.append("}")
+    return lines

@@ -3,7 +3,6 @@ use crate::codec::v8_datetime_to_iso;
 use crate::codec::RecordCursor;
 use crate::error::Result;
 use serde::Serialize;
-use crate::metadata::RpcMethodMeta;
 use crate::Uuid16;
 use crate::rac_wire::encode_with_len_u8;
 
@@ -120,64 +119,6 @@ impl CounterValuesRecord {
             time,
         })
     }
-}
-
-pub const RPC_COUNTER_LIST_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: crate::rac_wire::METHOD_COUNTER_LIST_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_COUNTER_LIST_RESP),
-    requires_cluster_context: true,
-    requires_infobase_context: false,
-};
-
-pub const RPC_COUNTER_INFO_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: crate::rac_wire::METHOD_COUNTER_INFO_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_COUNTER_INFO_RESP),
-    requires_cluster_context: true,
-    requires_infobase_context: false,
-};
-
-pub const RPC_COUNTER_UPDATE_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: crate::rac_wire::METHOD_COUNTER_UPDATE_REQ,
-    method_resp: None,
-    requires_cluster_context: true,
-    requires_infobase_context: false,
-};
-
-pub const RPC_COUNTER_REMOVE_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: crate::rac_wire::METHOD_COUNTER_REMOVE_REQ,
-    method_resp: None,
-    requires_cluster_context: true,
-    requires_infobase_context: false,
-};
-
-pub const RPC_COUNTER_CLEAR_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: crate::rac_wire::METHOD_COUNTER_CLEAR_REQ,
-    method_resp: None,
-    requires_cluster_context: true,
-    requires_infobase_context: false,
-};
-
-pub const RPC_COUNTER_VALUES_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: crate::rac_wire::METHOD_COUNTER_VALUES_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_COUNTER_VALUES_RESP),
-    requires_cluster_context: true,
-    requires_infobase_context: false,
-};
-
-pub const RPC_COUNTER_ACCUMULATED_VALUES_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: crate::rac_wire::METHOD_COUNTER_ACCUMULATED_VALUES_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_COUNTER_ACCUMULATED_VALUES_RESP),
-    requires_cluster_context: true,
-    requires_infobase_context: false,
-};
-
-
-pub fn parse_counter_info_body(body: &[u8]) -> Result<CounterRecord> {
-    if body.is_empty() {
-        return Err(RacError::Decode("counter info empty body"));
-    }
-    let mut cursor = RecordCursor::new(body, 0);
-    CounterRecord::decode(&mut cursor)
 }
 
 #[derive(Debug, Clone)]
@@ -343,5 +284,62 @@ impl CounterAccumulatedValuesRequest {
 }
 
 
+pub fn parse_counter_info_body(body: &[u8]) -> Result<CounterRecord> {
+    if body.is_empty() {
+        return Err(RacError::Decode("counter info empty body"));
+    }
+    let mut cursor = RecordCursor::new(body, 0);
+    CounterRecord::decode(&mut cursor)
+}
+
+
+pub const RPC_COUNTER_LIST_META: crate::rpc::Meta = crate::rpc::Meta {
+    method_req: crate::rac_wire::METHOD_COUNTER_LIST_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_COUNTER_LIST_RESP),
+    requires_cluster_context: true,
+    requires_infobase_context: false,
+};
+
+pub const RPC_COUNTER_INFO_META: crate::rpc::Meta = crate::rpc::Meta {
+    method_req: crate::rac_wire::METHOD_COUNTER_INFO_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_COUNTER_INFO_RESP),
+    requires_cluster_context: true,
+    requires_infobase_context: false,
+};
+
+pub const RPC_COUNTER_UPDATE_META: crate::rpc::Meta = crate::rpc::Meta {
+    method_req: crate::rac_wire::METHOD_COUNTER_UPDATE_REQ,
+    method_resp: None,
+    requires_cluster_context: true,
+    requires_infobase_context: false,
+};
+
+pub const RPC_COUNTER_REMOVE_META: crate::rpc::Meta = crate::rpc::Meta {
+    method_req: crate::rac_wire::METHOD_COUNTER_REMOVE_REQ,
+    method_resp: None,
+    requires_cluster_context: true,
+    requires_infobase_context: false,
+};
+
+pub const RPC_COUNTER_CLEAR_META: crate::rpc::Meta = crate::rpc::Meta {
+    method_req: crate::rac_wire::METHOD_COUNTER_CLEAR_REQ,
+    method_resp: None,
+    requires_cluster_context: true,
+    requires_infobase_context: false,
+};
+
+pub const RPC_COUNTER_VALUES_META: crate::rpc::Meta = crate::rpc::Meta {
+    method_req: crate::rac_wire::METHOD_COUNTER_VALUES_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_COUNTER_VALUES_RESP),
+    requires_cluster_context: true,
+    requires_infobase_context: false,
+};
+
+pub const RPC_COUNTER_ACCUMULATED_VALUES_META: crate::rpc::Meta = crate::rpc::Meta {
+    method_req: crate::rac_wire::METHOD_COUNTER_ACCUMULATED_VALUES_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_COUNTER_ACCUMULATED_VALUES_RESP),
+    requires_cluster_context: true,
+    requires_infobase_context: false,
+};
 
 

@@ -4,7 +4,6 @@ use crate::codec::v8_datetime_to_iso;
 use crate::codec::RecordCursor;
 use crate::error::Result;
 use serde::Serialize;
-use crate::metadata::RpcMethodMeta;
 
 #[derive(Debug, Serialize, Clone)]
 pub struct ConnectionRecord {
@@ -44,29 +43,6 @@ impl ConnectionRecord {
     }
 }
 
-pub const RPC_CONNECTION_LIST_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: crate::rac_wire::METHOD_CONNECTION_LIST_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_CONNECTION_LIST_RESP),
-    requires_cluster_context: true,
-    requires_infobase_context: false,
-};
-
-pub const RPC_CONNECTION_INFO_META: RpcMethodMeta = RpcMethodMeta {
-    method_req: crate::rac_wire::METHOD_CONNECTION_INFO_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_CONNECTION_INFO_RESP),
-    requires_cluster_context: true,
-    requires_infobase_context: false,
-};
-
-
-pub fn parse_connection_info_body(body: &[u8]) -> Result<ConnectionRecord> {
-    if body.is_empty() {
-        return Err(RacError::Decode("connection info empty body"));
-    }
-    let mut cursor = RecordCursor::new(body, 0);
-    ConnectionRecord::decode(&mut cursor)
-}
-
 #[derive(Debug, Clone)]
 pub struct ConnectionListRequest {
     pub cluster: Uuid16,
@@ -102,5 +78,27 @@ impl ConnectionInfoRequest {
 }
 
 
+pub fn parse_connection_info_body(body: &[u8]) -> Result<ConnectionRecord> {
+    if body.is_empty() {
+        return Err(RacError::Decode("connection info empty body"));
+    }
+    let mut cursor = RecordCursor::new(body, 0);
+    ConnectionRecord::decode(&mut cursor)
+}
+
+
+pub const RPC_CONNECTION_LIST_META: crate::rpc::Meta = crate::rpc::Meta {
+    method_req: crate::rac_wire::METHOD_CONNECTION_LIST_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_CONNECTION_LIST_RESP),
+    requires_cluster_context: true,
+    requires_infobase_context: false,
+};
+
+pub const RPC_CONNECTION_INFO_META: crate::rpc::Meta = crate::rpc::Meta {
+    method_req: crate::rac_wire::METHOD_CONNECTION_INFO_REQ,
+    method_resp: Some(crate::rac_wire::METHOD_CONNECTION_INFO_RESP),
+    requires_cluster_context: true,
+    requires_infobase_context: false,
+};
 
 

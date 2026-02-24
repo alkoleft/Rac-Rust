@@ -18,28 +18,28 @@ RAC output reference:
 
 Observed field names in `rac process list` output, with capture mapping status.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `process` | UUID | yes | 1 |
-| `host` | string | yes | 2 |
-| `port` | u16 | yes | 10 |
-| `pid` | string (digits) | yes | 13 |
-| `turned-on` | bool | hypothesis | - |
-| `running` | bool | yes | 17 |
-| `started-at` | datetime | yes | 16 |
-| `use` | enum | yes | 14 |
-| `available-performance` | u32 | yes | 18 |
-| `capacity` | u32 | yes | 3 |
-| `connections` | u32 | yes | 4 |
-| `memory-size` | u32 | yes | 12 |
-| `memory-excess-time` | u32 | hypothesis | 11 |
-| `selection-size` | u32 | yes | 15 |
-| `avg-call-time` | f64 | yes | 5 |
-| `avg-db-call-time` | f64 | yes | 6 |
-| `avg-lock-call-time` | f64 | yes | 7 |
-| `avg-server-call-time` | f64 | yes | 8 |
-| `avg-threads` | f64 | yes | 9 |
-| `reserve` | bool | hypothesis | 19 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `process` | UUID | yes | 1 | 11.0 |
+| `host` | string | yes | 2 | 11.0 |
+| `port` | u16 | yes | 10 | 11.0 |
+| `pid` | string (digits) | yes | 13 | 11.0 |
+| `turned-on` | bool | hypothesis | - | 16.0 |
+| `running` | bool | yes | 17 | 11.0 |
+| `started-at` | datetime | yes | 16 | 11.0 |
+| `use` | enum | yes | 14 | 11.0 |
+| `available-performance` | u32 | yes | 18 | 16.0 |
+| `capacity` | u32 | yes | 3 | 11.0 |
+| `connections` | u32 | yes | 4 | 11.0 |
+| `memory-size` | u32 | yes | 12 | 11.0 |
+| `memory-excess-time` | u32 | hypothesis | 11 | 11.0 |
+| `selection-size` | u32 | yes | 15 | 11.0 |
+| `avg-call-time` | f64 | yes | 5 | 11.0 |
+| `avg-db-call-time` | f64 | yes | 6 | 11.0 |
+| `avg-lock-call-time` | f64 | yes | 7 | 11.0 |
+| `avg-server-call-time` | f64 | yes | 8 | 11.0 |
+| `avg-threads` | f64 | yes | 9 | 11.0 |
+| `reserve` | bool | hypothesis | 19 | 11.0 |
 
 ### RPC Envelope
 
@@ -50,11 +50,11 @@ Response method: `0x1e`
 
 Observed request parameters for `rac process list`.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `cluster` | UUID | yes | 1 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 2 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | yes | 1 | 11.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
 
 Payload structure (method body):
 - offset `0x00`: `count:u8` (observed `0x01`)
@@ -103,20 +103,20 @@ RAC output reference:
 
 Observed field names in `rac process list --licenses` output, with capture mapping status.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `full-name` | string | yes | - |
-| `series` | string | yes | - |
-| `issued-by-server` | bool | yes | - |
-| `license-type` | enum | yes | - |
-| `net` | bool | yes | - |
-| `max-users-all` | u32 | yes | - |
-| `max-users-cur` | u32 | yes | - |
-| `rmngr-address` | string | yes | - |
-| `rmngr-port` | u32 | yes | - |
-| `rmngr-pid` | string (digits) | yes | - |
-| `short-presentation` | string | yes | - |
-| `full-presentation` | string | yes | - |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `full-name` | string | yes | - | 16.0 |
+| `series` | string | yes | - | 16.0 |
+| `issued-by-server` | bool | yes | - | 16.0 |
+| `license-type` | enum | yes | - | 16.0 |
+| `net` | bool | yes | - | 16.0 |
+| `max-users-all` | u32 | yes | - | 16.0 |
+| `max-users-cur` | u32 | yes | - | 16.0 |
+| `rmngr-address` | string | yes | - | 16.0 |
+| `rmngr-port` | u32 | yes | - | 16.0 |
+| `rmngr-pid` | string (digits) | yes | - | 16.0 |
+| `short-presentation` | string | yes | - | 16.0 |
+| `full-presentation` | string | yes | - | 16.0 |
 
 ### Record Layout Notes (`--licenses`)
 
@@ -196,12 +196,12 @@ Response method: `0x20`
 
 Observed request parameters for `rac process info`.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `cluster` | UUID | yes | 1 |
-| `process` | UUID | yes | 2 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 3 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 4 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | yes | 1 | 11.0 |
+| `process` | UUID | yes | 2 | 11.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 4 | 11.0 |
 
 Payload structure (method body):
 - single record in the same layout as `process list` (no leading count byte)

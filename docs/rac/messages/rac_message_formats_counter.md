@@ -18,25 +18,25 @@ RAC output reference:
 
 Observed field names in `rac counter list` output, with capture mapping status.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `name` | string | yes | 1 |
-| `collection-time` | u64_be | yes | 2 |
-| `group` | enum (u8) | yes | 3 |
-| `filter-type` | enum (u8) | yes | 4 |
-| `filter` | string | yes | 5 |
-| `duration` | enum (u8) | yes | 6 |
-| `cpu-time` | enum (u8) | yes | 7 |
-| `duration-dbms` | enum (u8) | yes | 8 |
-| `service` | enum (u8) | yes | 9 |
-| `memory` | enum (u8) | yes | 10 |
-| `read` | enum (u8) | yes | 11 |
-| `write` | enum (u8) | yes | 12 |
-| `dbms-bytes` | enum (u8) | yes | 13 |
-| `call` | enum (u8) | yes | 14 |
-| `number-of-active-sessions` | enum (u8) | yes | 15 |
-| `number-of-sessions` | enum (u8) | yes | 16 |
-| `descr` | string | yes | 17 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `name` | string | yes | 1 | 11.0 |
+| `collection-time` | u64_be | yes | 2 | 11.0 |
+| `group` | enum (u8) | yes | 3 | 11.0 |
+| `filter-type` | enum (u8) | yes | 4 | 11.0 |
+| `filter` | string | yes | 5 | 11.0 |
+| `duration` | enum (u8) | yes | 6 | 11.0 |
+| `cpu-time` | enum (u8) | yes | 7 | 11.0 |
+| `duration-dbms` | enum (u8) | yes | 8 | 11.0 |
+| `service` | enum (u8) | yes | 9 | 11.0 |
+| `memory` | enum (u8) | yes | 10 | 11.0 |
+| `read` | enum (u8) | yes | 11 | 11.0 |
+| `write` | enum (u8) | yes | 12 | 11.0 |
+| `dbms-bytes` | enum (u8) | yes | 13 | 11.0 |
+| `call` | enum (u8) | yes | 14 | 11.0 |
+| `number-of-active-sessions` | enum (u8) | yes | 15 | 11.0 |
+| `number-of-sessions` | enum (u8) | yes | 16 | 11.0 |
+| `descr` | string | yes | 17 | 11.0 |
 
 ### RPC
 
@@ -50,11 +50,11 @@ Payload structure (method body):
 
 Observed request parameters for `rac counter list`.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `cluster` | UUID | yes | 1 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 2 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | yes | 1 | 11.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
 
 ### Record Layout (Observed)
 
@@ -115,25 +115,25 @@ RAC output reference:
 
 Observed field names in `rac counter info` output, with capture mapping status.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `name` | string | yes | 1 |
-| `collection-time` | u64_be | yes | 2 |
-| `group` | enum (u8) | yes | 3 |
-| `filter-type` | enum (u8) | yes | 4 |
-| `filter` | string | yes | 5 |
-| `duration` | enum (u8) | yes | 6 |
-| `cpu-time` | enum (u8) | yes | 7 |
-| `duration-dbms` | enum (u8) | yes | 8 |
-| `service` | enum (u8) | yes | 9 |
-| `memory` | enum (u8) | yes | 10 |
-| `read` | enum (u8) | yes | 11 |
-| `write` | enum (u8) | yes | 12 |
-| `dbms-bytes` | enum (u8) | yes | 13 |
-| `call` | enum (u8) | yes | 14 |
-| `number-of-active-sessions` | enum (u8) | yes | 15 |
-| `number-of-sessions` | enum (u8) | yes | 16 |
-| `descr` | string | yes | 17 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `name` | string | yes | 1 | 11.0 |
+| `collection-time` | u64_be | yes | 2 | 11.0 |
+| `group` | enum (u8) | yes | 3 | 11.0 |
+| `filter-type` | enum (u8) | yes | 4 | 11.0 |
+| `filter` | string | yes | 5 | 11.0 |
+| `duration` | enum (u8) | yes | 6 | 11.0 |
+| `cpu-time` | enum (u8) | yes | 7 | 11.0 |
+| `duration-dbms` | enum (u8) | yes | 8 | 11.0 |
+| `service` | enum (u8) | yes | 9 | 11.0 |
+| `memory` | enum (u8) | yes | 10 | 11.0 |
+| `read` | enum (u8) | yes | 11 | 11.0 |
+| `write` | enum (u8) | yes | 12 | 11.0 |
+| `dbms-bytes` | enum (u8) | yes | 13 | 11.0 |
+| `call` | enum (u8) | yes | 14 | 11.0 |
+| `number-of-active-sessions` | enum (u8) | yes | 15 | 11.0 |
+| `number-of-sessions` | enum (u8) | yes | 16 | 11.0 |
+| `descr` | string | yes | 17 | 11.0 |
 
 ### RPC
 
@@ -147,12 +147,12 @@ Payload structure (method body):
 
 Observed request parameters for `rac counter info`.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `cluster` | UUID | yes | 1 |
-| `counter` | string | yes | 2 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 3 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 4 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | yes | 1 | 11.0 |
+| `counter` | string | yes | 2 | 11.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 4 | 11.0 |
 
 ### Record Layout (Observed)
 
@@ -211,9 +211,9 @@ RAC output reference:
 
 `rac counter update` produces no output. The response payload is an ACK-only block.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `ack` | u32_be | yes | 1 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `ack` | u32_be | yes | 1 | 16.0 |
 
 ### RPC
 
@@ -228,28 +228,28 @@ Payload structure (method body):
 
 Observed request parameters for `rac counter update`.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `cluster` | UUID | yes | 1 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 2 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 |
-| `name` | string | yes | 4 |
-| `collection-time` | u64_be | yes | 5 |
-| `group` | enum (u8) | yes | 6 |
-| `filter-type` | enum (u8) | yes | 7 |
-| `filter` | string | yes | 8 |
-| `duration` | enum (u8) | yes | 9 |
-| `cpu-time` | enum (u8) | yes | 10 |
-| `duration-dbms` | enum (u8) | yes | 11 |
-| `service` | enum (u8) | yes | 12 |
-| `memory` | enum (u8) | yes | 13 |
-| `read` | enum (u8) | yes | 14 |
-| `write` | enum (u8) | yes | 15 |
-| `dbms-bytes` | enum (u8) | yes | 16 |
-| `call` | enum (u8) | yes | 17 |
-| `number-of-active-sessions` | enum (u8) | yes | 18 |
-| `number-of-sessions` | enum (u8) | yes | 19 |
-| `descr` | string | yes | 20 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | yes | 1 | 11.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
+| `name` | string | yes | 4 | 11.0 |
+| `collection-time` | u64_be | yes | 5 | 11.0 |
+| `group` | enum (u8) | yes | 6 | 11.0 |
+| `filter-type` | enum (u8) | yes | 7 | 11.0 |
+| `filter` | string | yes | 8 | 11.0 |
+| `duration` | enum (u8) | yes | 9 | 11.0 |
+| `cpu-time` | enum (u8) | yes | 10 | 11.0 |
+| `duration-dbms` | enum (u8) | yes | 11 | 11.0 |
+| `service` | enum (u8) | yes | 12 | 11.0 |
+| `memory` | enum (u8) | yes | 13 | 11.0 |
+| `read` | enum (u8) | yes | 14 | 11.0 |
+| `write` | enum (u8) | yes | 15 | 11.0 |
+| `dbms-bytes` | enum (u8) | yes | 16 | 11.0 |
+| `call` | enum (u8) | yes | 17 | 11.0 |
+| `number-of-active-sessions` | enum (u8) | yes | 18 | 11.0 |
+| `number-of-sessions` | enum (u8) | yes | 19 | 11.0 |
+| `descr` | string | yes | 20 | 11.0 |
 
 ### Record Layout (Observed)
 
@@ -308,22 +308,22 @@ RAC output reference:
 
 Observed field names in `rac counter values` output, with capture mapping status.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `object` | string | yes | 1 |
-| `collection-time` | u64_be | yes | 2 |
-| `duration` | u64_be | yes | 3 |
-| `cpu-time` | u64_be | yes | 4 |
-| `memory` | u64_be | yes | 5 |
-| `read` | u64_be | yes | 6 |
-| `write` | u64_be | yes | 7 |
-| `duration-dbms` | u64_be | yes | 8 |
-| `dbms-bytes` | u64_be | yes | 9 |
-| `service` | u64_be | yes | 10 |
-| `call` | u64_be | yes | 11 |
-| `number-of-active-sessions` | u64_be | yes | 12 |
-| `number-of-sessions` | u64_be | yes | 13 |
-| `time` | datetime | yes | 14 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `object` | string | yes | 1 | 11.0 |
+| `collection-time` | u64_be | yes | 2 | 11.0 |
+| `duration` | u64_be | yes | 3 | 11.0 |
+| `cpu-time` | u64_be | yes | 4 | 11.0 |
+| `memory` | u64_be | yes | 5 | 11.0 |
+| `read` | u64_be | yes | 6 | 11.0 |
+| `write` | u64_be | yes | 7 | 11.0 |
+| `duration-dbms` | u64_be | yes | 8 | 11.0 |
+| `dbms-bytes` | u64_be | yes | 9 | 11.0 |
+| `service` | u64_be | yes | 10 | 11.0 |
+| `call` | u64_be | yes | 11 | 11.0 |
+| `number-of-active-sessions` | u64_be | yes | 12 | 11.0 |
+| `number-of-sessions` | u64_be | yes | 13 | 11.0 |
+| `time` | datetime | yes | 14 | 16.0 |
 
 ### RPC
 
@@ -338,13 +338,13 @@ Payload structure (method body):
 
 Observed request parameters for `rac counter values`.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `cluster` | UUID | yes | 1 |
-| `counter` | string | yes | 2 |
-| `object` | string | yes (empty, `len=0`) | 3 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 4 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 5 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | yes | 1 | 11.0 |
+| `counter` | string | yes | 2 | 11.0 |
+| `object` | string | yes (empty, `len=0`) | 3 | 11.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 4 | 11.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 5 | 11.0 |
 
 ### Record Layout (Observed)
 
@@ -398,22 +398,22 @@ RAC output reference:
 
 Observed field names in `rac counter accumulated-values` output, with capture mapping status.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `object` | string | yes | 1 |
-| `collection-time` | u64_be | yes | 2 |
-| `duration` | u64_be | yes | 3 |
-| `cpu-time` | u64_be | yes | 4 |
-| `memory` | u64_be | yes | 5 |
-| `read` | u64_be | yes | 6 |
-| `write` | u64_be | yes | 7 |
-| `duration-dbms` | u64_be | yes | 8 |
-| `dbms-bytes` | u64_be | yes | 9 |
-| `service` | u64_be | yes | 10 |
-| `call` | u64_be | yes | 11 |
-| `number-of-active-sessions` | u64_be | yes | 12 |
-| `number-of-sessions` | u64_be | yes | 13 |
-| `time` | datetime | yes | 14 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `object` | string | yes | 1 | 11.0 |
+| `collection-time` | u64_be | yes | 2 | 11.0 |
+| `duration` | u64_be | yes | 3 | 11.0 |
+| `cpu-time` | u64_be | yes | 4 | 11.0 |
+| `memory` | u64_be | yes | 5 | 11.0 |
+| `read` | u64_be | yes | 6 | 11.0 |
+| `write` | u64_be | yes | 7 | 11.0 |
+| `duration-dbms` | u64_be | yes | 8 | 11.0 |
+| `dbms-bytes` | u64_be | yes | 9 | 11.0 |
+| `service` | u64_be | yes | 10 | 11.0 |
+| `call` | u64_be | yes | 11 | 11.0 |
+| `number-of-active-sessions` | u64_be | yes | 12 | 11.0 |
+| `number-of-sessions` | u64_be | yes | 13 | 11.0 |
+| `time` | datetime | yes | 14 | 16.0 |
 
 ### RPC
 
@@ -428,13 +428,13 @@ Payload structure (method body):
 
 Observed request parameters for `rac counter accumulated-values`.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `cluster` | UUID | yes | 1 |
-| `counter` | string | yes | 2 |
-| `object` | string | yes (empty, `len=0`) | 3 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 4 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 5 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | yes | 1 | 11.0 |
+| `counter` | string | yes | 2 | 11.0 |
+| `object` | string | yes (empty, `len=0`) | 3 | 11.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 4 | 11.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 5 | 11.0 |
 
 ### Record Layout (Observed)
 
@@ -488,9 +488,9 @@ RAC output reference:
 
 `rac counter clear` produces no output. The response payload is an ACK-only block.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `ack` | u32_be | yes | 1 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `ack` | u32_be | yes | 1 | 16.0 |
 
 ### RPC
 
@@ -506,13 +506,13 @@ Payload structure (method body):
 
 Observed request parameters for `rac counter clear`.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `cluster` | UUID | yes | 1 |
-| `counter` | string | yes | 2 |
-| `object` | string | yes (empty, `len=0`) | 3 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 4 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 5 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | yes | 1 | 11.0 |
+| `counter` | string | yes | 2 | 11.0 |
+| `object` | string | yes (empty, `len=0`) | 3 | 11.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 4 | 11.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 5 | 11.0 |
 
 ### Hypotheses
 
@@ -541,9 +541,9 @@ RAC output reference:
 
 `rac counter remove` produces no output. The response payload is an ACK-only block.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `ack` | u32_be | yes | 1 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `ack` | u32_be | yes | 1 | 16.0 |
 
 ### RPC
 
@@ -558,12 +558,12 @@ Payload structure (method body):
 
 Observed request parameters for `rac counter remove`.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `cluster` | UUID | yes | 1 |
-| `name` | string | yes | 2 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 3 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 4 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | yes | 1 | 11.0 |
+| `name` | string | yes | 2 | 11.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 4 | 11.0 |
 
 ### Hypotheses
 

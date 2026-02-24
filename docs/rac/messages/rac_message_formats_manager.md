@@ -18,14 +18,14 @@ RAC output reference:
 
 Observed field names in `rac manager list` output, with capture mapping status.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `manager` | UUID | yes | 1 |
-| `descr` | string | yes | 2 |
-| `host` | string | yes | 3 |
-| `using` | enum (u32) | yes | 4 |
-| `port` | u16 | yes | 5 |
-| `pid` | string (digits) | yes | 6 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `manager` | UUID | yes | 1 | 11.0 |
+| `descr` | string | yes | 2 | 11.0 |
+| `host` | string | yes | 3 | 11.0 |
+| `using` | enum (u32) | yes | 4 | 11.0 |
+| `port` | u16 | yes | 5 | 11.0 |
+| `pid` | string (digits) | yes | 6 | 11.0 |
 
 ### RPC
 
@@ -36,11 +36,11 @@ Response method: `0x13`
 
 Observed request parameters for `rac manager list`.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `cluster` | UUID | yes | 1 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 2 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | yes | 1 | 11.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
 
 Payload structure (method body):
 - offset `0x00`: `count:u8` (observed `0x01`)
@@ -89,12 +89,12 @@ Response method: `0x15`
 
 Observed request parameters for `rac manager info`.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `cluster` | UUID | yes | 1 |
-| `manager` | UUID | yes | 2 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 3 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 4 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | yes | 1 | 11.0 |
+| `manager` | UUID | yes | 2 | 11.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 4 | 11.0 |
 
 Payload structure (method body):
 - single record in the same layout as `manager list` (no leading count byte)

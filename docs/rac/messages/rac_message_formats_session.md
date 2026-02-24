@@ -39,78 +39,78 @@ Aligned with current decoder implementation in `apps/rac_protocol/src/commands/s
 
 Fields are read sequentially by the decoder. When the payload ends early, the decoder fills missing fields with defaults (empty string, `0`, `false`, or zero UUID).
 
-| Field | Type | Optional | Notes |
-| --- | --- | --- | --- |
-| `session` | `uuid16` | no | Record start anchor. |
-| `app-id` | `str8` | no | Examples: `Designer`, `1CV8C`, `SystemBackgroundJob`. |
-| `counters.blocked-by-dbms` | `u32_be` | yes | Present in the stream, but still being interpreted. Missing values default to `0`. |
-| `counters.blocked-by-ls` | `u32_be` | yes | Present in the stream, but still being interpreted. Missing values default to `0`. |
-| `counters.bytes-all` | `u64_be` | yes | Missing values default to `0`. |
-| `counters.bytes-last-5min` | `u64_be` | yes | Missing values default to `0`. |
-| `counters.calls-all` | `u32_be` | yes | Missing values default to `0`. |
-| `counters.calls-last-5min` | `u64_be` | yes | Missing values default to `0`. |
-| `connection` | `uuid16` | yes | Missing values default to zero UUID. |
-| `counters.dbms-bytes-all` | `u64_be` | yes | Missing values default to `0`. |
-| `counters.dbms-bytes-last-5min` | `u64_be` | yes | Missing values default to `0`. |
-| `db-proc-info` | `str8` | yes | Only present when DB procedure info is reported. Missing values default to empty string. |
-| `counters.db-proc-took` | `u32_be` | yes | Missing values default to `0`. |
-| `db-proc-took-at` | `datetime` | yes | 1C timestamp, decoded to ISO string. Missing values default to empty string. |
-| `counters.duration-all` | `u32_be` | yes | Missing values default to `0`. |
-| `counters.duration-all-dbms` | `u32_be` | yes | Missing values default to `0`. |
-| `counters.duration-current` | `u32_be` | yes | Missing values default to `0`. |
-| `counters.duration-current-dbms` | `u32_be` | yes | Missing values default to `0`. |
-| `counters.duration-last-5min` | `u64_be` | yes | Missing values default to `0`. |
-| `counters.duration-last-5min-dbms` | `u64_be` | yes | Missing values default to `0`. |
-| `host` | `str8` | yes | Missing values default to empty string. |
-| `infobase` | `uuid16` | yes | Missing values default to zero UUID. |
-| `last-active-at` | `datetime` | yes | 1C timestamp, decoded to ISO string. Missing values default to empty string. |
-| `hibernate` | `bool` | yes | Currently treated as a boolean flag. Missing values default to `false`. |
-| `counters.passive-session-hibernate-time` | `u32_be` | yes | Missing values default to `0`. |
-| `counters.hibernate-session-terminate-time` | `u32_be` | yes | Missing values default to `0`. |
-| `license` | `license-block` | yes | Parsed by `parse_licenses`. Missing values default to an empty `SessionLicense`. |
-| `locale` | `str8` | yes | Missing values default to empty string. |
-| `process` | `uuid16` | yes | Missing values default to zero UUID. |
-| `session-id` | `u32_be` | yes | Missing values default to `0`. |
-| `started-at` | `datetime` | yes | 1C timestamp, decoded to ISO string. Missing values default to empty string. |
-| `user-name` | `str8` | yes | Missing values default to empty string. |
-| `counters.memory-current` | `u64_be` | yes | Missing values default to `0`. |
-| `counters.memory-last-5min` | `u64_be` | yes | Missing values default to `0`. |
-| `counters.memory-total` | `u64_be` | yes | Missing values default to `0`. |
-| `counters.read-current` | `u64_be` | yes | Missing values default to `0`. |
-| `counters.read-last-5min` | `u64_be` | yes | Missing values default to `0`. |
-| `counters.read-total` | `u64_be` | yes | Missing values default to `0`. |
-| `counters.write-current` | `u64_be` | yes | Missing values default to `0`. |
-| `counters.write-last-5min` | `u64_be` | yes | Missing values default to `0`. |
-| `counters.write-total` | `u64_be` | yes | Missing values default to `0`. |
-| `counters.duration-current-service` | `u32_be` | yes | Missing values default to `0`. |
-| `counters.duration-last-5min-service` | `u64_be` | yes | Missing values default to `0`. |
-| `counters.duration-all-service` | `u32_be` | yes | Missing values default to `0`. |
-| `current-service-name` | `str8` | yes | Missing values default to empty string. |
-| `counters.cpu-time-current` | `u64_be` | yes | Missing values default to `0`. |
-| `counters.cpu-time-last-5min` | `u64_be` | yes | Missing values default to `0`. |
-| `counters.cpu-time-total` | `u64_be` | yes | Missing values default to `0`. |
-| `data-separation` | `str8` | yes | Missing values default to empty string. |
-| `client-ip` | `str8` | yes | Missing values default to empty string. |
+| Field | Type | Optional | Notes | Version |
+| --- | --- | --- | --- | --- |
+| `session` | `uuid16` | no | Record start anchor. | 11.0 |
+| `app-id` | `str8` | no | Examples: `Designer`, `1CV8C`, `SystemBackgroundJob`. | 11.0 |
+| `counters.blocked-by-dbms` | `u32_be` | yes | Present in the stream, but still being interpreted. Missing values default to `0`. | 11.0 |
+| `counters.blocked-by-ls` | `u32_be` | yes | Present in the stream, but still being interpreted. Missing values default to `0`. | 11.0 |
+| `counters.bytes-all` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
+| `counters.bytes-last-5min` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
+| `counters.calls-all` | `u32_be` | yes | Missing values default to `0`. | 11.0 |
+| `counters.calls-last-5min` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
+| `connection` | `uuid16` | yes | Missing values default to zero UUID. | 11.0 |
+| `counters.dbms-bytes-all` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
+| `counters.dbms-bytes-last-5min` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
+| `db-proc-info` | `str8` | yes | Only present when DB procedure info is reported. Missing values default to empty string. | 11.0 |
+| `counters.db-proc-took` | `u32_be` | yes | Missing values default to `0`. | 11.0 |
+| `db-proc-took-at` | `datetime` | yes | 1C timestamp, decoded to ISO string. Missing values default to empty string. | 11.0 |
+| `counters.duration-all` | `u32_be` | yes | Missing values default to `0`. | 11.0 |
+| `counters.duration-all-dbms` | `u32_be` | yes | Missing values default to `0`. | 11.0 |
+| `counters.duration-current` | `u32_be` | yes | Missing values default to `0`. | 11.0 |
+| `counters.duration-current-dbms` | `u32_be` | yes | Missing values default to `0`. | 11.0 |
+| `counters.duration-last-5min` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
+| `counters.duration-last-5min-dbms` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
+| `host` | `str8` | yes | Missing values default to empty string. | 11.0 |
+| `infobase` | `uuid16` | yes | Missing values default to zero UUID. | 11.0 |
+| `last-active-at` | `datetime` | yes | 1C timestamp, decoded to ISO string. Missing values default to empty string. | 11.0 |
+| `hibernate` | `bool` | yes | Currently treated as a boolean flag. Missing values default to `false`. | 11.0 |
+| `counters.passive-session-hibernate-time` | `u32_be` | yes | Missing values default to `0`. | 11.0 |
+| `counters.hibernate-session-terminate-time` | `u32_be` | yes | Missing values default to `0`. | 11.0 |
+| `license` | `license-block` | yes | Parsed by `parse_licenses`. Missing values default to an empty `SessionLicense`. | 11.0 |
+| `locale` | `str8` | yes | Missing values default to empty string. | 11.0 |
+| `process` | `uuid16` | yes | Missing values default to zero UUID. | 11.0 |
+| `session-id` | `u32_be` | yes | Missing values default to `0`. | 11.0 |
+| `started-at` | `datetime` | yes | 1C timestamp, decoded to ISO string. Missing values default to empty string. | 11.0 |
+| `user-name` | `str8` | yes | Missing values default to empty string. | 11.0 |
+| `counters.memory-current` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
+| `counters.memory-last-5min` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
+| `counters.memory-total` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
+| `counters.read-current` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
+| `counters.read-last-5min` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
+| `counters.read-total` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
+| `counters.write-current` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
+| `counters.write-last-5min` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
+| `counters.write-total` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
+| `counters.duration-current-service` | `u32_be` | yes | Missing values default to `0`. | 11.0 |
+| `counters.duration-last-5min-service` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
+| `counters.duration-all-service` | `u32_be` | yes | Missing values default to `0`. | 11.0 |
+| `current-service-name` | `str8` | yes | Missing values default to empty string. | 11.0 |
+| `counters.cpu-time-current` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
+| `counters.cpu-time-last-5min` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
+| `counters.cpu-time-total` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
+| `data-separation` | `str8` | yes | Missing values default to empty string. | 11.0 |
+| `client-ip` | `str8` | yes | Missing values default to empty string. | 11.0 |
 
 ### License Block Layout (decoded order)
 
 The decoder reads the license block immediately after the hibernate timers.
 
-| Field | Type | Optional | Notes |
-| --- | --- | --- | --- |
-| `licenses-count` | `u8` | no | Number of license entries in the payload. |
-| `file-name` | `str8` | yes | Only the first entry is decoded. Missing values default to empty string. |
-| `full-presentation` | `str8` | yes | Only the first entry is decoded. Missing values default to empty string. |
-| `issued-by-server` | `bool` | yes | Only the first entry is decoded. Missing values default to `false`. |
-| `license-type` | `u32_be` | yes | Only the first entry is decoded. Missing values default to `0`. |
-| `max-users-all` | `u32_be` | yes | Only the first entry is decoded. Missing values default to `0`. |
-| `max-users-current` | `u32_be` | yes | Only the first entry is decoded. Missing values default to `0`. |
-| `network-key` | `bool` | yes | Only the first entry is decoded. Missing values default to `false`. |
-| `server-address` | `str8` | yes | Only the first entry is decoded. Missing values default to empty string. |
-| `process-id` | `str8` | yes | Only the first entry is decoded. Missing values default to empty string. |
-| `server-port` | `u32_be` | yes | Only the first entry is decoded. Missing values default to `0`. |
-| `key-series` | `str8` | yes | Only the first entry is decoded. Missing values default to empty string. |
-| `brief-presentation` | `str8` | yes | Only the first entry is decoded. Missing values default to empty string. |
+| Field | Type | Optional | Notes | Version |
+| --- | --- | --- | --- | --- |
+| `licenses-count` | `u8` | no | Number of license entries in the payload. | 11.0 |
+| `file-name` | `str8` | yes | Only the first entry is decoded. Missing values default to empty string. | 11.0 |
+| `full-presentation` | `str8` | yes | Only the first entry is decoded. Missing values default to empty string. | 11.0 |
+| `issued-by-server` | `bool` | yes | Only the first entry is decoded. Missing values default to `false`. | 11.0 |
+| `license-type` | `u32_be` | yes | Only the first entry is decoded. Missing values default to `0`. | 11.0 |
+| `max-users-all` | `u32_be` | yes | Only the first entry is decoded. Missing values default to `0`. | 11.0 |
+| `max-users-current` | `u32_be` | yes | Only the first entry is decoded. Missing values default to `0`. | 11.0 |
+| `network-key` | `bool` | yes | Only the first entry is decoded. Missing values default to `false`. | 11.0 |
+| `server-address` | `str8` | yes | Only the first entry is decoded. Missing values default to empty string. | 11.0 |
+| `process-id` | `str8` | yes | Only the first entry is decoded. Missing values default to empty string. | 11.0 |
+| `server-port` | `u32_be` | yes | Only the first entry is decoded. Missing values default to `0`. | 11.0 |
+| `key-series` | `str8` | yes | Only the first entry is decoded. Missing values default to empty string. | 11.0 |
+| `brief-presentation` | `str8` | yes | Only the first entry is decoded. Missing values default to empty string. | 11.0 |
 
 Notes:
 

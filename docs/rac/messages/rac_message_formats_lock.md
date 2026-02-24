@@ -18,13 +18,13 @@ RAC output reference:
 
 Observed field names in `rac lock list` output, with capture mapping status.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `connection` | UUID | yes | 1 |
-| `descr` | string | yes | 2 |
-| `locked` | datetime (u64 ticks, 100us since 0001-01-01) | yes | 3 |
-| `session` | UUID | yes | 4 |
-| `object` | UUID | yes | 5 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `connection` | UUID | yes | 1 | 11.0 |
+| `descr` | string | yes | 2 | 11.0 |
+| `locked` | datetime (u64 ticks, 100us since 0001-01-01) | yes | 3 | 11.0 |
+| `session` | UUID | yes | 4 | 11.0 |
+| `object` | UUID | yes | 5 | 11.0 |
 
 ### RPC
 
@@ -39,14 +39,14 @@ Payload structure (method body):
 
 Observed request parameters for `rac lock list`.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `cluster` | UUID | yes | 1 |
-| `cluster-user` | string | yes | 2 |
-| `cluster-pwd` | string | yes | 3 |
-| `infobase` | UUID | no | 4 |
-| `connection` | UUID | no | 5 |
-| `session` | UUID | no | 6 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | yes | 1 | 11.0 |
+| `cluster-user` | string | yes | 2 | 11.0 |
+| `cluster-pwd` | string | yes | 3 | 11.0 |
+| `infobase` | UUID | no | 4 | 11.0 |
+| `connection` | UUID | no | 5 | 11.0 |
+| `session` | UUID | no | 6 | 11.0 |
 
 Notes:
 - `cluster-user`/`cluster-pwd` are sent via the context setter (`rpc_method_id=0x09`) before the `lock list` request. Order in that context payload: `cluster`, `cluster-user`, `cluster-pwd`.

@@ -21,12 +21,12 @@ RAC output reference:
 
 Observed field names in `rac agent admin list` output, with capture mapping status.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `name` | string | yes | 1 |
-| `auth` | enum/string | no | 2 |
-| `os-user` | string | no | 3 |
-| `descr` | string | no | 4 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `name` | string | yes | 1 | 11.0 |
+| `auth` | enum/string | no | 2 | 11.0 |
+| `os-user` | string | no | 3 | 11.0 |
+| `descr` | string | no | 4 | 11.0 |
 
 ### RPC
 
@@ -37,10 +37,10 @@ Response method: `0x01`
 
 Observed request parameters for `rac agent admin list`.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `agent-user` | string | yes (auth call `0x08`) | 1 |
-| `agent-pwd` | string | yes (auth call `0x08`) | 2 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `agent-user` | string | yes (auth call `0x08`) | 1 | 11.0 |
+| `agent-pwd` | string | yes (auth call `0x08`) | 2 | 11.0 |
 
 Payload structure (method body):
 - empty body (observed only RPC header)
@@ -84,9 +84,9 @@ Payload structure (method body):
 
 ### Поля ответа
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `version` | string | no | 1 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `version` | string | no | 1 | 11.0 |
 
 ### Record Layout (Decoder-Based)
 

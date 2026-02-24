@@ -18,13 +18,13 @@ RAC output reference:
 
 Observed field names in `rac service-setting list` output, with capture mapping status.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `setting` | UUID | yes | 1 |
-| `service-name` | string | yes | 2 |
-| `infobase-name` | string | yes (empty string, len=0) | 3 |
-| `service-data-dir` | string | yes | 4 |
-| `active` | bool (u16?) | yes | 5 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `setting` | UUID | yes | 1 | 16.0 |
+| `service-name` | string | yes | 2 | 16.0 |
+| `infobase-name` | string | yes (empty string, len=0) | 3 | 16.0 |
+| `service-data-dir` | string | yes | 4 | 16.0 |
+| `active` | bool (u16?) | yes | 5 | 16.0 |
 
 ### RPC
 
@@ -40,12 +40,12 @@ Payload structure (method body):
 
 Observed request parameters for `rac service-setting list`.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `cluster` | UUID | yes (auth/context `0x09`, request `0x8b`) | 1 |
-| `cluster-user` | string | yes (auth/context `0x09`) | 2 |
-| `cluster-pwd` | string | yes (auth/context `0x09`) | 3 |
-| `server` | UUID | yes (request `0x8b`) | 4 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | yes (auth/context `0x09`, request `0x8b`) | 1 | 16.0 |
+| `cluster-user` | string | yes (auth/context `0x09`) | 2 | 16.0 |
+| `cluster-pwd` | string | yes (auth/context `0x09`) | 3 | 16.0 |
+| `server` | UUID | yes (request `0x8b`) | 4 | 16.0 |
 
 ### Record Layout (Observed)
 
@@ -77,13 +77,13 @@ RAC output reference:
 
 Observed field names in `rac service-setting info` output, with capture mapping status.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `setting` | UUID | yes | 1 |
-| `service-name` | string | yes | 2 |
-| `infobase-name` | string | yes (empty string, len=0) | 3 |
-| `service-data-dir` | string | yes | 4 |
-| `active` | bool (u16?) | yes | 5 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `setting` | UUID | yes | 1 | 16.0 |
+| `service-name` | string | yes | 2 | 16.0 |
+| `infobase-name` | string | yes (empty string, len=0) | 3 | 16.0 |
+| `service-data-dir` | string | yes | 4 | 16.0 |
+| `active` | bool (u16?) | yes | 5 | 16.0 |
 
 ### RPC
 
@@ -97,13 +97,13 @@ Payload structure (method body):
 
 Observed request parameters for `rac service-setting info`.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `cluster` | UUID | yes (auth/context `0x09`, request `0x89`) | 1 |
-| `server` | UUID | yes (request `0x89`) | 2 |
-| `setting` | UUID | yes (request `0x89`) | 3 |
-| `cluster-user` | string | yes (auth/context `0x09`) | 4 |
-| `cluster-pwd` | string | yes (auth/context `0x09`) | 5 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | yes (auth/context `0x09`, request `0x89`) | 1 | 16.0 |
+| `server` | UUID | yes (request `0x89`) | 2 | 16.0 |
+| `setting` | UUID | yes (request `0x89`) | 3 | 16.0 |
+| `cluster-user` | string | yes (auth/context `0x09`) | 4 | 16.0 |
+| `cluster-pwd` | string | yes (auth/context `0x09`) | 5 | 16.0 |
 
 ### Record Layout (Observed)
 
@@ -135,9 +135,9 @@ RAC output reference:
 
 `rac service-setting insert` returns the created setting UUID.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `setting` | UUID | yes | 1 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `setting` | UUID | yes | 1 | 16.0 |
 
 ### RPC
 
@@ -154,17 +154,17 @@ Payload structure (method body):
 
 Observed request parameters for `rac service-setting insert`.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `cluster` | UUID | yes | 1 |
-| `server` | UUID | yes | 2 |
-| `setting` | UUID | yes (zeroed for insert) | 3 |
-| `service-name` | string | yes | 4 |
-| `infobase-name` | string | yes (empty string, len=0) | 5 |
-| `service-data-dir` | string | yes | 6 |
-| `active` | bool (u16?) | yes (default `0x0000`) | 7 |
-| `cluster-user` | string | yes (auth/context `0x09`) | 8 |
-| `cluster-pwd` | string | yes (auth/context `0x09`) | 9 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | yes | 1 | 16.0 |
+| `server` | UUID | yes | 2 | 16.0 |
+| `setting` | UUID | yes (zeroed for insert) | 3 | 16.0 |
+| `service-name` | string | yes | 4 | 16.0 |
+| `infobase-name` | string | yes (empty string, len=0) | 5 | 16.0 |
+| `service-data-dir` | string | yes | 6 | 16.0 |
+| `active` | bool (u16?) | yes (default `0x0000`) | 7 | 16.0 |
+| `cluster-user` | string | yes (auth/context `0x09`) | 8 | 16.0 |
+| `cluster-pwd` | string | yes (auth/context `0x09`) | 9 | 16.0 |
 
 ### Record Layout (Observed)
 
@@ -196,9 +196,9 @@ RAC output reference:
 
 `rac service-setting update` produces no output; the response payload contains the setting UUID.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `setting` | UUID | yes | 1 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `setting` | UUID | yes | 1 | 16.0 |
 
 ### RPC
 
@@ -218,17 +218,17 @@ Notes:
 
 Observed request parameters for `rac service-setting update`.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `cluster` | UUID | yes | 1 |
-| `server` | UUID | yes | 2 |
-| `setting` | UUID | yes (non-zero) | 3 |
-| `service-name` | string | yes | 4 |
-| `infobase-name` | string | yes (empty string, len=0) | 5 |
-| `service-data-dir` | string | yes | 6 |
-| `active` | bool (u16?) | yes (default `0x0000`) | 7 |
-| `cluster-user` | string | yes (auth/context `0x09`) | 8 |
-| `cluster-pwd` | string | yes (auth/context `0x09`) | 9 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | yes | 1 | 16.0 |
+| `server` | UUID | yes | 2 | 16.0 |
+| `setting` | UUID | yes (non-zero) | 3 | 16.0 |
+| `service-name` | string | yes | 4 | 16.0 |
+| `infobase-name` | string | yes (empty string, len=0) | 5 | 16.0 |
+| `service-data-dir` | string | yes | 6 | 16.0 |
+| `active` | bool (u16?) | yes (default `0x0000`) | 7 | 16.0 |
+| `cluster-user` | string | yes (auth/context `0x09`) | 8 | 16.0 |
+| `cluster-pwd` | string | yes (auth/context `0x09`) | 9 | 16.0 |
 
 ### Record Layout (Observed)
 
@@ -260,12 +260,12 @@ RAC output reference:
 
 Observed field names in `rac service-setting get-service-data-dirs-for-transfer` output, with capture mapping status.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `service-name` | string | yes | 1 |
-| `user` | string | yes | 2 |
-| `source-dir` | string | yes | 3 |
-| `target-dir` | string | yes | 4 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `service-name` | string | yes | 1 | 16.0 |
+| `user` | string | yes | 2 | 16.0 |
+| `source-dir` | string | yes | 3 | 16.0 |
+| `target-dir` | string | yes | 4 | 16.0 |
 
 ### RPC
 
@@ -282,13 +282,13 @@ Payload structure (method body):
 
 Observed request parameters for `rac service-setting get-service-data-dirs-for-transfer`.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `cluster` | UUID | yes (auth/context `0x09`, request `0x91`) | 1 |
-| `server` | UUID | yes (request `0x91`) | 2 |
-| `service-name` | string | yes | 3 |
-| `cluster-user` | string | yes (auth/context `0x09`) | 4 |
-| `cluster-pwd` | string | yes (auth/context `0x09`) | 5 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | yes (auth/context `0x09`, request `0x91`) | 1 | 16.0 |
+| `server` | UUID | yes (request `0x91`) | 2 | 16.0 |
+| `service-name` | string | yes | 3 | 16.0 |
+| `cluster-user` | string | yes (auth/context `0x09`) | 4 | 16.0 |
+| `cluster-pwd` | string | yes (auth/context `0x09`) | 5 | 16.0 |
 
 ### Record Layout (Observed)
 
@@ -322,9 +322,9 @@ RAC output reference:
 
 `rac service-setting remove` produces no output. The response payload is an ACK-only block.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `ack` | u32_be | yes | 1 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `ack` | u32_be | yes | 1 | 16.0 |
 
 ### RPC
 
@@ -340,13 +340,13 @@ Payload structure (method body):
 
 Observed request parameters for `rac service-setting remove`.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `cluster` | UUID | yes (auth/context `0x09`, request `0x8f`) | 1 |
-| `server` | UUID | yes (request `0x8f`) | 2 |
-| `setting` | UUID | yes (request `0x8f`) | 3 |
-| `cluster-user` | string | yes (auth/context `0x09`) | 4 |
-| `cluster-pwd` | string | yes (auth/context `0x09`) | 5 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | yes (auth/context `0x09`, request `0x8f`) | 1 | 16.0 |
+| `server` | UUID | yes (request `0x8f`) | 2 | 16.0 |
+| `setting` | UUID | yes (request `0x8f`) | 3 | 16.0 |
+| `cluster-user` | string | yes (auth/context `0x09`) | 4 | 16.0 |
+| `cluster-pwd` | string | yes (auth/context `0x09`) | 5 | 16.0 |
 
 ### Record Layout (Observed)
 
@@ -373,9 +373,9 @@ RAC output reference:
 
 `rac service-setting apply` produces no output. The response payload is an ACK-only block.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `ack` | u32_be | yes | 1 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `ack` | u32_be | yes | 1 | 16.0 |
 
 ### RPC
 
@@ -390,12 +390,12 @@ Payload structure (method body):
 
 Observed request parameters for `rac service-setting apply`.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `cluster` | UUID | yes (auth/context `0x09`, request `0x90`) | 1 |
-| `server` | UUID | yes (request `0x90`) | 2 |
-| `cluster-user` | string | yes (auth/context `0x09`) | 3 |
-| `cluster-pwd` | string | yes (auth/context `0x09`) | 4 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | yes (auth/context `0x09`, request `0x90`) | 1 | 16.0 |
+| `server` | UUID | yes (request `0x90`) | 2 | 16.0 |
+| `cluster-user` | string | yes (auth/context `0x09`) | 3 | 16.0 |
+| `cluster-pwd` | string | yes (auth/context `0x09`) | 4 | 16.0 |
 
 ### Record Layout (Observed)
 

@@ -13,17 +13,17 @@ RAC output reference:
 
 Observed field names in `rac connection list` output, with capture mapping status.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `connection` | UUID | yes | 1 |
-| `application` | string | yes | 2 |
-| `connected-at` | datetime (u64 ticks, 100us since 0001-01-01) | yes | 3 (inside `blocked_by_ls + connected_at`) |
-| `conn-id` | u32 | yes | 3 |
-| `host` | string | yes | 4 |
-| `infobase` | UUID (nullable) | yes | 5 |
-| `process` | UUID | yes | 6 |
-| `session-number` | u32 | yes | 7 (tail) |
-| `blocked-by-ls` | u32 | hypothesis (maps to `blocked_by_ls`) | 3 (inside `blocked_by_ls`) |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `connection` | UUID | yes | 1 | 11.0 |
+| `application` | string | yes | 2 | 11.0 |
+| `connected-at` | datetime (u64 ticks, 100us since 0001-01-01) | yes | 3 (inside `blocked_by_ls + connected_at`) | 11.0 |
+| `conn-id` | u32 | yes | 3 | 11.0 |
+| `host` | string | yes | 4 | 11.0 |
+| `infobase` | UUID (nullable) | yes | 5 | 11.0 |
+| `process` | UUID | yes | 6 | 11.0 |
+| `session-number` | u32 | yes | 7 (tail) | 11.0 |
+| `blocked-by-ls` | u32 | hypothesis (maps to `blocked_by_ls`) | 3 (inside `blocked_by_ls`) | 11.0 |
 
 ## RPC
 

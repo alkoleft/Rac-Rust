@@ -18,9 +18,9 @@ RAC output reference:
 
 `rac rule apply` produces no output. The response payload is an ACK-only block.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `ack` | u32_be | yes | 1 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `ack` | u32_be | yes | 1 | 11.0 |
 
 ### RPC
 
@@ -35,12 +35,12 @@ Payload structure (method body):
 
 Observed request parameters for `rac rule apply`.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `cluster` | UUID | yes (auth/context `0x09`, request `0x51`) | 1 |
-| `full/partial` | enum (u32_be) | yes (request `0x51`) | 2 |
-| `cluster-user` | string | yes (auth/context `0x09`) | 3 |
-| `cluster-pwd` | string | yes (auth/context `0x09`) | 4 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | yes (auth/context `0x09`, request `0x51`) | 1 | 11.0 |
+| `full/partial` | enum (u32_be) | yes (request `0x51`) | 2 | 11.0 |
+| `cluster-user` | string | yes (auth/context `0x09`) | 3 | 11.0 |
+| `cluster-pwd` | string | yes (auth/context `0x09`) | 4 | 11.0 |
 
 ### Record Layout (Observed)
 
@@ -78,14 +78,14 @@ RAC output reference:
 
 Observed field names in `rac rule list` output, with capture mapping status.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `rule` | UUID | yes | 1 |
-| `object-type` | u32_be | yes | 2 |
-| `infobase-name` | string | yes | 3 |
-| `rule-type` | enum (u8) | yes | 4 |
-| `application-ext` | string | yes | 5 |
-| `priority` | u32_be | yes | 6 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `rule` | UUID | yes | 1 | 11.0 |
+| `object-type` | u32_be | yes | 2 | 11.0 |
+| `infobase-name` | string | yes | 3 | 11.0 |
+| `rule-type` | enum (u8) | yes | 4 | 11.0 |
+| `application-ext` | string | yes | 5 | 11.0 |
+| `priority` | u32_be | yes | 6 | 11.0 |
 
 ### RPC
 
@@ -101,12 +101,12 @@ Payload structure (method body):
 
 Observed request parameters for `rac rule list`.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `cluster` | UUID | yes (auth/context `0x09`, request `0x55`) | 1 |
-| `server` | UUID | yes (request `0x55`) | 2 |
-| `cluster-user` | string | yes (auth/context `0x09`) | 3 |
-| `cluster-pwd` | string | yes (auth/context `0x09`) | 4 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | yes (auth/context `0x09`, request `0x55`) | 1 | 11.0 |
+| `server` | UUID | yes (request `0x55`) | 2 | 11.0 |
+| `cluster-user` | string | yes (auth/context `0x09`) | 3 | 11.0 |
+| `cluster-pwd` | string | yes (auth/context `0x09`) | 4 | 11.0 |
 
 ### Record Layout (Observed)
 
@@ -150,14 +150,14 @@ RAC output reference:
 
 Observed field names in `rac rule info` output, with capture mapping status.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `rule` | UUID | yes | 1 |
-| `object-type` | u32_be | yes | 2 |
-| `infobase-name` | string | yes | 3 |
-| `rule-type` | enum (u8) | yes | 4 |
-| `application-ext` | string | yes | 5 |
-| `priority` | u32_be | yes | 6 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `rule` | UUID | yes | 1 | 11.0 |
+| `object-type` | u32_be | yes | 2 | 11.0 |
+| `infobase-name` | string | yes | 3 | 11.0 |
+| `rule-type` | enum (u8) | yes | 4 | 11.0 |
+| `application-ext` | string | yes | 5 | 11.0 |
+| `priority` | u32_be | yes | 6 | 11.0 |
 
 ### RPC
 
@@ -173,13 +173,13 @@ Payload structure (method body):
 
 Observed request parameters for `rac rule info`.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `cluster` | UUID | yes (auth/context `0x09`, request `0x57`) | 1 |
-| `server` | UUID | yes (request `0x57`) | 2 |
-| `rule` | UUID | yes (request `0x57`) | 3 |
-| `cluster-user` | string | yes (auth/context `0x09`) | 4 |
-| `cluster-pwd` | string | yes (auth/context `0x09`) | 5 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | yes (auth/context `0x09`, request `0x57`) | 1 | 11.0 |
+| `server` | UUID | yes (request `0x57`) | 2 | 11.0 |
+| `rule` | UUID | yes (request `0x57`) | 3 | 11.0 |
+| `cluster-user` | string | yes (auth/context `0x09`) | 4 | 11.0 |
+| `cluster-pwd` | string | yes (auth/context `0x09`) | 5 | 11.0 |
 
 ### Record Layout (Observed)
 
@@ -223,9 +223,9 @@ RAC output reference:
 
 Observed field names in `rac rule insert` output, with capture mapping status.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `rule` | UUID | yes | 1 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `rule` | UUID | yes | 1 | 11.0 |
 
 ### RPC
 
@@ -248,18 +248,18 @@ Payload structure (method body):
 
 Observed request parameters for `rac rule insert`.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `cluster` | UUID | yes (auth/context `0x09`, request `0x52`) | 1 |
-| `server` | UUID | yes (request `0x52`) | 2 |
-| `position` | u32_be | yes (request `0x52`) | 3 |
-| `object-type` | u32_be | yes (request `0x52`) | 4 |
-| `infobase-name` | string | yes (request `0x52`) | 5 |
-| `rule-type` | enum (u8) | yes (request `0x52`) | 6 |
-| `application-ext` | string | yes (request `0x52`) | 7 |
-| `priority` | u32_be | yes (request `0x52`) | 8 |
-| `cluster-user` | string | yes (auth/context `0x09`) | 9 |
-| `cluster-pwd` | string | yes (auth/context `0x09`) | 10 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | yes (auth/context `0x09`, request `0x52`) | 1 | 11.0 |
+| `server` | UUID | yes (request `0x52`) | 2 | 11.0 |
+| `position` | u32_be | yes (request `0x52`) | 3 | 11.0 |
+| `object-type` | u32_be | yes (request `0x52`) | 4 | 11.0 |
+| `infobase-name` | string | yes (request `0x52`) | 5 | 11.0 |
+| `rule-type` | enum (u8) | yes (request `0x52`) | 6 | 11.0 |
+| `application-ext` | string | yes (request `0x52`) | 7 | 11.0 |
+| `priority` | u32_be | yes (request `0x52`) | 8 | 11.0 |
+| `cluster-user` | string | yes (auth/context `0x09`) | 9 | 11.0 |
+| `cluster-pwd` | string | yes (auth/context `0x09`) | 10 | 11.0 |
 
 ### Record Layout (Observed)
 
@@ -296,9 +296,9 @@ RAC output reference:
 
 `rac rule update` produces no output; response includes a rule UUID payload.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `rule` | UUID | yes | 1 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `rule` | UUID | yes | 1 | 11.0 |
 
 ### RPC
 
@@ -321,19 +321,19 @@ Payload structure (method body):
 
 Observed request parameters for `rac rule update`.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `cluster` | UUID | yes (auth/context `0x09`, request `0x52`) | 1 |
-| `server` | UUID | yes (request `0x52`) | 2 |
-| `rule` | UUID | yes (request `0x52`) | 3 |
-| `position` | u32_be | yes (request `0x52`) | 4 |
-| `object-type` | u32_be | yes (request `0x52`) | 5 |
-| `infobase-name` | string | yes (request `0x52`) | 6 |
-| `rule-type` | enum (u8) | yes (request `0x52`) | 7 |
-| `application-ext` | string | yes (request `0x52`) | 8 |
-| `priority` | u32_be | yes (request `0x52`) | 9 |
-| `cluster-user` | string | yes (auth/context `0x09`) | 10 |
-| `cluster-pwd` | string | yes (auth/context `0x09`) | 11 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | yes (auth/context `0x09`, request `0x52`) | 1 | 11.0 |
+| `server` | UUID | yes (request `0x52`) | 2 | 11.0 |
+| `rule` | UUID | yes (request `0x52`) | 3 | 11.0 |
+| `position` | u32_be | yes (request `0x52`) | 4 | 11.0 |
+| `object-type` | u32_be | yes (request `0x52`) | 5 | 11.0 |
+| `infobase-name` | string | yes (request `0x52`) | 6 | 11.0 |
+| `rule-type` | enum (u8) | yes (request `0x52`) | 7 | 11.0 |
+| `application-ext` | string | yes (request `0x52`) | 8 | 11.0 |
+| `priority` | u32_be | yes (request `0x52`) | 9 | 11.0 |
+| `cluster-user` | string | yes (auth/context `0x09`) | 10 | 11.0 |
+| `cluster-pwd` | string | yes (auth/context `0x09`) | 11 | 11.0 |
 
 ### Record Layout (Observed)
 
@@ -370,9 +370,9 @@ RAC output reference:
 
 `rac rule remove` produces no output. The response payload is an ACK-only block.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `ack` | u32_be | yes | 1 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `ack` | u32_be | yes | 1 | 11.0 |
 
 ### RPC
 
@@ -388,13 +388,13 @@ Payload structure (method body):
 
 Observed request parameters for `rac rule remove`.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `cluster` | UUID | yes (auth/context `0x09`, request `0x54`) | 1 |
-| `server` | UUID | yes (request `0x54`) | 2 |
-| `rule` | UUID | yes (request `0x54`) | 3 |
-| `cluster-user` | string | yes (auth/context `0x09`) | 4 |
-| `cluster-pwd` | string | yes (auth/context `0x09`) | 5 |
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | yes (auth/context `0x09`, request `0x54`) | 1 | 11.0 |
+| `server` | UUID | yes (request `0x54`) | 2 | 11.0 |
+| `rule` | UUID | yes (request `0x54`) | 3 | 11.0 |
+| `cluster-user` | string | yes (auth/context `0x09`) | 4 | 11.0 |
+| `cluster-pwd` | string | yes (auth/context `0x09`) | 5 | 11.0 |
 
 ### Record Layout (Observed)
 

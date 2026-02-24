@@ -1,5 +1,7 @@
 # RAC Message Formats (Read/Info Scope)
 
+Protocol version (service negotiation): `v8.service.Admin.Cluster` `16.0` (observed in captures).
+
 Generated from local captures in `logs/` and method map in `docs/rac/documentation/rac_cli_method_map.generated.md`. Response byte examples are stored in `artifacts/rac/`.
 
 ## Transport Framing (Confirmed)

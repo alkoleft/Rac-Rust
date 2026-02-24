@@ -1,5 +1,8 @@
 # RAC Message Formats: Infobase API
 
+Protocol version (service negotiation): `v8.service.Admin.Cluster` `16.0` (observed in captures).
+
+
 Derived from `docs/rac/messages/rac_message_formats.md`.
 
 ## Commands

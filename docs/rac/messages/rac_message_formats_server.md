@@ -1,5 +1,8 @@
 # RAC Server Message Formats (Observed)
 
+Protocol version (service negotiation): `v8.service.Admin.Cluster` `16.0` (observed in captures).
+
+
 ## Server List
 
 Source capture:

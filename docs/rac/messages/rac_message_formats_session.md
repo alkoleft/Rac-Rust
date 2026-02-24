@@ -1,5 +1,8 @@
 # RAC Message Formats: Session API
 
+Protocol version (service negotiation): `v8.service.Admin.Cluster` `16.0` (observed in captures).
+
+
 Aligned with current decoder implementation in `apps/rac_protocol/src/commands/session.rs`.
 
 ## Sources

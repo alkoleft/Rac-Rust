@@ -1,0 +1,22 @@
+infobase                                   : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+name                                       : yaxunit
+dbms                                       : PostgreSQL
+db-server                                  : localhost
+db-name                                    : yaxunit
+db-user                                    : postgres
+security-level                             : 0
+license-distribution                       : allow
+scheduled-jobs-deny                        : off
+sessions-deny                              : off
+denied-from                                : 2026-02-23T00:00:00
+denied-message                             : "Message"
+denied-parameter                           : "PARAMETER"
+denied-to                                  : 2029-11-01T00:00:00
+permission-code                            : "CODE"
+external-session-manager-connection-string : 
+external-session-manager-required          : no
+security-profile-name                      : 
+safe-mode-security-profile-name            : 
+reserve-working-processes                  : no
+descr                                      : "Description"
+

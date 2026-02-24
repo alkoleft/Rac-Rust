@@ -11,11 +11,13 @@ def rust_type(field: FieldSpec) -> str:
     if field.type_name in {
         "str8",
         "str8_opt",
+        "str8_default",
         "str_len_u8",
         "str_len_u8_or_2c",
         "str_u14",
         "datetime_u64_be",
         "datetime_u64_be_opt",
+        "datetime_u64_be_default",
     }:
         return "String"
     if field.type_name == "bytes":
@@ -40,19 +42,27 @@ def rust_type(field: FieldSpec) -> str:
         return "u32"
     if field.type_name == "u32_be_opt":
         return "u32"
+    if field.type_name == "u32_be_default":
+        return "u32"
     if field.type_name == "u64_be":
         return "u64"
     if field.type_name == "u64_be_opt":
         return "u64"
+    if field.type_name == "u64_be_default":
+        return "u64"
     if field.type_name == "f64_be":
         return "f64"
     if field.type_name in {"u8_bool", "u32_be_bool"}:
+        return "bool"
+    if field.type_name == "bool_default":
         return "bool"
     if field.type_name == "u8_opt":
         return "u8"
     if field.type_name == "bool_opt":
         return "bool"
     if field.type_name == "uuid_opt":
+        return "Uuid16"
+    if field.type_name == "uuid_default":
         return "Uuid16"
     if field.type_name == "list_u8":
         if not field.item:
@@ -79,9 +89,13 @@ def decode_expr(field: FieldSpec, var_map: Dict[str, str]) -> List[str]:
         return ["cursor.take_uuid()?;"]
     if t == "uuid_opt":
         return ["cursor.take_uuid_opt()?.unwrap_or_default();"]
+    if t == "uuid_default":
+        return ["cursor.take_uuid_opt()?.unwrap_or_default();"]
     if t == "str8":
         return ["cursor.take_str8()?;"]
     if t == "str8_opt":
+        return ["cursor.take_str8_opt()?.unwrap_or_default();"]
+    if t == "str8_default":
         return ["cursor.take_str8_opt()?.unwrap_or_default();"]
     if t == "str_len_u8":
         if field.len_source:
@@ -181,9 +195,13 @@ def decode_expr(field: FieldSpec, var_map: Dict[str, str]) -> List[str]:
         return ["cursor.take_u32_le()?;"]
     if t == "u32_be_opt":
         return ["cursor.take_u32_be_opt()?.unwrap_or_default();"]
+    if t == "u32_be_default":
+        return ["cursor.take_u32_be_opt()?.unwrap_or_default();"]
     if t == "u64_be":
         return ["cursor.take_u64_be()?;"]
     if t == "u64_be_opt":
+        return ["cursor.take_u64_be_opt()?.unwrap_or_default();"]
+    if t == "u64_be_default":
         return ["cursor.take_u64_be_opt()?.unwrap_or_default();"]
     if t == "f64_be":
         return ["cursor.take_f64_be()?;"]
@@ -195,9 +213,13 @@ def decode_expr(field: FieldSpec, var_map: Dict[str, str]) -> List[str]:
         return ["cursor.take_u16_be()? != 0;"]
     if t == "bool_opt":
         return ["cursor.take_bool_opt()?.unwrap_or_default();"]
+    if t == "bool_default":
+        return ["cursor.take_bool_opt()?.unwrap_or_default();"]
     if t == "datetime_u64_be":
         return ["v8_datetime_to_iso(cursor.take_u64_be()?).unwrap_or_default();"]
     if t == "datetime_u64_be_opt":
+        return ["cursor.take_datetime_opt()?.unwrap_or_default();"]
+    if t == "datetime_u64_be_default":
         return ["cursor.take_datetime_opt()?.unwrap_or_default();"]
     if t == "list_u8":
         item = field.item
@@ -246,7 +268,7 @@ def needs_datetime(records: List[RecordSpec]) -> bool:
 def needs_uuid(records: List[RecordSpec]) -> bool:
     for record in records:
         for field in record.fields:
-            if field.type_name in {"uuid", "uuid_opt"}:
+            if field.type_name in {"uuid", "uuid_opt", "uuid_default"}:
                 return True
     return False
 

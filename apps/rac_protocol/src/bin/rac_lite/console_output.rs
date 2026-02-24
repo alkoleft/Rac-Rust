@@ -9,14 +9,12 @@ use rac_protocol::commands::{
     ProcessRecord, RuleApplyResp, RuleInsertResp, RuleRecord, RuleRemoveResp, RuleUpdateResp,
     ServerRecord, ServiceSettingApplyResp, ServiceSettingInsertResp, ServiceSettingRecord,
     ServiceSettingRemoveResp, ServiceSettingTransferDataDirRecord, ServiceSettingUpdateResp,
-    SessionCounters, SessionLicense, SessionRecord,
+    SessionLicense, SessionRecord,
 };
 use rac_protocol::rac_wire::format_uuid;
 use rac_protocol::Uuid16;
 
-use super::format::{
-    append_opt_yes_no, info_display_to_string, list_to_string, write_trimmed,
-};
+use super::format::{info_display_to_string, list_to_string, write_trimmed};
 use super::format::MoreLabel;
 
 macro_rules! outln {
@@ -1221,17 +1219,6 @@ impl Display for SessionInfoDisplay<'_> {
             display_str(&item.last_active_at)
         );
         outln!(&mut out, "client-ip: {}", display_str(&item.client_ip));
-        outln!(
-            &mut out,
-            "retrieved-by-server: {}",
-            yes_no(item.retrieved_by_server)
-        );
-        outln!(
-            &mut out,
-            "software-license: {}",
-            yes_no(item.software_license)
-        );
-        outln!(&mut out, "network-key: {}", yes_no(item.network_key));
         outln!(&mut out, "db-proc-info: {}", display_str(&item.db_proc_info));
         outln!(
             &mut out,
@@ -1250,7 +1237,7 @@ impl Display for SessionInfoDisplay<'_> {
         );
         append_license_prefixed(&mut out, &item.license, "license.");
         outln!(&mut out, "session-id: {}", item.session_id);
-        append_counters_prefixed(&mut out, &item.counters, "");
+        append_counters_prefixed(&mut out, item, "");
         write_trimmed(f, &out)
     }
 }
@@ -1413,18 +1400,12 @@ fn append_license_prefixed(out: &mut String, license: &SessionLicense, prefix: &
         "{prefix}key-series: {}",
         display_str(&license.key_series)
     );
-
-    append_opt_yes_no(
+    outln!(
         out,
-        &format!("{prefix}software-license"),
-        Some(license.software_license),
+        "{prefix}retrieved-by-server: {}",
+        yes_no(license.issued_by_server)
     );
-    append_opt_yes_no(
-        out,
-        &format!("{prefix}retrieved-by-server"),
-        Some(license.issued_by_server),
-    );
-    append_opt_yes_no(out, &format!("{prefix}network-key"), Some(license.network_key));
+    outln!(out, "{prefix}network-key: {}", yes_no(license.network_key));
 }
 
 fn yes_no(value: bool) -> &'static str {
@@ -1546,87 +1527,87 @@ where
     );
 }
 
-fn append_counters_prefixed(out: &mut String, counters: &SessionCounters, prefix: &str) {
-    opt_field!(out, prefix, "blocked-by-dbms", counters.blocked_by_dbms);
-    opt_field!(out, prefix, "blocked-by-ls", counters.blocked_by_ls);
-    opt_field!(out, prefix, "bytes-all", counters.bytes_all);
-    opt_field!(out, prefix, "bytes-last-5min", counters.bytes_last_5min);
-    opt_field!(out, prefix, "calls-all", counters.calls_all);
-    opt_field!(out, prefix, "calls-last-5min", counters.calls_last_5min);
-    opt_field!(out, prefix, "dbms-bytes-all", counters.dbms_bytes_all);
+fn append_counters_prefixed(out: &mut String, record: &SessionRecord, prefix: &str) {
+    opt_field!(out, prefix, "blocked-by-dbms", record.blocked_by_dbms);
+    opt_field!(out, prefix, "blocked-by-ls", record.blocked_by_ls);
+    opt_field!(out, prefix, "bytes-all", record.bytes_all);
+    opt_field!(out, prefix, "bytes-last-5min", record.bytes_last_5min);
+    opt_field!(out, prefix, "calls-all", record.calls_all);
+    opt_field!(out, prefix, "calls-last-5min", record.calls_last_5min);
+    opt_field!(out, prefix, "dbms-bytes-all", record.dbms_bytes_all);
     opt_field!(
         out,
         prefix,
         "dbms-bytes-last-5min",
-        counters.dbms_bytes_last_5min
+        record.dbms_bytes_last_5min
     );
-    opt_field!(out, prefix, "db-proc-took", counters.db_proc_took);
-    opt_field!(out, prefix, "duration-all", counters.duration_all);
-    opt_field!(out, prefix, "duration-all-dbms", counters.duration_all_dbms);
-    opt_field!(out, prefix, "duration-current", counters.duration_current);
+    opt_field!(out, prefix, "db-proc-took", record.db_proc_took);
+    opt_field!(out, prefix, "duration-all", record.duration_all);
+    opt_field!(out, prefix, "duration-all-dbms", record.duration_all_dbms);
+    opt_field!(out, prefix, "duration-current", record.duration_current);
     opt_field!(
         out,
         prefix,
         "duration-current-dbms",
-        counters.duration_current_dbms
+        record.duration_current_dbms
     );
     opt_field!(
         out,
         prefix,
         "duration-last-5min",
-        counters.duration_last_5min
+        record.duration_last_5min
     );
     opt_field!(
         out,
         prefix,
         "duration-last-5min-dbms",
-        counters.duration_last_5min_dbms
+        record.duration_last_5min_dbms
     );
     opt_field!(
         out,
         prefix,
         "passive-session-hibernate-time",
-        counters.passive_session_hibernate_time
+        record.passive_session_hibernate_time
     );
     opt_field!(
         out,
         prefix,
         "hibernate-session-terminate-time",
-        counters.hibernate_session_terminate_time
+        record.hibernate_session_terminate_time
     );
-    opt_field!(out, prefix, "memory-current", counters.memory_current);
-    opt_field!(out, prefix, "memory-last-5min", counters.memory_last_5min);
-    opt_field!(out, prefix, "memory-total", counters.memory_total);
-    opt_field!(out, prefix, "read-current", counters.read_current);
-    opt_field!(out, prefix, "read-last-5min", counters.read_last_5min);
-    opt_field!(out, prefix, "read-total", counters.read_total);
-    opt_field!(out, prefix, "write-current", counters.write_current);
-    opt_field!(out, prefix, "write-last-5min", counters.write_last_5min);
-    opt_field!(out, prefix, "write-total", counters.write_total);
+    opt_field!(out, prefix, "memory-current", record.memory_current);
+    opt_field!(out, prefix, "memory-last-5min", record.memory_last_5min);
+    opt_field!(out, prefix, "memory-total", record.memory_total);
+    opt_field!(out, prefix, "read-current", record.read_current);
+    opt_field!(out, prefix, "read-last-5min", record.read_last_5min);
+    opt_field!(out, prefix, "read-total", record.read_total);
+    opt_field!(out, prefix, "write-current", record.write_current);
+    opt_field!(out, prefix, "write-last-5min", record.write_last_5min);
+    opt_field!(out, prefix, "write-total", record.write_total);
     opt_field!(
         out,
         prefix,
         "duration-current-service",
-        counters.duration_current_service
+        record.duration_current_service
     );
     opt_field!(
         out,
         prefix,
         "duration-last-5min-service",
-        counters.duration_last_5min_service
+        record.duration_last_5min_service
     );
     opt_field!(
         out,
         prefix,
         "duration-all-service",
-        counters.duration_all_service
+        record.duration_all_service
     );
     opt_field!(
         out,
         prefix,
         "cpu-time-last-5min",
-        counters.cpu_time_last_5min
+        record.cpu_time_last_5min
     );
-    opt_field!(out, prefix, "cpu-time-current", counters.cpu_time_current);
-    opt_field!(out, prefix, "cpu-time-total", counters.cpu_time_total);
+    opt_field!(out, prefix, "cpu-time-current", record.cpu_time_current);
+    opt_field!(out, prefix, "cpu-time-total", record.cpu_time_total);
 }

@@ -58,8 +58,7 @@ pub use self::server::{
     server_info, server_list, ServerInfoResp, ServerListResp, ServerRecord,
 };
 pub use self::session::{
-    session_info, session_list, SessionCounters, SessionInfoResp, SessionLicense, SessionListResp,
-    SessionRecord,
+    session_info, session_list, SessionInfoResp, SessionLicense, SessionListResp, SessionRecord,
 };
 pub use self::service_setting::{
     service_setting_apply, service_setting_get_service_data_dirs_for_transfer,

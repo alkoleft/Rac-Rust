@@ -5,7 +5,7 @@ use crate::error::Result;
 use serde::Serialize;
 
 #[derive(Debug, Serialize, Default, Clone)]
-pub struct SessionLicenseRecord {
+pub struct SessionLicense {
     pub file_name: String,
     pub full_presentation: String,
     pub issued_by_server: bool,
@@ -20,7 +20,7 @@ pub struct SessionLicenseRecord {
     pub brief_presentation: String,
 }
 
-impl SessionLicenseRecord {
+impl SessionLicense {
     pub fn decode(cursor: &mut RecordCursor<'_>) -> Result<Self> {
         let file_name = cursor.take_str8_opt()?.unwrap_or_default();
         let full_presentation = cursor.take_str8_opt()?.unwrap_or_default();
@@ -52,7 +52,7 @@ impl SessionLicenseRecord {
 }
 
 #[derive(Debug, Serialize, Clone)]
-pub struct SessionRecordRaw {
+pub struct SessionRecord {
     pub session: Uuid16,
     pub app_id: String,
     pub blocked_by_dbms: u32,
@@ -79,7 +79,7 @@ pub struct SessionRecordRaw {
     pub hibernate: bool,
     pub passive_session_hibernate_time: u32,
     pub hibernate_session_terminate_time: u32,
-    pub license: SessionLicenseRecord,
+    pub license: SessionLicense,
     pub locale: String,
     pub process: Uuid16,
     pub session_id: u32,
@@ -105,7 +105,7 @@ pub struct SessionRecordRaw {
     pub client_ip: String,
 }
 
-impl SessionRecordRaw {
+impl SessionRecord {
     pub fn decode(cursor: &mut RecordCursor<'_>) -> Result<Self> {
         let session = cursor.take_uuid()?;
         let app_id = cursor.take_str8()?;
@@ -135,7 +135,7 @@ impl SessionRecordRaw {
         let hibernate_session_terminate_time = cursor.take_u32_be_opt()?.unwrap_or_default();
         let license = {
             let count = cursor.take_u8()? as usize;
-            if count == 0 { SessionLicenseRecord::default() } else { SessionLicenseRecord::decode(cursor)? }
+            if count == 0 { SessionLicense::default() } else { SessionLicense::decode(cursor)? }
         };
         let locale = cursor.take_str8_opt()?.unwrap_or_default();
         let process = cursor.take_uuid_opt()?.unwrap_or_default();
@@ -251,12 +251,12 @@ impl SessionInfoRequest {
 
 
 
-pub fn parse_session_info_body(body: &[u8]) -> Result<SessionRecordRaw> {
+pub fn parse_session_info_body(body: &[u8]) -> Result<SessionRecord> {
     if body.is_empty() {
         return Err(RacError::Decode("session info empty body"));
     }
     let mut cursor = RecordCursor::new(body, 0);
-    SessionRecordRaw::decode(&mut cursor)
+    SessionRecord::decode(&mut cursor)
 }
 
 

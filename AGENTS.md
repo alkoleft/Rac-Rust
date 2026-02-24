@@ -18,6 +18,7 @@ These rules apply to all Codex-driven implementation and review work in this rep
 - When possible, define RPC request fields inline under `[rpc.*]` (use `fields` and optional `derive`) instead of separate `[request.*]`.
 - Responses should be described in `[response.*]`; generate response structs only when `body.struct = true`.
 - Response bodies may define `field` to control the response struct field name (e.g., `admins`, `version`).
+- Schemas must not reference manual code (no `super::` in schema response types). Favor generated types.
 
 ## Test Rules
 - Tests must have strict, deterministic assertions.

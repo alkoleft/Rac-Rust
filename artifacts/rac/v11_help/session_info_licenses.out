@@ -1,0 +1,17 @@
+session            : 8397b7bb-e836-4c95-9a4f-cf22bef822ff
+user-name          : iadmin
+host               : alko-home
+app-id             : 1CV8C
+full-name          : 
+series             : "ORGL8"
+issued-by-server   : no
+license-type       : HASP
+net                : yes
+max-users-all      : 50
+max-users-cur      : 50
+rmngr-address      : 
+rmngr-port         : 0
+rmngr-pid          : 3633350
+short-presentation : "Клиент, ORGL8 Сет 50"
+full-presentation  : "Клиент, 3633350, ORGL8 Сетевой 50"
+

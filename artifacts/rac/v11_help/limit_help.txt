@@ -1,0 +1,103 @@
+1C:Enterprise 8.3 Remote Administrative Client Utility © 1C-Soft LLC 1996-2022
+1C:Enterprise platform administration utility
+
+Use:
+
+	rac limit [command] [options] [arguments]
+
+Shared options:
+
+    --version | -v
+        get the utility version
+
+    --help | -h | -?
+        display brief utility description
+
+Shared arguments:
+
+    <host>[:<port>]
+        administration server address (default: localhost:1545)
+
+Mode:
+
+    limit
+        Resource consumption limits management mode
+
+Parameters:
+
+    --cluster=<uuid>
+        (required) server cluster identifier
+
+    --cluster-user=<name>
+        name of the cluster administrator
+
+    --cluster-pwd=<pwd>
+        password of the cluster administrator
+
+Commands:
+
+    list
+        retrieve the limits list
+
+    info
+        retrieve the limit information
+
+        --limit=<name>
+            (required) resource consumption limit ID
+
+    update
+        create or update a limit
+
+        --name=<name>
+            (required) resource consumption limit name
+
+        --action=<none|set-low-priority-thread|interrupt-current-call|interrupt-session>
+            (required) resource consumption limit name
+
+        --counter=<counter>
+            a counter referred to the limit
+
+        --duration=<number>
+            server calls duration limit
+
+        --cpu-time=<number>
+            CPU usage time limit
+
+        --memory=<number>
+            memory usage limit
+
+        --read=<number>
+            limit of the amount of data read from disk
+
+        --write=<number>
+            limit of the amount of data written on disk
+
+        --duration-dbms=<number>
+            DBMS calls duration limit
+
+        --dbms-bytes=<number>
+            limit the amount of data received from the DBMS
+
+        --service=<number>
+            service calls duration limit
+
+        --call=<number>
+            server calls number limit
+
+        --number-of-active-sessions=<number>
+            active sessions number limit
+
+        --number-of-sessions=<number>
+            sessions number limit
+
+        --error-message=<string>
+            exceeding the limit message
+
+        --descr=<descr>
+            resource consumption limit description
+
+    remove
+        delete the resource consumption limit
+
+        --name=<name>
+            (required) resource consumption limit name

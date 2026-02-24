@@ -1,0 +1,50 @@
+session                          : 8397b7bb-e836-4c95-9a4f-cf22bef822ff
+session-id                       : 2
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : 00000000-0000-0000-0000-000000000000
+process                          : 00000000-0000-0000-0000-000000000000
+user-name                        : iadmin
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-23T03:32:56
+last-active-at                   : 2026-02-24T11:59:39
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 231133
+bytes-last-5min                  : 422
+calls-all                        : 430
+calls-last-5min                  : 1
+dbms-bytes-all                   : 791914
+dbms-bytes-last-5min             : 0
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 7797
+duration-all-dbms                : 190
+duration-current                 : 0
+duration current-dbms            : 0
+duration-last-5min               : 3
+duration-last-5min-dbms          : 0
+memory-current                   : 0
+memory-last-5min                 : 22642
+memory-total                     : 55958267
+read-current                     : 0
+read-last-5min                   : 0
+read-total                       : 12522323
+write-current                    : 0
+write-last-5min                  : 0
+write-total                      : 11602045
+duration-current-service         : 0
+duration-last-5min-service       : 0
+duration-all-service             : 56
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 1
+cpu-time-total                   : 3217
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+

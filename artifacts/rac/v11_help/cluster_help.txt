@@ -1,0 +1,195 @@
+1C:Enterprise 8.3 Remote Administrative Client Utility © 1C-Soft LLC 1996-2022
+1C:Enterprise platform administration utility
+
+Use:
+
+	rac cluster [command] [options] [arguments]
+
+Shared options:
+
+    --version | -v
+        get the utility version
+
+    --help | -h | -?
+        display brief utility description
+
+Shared arguments:
+
+    <host>[:<port>]
+        administration server address (default: localhost:1545)
+
+Mode:
+
+    cluster
+        Server cluster administration mode
+
+Commands:
+
+    admin
+        management of cluster administrators
+
+        Additional commands:
+            list
+                receipt of the cluster administrator list
+
+            register
+                adding a new cluster administrator
+
+                --name=<name>
+                    (required) administrator name
+
+                --pwd=<name>
+                    administrator password in case of password authentication
+
+                --descr=<descr>
+                    description of the administrator
+
+                --auth=pwd[,os]
+                    available authentication methods:
+                        pwd - using the user name and password
+                        os - authentication using OS
+
+                --os-user=<name>
+                    OS user name
+
+                --agent-user=<name>
+                    name of the cluster agent administrator
+
+                --agent-pwd=<pwd>
+                    password of the cluster agent administrator
+
+            remove
+                deleting the cluster administrator
+
+                --name=<name>
+                    (required) name of the cluster administrator
+
+        --cluster=<uuid>
+            (required) server cluster identifier
+
+        --cluster-user=<name>
+            name of the cluster administrator
+
+        --cluster-pwd=<pwd>
+            password of the cluster administrator
+
+    info
+        receipt of cluster information
+
+        --cluster=<uuid>
+            (required) server cluster identifier
+
+    list
+        receipt of the cluster information list
+
+    insert
+        new cluster registration
+
+        --host=<host>
+            (required) name (or IP-address) of the computer where
+            the cluster registry and the main cluster manager process are located
+
+        --port=<port>
+            (required) main port of the main manager
+
+        --name=<name>
+            cluster name (presentation)
+
+        --expiration-timeout=<seconds>
+            forced termination time (seconds)
+
+        --lifetime-limit=<seconds>
+            restart time of cluster working processes (seconds)
+
+        --max-memory-size=<Kb>
+            maximum virtual address space (KB),
+            used by the working process
+
+        --max-memory-time-limit=<seconds>
+            maximum period of exceeding critical memory limit (seconds)
+
+        --security-level=<level>
+            connection security level
+
+        --session-fault-tolerance-level=<level>
+            fault-tolerance level
+
+        --load-balancing-mode=performance|memory
+            load balancing mode
+                performance - priority by available performance
+                memory - priority by available memory
+
+        --errors-count-threshold=<percentage>
+            server errors threshold (percentage)
+
+        --kill-problem-processes=<yes/no>
+            terminate corrupted processes
+
+        --kill-by-memory-with-dump=<yes/no>
+            create process dump when maximum memory amount is exceeded
+
+        --agent-user=<name>
+            name of the cluster agent administrator
+
+        --agent-pwd=<pwd>
+            password of the cluster agent administrator
+
+    update
+        cluster parameter update
+
+        --cluster=<uuid>
+            (required) server cluster identifier
+
+        --name=<name>
+            cluster name (presentation)
+
+        --expiration-timeout=<seconds>
+            forced termination time (seconds)
+
+        --lifetime-limit=<seconds>
+            restart time of cluster working processes (seconds)
+
+        --max-memory-size=<Kb>
+            maximum virtual address space (KB),
+            used by the working process
+
+        --max-memory-time-limit=<seconds>
+            maximum period of exceeding critical memory limit (seconds)
+
+        --security-level=<level>
+            connection security level
+
+        --session-fault-tolerance-level=<level>
+            fault-tolerance level
+
+        --load-balancing-mode=performance|memory
+            load balancing mode
+                performance - priority by available performance
+                memory - priority by available memory
+
+        --errors-count-threshold=<percentage>
+            server errors threshold (percentage)
+
+        --kill-problem-processes=<yes/no>
+            terminate corrupted processes
+
+        --kill-by-memory-with-dump=<yes/no>
+            create process dump when maximum memory amount is exceeded
+
+        --agent-user=<name>
+            name of the cluster agent administrator
+
+        --agent-pwd=<pwd>
+            password of the cluster agent administrator
+
+    remove
+        deleting the cluster
+
+        --cluster=<uuid>
+            (required) server cluster identifier
+
+        --cluster-user=<name>
+            name of the cluster administrator
+
+        --cluster-pwd=<pwd>
+            password of the cluster administrator

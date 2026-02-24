@@ -1,0 +1,133 @@
+1C:Enterprise 8.3 Remote Administrative Client Utility © 1C-Soft LLC 1996-2022
+1C:Enterprise platform administration utility
+
+Use:
+
+	rac counter [command] [options] [arguments]
+
+Shared options:
+
+    --version | -v
+        get the utility version
+
+    --help | -h | -?
+        display brief utility description
+
+Shared arguments:
+
+    <host>[:<port>]
+        administration server address (default: localhost:1545)
+
+Mode:
+
+    counter
+        Resource consumption counters management mode
+
+Parameters:
+
+    --cluster=<uuid>
+        (required) server cluster identifier
+
+    --cluster-user=<name>
+        name of the cluster administrator
+
+    --cluster-pwd=<pwd>
+        password of the cluster administrator
+
+Commands:
+
+    list
+        retrieve the counters list
+
+    info
+        retrieve the counter data
+
+        --counter=<name>
+            (required) resource consumption counter ID
+
+    update
+        create or update counter
+
+        --name=<name>
+            (required) resource consumption counter name
+
+        --collection-time=<number|current-call>
+            (required) counter registering period
+
+        --group=<users|data-separation>
+            (required) grouping type
+
+        --filter-type=<all-selected|all-but-selected|all>
+            (required) filter type
+
+        --filter=<string>
+            (required) filter value
+
+        --duration=<analyze|not-analyze>
+            register server calls duration
+
+        --cpu-time=<analyze|not-analyze>
+            register CPU usage time
+
+        --memory=<analyze|not-analyze>
+            register memory consumption
+
+        --read=<analyze|not-analyze>
+            register the amount of data read from disk
+
+        --write=<analyze|not-analyze>
+            register the amount of data written on disk
+
+        --duration-dbms=<analyze|not-analyze>
+            register the DBMS calls duration
+
+        --dbms-bytes=<analyze|not-analyze>
+            register the amount of data received from the DBMS
+
+        --service=<analyze|not-analyze>
+            register the services calls duration
+
+        --call=<analyze|not-analyze>
+            register server calls number
+
+        --number-of-active-sessions=<analyze|not-analyze>
+            register active sessions number
+
+        --number-of-sessions=<analyze|not-analyze>
+            register sessions number
+
+        --descr=<descr>
+            resource consumption counter description
+
+    values
+        display the resource consumption counter readings
+
+        --counter=<counter>
+            (required) resource consumption counter name
+
+        --object=<format-string>
+            filters in "filter_type=value;" format. The following filter types are available: infobase, data-separation, user, appID, safe-mode, and safe-mode-profile-name. You can specify multiple filters separated by |. Example: infobase=ib1;user=user1|user=user2.
+
+    remove
+        delete the resource consumption counter
+
+        --name=<name>
+            (required) resource consumption counter name
+
+    clear
+        clear counter values
+
+        --counter=<counter>
+            (required) resource consumption counter name
+
+        --object=<format-string>
+            filters in "filter_type=value;" format. The following filter types are available: infobase, data-separation, user. To set multiple filters, separate them by vertical bars. For example, infobase=ib1;user=user1|user=user2.
+
+    accumulated-values
+        get list of accumulated counter values
+
+        --counter=<counter>
+            (required) resource consumption counter name
+
+        --object=<format-string>
+            filters in "filter_type=value;" format. The following filter types are available: infobase, data-separation, user. To set multiple filters, separate them by vertical bars. For example, infobase=ib1;user=user1|user=user2.

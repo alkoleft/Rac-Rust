@@ -1,0 +1,70 @@
+1C:Enterprise 8.3 Remote Administrative Client Utility © 1C-Soft LLC 1996-2022
+1C:Enterprise platform administration utility
+
+Use:
+
+	rac agent [command] [options] [arguments]
+
+Shared options:
+
+    --version | -v
+        get the utility version
+
+    --help | -h | -?
+        display brief utility description
+
+Shared arguments:
+
+    <host>[:<port>]
+        administration server address (default: localhost:1545)
+
+Mode:
+
+    agent
+        Server cluster agent administration mode
+
+Parameters:
+
+    --agent-user=<name>
+        name of the cluster agent administrator
+
+    --agent-pwd=<pwd>
+        password of the cluster agent administrator
+
+Commands:
+
+    admin
+        management of cluster agent administrators
+
+        Additional commands:
+            list
+                receipt of the cluster agent administrator list
+
+            register
+                adding a new cluster agent administrator
+
+                --name=<name>
+                    (required) administrator name
+
+                --pwd=<name>
+                    administrator password in case of password authentication
+
+                --descr=<descr>
+                    description of the administrator
+
+                --auth=pwd[,os]
+                    available authentication methods:
+                        pwd - using the user name and password
+                        os - authentication using OS
+
+                --os-user=<name>
+                    OS user name
+
+            remove
+                deleting the cluster agent administrator
+
+                --name=<name>
+                    (required) name of the cluster agent administrator
+
+    version
+        getting a cluster agent version

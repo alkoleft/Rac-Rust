@@ -89,19 +89,19 @@ Observed field names in `rac infobase info` output (v11), with capture mapping s
 | `db-name` | string | yes | 5 | 11.0 |
 | `db-user` | string | yes | 6 | 11.0 |
 | `security-level` | u32 | yes | 7 | 11.0 |
-| `license-distribution` | enum | yes | 8 | 11.0 |
-| `scheduled-jobs-deny` | enum | yes | 9 | 11.0 |
-| `sessions-deny` | enum | yes | 10 | 11.0 |
+| `license-distribution` | enum (`allow/deny`) | yes | 8 | 11.0 |
+| `scheduled-jobs-deny` | enum (`on/off`) | yes | 9 | 11.0 |
+| `sessions-deny` | enum (`on/off`) | yes | 10 | 11.0 |
 | `denied-from` | datetime | yes | 11 | 11.0 |
 | `denied-message` | string | yes | 12 | 11.0 |
 | `denied-parameter` | string | yes | 13 | 11.0 |
 | `denied-to` | datetime | yes | 14 | 11.0 |
 | `permission-code` | string | yes | 15 | 11.0 |
 | `external-session-manager-connection-string` | string | yes | 16 | 11.0 |
-| `external-session-manager-required` | enum | yes | 17 | 11.0 |
+| `external-session-manager-required` | enum (`yes/no`) | yes | 17 | 11.0 |
 | `security-profile-name` | string | yes | 18 | 11.0 |
 | `safe-mode-security-profile-name` | string | yes | 19 | 11.0 |
-| `reserve-working-processes` | enum | yes | 20 | 11.0 |
+| `reserve-working-processes` | enum (`yes/no`) | yes | 20 | 11.0 |
 | `descr` | string | yes | 21 | 11.0 |
 
 

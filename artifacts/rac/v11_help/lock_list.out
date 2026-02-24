@@ -1,0 +1,54 @@
+connection : 00000000-0000-0000-0000-000000000000
+session    : 00000000-0000-0000-0000-000000000000
+object     : 00000000-0000-0000-0000-000000000000
+locked     : 2026-02-23T03:28:45
+descr      : "Менеджер кластера(alko-home,1541,0)"
+
+connection : 00000000-0000-0000-0000-000000000000
+session    : 00000000-0000-0000-0000-000000000000
+object     : 00000000-0000-0000-0000-000000000000
+locked     : 2026-02-23T04:13:12
+descr      : "Рабочий процесс(alko-home,1562,0)"
+
+connection : 8b7739ee-c6c3-4890-b533-32632987433a
+session    : 00000000-0000-0000-0000-000000000000
+object     : 00000000-0000-0000-0000-000000000000
+locked     : 2026-02-23T04:13:16
+descr      : "Соединение(ServerJobExecutorContext,alko-home,AgentStandardCall)"
+
+connection : efe116d6-457e-4fe2-b6ed-d824ea9447e2
+session    : 00000000-0000-0000-0000-000000000000
+object     : 00000000-0000-0000-0000-000000000000
+locked     : 2026-02-23T04:19:37
+descr      : "Соединение(yaxunit,alko-home,1CV8C,(yaxunit,17))"
+
+connection : ba3e59f8-097f-4670-b8ed-9e547dd473ee
+session    : 00000000-0000-0000-0000-000000000000
+object     : 00000000-0000-0000-0000-000000000000
+locked     : 2026-02-24T08:00:00
+descr      : "Соединение(ServerJobExecutorContext,alko-home,JobScheduler)"
+
+connection : 5f6d4fec-88ae-49f3-bd21-a62da9a19036
+session    : 00000000-0000-0000-0000-000000000000
+object     : 00000000-0000-0000-0000-000000000000
+locked     : 2026-02-24T12:02:59
+descr      : "Соединение(yaxunit,alko-home,JobScheduler)"
+
+connection : 00000000-0000-0000-0000-000000000000
+session    : 8397b7bb-e836-4c95-9a4f-cf22bef822ff
+object     : 00000000-0000-0000-0000-000000000000
+locked     : 2026-02-23T03:32:56
+descr      : "ИБ(сеанс ,yaxunit,разделяемая)"
+
+connection : efe116d6-457e-4fe2-b6ed-d824ea9447e2
+session    : 00000000-0000-0000-0000-000000000000
+object     : 00000000-0000-0000-0000-000000000000
+locked     : 2026-02-23T04:19:37
+descr      : "ИБ(соединение ,yaxunit,разделяемая)"
+
+connection : 00000000-0000-0000-0000-000000000000
+session    : 8397b7bb-e836-4c95-9a4f-cf22bef822ff
+object     : 00000000-0000-0000-0000-000000000000
+locked     : 2026-02-23T03:32:56
+descr      : "БД(сеанс ,yaxunit,разделяемая)"
+

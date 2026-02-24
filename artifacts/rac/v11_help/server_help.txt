@@ -1,0 +1,155 @@
+1C:Enterprise 8.3 Remote Administrative Client Utility © 1C-Soft LLC 1996-2022
+1C:Enterprise platform administration utility
+
+Use:
+
+	rac server [command] [options] [arguments]
+
+Shared options:
+
+    --version | -v
+        get the utility version
+
+    --help | -h | -?
+        display brief utility description
+
+Shared arguments:
+
+    <host>[:<port>]
+        administration server address (default: localhost:1545)
+
+Mode:
+
+    server
+        Working server administration mode
+
+Parameters:
+
+    --cluster=<uuid>
+        (required) server cluster identifier
+
+    --cluster-user=<name>
+        name of the cluster administrator
+
+    --cluster-pwd=<pwd>
+        password of the cluster administrator
+
+Commands:
+
+    info
+        receiving information on the working server
+
+        --server=<uuid>
+            (required) identifier of the working server of the server cluster
+
+    list
+        receiving the working server information list
+
+    insert
+        working server registration
+
+        --agent-host=<host>
+            (required) host name or server agent IP-address
+
+        --agent-port=<port>
+            (required) main port of the server agent
+
+        --port-range=<min>:<max>
+            (required) range of IP-ports for dynamic allocation,
+            several ranges can be specified
+
+        --name=<name>
+            working server name
+
+        --using=main|normal
+            working server use variant
+                main - as a main server
+                normal - as an ordinary server
+
+        --infobases-limit=<count>
+            maximum number of infobases per working process
+
+        --memory-limit=<Kb>
+            memory use limit for working processes
+
+        --connections-limit=<count>
+            maximum number of connections per working process
+
+        --cluster-port=<port>
+            port number of the main manager of the cluster
+
+        --dedicate-managers=all|none
+            service manager allocation variant
+                all - allocate all services to separate managers
+                none - allocate all services to one manager
+
+        --safe-working-processes-memory-limit=<bytes>
+            Maximum memory in working processes on servers
+
+        --safe-call-memory-limit=<bytes>
+            safe memory consumption per call (bytes)
+
+        --critical-total-memory=<bytes>
+            maximum amount of working server processes memory
+
+        --temporary-allowed-total-memory=<bytes>
+            working server processes memory threshold
+
+        --temporary-allowed-total-memory-time-limit=<seconds>
+            period (in seconds) of exceeding the process memory threshold
+
+        --service-principal-name=<spn>
+            1C:Enterprise server SPN
+
+    update
+        changing working server parameters
+
+        --server=<uuid>
+            (required) identifier of the working server of the server cluster
+
+        --port-range=<min>:<max>
+            range of IP-ports for dynamic allocation,
+            several ranges can be specified
+
+        --using=main|normal
+            working server use variant
+                main - as a main server
+                normal - as an ordinary server
+
+        --infobases-limit=<count>
+            maximum number of infobases per working process
+
+        --memory-limit=<Kb>
+            memory use limit for working processes
+
+        --connections-limit=<count>
+            maximum number of connections per working process
+
+        --dedicate-managers=all|none
+            service manager allocation variant
+                all - allocate all services to separate managers
+                none - allocate all services to one manager
+
+        --safe-working-processes-memory-limit=<bytes>
+            Maximum memory in working processes on servers
+
+        --safe-call-memory-limit=<bytes>
+            safe memory consumption per call (bytes)
+
+        --critical-total-memory=<bytes>
+            maximum amount of working server processes memory
+
+        --temporary-allowed-total-memory=<bytes>
+            working server processes memory threshold
+
+        --temporary-allowed-total-memory-time-limit=<seconds>
+            period (in seconds) of exceeding the process memory threshold
+
+        --service-principal-name=<spn>
+            1C:Enterprise server SPN
+
+    remove
+        deleting the working server
+
+        --server=<uuid>
+            (required) identifier of the working server of the server cluster

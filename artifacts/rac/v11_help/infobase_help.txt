@@ -1,0 +1,222 @@
+1C:Enterprise 8.3 Remote Administrative Client Utility © 1C-Soft LLC 1996-2022
+1C:Enterprise platform administration utility
+
+Use:
+
+	rac infobase [command] [options] [arguments]
+
+Shared options:
+
+    --version | -v
+        get the utility version
+
+    --help | -h | -?
+        display brief utility description
+
+Shared arguments:
+
+    <host>[:<port>]
+        administration server address (default: localhost:1545)
+
+Mode:
+
+    infobase
+        Infobase administration mode
+
+Parameters:
+
+    --cluster=<uuid>
+        (required) server cluster identifier
+
+    --cluster-user=<name>
+        name of the cluster administrator
+
+    --cluster-pwd=<pwd>
+        password of the cluster administrator
+
+Commands:
+
+    info
+        receiving the information about the infobase
+
+        --infobase=<uuid>
+            (required) infobase identifier
+
+        --infobase-user=<name>
+            name of the infobase administrator
+
+        --infobase-pwd=<pwd>
+            password of the infobase administrator
+
+    summary
+        management of brief information on infobases
+
+        Additional commands:
+            info
+                receiving brief information on the infobase
+
+                --infobase=<uuid>
+                    (required) infobase identifier
+
+            list
+                receiving the list of brief information on infobases
+
+            update
+                updating brief information on the infobase
+
+                --infobase=<uuid>
+                    (required) infobase identifier
+
+                --descr=<descr>
+                    infobase description
+
+    create
+        infobase creation
+
+        --create-database
+            Create database when creating infobase
+
+        --name=<name>
+            (required) name of infobase
+
+        --dbms=MSSQLServer|PostgreSQL|IBMDB2|OracleDatabase
+            (required) type of the Database Management System where the infobase is located:
+                MSSQLServer - MS SQL Server
+                PostgreSQL - PostgreSQL
+                IBMDB2 - IBM DB2
+                OracleDatabase - Oracle Database
+
+        --db-server=<host>
+            (required) the name of the database server
+
+        --db-name=<name>
+            (required) database name
+
+        --locale=<locale>
+            (required) identifier of national settings of the infobase
+
+        --db-user=<name>
+            database administrator name
+
+        --db-pwd=<pwd>
+            database administrator password
+
+        --descr=<descr>
+            infobase description
+
+        --date-offset=<offset>
+            date offset in the infobase
+
+        --security-level=<level>
+            infobase connection security level
+
+        --scheduled-jobs-deny=on|off
+            scheduled job lock management
+                on - scheduled job execution prohibited
+                off - scheduled job execution permitted
+
+        --license-distribution=deny|allow
+            management of licenses granting by 1C:Enterprise server
+                deny - licensing is forbidden
+                allow - licensing is allowed
+
+    update
+        updating information on infobase
+
+        --infobase=<uuid>
+            (required) infobase identifier
+
+        --infobase-user=<name>
+            name of the infobase administrator
+
+        --infobase-pwd=<pwd>
+            password of the infobase administrator
+
+        --dbms=MSSQLServer|PostgreSQL|IBMDB2|OracleDatabase
+            type of the Database Management System where the infobase is located:
+                MSSQLServer - MS SQL Server
+                PostgreSQL - PostgreSQL
+                IBMDB2 - IBM DB2
+                OracleDatabase - Oracle Database
+
+        --db-server=<host>
+            the name of the database server
+
+        --db-name=<name>
+            database name
+
+        --db-user=<name>
+            database administrator name
+
+        --db-pwd=<pwd>
+            database administrator password
+
+        --descr=<descr>
+            infobase description
+
+        --denied-from=<date>
+            start of the time interval within which the session lock mode is enabled
+
+        --denied-message=<msg>
+            message displayed upon session lock violation
+
+        --denied-parameter=<string>
+            session lock parameter
+
+        --denied-to=<date>
+            end of the time interval within which the session lock mode is enabled
+
+        --permission-code=<string>
+            access code that allows the session to start in spite of enabled session lock
+
+        --sessions-deny=on|off
+            session lock mode management
+                on - mode of session start lock enabled
+                off - mode of session start lock disabled
+
+        --scheduled-jobs-deny=on|off
+            scheduled job lock management
+                on - scheduled job execution prohibited
+                off - scheduled job execution permitted
+
+        --license-distribution=deny|allow
+            management of licenses granting by 1C:Enterprise server
+                deny - licensing is forbidden
+                allow - licensing is allowed
+
+        --external-session-manager-connection-string=<connect-string>
+            external session management parameter
+
+        --external-session-manager-required=yes|no
+            external session management required
+                yes - external session management is a must
+                no - external session management is optional
+
+        --reserve-working-processes=yes|no
+            Workflow backup
+                yes - Workflow backup is enabled
+                no - Workflow backup is disabled
+
+        --security-profile-name=<name>
+            infobase security profile
+
+        --safe-mode-security-profile-name=<name>
+            external code security profile
+
+    drop
+        remote infobase mode
+
+        --infobase=<uuid>
+            (required) infobase identifier
+
+        --infobase-user=<name>
+            name of the infobase administrator
+
+        --infobase-pwd=<pwd>
+            password of the infobase administrator
+
+        --drop-database
+            delete database upon deleting infobase
+
+        --clear-database
+            clear database upon deleting infobase

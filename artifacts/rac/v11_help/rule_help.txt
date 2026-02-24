@@ -1,0 +1,131 @@
+1C:Enterprise 8.3 Remote Administrative Client Utility © 1C-Soft LLC 1996-2022
+1C:Enterprise platform administration utility
+
+Use:
+
+	rac rule [command] [options] [arguments]
+
+Shared options:
+
+    --version | -v
+        get the utility version
+
+    --help | -h | -?
+        display brief utility description
+
+Shared arguments:
+
+    <host>[:<port>]
+        administration server address (default: localhost:1545)
+
+Mode:
+
+    rule
+        Assignment rule management mode
+
+Parameters:
+
+    --cluster=<uuid>
+        (required) server cluster identifier
+
+    --cluster-user=<name>
+        name of the cluster administrator
+
+    --cluster-pwd=<pwd>
+        password of the cluster administrator
+
+Commands:
+
+    apply
+        use of requirements
+
+        --full
+            full requirement use mode (default)
+
+        --partial
+            partial requirement use mode
+
+    info
+        receiving information on the assignment rule
+
+        --server=<uuid>
+            (required) identifier of the working server of the server cluster
+
+        --rule=<uuid>
+            (required) assignment rule identifier
+
+    list
+        receiving the list of assignment rules
+
+        --server=<uuid>
+            (required) identifier of the working server of the server cluster
+
+    insert
+        inserting a new assignment rule into the list
+
+        --server=<uuid>
+            (required) identifier of the working server of the server cluster
+
+        --position=<num>
+            (required) requirement position in the list (beginning with 0)
+
+        --object-type=<id>
+            requirement object identifier
+
+        --infobase-name=<name>
+            infobase name,
+            if the parameter is not specified, the requirement is applied to all
+            infobases
+
+        --rule-type=auto|always|never
+            allocation rule type:
+                auto - no rules (by default)
+                always - allocate to this server only
+                never - do not allocate to this server
+
+        --application-ext=<name>
+            application with an adjustment
+
+        --priority=<priority>
+            assignment rule priority
+
+    update
+        updating parameters of an assignment rule in the list
+
+        --server=<uuid>
+            (required) identifier of the working server of the server cluster
+
+        --rule=<uuid>
+            (required) assignment rule identifier
+
+        --position=<num>
+            (required) requirement position in the list (beginning with 0)
+
+        --object-type=<id>
+            requirement object identifier
+
+        --infobase-name=<name>
+            infobase name,
+            if the parameter is not specified, the requirement is applied to all
+            infobases
+
+        --rule-type=auto|always|never
+            allocation rule type:
+                auto - no rules (by default)
+                always - allocate to this server only
+                never - do not allocate to this server
+
+        --application-ext=<name>
+            application with an adjustment
+
+        --priority=<priority>
+            assignment rule priority
+
+    remove
+        deleting an assignment rule
+
+        --server=<uuid>
+            (required) identifier of the working server of the server cluster
+
+        --rule=<uuid>
+            (required) assignment rule identifier

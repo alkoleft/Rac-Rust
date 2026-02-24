@@ -1,0 +1,40 @@
+connection     : 8b7739ee-c6c3-4890-b533-32632987433a
+conn-id        : 0
+host           : alko-home
+process        : 0399133a-6d5d-4fb0-9029-d240c8e07763
+infobase       : 00000000-0000-0000-0000-000000000000
+application    : "AgentStandardCall"
+connected-at   : 2026-02-23T04:13:16
+session-number : 0
+blocked-by-ls  : 0
+
+connection     : efe116d6-457e-4fe2-b6ed-d824ea9447e2
+conn-id        : 17
+host           : alko-home
+process        : 0399133a-6d5d-4fb0-9029-d240c8e07763
+infobase       : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+application    : "1CV8C"
+connected-at   : 2026-02-23T04:19:37
+session-number : 0
+blocked-by-ls  : 0
+
+connection     : ba3e59f8-097f-4670-b8ed-9e547dd473ee
+conn-id        : 0
+host           : alko-home
+process        : 0399133a-6d5d-4fb0-9029-d240c8e07763
+infobase       : 00000000-0000-0000-0000-000000000000
+application    : "JobScheduler"
+connected-at   : 2026-02-24T08:00:00
+session-number : 0
+blocked-by-ls  : 0
+
+connection     : 5f6d4fec-88ae-49f3-bd21-a62da9a19036
+conn-id        : 0
+host           : alko-home
+process        : 0399133a-6d5d-4fb0-9029-d240c8e07763
+infobase       : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+application    : "JobScheduler"
+connected-at   : 2026-02-24T12:02:59
+session-number : 0
+blocked-by-ls  : 0
+

@@ -1,0 +1,55 @@
+1C:Enterprise 8.3 Remote Administrative Client Utility © 1C-Soft LLC 1996-2022
+1C:Enterprise platform administration utility
+
+Use:
+
+	rac process [command] [options] [arguments]
+
+Shared options:
+
+    --version | -v
+        get the utility version
+
+    --help | -h | -?
+        display brief utility description
+
+Shared arguments:
+
+    <host>[:<port>]
+        administration server address (default: localhost:1545)
+
+Mode:
+
+    process
+        Working process administration mode
+
+Parameters:
+
+    --cluster=<uuid>
+        (required) server cluster identifier
+
+    --cluster-user=<name>
+        name of the cluster administrator
+
+    --cluster-pwd=<pwd>
+        password of the cluster administrator
+
+Commands:
+
+    info
+        receiving information on the working process
+
+        --process=<uuid>
+            (required) identifier of the working process of the server
+
+        --licenses
+            displaying information on licenses granted by the working process
+
+    list
+        receiving the working process information list
+
+        --server=<uuid>
+            identifier of the working server of the server cluster
+
+        --licenses
+            displaying information on licenses granted by the working process

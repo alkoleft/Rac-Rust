@@ -118,6 +118,140 @@ Observed field names in `rac infobase info` output (v11), with capture mapping s
 
 Same field set as `infobase summary list` (see above).
 
+### Infobase Summary Update
+
+Sources:
+- `artifacts/rac/v11_help/infobase_help.txt` (command parameters)
+
+### RPC
+
+Request/response method ids: not captured yet (v11 help only).
+
+### Поля запроса (из `rac`)
+
+Observed request parameters for `rac infobase summary update` (v11).
+
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `infobase` | UUID | no | - | 11.0 |
+| `descr` | string | no | - | 11.0 |
+
+### Поля ответа
+
+Output not captured yet. Likely ACK-only.
+
+### Infobase Create
+
+Sources:
+- `artifacts/rac/v11_help/infobase_help.txt` (command parameters)
+
+### RPC
+
+Request/response method ids: not captured yet (v11 help only).
+
+### Поля запроса (из `rac`)
+
+Observed request parameters for `rac infobase create` (v11).
+
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `create-database` | flag | no | - | 11.0 |
+| `name` | string | no | - | 11.0 |
+| `dbms` | enum | no | - | 11.0 |
+| `db-server` | string | no | - | 11.0 |
+| `db-name` | string | no | - | 11.0 |
+| `locale` | string | no | - | 11.0 |
+| `db-user` | string | no | - | 11.0 |
+| `db-pwd` | string | no | - | 11.0 |
+| `descr` | string | no | - | 11.0 |
+| `date-offset` | string | no | - | 11.0 |
+| `security-level` | u32 | no | - | 11.0 |
+| `scheduled-jobs-deny` | enum (`on/off`) | no | - | 11.0 |
+| `license-distribution` | enum (`deny/allow`) | no | - | 11.0 |
+
+### Поля ответа
+
+Output not captured yet. Likely returns created `infobase` UUID or ACK-only.
+
+### Infobase Update
+
+Sources:
+- `artifacts/rac/v11_help/infobase_help.txt` (command parameters)
+
+### RPC
+
+Request/response method ids: not captured yet (v11 help only).
+
+### Поля запроса (из `rac`)
+
+Observed request parameters for `rac infobase update` (v11).
+
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `infobase` | UUID | no | - | 11.0 |
+| `infobase-user` | string | no | - | 11.0 |
+| `infobase-pwd` | string | no | - | 11.0 |
+| `dbms` | enum | no | - | 11.0 |
+| `db-server` | string | no | - | 11.0 |
+| `db-name` | string | no | - | 11.0 |
+| `db-user` | string | no | - | 11.0 |
+| `db-pwd` | string | no | - | 11.0 |
+| `descr` | string | no | - | 11.0 |
+| `denied-from` | datetime | no | - | 11.0 |
+| `denied-message` | string | no | - | 11.0 |
+| `denied-parameter` | string | no | - | 11.0 |
+| `denied-to` | datetime | no | - | 11.0 |
+| `permission-code` | string | no | - | 11.0 |
+| `sessions-deny` | enum (`on/off`) | no | - | 11.0 |
+| `scheduled-jobs-deny` | enum (`on/off`) | no | - | 11.0 |
+| `license-distribution` | enum (`deny/allow`) | no | - | 11.0 |
+| `external-session-manager-connection-string` | string | no | - | 11.0 |
+| `external-session-manager-required` | enum (`yes/no`) | no | - | 11.0 |
+| `reserve-working-processes` | enum (`yes/no`) | no | - | 11.0 |
+| `security-profile-name` | string | no | - | 11.0 |
+| `safe-mode-security-profile-name` | string | no | - | 11.0 |
+
+### Поля ответа
+
+Output not captured yet. Likely ACK-only.
+
+### Infobase Drop
+
+Sources:
+- `artifacts/rac/v11_help/infobase_help.txt` (command parameters)
+
+### RPC
+
+Request/response method ids: not captured yet (v11 help only).
+
+### Поля запроса (из `rac`)
+
+Observed request parameters for `rac infobase drop` (v11).
+
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `infobase` | UUID | no | - | 11.0 |
+| `infobase-user` | string | no | - | 11.0 |
+| `infobase-pwd` | string | no | - | 11.0 |
+| `drop-database` | flag | no | - | 11.0 |
+| `clear-database` | flag | no | - | 11.0 |
+
+### Поля ответа
+
+Output not captured yet. Likely ACK-only.
+
 
 ### Infobase Info
 

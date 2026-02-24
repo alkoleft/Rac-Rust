@@ -7,6 +7,18 @@ Derived from `docs/rac/messages/rac_message_formats.md`.
 
 ## Commands
 
+Command set for protocol version `11.0` (observed via `rac` help/output):
+- `infobase summary list`
+- `infobase summary info`
+- `infobase summary update`
+- `infobase info`
+- `infobase create`
+- `infobase update`
+- `infobase drop`
+
+Note:
+- `infobase list` is not available in v11 (command prints help instead).
+
 ### Infobase Summary List
 
 - **Request**: `0x09` (context), then method `0x2a`.

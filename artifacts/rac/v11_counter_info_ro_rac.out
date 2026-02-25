@@ -1,0 +1,18 @@
+name                      : cpu
+collection-time           : 6
+group                     : users
+filter-type               : all
+filter                    : 
+duration                  : not-analyze
+cpu-time                  : analyze
+memory                    : not-analyze
+read                      : not-analyze
+write                     : not-analyze
+duration-dbms             : not-analyze
+dbms-bytes                : not-analyze
+service                   : not-analyze
+call                      : not-analyze
+number-of-active-sessions : not-analyze
+number-of-sessions        : not-analyze
+descr                     : cpu desc
+

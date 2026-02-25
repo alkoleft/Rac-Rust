@@ -1,0 +1,12 @@
+file=logs/session_1772063129_1251526_127_0_0_1_51000/server_to_client.stream.bin
+size=87
+frames=4
+frame=1 opcode=0x02 len=1 len_field_size=1
+  payload_hex=80
+frame=2 opcode=0x0c len=32 len_field_size=1
+  payload_hex=1876382e736572766963652e41646d696e2e436c75737465720431312e300180
+frame=3 opcode=0x0e len=4 len_field_size=1
+  payload_hex=01000000
+frame=4 opcode=0x0e len=42 len_field_size=1
+  payload_hex=010000012b01717bdda72f604577b262f1fc8c0e472c0b4465736372697074696f6e07796178756e6974
+  rpc_method_id=0x2b (43)

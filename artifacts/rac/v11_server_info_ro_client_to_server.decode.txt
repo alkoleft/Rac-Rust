@@ -1,0 +1,19 @@
+file=logs/session_1772062823_1248443_127_0_0_1_43640/client_to_server.stream.bin
+size=143
+swp_init.version=0x01
+swp_init.header_a=1
+swp_init.header_b=1
+swp_init.tag=0x16
+swp_init.params=1
+swp_init.param_1 key=connect.timeout type=0x04 value_u32=2000
+frames=4
+frame=1 opcode=0x0b len=31 len_field_size=1
+  payload_hex=1876382e736572766963652e41646d696e2e436c75737465720431312e3080
+frame=2 opcode=0x0e len=34 len_field_size=1
+  payload_hex=01000001091619820ad36f4d8aa7161516b1dea077066361646d696e056370617373
+  rpc_method_id=0x9 (9)
+frame=3 opcode=0x0e len=37 len_field_size=1
+  payload_hex=01000001181619820ad36f4d8aa7161516b1dea0776aa3a88a934644998034a4a72d7ee8e8
+  rpc_method_id=0x18 (24)
+frame=4 opcode=0x0d len=1 len_field_size=1
+  payload_hex=01

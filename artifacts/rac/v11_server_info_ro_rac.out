@@ -1,0 +1,18 @@
+server                                    : 6aa3a88a-9346-4499-8034-a4a72d7ee8e8
+agent-host                                : alko-home
+agent-port                                : 1540
+port-range                                : 1560:1591
+name                                      : "Центральный сервер"
+using                                     : main
+dedicate-managers                         : none
+infobases-limit                           : 8
+memory-limit                              : 0
+connections-limit                         : 256
+safe-working-processes-memory-limit       : 0
+safe-call-memory-limit                    : 0
+cluster-port                              : 1541
+critical-total-memory                     : 0
+temporary-allowed-total-memory            : 0
+temporary-allowed-total-memory-time-limit : 0
+service-principal-name                    : "spn test"
+

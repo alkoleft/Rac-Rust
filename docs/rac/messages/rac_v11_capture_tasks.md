@@ -15,34 +15,34 @@
 - [x] cluster admin list
 - [x] connection list
 - [x] lock list (без фильтра)
-- [ ] server list
-- [ ] server info
-- [ ] process list
-- [ ] process list --licenses
-- [ ] process info
-- [ ] process info --licenses
-- [ ] rule list
+- [x] server list
+- [x] server info
+- [x] process list
+- [x] process list --licenses
+- [x] process info
+- [x] process info --licenses
+- [x] rule list
 - [ ] rule info
 - [ ] rule apply --partial
-- [ ] counter list
-- [ ] counter info
-- [ ] counter values
-- [ ] counter accumulated-values
-- [ ] limit list
-- [ ] limit info
-- [ ] service list
-- [ ] profile list
+- [x] counter list
+- [x] counter info
+- [x] counter values
+- [x] counter accumulated-values
+- [x] limit list
+- [x] limit info
+- [x] service list
+- [x] profile list
 
 ## Read-only: для выборочных захватов
 
-- [ ] session list (нужен для lock list --session)
-- [ ] infobase summary list (нужен для lock list --infobase)
+- [x] session list (нужен для lock list --session)
+- [x] infobase summary list (нужен для lock list --infobase)
 
 ## Read-only: фильтры (если есть IDs)
 
-- [ ] lock list --session <id>
-- [ ] lock list --connection <id>
-- [ ] lock list --infobase <id>
+- [ ] lock list --session <id> (в session list пусто)
+- [x] lock list --connection <id>
+- [x] lock list --infobase <id>
 
 ## Документация
 

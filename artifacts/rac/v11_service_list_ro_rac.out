@@ -1,0 +1,140 @@
+name      : LicenseService
+main-only : 0
+manager   : 3985f906-ba9d-484f-aebc-3e1c6f1a8fe8
+descr     : "Сервис лицензирования"
+
+name      : EventLogService
+main-only : 0
+manager   : 3985f906-ba9d-484f-aebc-3e1c6f1a8fe8
+descr     : "Сервис журналов регистрации"
+
+name      : GetSessionsService
+main-only : 0
+manager   : 3985f906-ba9d-484f-aebc-3e1c6f1a8fe8
+descr     : "Сервис получения списка сеансов"
+
+name      : OpenID2ProviderContextService
+main-only : 0
+manager   : 3985f906-ba9d-484f-aebc-3e1c6f1a8fe8
+descr     : "Сервис провайдера OpenID2"
+
+name      : DbCopiesService
+main-only : 0
+manager   : 3985f906-ba9d-484f-aebc-3e1c6f1a8fe8
+descr     : "Сервис копий базы данных"
+
+name      : TimestampService
+main-only : 0
+manager   : 3985f906-ba9d-484f-aebc-3e1c6f1a8fe8
+descr     : "Сервис времени"
+
+name      : IntegrationDataService
+main-only : 0
+manager   : 3985f906-ba9d-484f-aebc-3e1c6f1a8fe8
+descr     : "Сервис интеграционных данных"
+
+name      : SessionReuseService
+main-only : 0
+manager   : 3985f906-ba9d-484f-aebc-3e1c6f1a8fe8
+descr     : "Сервис повторного использования сеансов"
+
+name      : CounterService
+main-only : 0
+manager   : 3985f906-ba9d-484f-aebc-3e1c6f1a8fe8
+descr     : "Сервис мониторинга счетчиков потребления ресурсов"
+
+name      : SessionDataService
+main-only : 0
+manager   : 3985f906-ba9d-484f-aebc-3e1c6f1a8fe8
+descr     : "Сервис сеансовых данных"
+
+name      : ExternalSessionManagerService
+main-only : 0
+manager   : 3985f906-ba9d-484f-aebc-3e1c6f1a8fe8
+descr     : "Сервис внешнего управления сеансами"
+
+name      : DbCopiesTimeService
+main-only : 0
+manager   : 3985f906-ba9d-484f-aebc-3e1c6f1a8fe8
+descr     : "Сервис времени копий базы данных"
+
+name      : FulltextSearchService
+main-only : 0
+manager   : 3985f906-ba9d-484f-aebc-3e1c6f1a8fe8
+descr     : "Сервис полнотекстового поиска"
+
+name      : TransactionLockService
+main-only : 0
+manager   : 3985f906-ba9d-484f-aebc-3e1c6f1a8fe8
+descr     : "Сервис транзакционных блокировок"
+
+name      : DebugService
+main-only : 1
+manager   : 3985f906-ba9d-484f-aebc-3e1c6f1a8fe8
+descr     : "Сервис управления предметами отладки (TCP)"
+
+name      : ClusterConfigService
+main-only : 1
+manager   : 3985f906-ba9d-484f-aebc-3e1c6f1a8fe8
+descr     : "Сервис конфигурации кластера"
+
+name      : ClientTestingService
+main-only : 0
+manager   : 3985f906-ba9d-484f-aebc-3e1c6f1a8fe8
+descr     : "Сервис тестирования"
+
+name      : ClusterStateService
+main-only : 1
+manager   : 3985f906-ba9d-484f-aebc-3e1c6f1a8fe8
+descr     : "Сервис состояния кластера"
+
+name      : JobService
+main-only : 0
+manager   : 3985f906-ba9d-484f-aebc-3e1c6f1a8fe8
+descr     : "Сервис заданий"
+
+name      : ExternalDataSourceXMLAService
+main-only : 0
+manager   : 3985f906-ba9d-484f-aebc-3e1c6f1a8fe8
+descr     : "Сервис работы с внешними источниками данных через XMLA"
+
+name      : SettingsService
+main-only : 0
+manager   : 3985f906-ba9d-484f-aebc-3e1c6f1a8fe8
+descr     : "Сервис пользовательских настроек"
+
+name      : DataAcceleratorService
+main-only : 0
+manager   : 3985f906-ba9d-484f-aebc-3e1c6f1a8fe8
+descr     : "Сервис Дата aкселератора"
+
+name      : ExternalDataSourceODBCService
+main-only : 0
+manager   : 3985f906-ba9d-484f-aebc-3e1c6f1a8fe8
+descr     : "Сервис работы с внешними источниками данных через ODBC"
+
+name      : NumerationService
+main-only : 0
+manager   : 3985f906-ba9d-484f-aebc-3e1c6f1a8fe8
+descr     : "Сервис нумерации"
+
+name      : DatabaseTableNumberingService
+main-only : 0
+manager   : 3985f906-ba9d-484f-aebc-3e1c6f1a8fe8
+descr     : "Сервис номеров имен таблиц и полей базы данных"
+
+name      : DataEditLockService
+main-only : 0
+manager   : 3985f906-ba9d-484f-aebc-3e1c6f1a8fe8
+descr     : "Сервис блокировки объектов"
+
+name      : AuxiliaryService
+main-only : 0
+manager   : 3985f906-ba9d-484f-aebc-3e1c6f1a8fe8
+descr     : "Сервис вспомогательных функций кластера"
+
+name      : DataBaseConfigurationUpdateService
+main-only : 0
+manager   : 3985f906-ba9d-484f-aebc-3e1c6f1a8fe8
+descr     : "Сервис обновления конфигурации базы данных"
+

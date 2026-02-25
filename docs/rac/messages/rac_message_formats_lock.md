@@ -14,6 +14,10 @@ Sources (v11):
 - `artifacts/rac/v11_lock_list_infobase_ro_server_to_client.decode.txt`
 - `artifacts/rac/v11_lock_list_infobase_ro_response.hex`
 - `artifacts/rac/v11_lock_list_infobase_ro_rac.out`
+- `artifacts/rac/v11_lock_list_session_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11_lock_list_session_ro_server_to_client.decode.txt`
+- `artifacts/rac/v11_lock_list_session_ro_response.hex`
+- `artifacts/rac/v11_lock_list_session_ro_rac.out`
 
 ## Lock List
 
@@ -21,11 +25,13 @@ Source capture:
 - `logs/session_1771361253_3690919_127_0_0_1_60046/server_to_client.stream.bin`
 - `artifacts/rac/v11_lock_list_connection_ro_server_to_client.decode.txt`
 - `artifacts/rac/v11_lock_list_infobase_ro_server_to_client.decode.txt`
+- `artifacts/rac/v11_lock_list_session_ro_server_to_client.decode.txt`
 
 Payload example:
 - `artifacts/rac/lock_list_response.hex`
 - `artifacts/rac/v11_lock_list_connection_ro_response.hex`
 - `artifacts/rac/v11_lock_list_infobase_ro_response.hex`
+- `artifacts/rac/v11_lock_list_session_ro_response.hex`
 
 RAC output reference:
 - `artifacts/rac/lock_list_rac.out`
@@ -58,6 +64,7 @@ Payload structure (method body):
 - offset `0x00` (request): `16 <cluster_uuid_16b>`
 - offset `0x10` (request, `--infobase`): `16 <infobase_uuid_16b>`
 - offset `0x10` (request, `--connection`): `16 <connection_uuid_16b>`
+- offset `0x10` (request, `--session`): not present in capture; payload matches `lock list --cluster <id>`
 - offset `0x00` (response): `items_count:u8`
 
 ### Поля запроса (из `rac`)
@@ -71,7 +78,7 @@ Observed request parameters for `rac lock list`.
 | `cluster-pwd` | string | yes | 3 | 11.0 |
 | `infobase` | UUID | yes | 4 | 11.0 |
 | `connection` | UUID | yes | 5 | 11.0 |
-| `session` | UUID | no | 6 | 11.0 |
+| `session` | UUID | no (payload matches `--cluster` only) | 6 | 11.0 |
 
 Notes:
 - `cluster-user`/`cluster-pwd` are sent via the context setter (`rpc_method_id=0x09`) before the `lock list` request. Order in that context payload: `cluster`, `cluster-user`, `cluster-pwd`.
@@ -110,9 +117,9 @@ Variant B (with `descr-flag` byte):
 ### Open Questions
 
 - Which values can `descr-flag` take besides `0x01`, and does it appear for other lock kinds?
-- Do `--session` introduce extra request fields beyond the cluster UUID?
+- Does `--session` introduce extra request fields beyond the cluster UUID? Current capture shows no extra payload fields.
 
 ### Gap Analysis (Required)
 
-- Capture `lock list --session <uuid>` to confirm request field order and whether additional parameters are appended after `<cluster_uuid_16b>`.
+- If `--session` should be sent on wire, capture a case where `rac` actually includes it (current capture did not).
 - Capture at least one lock record with a non-zero `object` UUID and correlate it to confirm that `object` is always present at the tail.

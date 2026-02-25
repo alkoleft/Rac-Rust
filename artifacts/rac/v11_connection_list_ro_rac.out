@@ -1,3 +1,23 @@
+connection     : 4f9ed984-6c96-4668-a804-f3256b3969d8
+conn-id        : 0
+host           : alko-home
+process        : 0399133a-6d5d-4fb0-9029-d240c8e07763
+infobase       : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+application    : "JobScheduler"
+connected-at   : 2026-02-26T02:55:36
+session-number : 0
+blocked-by-ls  : 0
+
+connection     : 14a1c6c6-d641-4402-97b5-b0f943f7df92
+conn-id        : 8578
+host           : alko-home
+process        : 0399133a-6d5d-4fb0-9029-d240c8e07763
+infobase       : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+application    : "Designer"
+connected-at   : 2026-02-26T02:55:35
+session-number : 1
+blocked-by-ls  : 0
+
 connection     : 8b7739ee-c6c3-4890-b533-32632987433a
 conn-id        : 0
 host           : alko-home
@@ -5,6 +25,16 @@ process        : 0399133a-6d5d-4fb0-9029-d240c8e07763
 infobase       : 00000000-0000-0000-0000-000000000000
 application    : "AgentStandardCall"
 connected-at   : 2026-02-23T04:13:16
+session-number : 0
+blocked-by-ls  : 0
+
+connection     : 928c701d-38e8-4ffd-b817-a7c96bad3af5
+conn-id        : 8579
+host           : alko-home
+process        : 0399133a-6d5d-4fb0-9029-d240c8e07763
+infobase       : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+application    : "1CV8C"
+connected-at   : 2026-02-26T02:55:49
 session-number : 0
 blocked-by-ls  : 0
 

@@ -1,4 +1,4 @@
-file=logs/session_1772063927_1257962_127_0_0_1_34284/client_to_server.stream.bin
+file=logs/session_1772063918_1257736_127_0_0_1_38676/client_to_server.stream.bin
 size=127
 swp_init.version=0x01
 swp_init.header_a=1
@@ -13,7 +13,7 @@ frame=2 opcode=0x0e len=34 len_field_size=1
   payload_hex=01000001091619820ad36f4d8aa7161516b1dea077066361646d696e056370617373
   rpc_method_id=0x9 (9)
 frame=3 opcode=0x0e len=21 len_field_size=1
-  payload_hex=01000001321619820ad36f4d8aa7161516b1dea077
-  rpc_method_id=0x32 (50)
+  payload_hex=01000001481619820ad36f4d8aa7161516b1dea077
+  rpc_method_id=0x48 (72)
 frame=4 opcode=0x0d len=1 len_field_size=1
   payload_hex=01

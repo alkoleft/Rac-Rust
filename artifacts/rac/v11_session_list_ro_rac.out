@@ -1,0 +1,100 @@
+session                          : 4851f0a9-ed90-4359-bc62-c36b926193c5
+session-id                       : 1
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : 14a1c6c6-d641-4402-97b5-b0f943f7df92
+process                          : 0399133a-6d5d-4fb0-9029-d240c8e07763
+user-name                        : iadmin
+host                             : alko-home
+app-id                           : Designer
+locale                           : ru_RU
+started-at                       : 2026-02-26T02:55:35
+last-active-at                   : 2026-02-26T02:58:17
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 68540
+bytes-last-5min                  : 68540
+calls-all                        : 879
+calls-last-5min                  : 879
+dbms-bytes-all                   : 746606
+dbms-bytes-last-5min             : 746606
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 211
+duration-all-dbms                : 59
+duration-current                 : 0
+duration current-dbms            : 0
+duration-last-5min               : 211
+duration-last-5min-dbms          : 59
+memory-current                   : 0
+memory-last-5min                 : 352907
+memory-total                     : 352907
+read-current                     : 0
+read-last-5min                   : 31398
+read-total                       : 31398
+write-current                    : 0
+write-last-5min                  : 139831
+write-total                      : 139831
+duration-current-service         : 0
+duration-last-5min-service       : 42
+duration-all-service             : 42
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 109
+cpu-time-total                   : 109
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+
+session                          : e08064d4-477e-47d3-a293-18c3b4d45042
+session-id                       : 2
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : 00000000-0000-0000-0000-000000000000
+process                          : 00000000-0000-0000-0000-000000000000
+user-name                        : iadmin
+host                             : alko-home
+app-id                           : 1CV8C
+locale                           : ru
+started-at                       : 2026-02-26T02:55:49
+last-active-at                   : 2026-02-26T02:55:55
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 36868
+bytes-last-5min                  : 36868
+calls-all                        : 51
+calls-last-5min                  : 51
+dbms-bytes-all                   : 551016
+dbms-bytes-last-5min             : 551016
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 927
+duration-all-dbms                : 155
+duration-current                 : 0
+duration current-dbms            : 0
+duration-last-5min               : 927
+duration-last-5min-dbms          : 155
+memory-current                   : 0
+memory-last-5min                 : 25348928
+memory-total                     : 25348928
+read-current                     : 0
+read-last-5min                   : 459613
+read-total                       : 459613
+write-current                    : 0
+write-last-5min                  : 1225937
+write-total                      : 1225937
+duration-current-service         : 0
+duration-last-5min-service       : 16
+duration-all-service             : 16
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 593
+cpu-time-total                   : 593
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+

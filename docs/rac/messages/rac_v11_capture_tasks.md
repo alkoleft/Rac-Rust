@@ -40,7 +40,7 @@
 
 ## Read-only: фильтры (если есть IDs)
 
-- [ ] lock list --session <id> (в session list пусто)
+- [x] lock list --session <id> (payload без session)
 - [x] lock list --connection <id>
 - [x] lock list --infobase <id>
 

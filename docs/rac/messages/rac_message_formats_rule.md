@@ -2,6 +2,10 @@
 
 Protocol version (service negotiation): `v8.service.Admin.Cluster` `16.0` (observed in captures).
 
+Sources (v11):
+- `artifacts/rac/v11_help/rule_help.txt`
+- `artifacts/rac/v11_help/rule_list.out`
+- `docs/rac/documentation/rac_cli_method_map.generated.md` (method IDs)
 
 ## Rule Apply
 

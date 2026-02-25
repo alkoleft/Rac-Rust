@@ -2,6 +2,12 @@
 
 Protocol version (service negotiation): `v8.service.Admin.Cluster` `16.0` (observed in captures).
 
+Sources (v11):
+- `artifacts/rac/v11_help/session_help.txt`
+- `artifacts/rac/v11_help/session_list.out`
+- `artifacts/rac/v11_help/session_info.out`
+- `artifacts/rac/v11_help/session_info_licenses.out`
+- `docs/rac/documentation/rac_cli_method_map.generated.md` (method IDs)
 
 Aligned with current decoder implementation in `apps/rac_protocol/src/commands/session.rs`.
 
@@ -22,6 +28,18 @@ Aligned with current decoder implementation in `apps/rac_protocol/src/commands/s
 - **Parameters**: `16 <cluster_uuid>`.
 - **Response body layout**: `u8 count` followed by `count` session records.
 
+#### Поля запроса (из `rac`)
+
+Observed request parameters for `rac session list` (v11).
+
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | yes | 1 | 11.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
+| `infobase` | UUID | yes | 4 | 11.0 |
+| `licenses` | flag | no | - | 11.0 |
+
 **Record boundary detection (current decoder):**
 
 - Each record starts with a `uuid16` that passes a RFC4122 sanity check.
@@ -34,6 +52,125 @@ Aligned with current decoder implementation in `apps/rac_protocol/src/commands/s
 - **Response**: method `0x46`.
 - **Parameters**: `16 <cluster_uuid> <session_uuid>`.
 - **Response body layout**: a single session record using the same layout as in Session List.
+
+#### Поля запроса (из `rac`)
+
+Observed request parameters for `rac session info` (v11).
+
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | yes | 1 | 11.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
+| `session` | UUID | yes | 4 | 11.0 |
+| `licenses` | flag | yes (see `session_info_licenses.out`) | 5 | 11.0 |
+
+### Session Terminate
+
+Sources:
+- `artifacts/rac/v11_help/session_help.txt`
+
+#### RPC
+
+Request/response method IDs: not captured yet (v11 help only).
+
+#### Поля запроса (из `rac`)
+
+Observed request parameters for `rac session terminate` (v11).
+
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `session` | UUID | no | - | 11.0 |
+| `error-message` | string | no | - | 11.0 |
+
+#### Поля ответа
+
+Not captured yet (likely ACK-only).
+
+### Session Interrupt Current Server Call
+
+Sources:
+- `artifacts/rac/v11_help/session_help.txt`
+
+#### RPC
+
+Request/response method IDs: not captured yet (v11 help only).
+
+#### Поля запроса (из `rac`)
+
+Observed request parameters for `rac session interrupt-current-server-call` (v11).
+
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `session` | UUID | no | - | 11.0 |
+| `error-message` | string | no | - | 11.0 |
+
+#### Поля ответа
+
+Not captured yet (likely ACK-only).
+
+### Поля ответа (из `rac`)
+
+Observed field names in `rac session list/info` output (v11), with capture mapping status.
+
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `session` | `uuid16` | yes | 1 | 11.0 |
+| `app-id` | `str8` | yes | 2 | 11.0 |
+| `counters.blocked-by-dbms` | `u32_be` | yes | 3 | 11.0 |
+| `counters.blocked-by-ls` | `u32_be` | yes | 4 | 11.0 |
+| `counters.bytes-all` | `u64_be` | yes | 5 | 11.0 |
+| `counters.bytes-last-5min` | `u64_be` | yes | 6 | 11.0 |
+| `counters.calls-all` | `u32_be` | yes | 7 | 11.0 |
+| `counters.calls-last-5min` | `u64_be` | yes | 8 | 11.0 |
+| `connection` | `uuid16` | yes | 9 | 11.0 |
+| `counters.dbms-bytes-all` | `u64_be` | yes | 10 | 11.0 |
+| `counters.dbms-bytes-last-5min` | `u64_be` | yes | 11 | 11.0 |
+| `db-proc-info` | `str8` | yes | 12 | 11.0 |
+| `counters.db-proc-took` | `u32_be` | yes | 13 | 11.0 |
+| `db-proc-took-at` | `datetime` | yes | 14 | 11.0 |
+| `counters.duration-all` | `u32_be` | yes | 15 | 11.0 |
+| `counters.duration-all-dbms` | `u32_be` | yes | 16 | 11.0 |
+| `counters.duration-current` | `u32_be` | yes | 17 | 11.0 |
+| `counters.duration-current-dbms` | `u32_be` | yes | 18 | 11.0 |
+| `counters.duration-last-5min` | `u64_be` | yes | 19 | 11.0 |
+| `counters.duration-last-5min-dbms` | `u64_be` | yes | 20 | 11.0 |
+| `host` | `str8` | yes | 21 | 11.0 |
+| `infobase` | `uuid16` | yes | 22 | 11.0 |
+| `last-active-at` | `datetime` | yes | 23 | 11.0 |
+| `hibernate` | `bool` | yes | 24 | 11.0 |
+| `counters.passive-session-hibernate-time` | `u32_be` | yes | 25 | 11.0 |
+| `counters.hibernate-session-terminate-time` | `u32_be` | yes | 26 | 11.0 |
+| `license` | `license-block` | yes | 27 | 11.0 |
+| `locale` | `str8` | yes | 28 | 11.0 |
+| `process` | `uuid16` | yes | 29 | 11.0 |
+| `session-id` | `u32_be` | yes | 30 | 11.0 |
+| `started-at` | `datetime` | yes | 31 | 11.0 |
+| `user-name` | `str8` | yes | 32 | 11.0 |
+| `counters.memory-current` | `u64_be` | yes | 33 | 11.0 |
+| `counters.memory-last-5min` | `u64_be` | yes | 34 | 11.0 |
+| `counters.memory-total` | `u64_be` | yes | 35 | 11.0 |
+| `counters.read-current` | `u64_be` | yes | 36 | 11.0 |
+| `counters.read-last-5min` | `u64_be` | yes | 37 | 11.0 |
+| `counters.read-total` | `u64_be` | yes | 38 | 11.0 |
+| `counters.write-current` | `u64_be` | yes | 39 | 11.0 |
+| `counters.write-last-5min` | `u64_be` | yes | 40 | 11.0 |
+| `counters.write-total` | `u64_be` | yes | 41 | 11.0 |
+| `counters.duration-current-service` | `u32_be` | yes | 42 | 11.0 |
+| `counters.duration-last-5min-service` | `u64_be` | yes | 43 | 11.0 |
+| `counters.duration-all-service` | `u32_be` | yes | 44 | 11.0 |
+| `current-service-name` | `str8` | yes | 45 | 11.0 |
+| `counters.cpu-time-current` | `u64_be` | yes | 46 | 11.0 |
+| `counters.cpu-time-last-5min` | `u64_be` | yes | 47 | 11.0 |
+| `counters.cpu-time-total` | `u64_be` | yes | 48 | 11.0 |
+| `data-separation` | `str8` | yes | 49 | 11.0 |
+| `client-ip` | `str8` | yes | 50 | 11.0 |
 
 ## Session Record Layout (decoded order)
 

@@ -15,16 +15,9 @@ Payload example:
 RAC output reference:
 - `artifacts/rac/<label>_rac.out`
 
-## Поля ответа (из `rac`)
-
-Observed field names in `rac <mode> <command>` output, with capture mapping status.
-
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `<field>` | `<type>` | yes/no/hypothesis | `<order>` |
-
 ## RPC
 
+Available from: `<min version>` |
 Request method: `0x??` (`<command> ...`)
 Response method: `0x??`
 
@@ -32,13 +25,21 @@ Payload structure (method body):
 - offset `0x00`: `<field>`
 - offset `0x..`: `<field>`
 
+## Поля ответа (из `rac`)
+
+Observed field names in `rac <mode> <command>` output, with capture mapping status.
+
+| Field | Type | Found In Capture | Order In Capture | Version |
+|---|---|---|---|---|
+| `<field>` | `<type>` | yes/no/hypothesis | `<order>` | `<min version>` |
+
 ## Поля запроса (из `rac`)
 
 Observed request parameters for `rac <mode> <command>`.
 
-| Field | Type | Found In Capture | Order In Capture |
-|---|---|---|---|
-| `<field>` | `<type>` | yes/no/hypothesis | `<order>` |
+| Field | Type | Found In Capture | Order In Capture | Version |
+|---|---|---|---|---|
+| `<field>` | `<type>` | yes/no/hypothesis | `<order>` | `<min version>` |
 
 ## Record Layout (Observed)
 

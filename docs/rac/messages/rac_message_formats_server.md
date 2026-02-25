@@ -2,6 +2,11 @@
 
 Protocol version (service negotiation): `v8.service.Admin.Cluster` `16.0` (observed in captures).
 
+Sources (v11):
+- `artifacts/rac/v11_help/server_help.txt`
+- `artifacts/rac/v11_help/server_list.out`
+- `artifacts/rac/v11_help/server_info.out`
+- `docs/rac/documentation/rac_cli_method_map.generated.md` (method IDs)
 
 ## Server List
 
@@ -13,6 +18,7 @@ Payload example:
 
 RAC output reference:
 - `artifacts/rac/server_list_rac.out`
+- `artifacts/rac/v11_help/server_list.out`
 
 ### Поля ответа (из `rac`)
 
@@ -106,6 +112,7 @@ Payload example:
 
 RAC output reference:
 - `artifacts/rac/server_info_rac.out`
+- `artifacts/rac/v11_help/server_info.out`
 
 ### Поля ответа (из `rac`)
 
@@ -150,3 +157,102 @@ Payload structure (method body):
   - Capture change: set `--safe-working-processes-memory-limit` to a non-zero value.
 - `gap_7` (size `1`): possible terminator or another empty field.
   - Capture change: set non-empty restart schedule to see if this byte disappears or shifts.
+
+## Server Insert
+
+Sources:
+- `artifacts/rac/v11_help/server_help.txt`
+
+### RPC
+
+Request/response method IDs: not captured yet (v11 help only).
+
+### Поля запроса (из `rac`)
+
+Observed request parameters for `rac server insert` (v11).
+
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `agent-host` | string | no | - | 11.0 |
+| `agent-port` | u16 | no | - | 11.0 |
+| `port-range` | string (`min:max`) | no | - | 11.0 |
+| `name` | string | no | - | 11.0 |
+| `using` | enum (`main`, `normal`) | no | - | 11.0 |
+| `infobases-limit` | u32 | no | - | 11.0 |
+| `memory-limit` | u32 | no | - | 11.0 |
+| `connections-limit` | u32 | no | - | 11.0 |
+| `cluster-port` | u16 | no | - | 11.0 |
+| `dedicate-managers` | enum (`all`, `none`) | no | - | 11.0 |
+| `safe-working-processes-memory-limit` | u64 | no | - | 11.0 |
+| `safe-call-memory-limit` | u64 | no | - | 11.0 |
+| `critical-total-memory` | u64 | no | - | 11.0 |
+| `temporary-allowed-total-memory` | u64 | no | - | 11.0 |
+| `temporary-allowed-total-memory-time-limit` | u32 | no | - | 11.0 |
+| `service-principal-name` | string | no | - | 11.0 |
+
+### Поля ответа
+
+Not captured yet (likely created `server` UUID or ACK-only).
+
+## Server Update
+
+Sources:
+- `artifacts/rac/v11_help/server_help.txt`
+
+### RPC
+
+Request/response method IDs: not captured yet (v11 help only).
+
+### Поля запроса (из `rac`)
+
+Observed request parameters for `rac server update` (v11).
+
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `server` | UUID | no | - | 11.0 |
+| `port-range` | string (`min:max`) | no | - | 11.0 |
+| `using` | enum (`main`, `normal`) | no | - | 11.0 |
+| `infobases-limit` | u32 | no | - | 11.0 |
+| `memory-limit` | u32 | no | - | 11.0 |
+| `connections-limit` | u32 | no | - | 11.0 |
+| `dedicate-managers` | enum (`all`, `none`) | no | - | 11.0 |
+| `safe-working-processes-memory-limit` | u64 | no | - | 11.0 |
+| `safe-call-memory-limit` | u64 | no | - | 11.0 |
+| `critical-total-memory` | u64 | no | - | 11.0 |
+| `temporary-allowed-total-memory` | u64 | no | - | 11.0 |
+| `temporary-allowed-total-memory-time-limit` | u32 | no | - | 11.0 |
+| `service-principal-name` | string | no | - | 11.0 |
+
+### Поля ответа
+
+Not captured yet (likely ACK-only).
+
+## Server Remove
+
+Sources:
+- `artifacts/rac/v11_help/server_help.txt`
+
+### RPC
+
+Request/response method IDs: not captured yet (v11 help only).
+
+### Поля запроса (из `rac`)
+
+Observed request parameters for `rac server remove` (v11).
+
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `server` | UUID | no | - | 11.0 |
+
+### Поля ответа
+
+Not captured yet (likely ACK-only).

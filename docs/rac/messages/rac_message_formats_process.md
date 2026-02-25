@@ -2,6 +2,11 @@
 
 Protocol version (service negotiation): `v8.service.Admin.Cluster` `16.0` (observed in captures).
 
+Sources (v11):
+- `artifacts/rac/v11_help/process_help.txt`
+- `artifacts/rac/v11_help/process_list.out`
+- `artifacts/rac/v11_help/process_info.out`
+- `docs/rac/documentation/rac_cli_method_map.generated.md` (method IDs)
 
 ## Process List
 
@@ -13,6 +18,7 @@ Payload example:
 
 RAC output reference:
 - `artifacts/rac/process_list_rac.out`
+- `artifacts/rac/v11_help/process_list.out`
 
 ### Fields From `rac` Output
 
@@ -182,6 +188,7 @@ Payload example:
 
 RAC output reference:
 - `artifacts/rac/process_info_rac.out`
+- `artifacts/rac/v11_help/process_info.out`
 
 ### Fields From `rac` Output
 

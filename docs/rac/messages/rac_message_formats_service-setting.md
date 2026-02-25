@@ -2,6 +2,8 @@
 
 Protocol version (service negotiation): `v8.service.Admin.Cluster` `16.0` (observed in captures).
 
+Note:
+- The `service-setting` mode does not appear in `rac` v11 help; commands below are **not available in v11** and are documented from v16.0 captures.
 
 ## Service Setting List
 

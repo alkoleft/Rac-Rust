@@ -2,6 +2,11 @@
 
 Protocol version (service negotiation): `v8.service.Admin.Cluster` `16.0` (observed in captures).
 
+Sources (v11):
+- `artifacts/rac/v11_help/cluster_help.txt`
+- `artifacts/rac/v11_help/cluster_list.out`
+- `artifacts/rac/v11_help/cluster_info.out`
+- `docs/rac/documentation/rac_cli_method_map.generated.md` (method IDs)
 
 ## Cluster List
 
@@ -19,6 +24,7 @@ RAC output reference:
 - `artifacts/rac/cluster_list_baseline_rac.out`
 - `artifacts/rac/cluster_list_custom_rac.out`
 - `artifacts/rac/cluster_list_flags_rac.out`
+- `artifacts/rac/v11_help/cluster_list.out`
 
 ## Fields From `rac` Output
 
@@ -138,6 +144,7 @@ Source capture:
 
 RAC output reference:
 - `rac cluster info --cluster <id>`
+- `artifacts/rac/v11_help/cluster_info.out`
 
 ## Fields From `rac` Output
 
@@ -175,6 +182,7 @@ Payload example:
 
 RAC output reference:
 - `rac cluster admin list --cluster <id> --cluster-user <user> --cluster-pwd <pwd>`
+- `artifacts/rac/v11_help/cluster_help.txt`
 
 ## Fields From `rac` Output
 
@@ -266,3 +274,119 @@ Offsets are relative to the start of the method body.
 
 - Confirm `auth_flags` for `--auth=pwd,os` and OS-only cases.
 - Identify the meaning of trailing `unknown_0`.
+
+## Cluster Admin Remove
+
+Sources:
+- `artifacts/rac/v11_help/cluster_help.txt`
+
+### RPC Envelope
+
+Request/response method IDs: not captured yet (v11 help only).
+
+### Поля запроса (из `rac`)
+
+Observed request parameters for `rac cluster admin remove` (v11).
+
+| Field | Type | Found In Capture | Order In Capture | Version |
+|---|---|---|---|---|
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `name` | string | no | - | 11.0 |
+
+### Поля ответа
+
+Not captured yet (likely ACK-only).
+
+## Cluster Insert
+
+Sources:
+- `artifacts/rac/v11_help/cluster_help.txt`
+
+### RPC Envelope
+
+Request/response method IDs: not captured yet (v11 help only).
+
+### Поля запроса (из `rac`)
+
+Observed request parameters for `rac cluster insert` (v11).
+
+| Field | Type | Found In Capture | Order In Capture | Version |
+|---|---|---|---|---|
+| `host` | string | no | - | 11.0 |
+| `port` | u16 | no | - | 11.0 |
+| `name` | string | no | - | 11.0 |
+| `expiration-timeout` | u32 | no | - | 11.0 |
+| `lifetime-limit` | u32 | no | - | 11.0 |
+| `max-memory-size` | u32 | no | - | 11.0 |
+| `max-memory-time-limit` | u32 | no | - | 11.0 |
+| `security-level` | u32 | no | - | 11.0 |
+| `session-fault-tolerance-level` | u32 | no | - | 11.0 |
+| `load-balancing-mode` | enum (`performance`, `memory`) | no | - | 11.0 |
+| `errors-count-threshold` | u32 | no | - | 11.0 |
+| `kill-problem-processes` | bool (`yes/no`) | no | - | 11.0 |
+| `kill-by-memory-with-dump` | bool (`yes/no`) | no | - | 11.0 |
+| `agent-user` | string | no | - | 11.0 |
+| `agent-pwd` | string | no | - | 11.0 |
+
+### Поля ответа
+
+Not captured yet (likely created `cluster` UUID or ACK-only).
+
+## Cluster Update
+
+Sources:
+- `artifacts/rac/v11_help/cluster_help.txt`
+
+### RPC Envelope
+
+Request/response method IDs: not captured yet (v11 help only).
+
+### Поля запроса (из `rac`)
+
+Observed request parameters for `rac cluster update` (v11).
+
+| Field | Type | Found In Capture | Order In Capture | Version |
+|---|---|---|---|---|
+| `cluster` | UUID | no | - | 11.0 |
+| `name` | string | no | - | 11.0 |
+| `expiration-timeout` | u32 | no | - | 11.0 |
+| `lifetime-limit` | u32 | no | - | 11.0 |
+| `max-memory-size` | u32 | no | - | 11.0 |
+| `max-memory-time-limit` | u32 | no | - | 11.0 |
+| `security-level` | u32 | no | - | 11.0 |
+| `session-fault-tolerance-level` | u32 | no | - | 11.0 |
+| `load-balancing-mode` | enum (`performance`, `memory`) | no | - | 11.0 |
+| `errors-count-threshold` | u32 | no | - | 11.0 |
+| `kill-problem-processes` | bool (`yes/no`) | no | - | 11.0 |
+| `kill-by-memory-with-dump` | bool (`yes/no`) | no | - | 11.0 |
+| `agent-user` | string | no | - | 11.0 |
+| `agent-pwd` | string | no | - | 11.0 |
+
+### Поля ответа
+
+Not captured yet (likely ACK-only).
+
+## Cluster Remove
+
+Sources:
+- `artifacts/rac/v11_help/cluster_help.txt`
+
+### RPC Envelope
+
+Request/response method IDs: not captured yet (v11 help only).
+
+### Поля запроса (из `rac`)
+
+Observed request parameters for `rac cluster remove` (v11).
+
+| Field | Type | Found In Capture | Order In Capture | Version |
+|---|---|---|---|---|
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+
+### Поля ответа
+
+Not captured yet (likely ACK-only).

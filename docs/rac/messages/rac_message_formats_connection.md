@@ -2,6 +2,11 @@
 
 Protocol version (service negotiation): `v8.service.Admin.Cluster` `16.0` (observed in captures).
 
+Sources (v11):
+- `artifacts/rac/v11_help/connection_help.txt`
+- `artifacts/rac/v11_help/connection_list.out`
+- `artifacts/rac/v11_help/connection_info.out`
+- `docs/rac/documentation/rac_cli_method_map.generated.md` (method IDs)
 
 Source capture:
 - `logs/session_1771281887_2714678_127_0_0_1_59850/server_to_client.stream.bin`
@@ -27,7 +32,7 @@ Observed field names in `rac connection list` output, with capture mapping statu
 
 ## RPC
 
-Request method: not captured (only server-to-client stream saved)
+Request method: `0x32` (after context `0x09`, `connection list --cluster <id>`)
 
 Response method: `0x33` (`connection list`)
 
@@ -80,3 +85,69 @@ From the first record in the capture (connection `c030e65d-680a-41ed-a15a-6b8590
 ## Open Questions
 
 - Confirm `blocked_by_ls` by finding a non-zero value in a capture.
+
+## Поля запроса (из `rac`)
+
+Observed request parameters for `rac connection list` (v11 help).
+
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `process` | UUID | no | - | 11.0 |
+| `infobase` | UUID | no | - | 11.0 |
+| `infobase-user` | string | no | - | 11.0 |
+| `infobase-pwd` | string | no | - | 11.0 |
+
+## Connection Info
+
+Source (v11 output):
+- `artifacts/rac/v11_help/connection_info.out`
+
+### RPC
+
+Request method: `0x36` (after context `0x09`, `connection info --cluster <id> --connection <id>`)
+Response method: `0x37`
+
+### Поля ответа (из `rac`)
+
+Same field set as `connection list` (see above).
+
+### Поля запроса (из `rac`)
+
+Observed request parameters for `rac connection info` (v11 help).
+
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `connection` | UUID | no | - | 11.0 |
+
+## Connection Disconnect
+
+Sources:
+- `artifacts/rac/v11_help/connection_help.txt`
+
+### RPC
+
+Request/response method IDs: not captured yet (v11 help only).
+
+### Поля запроса (из `rac`)
+
+Observed request parameters for `rac connection disconnect` (v11).
+
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `process` | UUID | no | - | 11.0 |
+| `connection` | UUID | no | - | 11.0 |
+| `infobase-user` | string | no | - | 11.0 |
+| `infobase-pwd` | string | no | - | 11.0 |
+
+### Поля ответа
+
+Not captured yet (likely ACK-only).

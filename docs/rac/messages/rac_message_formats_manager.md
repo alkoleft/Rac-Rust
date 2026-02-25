@@ -2,6 +2,11 @@
 
 Protocol version (service negotiation): `v8.service.Admin.Cluster` `16.0` (observed in captures).
 
+Sources (v11):
+- `artifacts/rac/v11_help/manager_help.txt`
+- `artifacts/rac/v11_help/manager_list.out`
+- `artifacts/rac/v11_help/manager_info.out`
+- `docs/rac/documentation/rac_cli_method_map.generated.md` (method IDs)
 
 ## Manager List
 
@@ -13,6 +18,7 @@ Payload example:
 
 RAC output reference:
 - `artifacts/rac/manager_list_rac.out`
+- `artifacts/rac/v11_help/manager_list.out`
 
 ### Поля ответа (из `rac`)
 
@@ -75,6 +81,7 @@ Payload example:
 
 RAC output reference:
 - `artifacts/rac/manager_info_rac.out`
+- `artifacts/rac/v11_help/manager_info.out`
 
 ### Поля ответа (из `rac`)
 

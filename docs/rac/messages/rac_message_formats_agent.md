@@ -2,6 +2,11 @@
 
 Protocol version (service negotiation): `v8.service.Admin.Cluster` `16.0` (observed in captures).
 
+Sources (v11):
+- `artifacts/rac/v11_help/agent_help.txt`
+- `artifacts/rac/v11_help/agent_admin_list.out`
+- `artifacts/rac/v11_help/agent_version.out`
+- `docs/rac/documentation/rac_cli_method_map.generated.md` (method IDs)
 
 Aligned with current decoder implementation in `apps/rac_protocol/src/commands/agent_generated.rs`.
 
@@ -16,6 +21,7 @@ Payload example:
 
 RAC output reference:
 - `artifacts/rac/agent_admin_list_rac.out`
+- `artifacts/rac/v11_help/agent_admin_list.out`
 
 ### Поля ответа (из `rac`)
 
@@ -70,6 +76,7 @@ Payload structure (response body):
 
 Sources:
 - `docs/rac/documentation/rac_cli_method_map.generated.md` (method IDs)
+- `artifacts/rac/v11_help/agent_version.out` (v11 output)
 
 Notes:
 - No capture for this command yet; layout is aligned with decoder behavior.
@@ -110,3 +117,53 @@ Offsets are relative to the start of the response body.
 
 - Need captures where `auth` is changed (e.g., OS auth), and where `os-user`/`descr` are non-empty to identify string length markers.
 - Capture multiple admin records to confirm whether any of `unknown_tag`, `unknown_flags`, or `unknown_tail` are per-record flags or response-level metadata.
+
+## Agent Admin Register
+
+Sources:
+- `artifacts/rac/v11_help/agent_help.txt`
+
+### RPC
+
+Request/response method IDs: not captured yet (v11 help only).
+
+### Поля запроса (из `rac`)
+
+Observed request parameters for `rac agent admin register` (v11).
+
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `agent-user` | string | no | - | 11.0 |
+| `agent-pwd` | string | no | - | 11.0 |
+| `name` | string | no | - | 11.0 |
+| `pwd` | string | no | - | 11.0 |
+| `descr` | string | no | - | 11.0 |
+| `auth` | enum (`pwd`, `os`) | no | - | 11.0 |
+| `os-user` | string | no | - | 11.0 |
+
+### Поля ответа
+
+Not captured yet (likely ACK-only).
+
+## Agent Admin Remove
+
+Sources:
+- `artifacts/rac/v11_help/agent_help.txt`
+
+### RPC
+
+Request/response method IDs: not captured yet (v11 help only).
+
+### Поля запроса (из `rac`)
+
+Observed request parameters for `rac agent admin remove` (v11).
+
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `agent-user` | string | no | - | 11.0 |
+| `agent-pwd` | string | no | - | 11.0 |
+| `name` | string | no | - | 11.0 |
+
+### Поля ответа
+
+Not captured yet (likely ACK-only).

@@ -2,6 +2,13 @@
 
 Protocol version (service negotiation): `v8.service.Admin.Cluster` `16.0` (observed in captures).
 
+Sources (v11):
+- `artifacts/rac/v11_help/infobase_help.txt`
+- `artifacts/rac/v11_help/infobase_list.out`
+- `artifacts/rac/v11_help/infobase_info.out`
+- `artifacts/rac/v11_help/infobase_summary_list.out`
+- `artifacts/rac/v11_help/infobase_summary_info.out`
+- `docs/rac/documentation/rac_cli_method_map.generated.md` (method IDs)
 
 Derived from `docs/rac/messages/rac_message_formats.md`.
 
@@ -43,6 +50,16 @@ Observed field names in `rac infobase summary list` output (v11), with capture m
 | `infobase` | UUID | yes | 1 | 11.0 |
 | `name` | string | yes | 2 | 11.0 |
 | `descr` | string | yes | 3 | 11.0 |
+
+#### Поля запроса (из `rac`)
+
+Observed request parameters for `rac infobase summary list` (v11).
+
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | yes | 1 | 11.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
 
 
 ### Infobase Info
@@ -104,6 +121,17 @@ Observed field names in `rac infobase info` output (v11), with capture mapping s
 | `reserve-working-processes` | enum (`yes/no`) | yes | 20 | 11.0 |
 | `descr` | string | yes | 21 | 11.0 |
 
+#### Поля запроса (из `rac`)
+
+Observed request parameters for `rac infobase info` (v11).
+
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | yes | 1 | 11.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
+| `infobase` | UUID | yes | 4 | 11.0 |
+
 
 ### Infobase Summary Info
 
@@ -117,6 +145,17 @@ Observed field names in `rac infobase info` output (v11), with capture mapping s
 #### Поля ответа (из `rac`)
 
 Same field set as `infobase summary list` (see above).
+
+#### Поля запроса (из `rac`)
+
+Observed request parameters for `rac infobase summary info` (v11).
+
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `cluster` | UUID | yes | 1 | 11.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
+| `infobase` | UUID | yes | 4 | 11.0 |
 
 ### Infobase Summary Update
 

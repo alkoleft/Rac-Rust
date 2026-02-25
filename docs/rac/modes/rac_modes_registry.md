@@ -73,8 +73,9 @@ Tracks per-mode documentation coverage. "Processed" means a mode has a dedicated
 |  |  |  | `version` |  |  | - |
 | `service` | `docs/rac/modes/rac_mode_service.md` | - | `list` | - | - | - |
 | `infobase` | `docs/rac/modes/rac_mode_infobase.md` | `docs/rac/messages/rac_message_formats_infobase.md` | `summary list` | yes | yes | - |
-|  |  |  | `list` | - | - | - |
+|  |  |  | `summary info` | yes | - | - |
+|  |  |  | `summary update` | yes | - | - |
 |  |  |  | `info` | yes | yes | - |
-|  |  |  | `create` | - | - | - |
-|  |  |  | `update` | - | - | - |
-|  |  |  | `remove` | - | - | - |
+|  |  |  | `create` | yes | - | - |
+|  |  |  | `update` | yes | - | - |
+|  |  |  | `drop` | yes | - | - |

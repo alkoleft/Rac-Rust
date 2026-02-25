@@ -2,6 +2,10 @@
 
 Protocol version (service negotiation): `v8.service.Admin.Cluster` `16.0` (observed in captures).
 
+Sources (v11):
+- `artifacts/rac/v11_help/lock_help.txt`
+- `artifacts/rac/v11_help/lock_list.out`
+- `docs/rac/documentation/rac_cli_method_map.generated.md` (method IDs)
 
 ## Lock List
 
@@ -13,6 +17,7 @@ Payload example:
 
 RAC output reference:
 - `artifacts/rac/lock_list_rac.out`
+- `artifacts/rac/v11_help/lock_list.out`
 
 ### Поля ответа (из `rac`)
 

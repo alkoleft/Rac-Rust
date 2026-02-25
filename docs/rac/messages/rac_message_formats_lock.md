@@ -6,14 +6,26 @@ Sources (v11):
 - `artifacts/rac/v11_help/lock_help.txt`
 - `artifacts/rac/v11_help/lock_list.out`
 - `docs/rac/documentation/rac_cli_method_map.generated.md` (method IDs)
+- `artifacts/rac/v11_lock_list_connection_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11_lock_list_connection_ro_server_to_client.decode.txt`
+- `artifacts/rac/v11_lock_list_connection_ro_response.hex`
+- `artifacts/rac/v11_lock_list_connection_ro_rac.out`
+- `artifacts/rac/v11_lock_list_infobase_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11_lock_list_infobase_ro_server_to_client.decode.txt`
+- `artifacts/rac/v11_lock_list_infobase_ro_response.hex`
+- `artifacts/rac/v11_lock_list_infobase_ro_rac.out`
 
 ## Lock List
 
 Source capture:
 - `logs/session_1771361253_3690919_127_0_0_1_60046/server_to_client.stream.bin`
+- `artifacts/rac/v11_lock_list_connection_ro_server_to_client.decode.txt`
+- `artifacts/rac/v11_lock_list_infobase_ro_server_to_client.decode.txt`
 
 Payload example:
 - `artifacts/rac/lock_list_response.hex`
+- `artifacts/rac/v11_lock_list_connection_ro_response.hex`
+- `artifacts/rac/v11_lock_list_infobase_ro_response.hex`
 
 RAC output reference:
 - `artifacts/rac/lock_list_rac.out`
@@ -33,11 +45,19 @@ Observed field names in `rac lock list` output, with capture mapping status.
 
 ### RPC
 
-Request method: `0x48` (`lock list --cluster <id>`)
-Response method: `0x49`
+Request methods:
+- `0x48` (`lock list --cluster <id>`)
+- `0x4a` (`lock list --infobase <uuid>`)
+- `0x4c` (`lock list --connection <uuid>`)
+Response methods:
+- `0x49` (for `0x48`)
+- `0x4b` (for `0x4a`)
+- `0x4d` (for `0x4c`)
 
 Payload structure (method body):
 - offset `0x00` (request): `16 <cluster_uuid_16b>`
+- offset `0x10` (request, `--infobase`): `16 <infobase_uuid_16b>`
+- offset `0x10` (request, `--connection`): `16 <connection_uuid_16b>`
 - offset `0x00` (response): `items_count:u8`
 
 ### Поля запроса (из `rac`)
@@ -49,8 +69,8 @@ Observed request parameters for `rac lock list`.
 | `cluster` | UUID | yes | 1 | 11.0 |
 | `cluster-user` | string | yes | 2 | 11.0 |
 | `cluster-pwd` | string | yes | 3 | 11.0 |
-| `infobase` | UUID | no | 4 | 11.0 |
-| `connection` | UUID | no | 5 | 11.0 |
+| `infobase` | UUID | yes | 4 | 11.0 |
+| `connection` | UUID | yes | 5 | 11.0 |
 | `session` | UUID | no | 6 | 11.0 |
 
 Notes:
@@ -90,9 +110,9 @@ Variant B (with `descr-flag` byte):
 ### Open Questions
 
 - Which values can `descr-flag` take besides `0x01`, and does it appear for other lock kinds?
-- Do `--infobase`, `--connection`, or `--session` introduce extra request fields beyond the cluster UUID in method `0x48`?
+- Do `--session` introduce extra request fields beyond the cluster UUID?
 
 ### Gap Analysis (Required)
 
-- Capture `lock list --infobase <uuid>`, `--connection <uuid>`, and `--session <uuid>` to confirm request field order and whether additional parameters are appended after `<cluster_uuid_16b>`.
+- Capture `lock list --session <uuid>` to confirm request field order and whether additional parameters are appended after `<cluster_uuid_16b>`.
 - Capture at least one lock record with a non-zero `object` UUID and correlate it to confirm that `object` is always present at the tail.

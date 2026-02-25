@@ -1,6 +1,6 @@
 # RAC CLI -> Method Map (Generated)
 
-Generated: 2026-02-14T21:19:42Z
+Generated: 2026-02-25T23:48:25Z
 
 - Cluster UUID: `1619820a-d36f-4d8a-a716-1516b1dea077`
 - Manager UUID: `3985f906-ba9d-484f-aebc-3e1c6f1a8fe8`
@@ -19,8 +19,11 @@ Generated: 2026-02-14T21:19:42Z
 | `connection list --cluster 1619820a-d36f-4d8a-a716-1516b1dea077` | 0 | `session_1771103987_389408_127_0_0_1_37462` | `0x9,0x32` | `0x33` |
 | `session list --cluster 1619820a-d36f-4d8a-a716-1516b1dea077` | 0 | `session_1771103987_389453_127_0_0_1_37466` | `0x9,0x41` | `0x42` |
 | `lock list --cluster 1619820a-d36f-4d8a-a716-1516b1dea077` | 0 | `session_1771103988_389509_127_0_0_1_37480` | `0x9,0x48` | `0x49` |
+| `lock list --cluster 1619820a-d36f-4d8a-a716-1516b1dea077 --infobase 717bdda7-2f60-4577-b262-f1fc8c0e472c` | 0 | `session_1772063157_1251829_127_0_0_1_45554` | `0x9,0x4a` | `0x4b` |
+| `lock list --cluster 1619820a-d36f-4d8a-a716-1516b1dea077 --connection 8b7739ee-c6c3-4890-b533-32632987433a` | 0 | `session_1772063148_1251710_127_0_0_1_55424` | `0x9,0x4c` | `0x4d` |
 | `rule list --cluster 1619820a-d36f-4d8a-a716-1516b1dea077` | 255 | `session_1771103989_389578_127_0_0_1_37492` | `0x9` | `` |
 | `profile list --cluster 1619820a-d36f-4d8a-a716-1516b1dea077` | 0 | `session_1771103989_389623_127_0_0_1_37500` | `0x9,0x59` | `0x5a` |
+| `service list --cluster 1619820a-d36f-4d8a-a716-1516b1dea077` | 0 | `session_1772063081_1251004_127_0_0_1_53412` | `0x9,0x23` | `0x24` |
 | `counter list --cluster 1619820a-d36f-4d8a-a716-1516b1dea077` | 0 | `session_1771103990_389678_127_0_0_1_49366` | `0x9,0x76` | `0x77` |
 | `limit list --cluster 1619820a-d36f-4d8a-a716-1516b1dea077` | 0 | `session_1771103991_389723_127_0_0_1_49380` | `0x9,0x7c` | `0x7d` |
 | `manager info --cluster 1619820a-d36f-4d8a-a716-1516b1dea077 --manager 3985f906-ba9d-484f-aebc-3e1c6f1a8fe8` | 0 | `session_1771103991_389768_127_0_0_1_49396` | `0x9,0x14` | `0x15` |

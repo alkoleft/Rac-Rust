@@ -5,16 +5,26 @@ Protocol version (service negotiation): `v8.service.Admin.Cluster` `11.0` (per v
 Sources (v11):
 - `artifacts/rac/v11_help/service_help.txt`
 - `artifacts/rac/v11_help/service_list.out`
+- `artifacts/rac/v11_service_list_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11_service_list_ro_server_to_client.decode.txt`
+- `artifacts/rac/v11_service_list_ro_response.hex`
+- `artifacts/rac/v11_service_list_ro_rac.out`
 
 ## Service List
 
 Sources:
 - `artifacts/rac/v11_help/service_help.txt`
 - `artifacts/rac/v11_help/service_list.out`
+- `artifacts/rac/v11_service_list_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11_service_list_ro_server_to_client.decode.txt`
+- `artifacts/rac/v11_service_list_ro_response.hex`
+- `artifacts/rac/v11_service_list_ro_rac.out`
 
 ### RPC
 
-Request/response method IDs: not captured yet (v11 help only).
+- **Request**: `0x09` (context), then method `0x23`.
+- **Response**: method `0x24`.
+- **Parameters**: `16 <cluster_uuid>`.
 
 ### Поля запроса (из `rac`)
 
@@ -22,10 +32,17 @@ Observed request parameters for `rac service list` (v11).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 11.0 |
-| `cluster-user` | string | no | - | 11.0 |
-| `cluster-pwd` | string | no | - | 11.0 |
+| `cluster` | UUID | yes | 1 | 11.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
 
 ### Поля ответа
 
-Not captured yet. The v11 help does not describe response fields.
+Observed field names in `rac service list` output (v11), with capture mapping status.
+
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `name` | string | yes | 1 | 11.0 |
+| `main-only` | u32 | yes | 2 | 11.0 |
+| `manager` | UUID | yes | 3 | 11.0 |
+| `descr` | string | yes | 4 | 11.0 |

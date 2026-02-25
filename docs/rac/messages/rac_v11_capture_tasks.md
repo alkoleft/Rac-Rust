@@ -46,6 +46,6 @@
 
 ## Документация
 
-- [ ] Обновить `docs/rac/messages/rac_message_formats_*.md` по новым захватам
-- [ ] Обновить `docs/rac/documentation/rac_cli_method_map.generated.md` при новых RPC id
-- [ ] Обновить `docs/rac/modes/rac_modes_registry.md` при изменениях
+- [~] Обновить `docs/rac/messages/rac_message_formats_*.md` по новым захватам
+- [x] Обновить `docs/rac/documentation/rac_cli_method_map.generated.md` при новых RPC id
+- [x] Обновить `docs/rac/modes/rac_modes_registry.md` при изменениях

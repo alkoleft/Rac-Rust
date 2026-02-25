@@ -36,7 +36,7 @@ Tracks per-mode documentation coverage. "Processed" means a mode has a dedicated
 |  |  |  | `insert` | yes | yes | - |
 |  |  |  | `update` | yes | yes | - |
 |  |  |  | `remove` | yes | yes | - |
-| `profile` | `docs/rac/modes/rac_mode_profile.md` | - | `list` |  |  | - |
+| `profile` | `docs/rac/modes/rac_mode_profile.md` | `docs/rac/messages/rac_message_formats_profile.md` | `list` | yes | - | - |
 |  |  |  | `update` | - | - | - |
 |  |  |  | `remove` | - | - | - |
 |  |  |  | `acl directory` | - | - | - |
@@ -71,7 +71,7 @@ Tracks per-mode documentation coverage. "Processed" means a mode has a dedicated
 |  |  |  | `admin register` | - | - | - |
 |  |  |  | `admin remove` | - | - | - |
 |  |  |  | `version` |  |  | - |
-| `service` | `docs/rac/modes/rac_mode_service.md` | - | `list` | - | - | - |
+| `service` | `docs/rac/modes/rac_mode_service.md` | `docs/rac/messages/rac_message_formats_service.md` | `list` | yes | - | - |
 | `infobase` | `docs/rac/modes/rac_mode_infobase.md` | `docs/rac/messages/rac_message_formats_infobase.md` | `summary list` | yes | yes | - |
 |  |  |  | `summary info` | yes | - | - |
 |  |  |  | `summary update` | yes | - | - |

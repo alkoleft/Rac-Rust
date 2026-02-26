@@ -13,11 +13,11 @@ for session in "$@"; do
   echo "=== session: $session ==="
   if [[ -f "$c2s" ]]; then
     echo "--- c2s methods ---"
-    cargo run --quiet --bin rac_decode -- "$c2s" | rg 'rpc_method_id=' || true
+    cargo run -p rac_cli --quiet --bin rac_decode -- "$c2s" | rg 'rpc_method_id=' || true
   fi
   if [[ -f "$s2c" ]]; then
     echo "--- s2c methods ---"
-    cargo run --quiet --bin rac_decode -- "$s2c" | rg 'rpc_method_id=' || true
+    cargo run -p rac_cli --quiet --bin rac_decode -- "$s2c" | rg 'rpc_method_id=' || true
   fi
   echo
 done

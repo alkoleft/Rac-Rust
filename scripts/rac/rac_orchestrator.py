@@ -118,7 +118,7 @@ def run_decode(state: PipelineState) -> None:
     artifacts.mkdir(parents=True, exist_ok=True)
     c2s_out = artifacts / f"{state.capture_name}_client_to_server.decode.txt"
     s2c_out = artifacts / f"{state.capture_name}_server_to_client.decode.txt"
-    cmd_base = ["cargo", "run", "-p", "rac_protocol", "--quiet", "--bin", "rac_decode", "--"]
+    cmd_base = ["cargo", "run", "-p", "rac_cli", "--quiet", "--bin", "rac_decode", "--"]
     c2s_run = run_cmd(cmd_base + [str(c2s)], ROOT)
     s2c_run = run_cmd(cmd_base + [str(s2c)], ROOT)
     c2s_out.write_text(c2s_run.stdout)

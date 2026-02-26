@@ -51,8 +51,8 @@ Remaining numeric fields are not mapped yet.
 Use the local parser:
 
 ```bash
-cargo run --bin rac_decode -- logs/session_1771098941_320377_127_0_0_1_42586/client_to_server.stream.bin
-cargo run --bin rac_decode -- logs/session_1771098941_320377_127_0_0_1_42586/server_to_client.stream.bin
+cargo run -p rac_cli --bin rac_decode -- logs/session_1771098941_320377_127_0_0_1_42586/client_to_server.stream.bin
+cargo run -p rac_cli --bin rac_decode -- logs/session_1771098941_320377_127_0_0_1_42586/server_to_client.stream.bin
 ```
 
 The parser prints frame offsets, opcode/length, payload hex, text candidates, and UUID candidates.

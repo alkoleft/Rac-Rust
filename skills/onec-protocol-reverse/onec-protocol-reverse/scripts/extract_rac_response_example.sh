@@ -11,7 +11,7 @@ SESSION_DIR="$1"
 METHOD_ID="$2"
 LABEL="$3"
 
-RAC_DECODE="${RAC_DECODE:-cargo run -p rac_protocol --quiet --bin rac_decode --}"
+RAC_DECODE="${RAC_DECODE:-cargo run -p rac_cli --quiet --bin rac_decode --}"
 OUT_DIR="${OUT_DIR:-./artifacts}"
 
 stream="${SESSION_DIR%/}/server_to_client.stream.bin"

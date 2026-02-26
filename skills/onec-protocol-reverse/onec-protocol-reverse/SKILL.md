@@ -16,8 +16,8 @@ Use this workflow for unknown 1C protocols and for extending known RAC protocol 
    - Raw captures go under `./logs/`. Extracted byte sequences go under `./artifacts/rac/`.
    - Or run equivalent proxy + client workflow for a different protocol.
 3. Decode streams:
-   - `cargo run --bin rac_decode -- <session>/client_to_server.stream.bin`
-   - `cargo run --bin rac_decode -- <session>/server_to_client.stream.bin`
+   - `cargo run -p rac_cli --bin rac_decode -- <session>/client_to_server.stream.bin`
+   - `cargo run -p rac_cli --bin rac_decode -- <session>/server_to_client.stream.bin`
 4. Update method/framing notes using templates in `references/`.
 5. Validate hypotheses by implementing minimal live client calls (`rac_lite` style).
 
@@ -70,7 +70,7 @@ Use `scripts/rac/extract_rac_response_example.sh` to save response payload bytes
 - When listing evidence in docs, prefer `artifacts/rac/<label>.hex` over `logs/session_*`.
 - If a proxy listen port is in use, change `LISTEN_ADDR` (e.g., `127.0.0.1:1566`) before retrying.
 - For `rac_decode`, the correct invocation in this repo is:
-  - `cargo run -p rac_protocol --quiet --bin rac_decode -- <stream.bin>`
+  - `cargo run -p rac_cli --quiet --bin rac_decode -- <stream.bin>`
 - For multi-record list responses:
   - Determine record boundaries by locating repeating entity UUIDs (e.g., `session` UUID).
   - Report offsets relative to each record start.

@@ -33,15 +33,15 @@ cargo run --release -p v8_proxy -- \
 Декодирование потока RAC:
 
 ```bash
-cargo run -p rac_protocol --bin rac_decode -- logs/<session>/client_to_server.stream.bin
-cargo run -p rac_protocol --bin rac_decode -- logs/<session>/server_to_client.stream.bin
+cargo run -p rac_cli --bin rac_decode -- logs/<session>/client_to_server.stream.bin
+cargo run -p rac_cli --bin rac_decode -- logs/<session>/server_to_client.stream.bin
 ```
 
 Мини‑клиент без `rac` (WIP):
 
 ```bash
-cargo run -p rac_protocol --bin rac_lite -- agent-version 127.0.0.1:1545
-cargo run -p rac_protocol --bin rac_lite -- cluster-list 127.0.0.1:1545
+cargo run -p rac_cli --bin rac_lite -- agent-version 127.0.0.1:1545
+cargo run -p rac_cli --bin rac_lite -- cluster-list 127.0.0.1:1545
 ```
 
 REST сервис для RAC (read‑only):

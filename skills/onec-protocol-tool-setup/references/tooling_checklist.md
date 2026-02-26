@@ -22,7 +22,7 @@ If a tool is missing, install or adjust PATH before continuing.
    - `client_to_server.stream.bin`
    - `server_to_client.stream.bin`
 3. Decode:
-   - `cargo run -p rac_protocol --quiet --bin rac_decode -- <stream.bin>`
+   - `cargo run -p rac_cli --quiet --bin rac_decode -- <stream.bin>`
 
 ## Troubleshooting
 

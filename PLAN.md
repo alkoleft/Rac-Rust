@@ -12,7 +12,7 @@ Build a definitive Markdown spec of RAC message formats for read/info commands a
 ## Deliverables
 1. `docs/rac/messages/rac_message_formats.md` (spec)
 2. `src/rac_wire/` library module with codecs
-3. CLI tool (`src/bin/rac_lite.rs` extended) using the library
+3. CLI tool (`apps/rac_cli/src/bin/rac_lite.rs` extended) using the library
 4. Tests against existing captures
 
 ---

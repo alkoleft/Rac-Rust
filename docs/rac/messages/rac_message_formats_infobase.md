@@ -28,7 +28,7 @@ Note:
 
 ### Infobase Summary List
 
-- **v11 output reference**: `artifacts/rac/v16/help/infobase_summary_list.out`
+- **v16 output reference**: `artifacts/rac/v16/help/infobase_summary_list.out`
 - **Request**: `0x09` (context), then method `0x2a`.
 - **Response**: method `0x2b`.
 - **Parameters**: `16 <cluster_uuid>`.
@@ -36,10 +36,9 @@ Note:
   - `u8 count` (observed `0x01`).
   - Repeated record:
     - `uuid[16]` (raw bytes).
-    - `u8 tag` (observed `0x2c`, meaning unknown).
     - `str8 descr` (observed `Description`).
     - `str8 name` (observed `yaxunit`).
-- **Evidence**: `artifacts/rac/v11/v11_infobase_summary_list_ro_client_to_server.decode.txt`, `artifacts/rac/v11/v11_infobase_summary_list_ro_server_to_client.decode.txt`, `artifacts/rac/v11/v11_infobase_summary_list_ro_response.hex`, `artifacts/rac/v11/v11_infobase_summary_list_ro_rac.out`.
+- **Evidence**: `artifacts/rac/v16/v16_debug_infobase_summary_list_client_to_server.decode.txt`, `artifacts/rac/v16/v16_debug_infobase_summary_list_server_to_client.decode.txt`, `artifacts/rac/v16/v16_debug_infobase_summary_list_response.hex`, `artifacts/rac/v16/v16_debug_infobase_summary_list_rac.out`.
 
 #### Поля ответа (из `rac`)
 
@@ -48,8 +47,8 @@ Observed field names in `rac infobase summary list` output (v16), with capture m
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
 | `infobase` | UUID | yes | 1 | 11.0 |
-| `name` | string | yes | 2 | 11.0 |
-| `descr` | string | yes | 3 | 11.0 |
+| `name` | string | yes | 3 | 11.0 |
+| `descr` | string | yes | 2 | 11.0 |
 
 #### Поля запроса (из `rac`)
 
@@ -64,8 +63,7 @@ Observed request parameters for `rac infobase summary list` (v16).
 
 ### Infobase Info
 
-- **v11 output reference**: `artifacts/rac/v16/help/infobase_info.out`
-- **v11 capture status**: no `v11_` success capture yet; fields below require v11 confirmation.
+- **v16 output reference**: `artifacts/rac/v16/help/infobase_info.out`
 - **Request**: `0x09` (context), then method `0x30` (observed).
 - **Response**: method `0x31`.
 - **Parameters**: `16 <cluster_uuid> <infobase_uuid>`.
@@ -92,7 +90,7 @@ Observed request parameters for `rac infobase summary list` (v16).
   - `str8 permission-code` (observed `CODE`).
   - `tail[28]` (7 x `u32` unknown; observed bytes
     `00000000 00000000 00010000 00000000 000003e7 00000378 00000309`).
-- **Evidence**: `logs/session_1771110795_484387_127_0_0_1_41870`.
+- **Evidence**: `artifacts/rac/v16/v16_20260226_053425_infobase_info_client_to_server.decode.txt`, `artifacts/rac/v16/v16_20260226_053425_infobase_info_server_to_client.decode.txt`, `artifacts/rac/v16/v16_20260226_053425_infobase_info_response.hex`, `artifacts/rac/v16/v16_20260226_053425_infobase_info_rac.out`.
 
 #### Поля ответа (из `rac`)
 
@@ -131,17 +129,20 @@ Observed request parameters for `rac infobase info` (v16).
 | `cluster` | UUID | yes | 1 | 11.0 |
 | `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
 | `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
-| `infobase` | UUID | yes | 4 | 11.0 |
+| `infobase` | UUID | yes | 2 | 11.0 |
 
 
 ### Infobase Summary Info
 
-- **v11 output reference**: `artifacts/rac/v16/help/infobase_summary_info.out`
+- **v16 output reference**: `artifacts/rac/v16/help/infobase_summary_info.out`
 - **Request**: `0x09` (context), then method `0x2e`.
 - **Response**: method `0x2f`.
 - **Parameters**: `16 <cluster_uuid> <infobase_uuid>`.
-- **Response fields** (hypothesis): infobase summary record (UUID + strings + numeric fields).
-- **Evidence**: `logs/session_1771103996_390065_127_0_0_1_49450`.
+- **Response body layout** (after `01 00 00 01 2f`):
+  - `uuid[16]` (raw bytes).
+  - `str8 descr` (observed `Description`).
+  - `str8 name` (observed `yaxunit`).
+- **Evidence**: `artifacts/rac/v16/v16_20260226_053425_infobase_summary_info_client_to_server.decode.txt`, `artifacts/rac/v16/v16_20260226_053425_infobase_summary_info_server_to_client.decode.txt`, `artifacts/rac/v16/v16_20260226_053425_infobase_summary_info_response.hex`, `artifacts/rac/v16/v16_20260226_053425_infobase_summary_info_rac.out`.
 
 #### Поля ответа (из `rac`)
 
@@ -156,16 +157,19 @@ Observed request parameters for `rac infobase summary info` (v16).
 | `cluster` | UUID | yes | 1 | 11.0 |
 | `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
 | `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
-| `infobase` | UUID | yes | 4 | 11.0 |
+| `infobase` | UUID | yes | 2 | 11.0 |
 
 ### Infobase Summary Update
 
 Sources:
 - `artifacts/rac/v16/help/infobase_help.txt` (command parameters)
+- `artifacts/rac/v16/v16_20260226_053425_infobase_summary_update_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_infobase_summary_update_server_to_client.decode.txt`
 
 ### RPC
 
-Request/response method ids: not captured yet (v11 help only).
+Request method: `0x27` (`infobase summary update`)
+Response: ACK (`01 00 00 00`)
 
 ### Поля запроса (из `rac`)
 
@@ -173,15 +177,21 @@ Observed request parameters for `rac infobase summary update` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 11.0 |
-| `cluster-user` | string | no | - | 11.0 |
-| `cluster-pwd` | string | no | - | 11.0 |
-| `infobase` | UUID | no | - | 11.0 |
-| `descr` | string | no | - | 11.0 |
+| `cluster` | UUID | yes | 1 | 11.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
+| `infobase` | UUID | yes | 2 | 11.0 |
+| `descr` | string | yes | 3 | 11.0 |
+
+Payload structure (method body):
+- offset `0x00`: `cluster_uuid[16]`
+- offset `0x10`: `infobase_uuid[16]`
+- offset `0x20`: `descr_len:u8`
+- offset `0x21`: `descr[descr_len]`
 
 ### Поля ответа
 
-Output not captured yet. Likely ACK-only.
+ACK-only (empty body).
 
 ### Infobase Create
 
@@ -198,22 +208,22 @@ Observed request parameters for `rac infobase create` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 11.0 |
-| `cluster-user` | string | no | - | 11.0 |
-| `cluster-pwd` | string | no | - | 11.0 |
-| `create-database` | flag | no | - | 11.0 |
-| `name` | string | no | - | 11.0 |
-| `dbms` | enum | no | - | 11.0 |
-| `db-server` | string | no | - | 11.0 |
-| `db-name` | string | no | - | 11.0 |
-| `locale` | string | no | - | 11.0 |
-| `db-user` | string | no | - | 11.0 |
-| `db-pwd` | string | no | - | 11.0 |
-| `descr` | string | no | - | 11.0 |
-| `date-offset` | string | no | - | 11.0 |
-| `security-level` | u32 | no | - | 11.0 |
-| `scheduled-jobs-deny` | enum (`on/off`) | no | - | 11.0 |
-| `license-distribution` | enum (`deny/allow`) | no | - | 11.0 |
+| `cluster` | UUID | no | unknown | 11.0 |
+| `cluster-user` | string | no | unknown | 11.0 |
+| `cluster-pwd` | string | no | unknown | 11.0 |
+| `create-database` | flag | no | unknown | 11.0 |
+| `name` | string | no | unknown | 11.0 |
+| `dbms` | enum | no | unknown | 11.0 |
+| `db-server` | string | no | unknown | 11.0 |
+| `db-name` | string | no | unknown | 11.0 |
+| `locale` | string | no | unknown | 11.0 |
+| `db-user` | string | no | unknown | 11.0 |
+| `db-pwd` | string | no | unknown | 11.0 |
+| `descr` | string | no | unknown | 11.0 |
+| `date-offset` | string | no | unknown | 11.0 |
+| `security-level` | u32 | no | unknown | 11.0 |
+| `scheduled-jobs-deny` | enum (`on/off`) | no | unknown | 11.0 |
+| `license-distribution` | enum (`deny/allow`) | no | unknown | 11.0 |
 
 ### Поля ответа
 
@@ -234,35 +244,46 @@ Observed request parameters for `rac infobase update` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 11.0 |
-| `cluster-user` | string | no | - | 11.0 |
-| `cluster-pwd` | string | no | - | 11.0 |
-| `infobase` | UUID | no | - | 11.0 |
-| `infobase-user` | string | no | - | 11.0 |
-| `infobase-pwd` | string | no | - | 11.0 |
-| `dbms` | enum | no | - | 11.0 |
-| `db-server` | string | no | - | 11.0 |
-| `db-name` | string | no | - | 11.0 |
-| `db-user` | string | no | - | 11.0 |
-| `db-pwd` | string | no | - | 11.0 |
-| `descr` | string | no | - | 11.0 |
-| `denied-from` | datetime | no | - | 11.0 |
-| `denied-message` | string | no | - | 11.0 |
-| `denied-parameter` | string | no | - | 11.0 |
-| `denied-to` | datetime | no | - | 11.0 |
-| `permission-code` | string | no | - | 11.0 |
-| `sessions-deny` | enum (`on/off`) | no | - | 11.0 |
-| `scheduled-jobs-deny` | enum (`on/off`) | no | - | 11.0 |
-| `license-distribution` | enum (`deny/allow`) | no | - | 11.0 |
-| `external-session-manager-connection-string` | string | no | - | 11.0 |
-| `external-session-manager-required` | enum (`yes/no`) | no | - | 11.0 |
-| `reserve-working-processes` | enum (`yes/no`) | no | - | 11.0 |
-| `security-profile-name` | string | no | - | 11.0 |
-| `safe-mode-security-profile-name` | string | no | - | 11.0 |
+| `cluster` | UUID | no | unknown | 11.0 |
+| `cluster-user` | string | no | unknown | 11.0 |
+| `cluster-pwd` | string | no | unknown | 11.0 |
+| `infobase` | UUID | no | unknown | 11.0 |
+| `infobase-user` | string | no | unknown | 11.0 |
+| `infobase-pwd` | string | no | unknown | 11.0 |
+| `dbms` | enum | no | unknown | 11.0 |
+| `db-server` | string | no | unknown | 11.0 |
+| `db-name` | string | no | unknown | 11.0 |
+| `db-user` | string | no | unknown | 11.0 |
+| `db-pwd` | string | no | unknown | 11.0 |
+| `descr` | string | no | unknown | 11.0 |
+| `denied-from` | datetime | no | unknown | 11.0 |
+| `denied-message` | string | no | unknown | 11.0 |
+| `denied-parameter` | string | no | unknown | 11.0 |
+| `denied-to` | datetime | no | unknown | 11.0 |
+| `permission-code` | string | no | unknown | 11.0 |
+| `sessions-deny` | enum (`on/off`) | no | unknown | 11.0 |
+| `scheduled-jobs-deny` | enum (`on/off`) | no | unknown | 11.0 |
+| `license-distribution` | enum (`deny/allow`) | no | unknown | 11.0 |
+| `external-session-manager-connection-string` | string | no | unknown | 11.0 |
+| `external-session-manager-required` | enum (`yes/no`) | no | unknown | 11.0 |
+| `reserve-working-processes` | enum (`yes/no`) | no | unknown | 11.0 |
+| `security-profile-name` | string | no | unknown | 11.0 |
+| `safe-mode-security-profile-name` | string | no | unknown | 11.0 |
 
 ### Поля ответа
 
 Output not captured yet. Likely ACK-only.
+
+## Open Questions
+
+- Does `infobase summary list` ever include an extra tag byte between UUID and strings in v16 captures?
+- Map the unknown strings/bytes and `tail[28]` slots in `infobase info` to specific `rac` fields.
+- Confirm request/response layouts for `infobase create`, `infobase update`, and `infobase drop`.
+
+## Gap Analysis
+
+- Need captures for `infobase create`, `infobase update`, `infobase drop`.
+- Need more varied `infobase info` values to identify `tail[28]` semantics and unknown string fields.
 
 ### Infobase Drop
 
@@ -279,14 +300,14 @@ Observed request parameters for `rac infobase drop` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 11.0 |
-| `cluster-user` | string | no | - | 11.0 |
-| `cluster-pwd` | string | no | - | 11.0 |
-| `infobase` | UUID | no | - | 11.0 |
-| `infobase-user` | string | no | - | 11.0 |
-| `infobase-pwd` | string | no | - | 11.0 |
-| `drop-database` | flag | no | - | 11.0 |
-| `clear-database` | flag | no | - | 11.0 |
+| `cluster` | UUID | no | unknown | 11.0 |
+| `cluster-user` | string | no | unknown | 11.0 |
+| `cluster-pwd` | string | no | unknown | 11.0 |
+| `infobase` | UUID | no | unknown | 11.0 |
+| `infobase-user` | string | no | unknown | 11.0 |
+| `infobase-pwd` | string | no | unknown | 11.0 |
+| `drop-database` | flag | no | unknown | 11.0 |
+| `clear-database` | flag | no | unknown | 11.0 |
 
 ### Поля ответа
 

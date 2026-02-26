@@ -20,6 +20,7 @@ pub use generated::{
     ClusterAdminRecord,
     ClusterAdminListResp,
     ClusterAdminListRpc,
+    ClusterAdminRemoveRpc,
     ClusterAdminRegisterRpc,
     ClusterAuthRpc,
     ClusterInfoRpc,
@@ -63,6 +64,18 @@ pub fn cluster_admin_register(
         descr,
         pwd,
         auth_flags,
+    })?;
+    Ok(resp.acknowledged)
+}
+
+pub fn cluster_admin_remove(
+    client: &mut RacClient,
+    cluster: Uuid16,
+    name: &str,
+) -> Result<bool> {
+    let resp = client.call_typed(ClusterAdminRemoveRpc {
+        cluster,
+        name: name.to_string(),
     })?;
     Ok(resp.acknowledged)
 }

@@ -1,105 +1,31 @@
-use serde::Serialize;
-
 use crate::client::RacClient;
-use crate::codec::RecordCursor;
-use crate::error::{RacError, Result};
-use crate::protocol::ProtocolCodec;
-use crate::rpc::{Meta, Request, Response};
-use crate::rpc::decode_utils::rpc_body;
-use crate::rac_wire::{
-    METHOD_CONNECTION_INFO_REQ, METHOD_CONNECTION_INFO_RESP, METHOD_CONNECTION_LIST_REQ,
-    METHOD_CONNECTION_LIST_RESP,
-};
+use crate::error::Result;
 use crate::Uuid16;
-
-use super::call_body;
 
 mod generated {
     include!("connection_generated.rs");
 }
 
-pub use generated::ConnectionRecord;
-
-#[derive(Debug, Serialize)]
-pub struct ConnectionListResp {
-    pub connections: Vec<Uuid16>,
-    pub records: Vec<ConnectionRecord>,
-}
-
-#[derive(Debug, Serialize)]
-pub struct ConnectionInfoResp {
-    pub connection: Uuid16,
-    pub record: ConnectionRecord,
-    pub fields: Vec<String>,
-}
-
-struct ConnectionListRpc {
-    cluster: Uuid16,
-}
-
-impl Request for ConnectionListRpc {
-    type Response = ConnectionListResp;
-
-    fn meta(&self) -> Meta {
-        Meta {
-            method_req: METHOD_CONNECTION_LIST_REQ,
-            method_resp: Some(METHOD_CONNECTION_LIST_RESP),
-            requires_cluster_context: true,
-            requires_infobase_context: false,
-        }
-    }
-
-    fn cluster(&self) -> Option<Uuid16> {
-        Some(self.cluster)
-    }
-
-    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
-        Ok(self.cluster.to_vec())
-    }
-}
-
-impl Response for ConnectionListResp {
-    fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
-        let body = rpc_body(payload)?;
-        let records = parse_connection_list_records(body)?;
-        Ok(Self {
-            connections: records.iter().map(|record| record.connection).collect(),
-            records,
-        })
-    }
-}
+pub use generated::{
+    ConnectionDisconnectRpc,
+    ConnectionInfoResp,
+    ConnectionInfoRpc,
+    ConnectionListByInfobaseRpc,
+    ConnectionListResp,
+    ConnectionListRpc,
+    ConnectionRecord,
+};
 
 pub fn connection_list(client: &mut RacClient, cluster: Uuid16) -> Result<ConnectionListResp> {
     client.call_typed(ConnectionListRpc { cluster })
 }
 
-struct ConnectionInfoRpc {
+pub fn connection_list_by_infobase(
+    client: &mut RacClient,
     cluster: Uuid16,
-    connection: Uuid16,
-}
-
-impl Request for ConnectionInfoRpc {
-    type Response = Vec<u8>;
-
-    fn meta(&self) -> Meta {
-        Meta {
-            method_req: METHOD_CONNECTION_INFO_REQ,
-            method_resp: Some(METHOD_CONNECTION_INFO_RESP),
-            requires_cluster_context: true,
-            requires_infobase_context: false,
-        }
-    }
-
-    fn cluster(&self) -> Option<Uuid16> {
-        Some(self.cluster)
-    }
-
-    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(32);
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&self.connection);
-        Ok(out)
-    }
+    infobase: Uuid16,
+) -> Result<ConnectionListResp> {
+    client.call_typed(ConnectionListByInfobaseRpc { cluster, infobase })
 }
 
 pub fn connection_info(
@@ -107,87 +33,13 @@ pub fn connection_info(
     cluster: Uuid16,
     connection: Uuid16,
 ) -> Result<ConnectionInfoResp> {
-    let body = call_body(client, ConnectionInfoRpc { cluster, connection })?;
-    let record = parse_connection_info_body(&body, connection)?;
-    let fields = collect_connection_fields(&record);
-    Ok(ConnectionInfoResp {
-        connection: record.connection,
-        record,
-        fields,
-    })
-}
-
-fn parse_connection_list_records(body: &[u8]) -> Result<Vec<ConnectionRecord>> {
-    if body.is_empty() {
-        return Ok(Vec::new());
-    }
-    let mut cursor = RecordCursor::new(body);
-    let count = cursor.take_u8()? as usize;
-    let mut records = Vec::with_capacity(count);
-    for _ in 0..count {
-        records.push(parse_connection_record(&mut cursor)?);
-    }
-    Ok(records)
-}
-
-fn parse_connection_record_1cv8c(body: &[u8]) -> Result<ConnectionRecord> {
-    let mut cursor = RecordCursor::new(body);
-    parse_connection_record(&mut cursor)
-}
-
-fn parse_connection_info_body(body: &[u8], requested: Uuid16) -> Result<ConnectionRecord> {
-    match parse_connection_info_from_list(body, requested) {
-        Ok(record) => Ok(record),
-        Err(_) => parse_connection_record_for_info(body, requested),
-    }
-}
-
-fn parse_connection_record_for_info(body: &[u8], requested: Uuid16) -> Result<ConnectionRecord> {
-    let record = parse_connection_record_1cv8c(body)?;
-    if record.connection != requested {
-        return Err(RacError::Decode(
-            "connection info record does not match requested connection",
-        ));
-    }
-    Ok(record)
-}
-
-fn parse_connection_info_from_list(body: &[u8], requested: Uuid16) -> Result<ConnectionRecord> {
-    let records = parse_connection_list_records(body)?;
-    for record in records {
-        if record.connection == requested {
-            return Ok(record);
-        }
-    }
-    Err(RacError::Decode("connection info record not found"))
-}
-
-fn parse_connection_record(cursor: &mut RecordCursor<'_>) -> Result<ConnectionRecord> {
-    if cursor.remaining_len() < 16 {
-        return Err(RacError::Decode("connection record truncated"));
-    }
-    ConnectionRecord::decode(cursor)
-}
-
-fn collect_connection_fields(record: &ConnectionRecord) -> Vec<String> {
-    let mut out = Vec::new();
-    push_if_nonempty(&mut out, &record.application);
-    push_if_nonempty(&mut out, &record.host);
-    push_if_nonempty(&mut out, &record.connected_at);
-    out.push(record.conn_id.to_string());
-    out.push(record.session_number.to_string());
-    out
-}
-
-fn push_if_nonempty(out: &mut Vec<String>, value: &str) {
-    if !value.is_empty() {
-        out.push(value.to_string());
-    }
+    client.call_typed(ConnectionInfoRpc { cluster, connection })
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::commands::parse_list_u8;
 
     fn push_uuid(out: &mut Vec<u8>, value: Uuid16) {
         out.extend_from_slice(&value);
@@ -258,7 +110,7 @@ mod tests {
         append_record(&mut body, &record_a, raw_a);
         append_record(&mut body, &record_b, raw_b);
 
-        let records = parse_connection_list_records(&body).expect("connection list parse");
+        let records = parse_list_u8(&body, ConnectionRecord::decode).expect("connection list parse");
         assert_eq!(records.len(), 2);
         assert_eq!(records[0].connection, conn_a);
         assert_eq!(records[0].application, "RAS");
@@ -302,7 +154,7 @@ mod tests {
         let mut body = Vec::new();
         append_record(&mut body, &record, raw_time);
 
-        let parsed = parse_connection_record_1cv8c(&body).expect("connection info parse");
+        let parsed = generated::parse_connection_info_body(&body).expect("connection info parse");
         assert_eq!(parsed.connection, conn);
         assert_eq!(parsed.application, "AgentStandardCall");
         assert_eq!(parsed.blocked_by_ls, 12);
@@ -315,7 +167,7 @@ mod tests {
     }
 
     #[test]
-    fn parse_connection_info_from_list_body() {
+    fn parse_connection_list_body_second_entry() {
         let conn_a = crate::rac_wire::parse_uuid("10101010-2020-3030-4040-505050505050").unwrap();
         let conn_b = crate::rac_wire::parse_uuid("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee").unwrap();
         let info_b = crate::rac_wire::parse_uuid("bbbbbbbb-cccc-dddd-eeee-ffffffffffff").unwrap();
@@ -353,15 +205,15 @@ mod tests {
         append_record(&mut body, &record_a, raw_a);
         append_record(&mut body, &record_b, raw_b);
 
-        let parsed = parse_connection_info_body(&body, conn_b).expect("connection info parse");
-        assert_eq!(parsed.connection, conn_b);
-        assert_eq!(parsed.application, "1CV8C");
-        assert_eq!(parsed.blocked_by_ls, 3);
-        assert_eq!(parsed.connected_at, "1970-01-01T00:00:10");
-        assert_eq!(parsed.conn_id, 77);
-        assert_eq!(parsed.host, "host-b");
-        assert_eq!(parsed.infobase, info_b);
-        assert_eq!(parsed.process, proc_b);
-        assert_eq!(parsed.session_number, 9);
+        let parsed = parse_list_u8(&body, ConnectionRecord::decode).expect("connection list parse");
+        assert_eq!(parsed[1].connection, conn_b);
+        assert_eq!(parsed[1].application, "1CV8C");
+        assert_eq!(parsed[1].blocked_by_ls, 3);
+        assert_eq!(parsed[1].connected_at, "1970-01-01T00:00:10");
+        assert_eq!(parsed[1].conn_id, 77);
+        assert_eq!(parsed[1].host, "host-b");
+        assert_eq!(parsed[1].infobase, info_b);
+        assert_eq!(parsed[1].process, proc_b);
+        assert_eq!(parsed[1].session_number, 9);
     }
 }

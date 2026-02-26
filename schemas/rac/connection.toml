@@ -13,6 +13,7 @@ fields = [
 ]
 
 [rpc.ConnectionList]
+response = "ConnectionListResp"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid", version = "11.0" },
@@ -24,6 +25,7 @@ requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.ConnectionListByInfobase]
+response = "ConnectionListResp"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid", version = "11.0" },
@@ -36,6 +38,7 @@ requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.ConnectionInfo]
+response = "ConnectionInfoResp"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid", version = "11.0" },
@@ -61,7 +64,7 @@ requires_cluster_context = true
 requires_infobase_context = false
 
 [response.ConnectionList]
-body = { type = "list_u8", item = "ConnectionRecord" }
+body = { type = "list_u8", item = "ConnectionRecord", field = "records", struct = true }
 
 [response.ConnectionInfo]
-body = { type = "record", item = "ConnectionRecord" }
+body = { type = "record", item = "ConnectionRecord", field = "record", struct = true }

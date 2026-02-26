@@ -11,14 +11,14 @@ Sources (v16):
 ## Process List
 
 Source capture:
-- `artifacts/rac/v11/v11_process_list_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11/v11_process_list_ro_server_to_client.decode.txt`
+- `artifacts/rac/v16/v16_20260226_051602_process_list_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_051602_process_list_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/v11/v11_process_list_ro_response.hex`
+- `artifacts/rac/v16/v16_20260226_051602_process_list_response.hex`
 
 RAC output reference:
-- `artifacts/rac/v11/v11_process_list_ro_rac.out`
+- `artifacts/rac/v16/v16_20260226_051602_process_list_rac.out`
 - `artifacts/rac/v16/help/process_list.out`
 
 ### Fields From `rac` Output
@@ -31,7 +31,7 @@ Observed field names in `rac process list` output, with capture mapping status.
 | `host` | string | yes | 2 | 11.0 |
 | `port` | u16 | yes | 10 | 11.0 |
 | `pid` | string (digits) | yes | 13 | 11.0 |
-| `turned-on` | bool | hypothesis | - | 16.0 |
+| `turned-on` | bool | hypothesis | unknown | 16.0 |
 | `running` | bool | yes | 17 | 11.0 |
 | `started-at` | datetime | yes | 16 | 11.0 |
 | `use` | enum | yes | 14 | 11.0 |
@@ -98,14 +98,14 @@ Offsets are relative to the start of a record.
 ## Process List (`--licenses`)
 
 Source capture:
-- `artifacts/rac/v11/v11_process_list_licenses_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11/v11_process_list_licenses_ro_server_to_client.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_process_list_licenses_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_process_list_licenses_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/v11/v11_process_list_licenses_ro_response.hex`
+- `artifacts/rac/v16/v16_20260226_053425_process_list_licenses_response.hex`
 
 RAC output reference:
-- `artifacts/rac/v11/v11_process_list_licenses_ro_rac.out`
+- `artifacts/rac/v16/v16_20260226_053425_process_list_licenses_rac.out`
 
 ### Fields From `rac` Output (`--licenses`)
 
@@ -113,18 +113,18 @@ Observed field names in `rac process list --licenses` output, with capture mappi
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `full-name` | string | yes | - | 11.0 |
-| `series` | string | yes | - | 11.0 |
-| `issued-by-server` | bool | yes | - | 11.0 |
-| `license-type` | enum | yes | - | 11.0 |
-| `net` | bool | yes | - | 11.0 |
-| `max-users-all` | u32 | yes | - | 11.0 |
-| `max-users-cur` | u32 | yes | - | 11.0 |
-| `rmngr-address` | string | yes | - | 11.0 |
-| `rmngr-port` | u32 | yes | - | 11.0 |
-| `rmngr-pid` | string (digits) | yes | - | 11.0 |
-| `short-presentation` | string | yes | - | 11.0 |
-| `full-presentation` | string | yes | - | 11.0 |
+| `full-name` | string | yes | unknown | 11.0 |
+| `series` | string | yes | unknown | 11.0 |
+| `issued-by-server` | bool | yes | unknown | 11.0 |
+| `license-type` | enum | yes | unknown | 11.0 |
+| `net` | bool | yes | unknown | 11.0 |
+| `max-users-all` | u32 | yes | unknown | 11.0 |
+| `max-users-cur` | u32 | yes | unknown | 11.0 |
+| `rmngr-address` | string | yes | unknown | 11.0 |
+| `rmngr-port` | u32 | yes | unknown | 11.0 |
+| `rmngr-pid` | string (digits) | yes | unknown | 11.0 |
+| `short-presentation` | string | yes | unknown | 11.0 |
+| `full-presentation` | string | yes | unknown | 11.0 |
 
 ### Record Layout Notes (`--licenses`)
 
@@ -183,14 +183,14 @@ Define `t0` as the byte immediately after `brief-presentation` (end of string). 
 ## Process Info
 
 Source capture:
-- `artifacts/rac/v11/v11_process_info_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11/v11_process_info_ro_server_to_client.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_process_info_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_process_info_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/v11/v11_process_info_ro_response.hex`
+- `artifacts/rac/v16/v16_20260226_053425_process_info_response.hex`
 
 RAC output reference:
-- `artifacts/rac/v11/v11_process_info_ro_rac.out`
+- `artifacts/rac/v16/v16_20260226_053425_process_info_rac.out`
 - `artifacts/rac/v16/help/process_info.out`
 
 ### Fields From `rac` Output
@@ -243,14 +243,14 @@ Offsets are relative to the start of the record.
 ## Process Info (`--licenses`)
 
 Source capture:
-- `artifacts/rac/v11/v11_process_info_licenses_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11/v11_process_info_licenses_ro_server_to_client.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_process_info_licenses_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_process_info_licenses_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/v11/v11_process_info_licenses_ro_response.hex`
+- `artifacts/rac/v16/v16_20260226_053425_process_info_licenses_response.hex`
 
 RAC output reference:
-- `artifacts/rac/v11/v11_process_info_licenses_ro_rac.out`
+- `artifacts/rac/v16/v16_20260226_053425_process_info_licenses_rac.out`
 
 ### Fields From `rac` Output (`--licenses`)
 

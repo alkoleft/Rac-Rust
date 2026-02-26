@@ -1,0 +1,15 @@
+name    : admin
+auth    : pwd
+os-user : 
+descr   : 
+
+name    : codex_agent_pwd_20260226_053425
+auth    : pwd
+os-user : 
+descr   : "Codex agent pwd"
+
+name    : codex_agent_os_20260226_053425
+auth    : pwd|os
+os-user : codex_os_user
+descr   : "Codex agent os"
+

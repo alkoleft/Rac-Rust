@@ -1,0 +1,50 @@
+connection     : 97fa9f69-bc51-4b02-8eed-4b78857f59f9
+conn-id        : 7
+host           : alko-home
+process        : 0399133a-6d5d-4fb0-9029-d240c8e07763
+infobase       : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+application    : "1CV8C"
+connected-at   : 2026-02-26T04:12:48
+session-number : 0
+blocked-by-ls  : 0
+
+connection     : 94deec1c-184e-4252-b1b7-7e84f4077b94
+conn-id        : 0
+host           : alko-home
+process        : 0399133a-6d5d-4fb0-9029-d240c8e07763
+infobase       : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+application    : "1CV8C"
+connected-at   : 2026-02-26T04:12:48
+session-number : 0
+blocked-by-ls  : 0
+
+connection     : c63d3bd9-bae8-49ac-8b35-c5e78f4ce721
+conn-id        : 0
+host           : alko-home
+process        : 0399133a-6d5d-4fb0-9029-d240c8e07763
+infobase       : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+application    : "JobScheduler"
+connected-at   : 2026-02-26T04:12:33
+session-number : 0
+blocked-by-ls  : 0
+
+connection     : 86dc74bb-b7be-48b4-87b1-22f351ec9852
+conn-id        : 0
+host           : alko-home
+process        : 0399133a-6d5d-4fb0-9029-d240c8e07763
+infobase       : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+application    : "1CV8C"
+connected-at   : 2026-02-26T04:12:48
+session-number : 0
+blocked-by-ls  : 0
+
+connection     : e942f0e3-9956-4025-b4aa-49aae1431af8
+conn-id        : 6
+host           : alko-home
+process        : 0399133a-6d5d-4fb0-9029-d240c8e07763
+infobase       : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+application    : "Designer"
+connected-at   : 2026-02-26T04:12:31
+session-number : 1
+blocked-by-ls  : 0
+

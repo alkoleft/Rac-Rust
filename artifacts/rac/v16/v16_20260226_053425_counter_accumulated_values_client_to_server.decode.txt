@@ -1,0 +1,19 @@
+file=/home/alko/develop/open-source/v8_protocols/logs/session_1772073300_1331612_127_0_0_1_59344/client_to_server.stream.bin
+size=158
+swp_init.version=0x01
+swp_init.header_a=1
+swp_init.header_b=1
+swp_init.tag=0x16
+swp_init.params=1
+swp_init.param_1 key=connect.timeout type=0x04 value_u32=2000
+frames=4
+frame=1 opcode=0x0b len=31 len_field_size=1
+  payload_hex=1876382e736572766963652e41646d696e2e436c75737465720431362e3080
+frame=2 opcode=0x0e len=34 len_field_size=1
+  payload_hex=01000001091619820ad36f4d8aa7161516b1dea077066361646d696e056370617373
+  rpc_method_id=0x9 (9)
+frame=3 opcode=0x0e len=52 len_field_size=1
+  payload_hex=01000001851619820ad36f4d8aa7161516b1dea0771d636f6465785f636f756e7465725f32303236303232365f30353334323500
+  rpc_method_id=0x85 (133)
+frame=4 opcode=0x0d len=1 len_field_size=1
+  payload_hex=01

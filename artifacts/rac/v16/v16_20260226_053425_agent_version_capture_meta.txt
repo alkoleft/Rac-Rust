@@ -1,0 +1,6 @@
+capture_name=v16_20260226_053425_agent_version
+session_dir=session_1772073269_1329652_127_0_0_1_46874
+rac_exit=0
+proxy_log=/tmp/v8_capture_v16_20260226_053425_agent_version.log
+rac_out=/tmp/rac_v16_20260226_053425_agent_version.out
+rac_err=/tmp/rac_v16_20260226_053425_agent_version.err

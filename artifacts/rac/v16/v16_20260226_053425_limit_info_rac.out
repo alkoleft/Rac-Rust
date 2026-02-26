@@ -1,0 +1,17 @@
+name                      : codex_limit_20260226_053425
+counter                   : codex_counter_20260226_053425
+action                    : interrupt-current-call
+duration                  : 100
+cpu-time                  : 200
+memory                    : 300
+read                      : 400
+write                     : 500
+duration-dbms             : 600
+dbms-bytes                : 700
+service                   : 800
+call                      : 900
+number-of-active-sessions : 5
+number-of-sessions        : 6
+error-message             : Codex limit
+descr                     : Codex limit descr
+

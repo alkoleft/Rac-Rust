@@ -1,0 +1,12 @@
+file=/home/alko/develop/open-source/v8_protocols/logs/session_1772073298_1331495_127_0_0_1_59328/server_to_client.stream.bin
+size=117
+frames=4
+frame=1 opcode=0x02 len=1 len_field_size=1
+  payload_hex=80
+frame=2 opcode=0x0c len=32 len_field_size=1
+  payload_hex=1876382e736572766963652e41646d696e2e436c75737465720431362e300180
+frame=3 opcode=0x0e len=4 len_field_size=1
+  payload_hex=01000000
+frame=4 opcode=0x0e len=72 len_field_size=1
+  payload_hex=01000001791d636f6465785f636f756e7465725f32303236303232365f303533343235000000000000003c0002012a01010101010101010101010d436f64657820636f756e746572
+  rpc_method_id=0x79 (121)

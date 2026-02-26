@@ -1,0 +1,6 @@
+capture_name=v16_20260226_053425_lock_list_cluster
+session_dir=session_1772073280_1330308_127_0_0_1_36100
+rac_exit=0
+proxy_log=/tmp/v8_capture_v16_20260226_053425_lock_list_cluster.log
+rac_out=/tmp/rac_v16_20260226_053425_lock_list_cluster.out
+rac_err=/tmp/rac_v16_20260226_053425_lock_list_cluster.err

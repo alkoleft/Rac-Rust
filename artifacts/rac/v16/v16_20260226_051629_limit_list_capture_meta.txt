@@ -1,0 +1,6 @@
+capture_name=v16_20260226_051629_limit_list
+session_dir=session_1772072191_1321970_127_0_0_1_57882
+rac_exit=0
+proxy_log=/tmp/v8_capture_v16_20260226_051629_limit_list.log
+rac_out=/tmp/rac_v16_20260226_051629_limit_list.out
+rac_err=/tmp/rac_v16_20260226_051629_limit_list.err

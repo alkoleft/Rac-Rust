@@ -1,0 +1,6 @@
+capture_name=v16_20260226_053425_rule_insert
+session_dir=session_1772073294_1331272_127_0_0_1_59284
+rac_exit=0
+proxy_log=/tmp/v8_capture_v16_20260226_053425_rule_insert.log
+rac_out=/tmp/rac_v16_20260226_053425_rule_insert.out
+rac_err=/tmp/rac_v16_20260226_053425_rule_insert.err

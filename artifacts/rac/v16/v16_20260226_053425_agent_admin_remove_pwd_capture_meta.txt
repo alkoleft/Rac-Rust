@@ -1,0 +1,6 @@
+capture_name=v16_20260226_053425_agent_admin_remove_pwd
+session_dir=session_1772073268_1329572_127_0_0_1_46856
+rac_exit=0
+proxy_log=/tmp/v8_capture_v16_20260226_053425_agent_admin_remove_pwd.log
+rac_out=/tmp/rac_v16_20260226_053425_agent_admin_remove_pwd.out
+rac_err=/tmp/rac_v16_20260226_053425_agent_admin_remove_pwd.err

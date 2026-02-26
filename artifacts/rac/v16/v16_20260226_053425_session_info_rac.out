@@ -1,0 +1,50 @@
+session                          : bc9e8fae-32f1-4e90-94cc-4312e65cc07d
+session-id                       : 1
+infobase                         : 717bdda7-2f60-4577-b262-f1fc8c0e472c
+connection                       : e942f0e3-9956-4025-b4aa-49aae1431af8
+process                          : 0399133a-6d5d-4fb0-9029-d240c8e07763
+user-name                        : iadmin
+host                             : alko-home
+app-id                           : Designer
+locale                           : ru_RU
+started-at                       : 2026-02-26T04:12:32
+last-active-at                   : 2026-02-26T05:34:43
+hibernate                        : no
+passive-session-hibernate-time   : 1200
+hibernate-session-terminate-time : 86400
+blocked-by-dbms                  : 0
+blocked-by-ls                    : 0
+bytes-all                        : 109736
+bytes-last-5min                  : 685
+calls-all                        : 1364
+calls-last-5min                  : 10
+dbms-bytes-all                   : 1100697
+dbms-bytes-last-5min             : 0
+db-proc-info                     : 
+db-proc-took                     : 0
+db-proc-took-at                  : 
+duration-all                     : 543
+duration-all-dbms                : 84
+duration-current                 : 0
+duration-current-dbms            : 0
+duration-last-5min               : 18
+duration-last-5min-dbms          : 0
+memory-current                   : 0
+memory-last-5min                 : 63837
+memory-total                     : 8786070
+read-current                     : 0
+read-last-5min                   : 0
+read-total                       : 285442
+write-current                    : 0
+write-last-5min                  : 0
+write-total                      : 364376
+duration-current-service         : 0
+duration-last-5min-service       : 18
+duration-all-service             : 240
+current-service-name             : 
+cpu-time-current                 : 0
+cpu-time-last-5min               : 8
+cpu-time-total                   : 273
+data-separation                  : ''
+client-ip                        : 127.0.0.1
+

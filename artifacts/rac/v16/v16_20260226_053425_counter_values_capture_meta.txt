@@ -1,0 +1,6 @@
+capture_name=v16_20260226_053425_counter_values
+session_dir=session_1772073299_1331572_127_0_0_1_59330
+rac_exit=0
+proxy_log=/tmp/v8_capture_v16_20260226_053425_counter_values.log
+rac_out=/tmp/rac_v16_20260226_053425_counter_values.out
+rac_err=/tmp/rac_v16_20260226_053425_counter_values.err

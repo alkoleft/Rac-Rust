@@ -1,0 +1,1 @@
+ server_addr=tcp://alko-home:1560 descr=recv returns zero, disconnected line=1644 file=src/rtrsrvc/src/DataExchangeTcpClientImpl.cpp

@@ -1,0 +1,6 @@
+capture_name=v16_20260226_051602_connection_list
+session_dir=session_1772072162_1321469_127_0_0_1_43834
+rac_exit=0
+proxy_log=/tmp/v8_capture_v16_20260226_051602_connection_list.log
+rac_out=/tmp/rac_v16_20260226_051602_connection_list.out
+rac_err=/tmp/rac_v16_20260226_051602_connection_list.err

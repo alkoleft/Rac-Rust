@@ -1,0 +1,6 @@
+capture_name=v16_20260226_053425_cluster_update_nonzero
+session_dir=
+rac_exit=255
+proxy_log=/tmp/v8_capture_v16_20260226_053425_cluster_update_nonzero.log
+rac_out=/tmp/rac_v16_20260226_053425_cluster_update_nonzero.out
+rac_err=/tmp/rac_v16_20260226_053425_cluster_update_nonzero.err

@@ -1,0 +1,6 @@
+capture_name=v16_20260226_051629_cluster_list
+session_dir=
+rac_exit=255
+proxy_log=/tmp/v8_capture_v16_20260226_051629_cluster_list.log
+rac_out=/tmp/rac_v16_20260226_051629_cluster_list.out
+rac_err=/tmp/rac_v16_20260226_051629_cluster_list.err

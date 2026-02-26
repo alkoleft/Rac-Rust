@@ -1,0 +1,6 @@
+capture_name=v16_20260226_053425_server_list_after_update
+session_dir=session_1772073287_1330713_127_0_0_1_54580
+rac_exit=0
+proxy_log=/tmp/v8_capture_v16_20260226_053425_server_list_after_update.log
+rac_out=/tmp/rac_v16_20260226_053425_server_list_after_update.out
+rac_err=/tmp/rac_v16_20260226_053425_server_list_after_update.err

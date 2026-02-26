@@ -1,0 +1,6 @@
+capture_name=v16_20260226_053425_session_interrupt
+session_dir=session_1772073290_1331007_127_0_0_1_54630
+rac_exit=255
+proxy_log=/tmp/v8_capture_v16_20260226_053425_session_interrupt.log
+rac_out=/tmp/rac_v16_20260226_053425_session_interrupt.out
+rac_err=/tmp/rac_v16_20260226_053425_session_interrupt.err

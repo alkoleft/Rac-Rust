@@ -1,0 +1,34 @@
+session            : bc9e8fae-32f1-4e90-94cc-4312e65cc07d
+user-name          : iadmin
+host               : alko-home
+app-id             : Designer
+full-name          : "file:///home/alko/.1cv8/1C/1cv8/conf/20250731010119.lic"
+series             : "500000125530"
+issued-by-server   : no
+license-type       : soft
+net                : no
+max-users-all      : 4
+max-users-cur      : 4
+rmngr-address      : 
+rmngr-port         : 0
+rmngr-pid          : 1293618
+short-presentation : "Клиент, 500000125530 4 4"
+full-presentation  : "Клиент, 1293618, 500000125530 4 4 01.03.2026 19:22:00 (UTC), file:///home/alko/.1cv8/1C/1cv8/conf/20250731010119.lic"
+
+session            : efa12b4d-7f83-408d-8a60-6ba38eda3ad6
+user-name          : iadmin
+host               : alko-home
+app-id             : 1CV8C
+full-name          : "file:///home/alko/.1cv8/1C/1cv8/conf/20250731010119.lic"
+series             : "500000125530"
+issued-by-server   : no
+license-type       : soft
+net                : no
+max-users-all      : 4
+max-users-cur      : 4
+rmngr-address      : 
+rmngr-port         : 0
+rmngr-pid          : 1293824
+short-presentation : "Клиент, 500000125530 4 4"
+full-presentation  : "Клиент, 1293824, 500000125530 4 4 01.03.2026 19:22:00 (UTC), file:///home/alko/.1cv8/1C/1cv8/conf/20250731010119.lic"
+

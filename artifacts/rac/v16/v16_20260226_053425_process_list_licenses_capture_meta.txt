@@ -1,0 +1,6 @@
+capture_name=v16_20260226_053425_process_list_licenses
+session_dir=session_1772073284_1330549_127_0_0_1_54542
+rac_exit=0
+proxy_log=/tmp/v8_capture_v16_20260226_053425_process_list_licenses.log
+rac_out=/tmp/rac_v16_20260226_053425_process_list_licenses.out
+rac_err=/tmp/rac_v16_20260226_053425_process_list_licenses.err

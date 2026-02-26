@@ -1,0 +1,21 @@
+process              : 0399133a-6d5d-4fb0-9029-d240c8e07763
+host                 : alko-home
+port                 : 1560
+pid                  : 1274199
+turned-on            : yes
+running              : yes
+started-at           : 2026-02-26T03:32:24
+use                  : used
+available-perfomance : 149
+capacity             : 1000
+connections          : 1
+memory-size          : 481792
+memory-excess-time   : 0
+selection-size       : 18064
+avg-call-time        : 0.000
+avg-db-call-time     : 0.000
+avg-lock-call-time   : 0.000
+avg-server-call-time : 0.000
+avg-threads          : 0.002
+reserve              : no
+

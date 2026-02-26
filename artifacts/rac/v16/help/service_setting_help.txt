@@ -1,0 +1,90 @@
+1C:Enterprise 8.5 Remote Administrative Client Utility © 1C-Soft LLC 1996-2025
+1C:Enterprise platform administration utility
+
+Use:
+
+	rac service-setting [command] [options] [arguments]
+
+Shared options:
+
+    --version | -v
+        get the utility version
+
+    --help | -h | -?
+        display brief utility description
+
+Shared arguments:
+
+    <host>[:<port>]
+        administration server address (default: localhost:1545)
+
+Mode:
+
+    service-setting
+        Service setting management mode
+
+Parameters:
+
+    --cluster=<uuid>
+        (required) server cluster identifier
+
+    --cluster-user=<name>
+        name of the cluster administrator
+
+    --cluster-pwd=<pwd>
+        password of the cluster administrator
+
+    --server=<uuid>
+        (required) identifier of the working server of the server cluster
+
+Commands:
+
+    info
+        get the information on the service setting
+
+        --setting=<uuid>
+            (required) service setup ID
+
+    list
+        get a list of service settings
+
+    insert
+        insert a new service setting into the list
+
+        --service-name=<name>
+            (required) service name
+
+        --infobase-name=<name>
+            infobase name. If the value is not specified and the service is divided by infobases,
+            the setting applies to all service infobases
+
+        --service-data-dir=<dir>
+            path to the service data directory. If no value is specified,
+            the cluster directory is used
+
+    update
+        update parameters of the existing service setting in the list
+
+        --setting=<uuid>
+            (required) service setup ID
+
+        --service-data-dir=<dir>
+            path to the service data directory. If no value is specified,
+            the cluster directory is used
+
+    get-service-data-dirs-for-transfer
+        returns a list, each line of which contains the service name, the infobase name,
+        the directory to transfer data from, and the directory to transfer data to.
+        If the setting is applied, the data for it is not displayed in the list
+
+        --service-name=<name>
+            service name
+
+    remove
+        delete the service setting
+
+        --setting=<uuid>
+            (required) service setup ID
+
+    apply
+        apply settings

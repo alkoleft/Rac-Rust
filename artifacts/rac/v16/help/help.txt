@@ -1,0 +1,48 @@
+1C:Enterprise 8.5 Remote Administrative Client Utility © 1C-Soft LLC 1996-2025
+1C:Enterprise platform administration utility
+
+Use:
+
+	rac help [options] [arguments]
+
+Shared options:
+
+    --version | -v
+        get the utility version
+
+    --help | -h | -?
+        display brief utility description
+
+Shared arguments:
+
+    <host>[:<port>]
+        administration server address (default: localhost:1545)
+
+Mode:
+
+    help (h)
+        Display help for the specified mode.
+
+Arguments:
+    MODE
+        mode to get information on command line options for
+
+Supported modes:
+
+help                   Display help for the specified mode.
+agent                  Server cluster agent administration mode
+cluster                Server cluster administration mode
+manager                Server cluster manager administration mode
+server                 Working server administration mode
+process                Working process administration mode
+service                Cluster manager service administration mode
+infobase               Infobase administration mode
+connection             Connection administration mode
+session                Infobase session administration mode
+lock                   Lock administration mode
+rule                   Assignment rule management mode
+profile                Cluster security profile management mode
+counter                Resource consumption counters management mode
+limit                  Resource consumption limits management mode
+service-setting        Service setting management mode
+binary-data-storage    Binary data storage management mode

@@ -1,0 +1,306 @@
+1C:Enterprise 8.5 Remote Administrative Client Utility © 1C-Soft LLC 1996-2025
+1C:Enterprise platform administration utility
+
+Use:
+
+	rac profile [command] [options] [arguments]
+
+Shared options:
+
+    --version | -v
+        get the utility version
+
+    --help | -h | -?
+        display brief utility description
+
+Shared arguments:
+
+    <host>[:<port>]
+        administration server address (default: localhost:1545)
+
+Mode:
+
+    profile
+        Cluster security profile management mode
+
+Parameters:
+
+    --cluster=<uuid>
+        (required) server cluster identifier
+
+    --cluster-user=<name>
+        name of the cluster administrator
+
+    --cluster-pwd=<pwd>
+        password of the cluster administrator
+
+Commands:
+
+    list
+        gets the list of security profiles
+
+    update
+        creates or updates a security profile
+
+        --name=<name>
+            (required) security profile name
+
+        --descr=<descr>
+            security profile description
+
+        --config=yes|no
+            using the security profile from the configuration is allowed
+                yes - yes
+                no - no
+
+        --priv=yes|no
+            setting privileged mode in the safe mode is allowed
+                yes - yes
+                no - no
+
+        --full-privileged-mode=yes|no
+            setting privileged mode in the safe mode is allowed
+                yes - yes
+                no - no
+
+        --privileged-mode-roles=<name[;name...]>
+            privileged mode roles
+
+        --crypto=yes|no
+            using cryptography functions is allowed
+                yes - yes
+                no - no
+
+        --right-extension=yes|no
+            all access rights extensions allowed
+                yes - yes
+                no - no
+
+        --right-extension-definition-roles=<name[;name...]>
+            roles that restrict access rights
+
+        --all-modules-extension=yes|no
+            allow extension of all modules
+                yes - yes
+                no - no
+
+        --modules-available-for-extension=<name[;name...]>
+            modules available for extension
+
+        --modules-not-available-for-extension=<name[;name...]>
+            modules not available for extension
+
+    remove
+        deletes a security profile
+
+        --name=<name>
+            (required) security profile name
+
+    acl
+        manage access lists
+
+        Additional commands:
+            directory
+                Virtual directory management mode
+
+                Additional commands:
+                    list
+                        gets the list of available virtual directories
+
+                    update
+                        adds or updates an available virtual directory
+
+                        --alias=<URL>
+                            (required) logical URL of a virtual directory
+
+                        --descr=<string>
+                            virtual directory description
+
+                        --physicalPath=<URL>
+                            physical URL of a virtual directory
+
+                        --allowedRead=yes|no
+                            reading from the virtual directory is allowed
+                                yes - yes
+                                no - no
+
+                        --allowedWrite=yes|no
+                            writing to the virtual directory is allowed
+                                yes - yes
+                                no - no
+
+                    remove
+                        removes the virtual directory of a security profile
+
+                        --alias=<URL>
+                            (required) logical URL of a virtual directory
+
+                --access=list|full
+                    full access to the file system or access list management
+                        list - access list is used
+                        full - full access is granted, the access list is ignored
+
+            com
+                Available COM class management mode
+
+                Additional commands:
+                    list
+                        gets the list of available COM classes
+
+                    update
+                        adds or updates an available COM class
+
+                        --name=<name>
+                            (required) COM class name
+
+                        --descr=<string>
+                            COM class description
+
+                        --fileName=<URL>
+                            file name or COM class moniker display name
+
+                        --id=<uuid>
+                            COM class ID
+
+                        --host=<URL>
+                            name of the computer where the COM object is created
+
+                    remove
+                        removes an available COM class
+
+                        --name=<name>
+                            (required) COM class name
+
+                --access=list|full
+                    full access to COM classes or access list management
+                        list - access list is used
+                        full - full access is granted, the access list is ignored
+
+            addin
+                Available add-in management mode
+
+                Additional commands:
+                    list
+                        gets the list of available add-ins
+
+                    update
+                        adds or updates an available add-in
+
+                        --name=<name>
+                            (required) available add-in name
+
+                        --descr=<string>
+                            available add-in description
+
+                        --hash=<string>
+                            available add-in checksum, base64
+
+                    remove
+                        removes an available add-in
+
+                        --name=<name>
+                            (required) available add-in name
+
+                --access=list|full
+                    full access to add-ins or access list management
+                        list - access list is used
+                        full - full access is granted, the access list is ignored
+
+            module
+                Available external module management mode
+
+                Additional commands:
+                    list
+                        gets the list of available external modules
+
+                    update
+                        adds or updates an external module
+
+                        --name=<name>
+                            (required) external module name
+
+                        --descr=<string>
+                            external module description
+
+                        --hash=<string>
+                            external module checksum, base64
+
+                    remove
+                        removes an available external module
+
+                        --name=<name>
+                            (required) external module name
+
+                --access=list|full
+                    full access to external modules or access list management
+                        list - access list is used
+                        full - full access is granted, the access list is ignored
+
+            app
+                Available application management mode
+
+                Additional commands:
+                    list
+                        gets the list of available applications
+
+                    update
+                        adds or updates an available application
+
+                        --name=<name>
+                            (required) application name
+
+                        --descr=<string>
+                            application details
+
+                        --wild=<URL>
+                            application command line syntax
+
+                    remove
+                        removes an available application
+
+                        --name=<name>
+                            (required) application name
+
+                --access=list|full
+                    full access to applications or access list management
+                        list - access list is used
+                        full - full access is granted, the access list is ignored
+
+            inet
+                Available Internet resource management mode
+
+                Additional commands:
+                    list
+                        gets the list of available Internet resources
+
+                    update
+                        adds or updates an Internet resource
+
+                        --name=<name>
+                            (required) Internet resource name
+
+                        --descr=<string>
+                            Internet resource description
+
+                        --protocol=<name>
+                            Internet resource protocol
+
+                        --url=<URL>
+                            Internet resource address
+
+                        --port=<number>
+                            Internet resource port, 0 stands for the default port
+
+                    remove
+                        removes an available Internet resource
+
+                        --name=<name>
+                            (required) Internet resource name
+
+                --access=list|full
+                    full access to Internet resources or access list management
+                        list - access list is used
+                        full - full access is granted, the access list is ignored
+
+        --name=<name>
+            (required) security profile name

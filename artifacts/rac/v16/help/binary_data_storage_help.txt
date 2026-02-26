@@ -1,0 +1,100 @@
+1C:Enterprise 8.5 Remote Administrative Client Utility © 1C-Soft LLC 1996-2025
+1C:Enterprise platform administration utility
+
+Use:
+
+	rac binary-data-storage [command] [options] [arguments]
+
+Shared options:
+
+    --version | -v
+        get the utility version
+
+    --help | -h | -?
+        display brief utility description
+
+Shared arguments:
+
+    <host>[:<port>]
+        administration server address (default: localhost:1545)
+
+Mode:
+
+    binary-data-storage
+        Binary data storage management mode
+
+Parameters:
+
+    --cluster=<uuid>
+        (required) server cluster identifier
+
+    --cluster-user=<name>
+        name of the cluster administrator
+
+    --cluster-pwd=<pwd>
+        password of the cluster administrator
+
+    --infobase=<uuid>
+        (required) infobase identifier
+
+    --infobase-user=<name>
+        name of the infobase administrator
+
+    --infobase-pwd=<pwd>
+        password of the infobase administrator
+
+Commands:
+
+    info
+        get information about the binary data storage
+
+        --storage=<uuid>
+            (required if name is not specified) binary data storage ID
+
+        --name=<name>
+            (required if storage is not specified) binary data storage name
+
+    list
+        get a list of binary data storages
+
+    create-full-backup
+        create a full backup of the built-in binary data storage
+
+        --server-path=<path>
+            (required) path to the backup file on the server
+
+    create-diff-backup
+        create a differential backup of the built-in binary data storage
+
+        --server-path=<path>
+            (required) path to the backup file on the server
+
+        --full-backup-server-path=<path>
+            (required) path to the full backup file on the server
+
+    load-full-backup
+        restore from a full backup of the built-in binary data storage
+
+        --server-path=<path>
+            (required) path to the backup file on the server
+
+    load-diff-backup
+        restore from a differential backup of the built-in binary data storage
+
+        --server-path=<path>
+            (required) path to the backup file on the server
+
+        --full-backup-server-path=<path>
+            (required) path to the full backup file on the server
+
+    clear-unused-space
+        clear unused binary data storage data
+
+        --storage=<uuid>
+            (required if name is not specified) binary data storage ID
+
+        --name=<name>
+            (required if storage is not specified) binary data storage name
+
+        --by-universal-date=<date>
+            (required if keep-days is not specified) delete unused data before the specified universal date

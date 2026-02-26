@@ -11,14 +11,14 @@ Sources (v16):
 ## Counter List
 
 Source capture:
-- `artifacts/rac/v11/v11_counter_list_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11/v11_counter_list_ro_server_to_client.decode.txt`
+- `artifacts/rac/v16/v16_20260226_051629_counter_list_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_051629_counter_list_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/v11/v11_counter_list_ro_response.hex`
+- `artifacts/rac/v16/v16_20260226_051629_counter_list_response.hex`
 
 RAC output reference:
-- `artifacts/rac/v11/v11_counter_list_ro_rac.out`
+- `artifacts/rac/v16/v16_20260226_051629_counter_list_rac.out`
 - `artifacts/rac/v16/help/counter_list.out`
 
 ### Поля ответа (из `rac`)
@@ -110,14 +110,14 @@ Notes:
 ## Counter Info
 
 Source capture:
-- `artifacts/rac/v11/v11_counter_info_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11/v11_counter_info_ro_server_to_client.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_counter_info_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_counter_info_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/v11/v11_counter_info_ro_response.hex`
+- `artifacts/rac/v16/v16_20260226_053425_counter_info_response.hex`
 
 RAC output reference:
-- `artifacts/rac/v11/v11_counter_info_ro_rac.out`
+- `artifacts/rac/v16/v16_20260226_053425_counter_info_rac.out`
 - `artifacts/rac/v16/help/counter_info.out`
 
 ### Поля ответа (из `rac`)
@@ -208,13 +208,14 @@ Notes:
 ## Counter Update
 
 Source capture:
-- `logs/session_1771346554_3508050_127_0_0_1_60770/server_to_client.stream.bin`
+- `artifacts/rac/v16/v16_20260226_053425_counter_update_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_counter_update_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/v16/counter_update_codex_tmp_response.hex`
+- `artifacts/rac/v16/v16_20260226_053425_counter_update_response.hex`
 
 RAC output reference:
-- `artifacts/rac/v16/counter_update_codex_tmp_rac.out`
+- `artifacts/rac/v16/v16_20260226_053425_counter_update_rac.out`
 
 ### Поля ответа (из `rac`)
 
@@ -305,14 +306,14 @@ Notes:
 ## Counter Values
 
 Source capture:
-- `artifacts/rac/v11/v11_counter_values_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11/v11_counter_values_ro_server_to_client.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_counter_values_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_counter_values_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/v11/v11_counter_values_ro_response.hex`
+- `artifacts/rac/v16/v16_20260226_053425_counter_values_response.hex`
 
 RAC output reference:
-- `artifacts/rac/v11/v11_counter_values_ro_rac.out`
+- `artifacts/rac/v16/v16_20260226_053425_counter_values_rac.out`
 
 ### Поля ответа (из `rac`)
 
@@ -396,14 +397,14 @@ Notes:
 ## Counter Accumulated Values
 
 Source capture:
-- `artifacts/rac/v11/v11_counter_accumulated_values_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11/v11_counter_accumulated_values_ro_server_to_client.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_counter_accumulated_values_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_counter_accumulated_values_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/v11/v11_counter_accumulated_values_ro_response.hex`
+- `artifacts/rac/v16/v16_20260226_053425_counter_accumulated_values_response.hex`
 
 RAC output reference:
-- `artifacts/rac/v11/v11_counter_accumulated_values_ro_rac.out`
+- `artifacts/rac/v16/v16_20260226_053425_counter_accumulated_values_rac.out`
 
 ### Поля ответа (из `rac`)
 
@@ -487,13 +488,14 @@ Notes:
 ## Counter Clear
 
 Source capture:
-- `logs/session_1771346568_3508493_127_0_0_1_33842/server_to_client.stream.bin`
+- `artifacts/rac/v16/v16_20260226_053425_counter_clear_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_counter_clear_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/v16/counter_clear_codex_tmp_response.hex`
+- `artifacts/rac/v16/v16_20260226_053425_counter_clear_response.hex`
 
 RAC output reference:
-- `artifacts/rac/v16/counter_clear_codex_tmp_rac.out`
+- `artifacts/rac/v16/v16_20260226_053425_counter_clear_rac.out`
 
 ### Поля ответа (из `rac`)
 
@@ -540,13 +542,14 @@ Observed request parameters for `rac counter clear`.
 ## Counter Remove
 
 Source capture:
-- `logs/session_1771346572_3508551_127_0_0_1_33850/server_to_client.stream.bin`
+- `artifacts/rac/v16/v16_20260226_053425_counter_remove_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_counter_remove_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/v16/counter_remove_codex_tmp_response.hex`
+- `artifacts/rac/v16/v16_20260226_053425_counter_remove_response.hex`
 
 RAC output reference:
-- `artifacts/rac/v16/counter_remove_codex_tmp_rac.out`
+- `artifacts/rac/v16/v16_20260226_053425_counter_remove_rac.out`
 
 ### Поля ответа (из `rac`)
 

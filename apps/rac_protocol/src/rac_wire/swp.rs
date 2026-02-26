@@ -23,7 +23,7 @@ pub struct SwpInit {
 }
 
 pub fn parse_swp_init(data: &[u8]) -> Result<(SwpInit, usize), WireError> {
-    let mut cursor = RecordCursor::new(data, 0);
+    let mut cursor = RecordCursor::new(data);
     let magic = cursor.take_u8()?;
     if magic != 0x1c {
         return Err(WireError::InvalidData("swp magic"));

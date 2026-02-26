@@ -133,7 +133,7 @@ fn parse_session_list_records(body: &[u8]) -> Result<Vec<SessionRecord>> {
 }
 
 fn parse_session_record_1cv8c(data: &[u8]) -> Result<SessionRecord> {
-    let mut cursor = RecordCursor::new(data, 0);
+    let mut cursor = RecordCursor::new(data);
     SessionRecord::decode(&mut cursor)
 }
 

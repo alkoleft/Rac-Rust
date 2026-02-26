@@ -1,7 +1,7 @@
 use crate::codec::RecordCursor;
 
 pub fn decode_rpc_method(payload: &[u8]) -> Option<u8> {
-    let mut cursor = RecordCursor::new(payload, 0);
+    let mut cursor = RecordCursor::new(payload);
     if cursor.remaining_len() < 5 {
         return None;
     }

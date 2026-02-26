@@ -114,7 +114,7 @@ impl Request for InfobaseSummaryInfoRpc {
 impl Response for InfobaseSummaryInfoResp {
     fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
         let body = rpc_body(payload)?;
-        let mut cursor = RecordCursor::new(body, 0);
+        let mut cursor = RecordCursor::new(body);
         let record = InfobaseFieldsRecord::decode(&mut cursor)?;
         Ok(Self {
             infobase: record.infobase,
@@ -163,7 +163,7 @@ impl Request for InfobaseInfoRpc {
 impl Response for InfobaseInfoResp {
     fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
         let body = rpc_body(payload)?;
-        let mut cursor = RecordCursor::new(body, 0);
+        let mut cursor = RecordCursor::new(body);
         let record = InfobaseFieldsRecord::decode(&mut cursor)?;
         Ok(Self {
             infobase: record.infobase,
@@ -184,7 +184,7 @@ fn parse_infobase_summary_list_body(body: &[u8]) -> Result<Vec<InfobaseSummary>>
     if body.is_empty() {
         return Ok(Vec::new());
     }
-    let mut cursor = RecordCursor::new(body, 0);
+    let mut cursor = RecordCursor::new(body);
     let count = cursor.take_u8()? as usize;
     let mut out = Vec::with_capacity(count);
     for _ in 0..count {

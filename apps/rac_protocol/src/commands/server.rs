@@ -98,7 +98,7 @@ impl Request for ServerInfoRpc {
 impl Response for ServerInfoResp {
     fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
         let body = rpc_body(payload)?;
-        let mut cursor = RecordCursor::new(body, 0);
+        let mut cursor = RecordCursor::new(body);
         Ok(Self {
             server: parse_server_record(&mut cursor)?,
         })
@@ -117,7 +117,7 @@ fn parse_server_list(body: &[u8]) -> Result<Vec<ServerRecord>> {
     if body.is_empty() {
         return Ok(Vec::new());
     }
-    let mut cursor = RecordCursor::new(body, 0);
+    let mut cursor = RecordCursor::new(body);
     let count = cursor.take_u8()? as usize;
     let mut servers = Vec::with_capacity(count);
     for _ in 0..count {
@@ -198,7 +198,7 @@ mod tests {
         let hex = include_str!("../../../../artifacts/rac/server_info_response.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
-        let mut cursor = RecordCursor::new(body, 0);
+        let mut cursor = RecordCursor::new(body);
         let server = parse_server_record(&mut cursor).expect("parse info");
 
         assert_eq!(

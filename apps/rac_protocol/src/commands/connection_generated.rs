@@ -43,37 +43,29 @@ impl ConnectionRecord {
     }
 }
 
-#[derive(Debug, Clone)]
-pub struct ConnectionListRequest {
-    pub cluster: Uuid16,
-}
-
-impl ConnectionListRequest {
-    pub fn encoded_len(&self) -> usize {
-        16
-    }
-
-    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
-        out.extend_from_slice(&self.cluster);
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct ConnectionInfoRequest {
+pub struct ConnectionDisconnectRpc {
     pub cluster: Uuid16,
     pub connection: Uuid16,
+    pub process: Uuid16,
 }
 
-impl ConnectionInfoRequest {
-    pub fn encoded_len(&self) -> usize {
-        16 + 16
+impl crate::rpc::Request for ConnectionDisconnectRpc {
+    type Response = crate::rpc::AckResponse;
+
+    fn meta(&self) -> crate::rpc::Meta {
+        RPC_CONNECTION_DISCONNECT_META
     }
 
-    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
+    fn cluster(&self) -> Option<crate::Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
+        let mut out = Vec::with_capacity(16 + 16 + 16);
         out.extend_from_slice(&self.cluster);
         out.extend_from_slice(&self.connection);
-        Ok(())
+        out.extend_from_slice(&self.process);
+        Ok(out)
     }
 }
 
@@ -83,21 +75,35 @@ pub fn parse_connection_info_body(body: &[u8]) -> Result<ConnectionRecord> {
     if body.is_empty() {
         return Err(RacError::Decode("connection info empty body"));
     }
-    let mut cursor = RecordCursor::new(body, 0);
+    let mut cursor = RecordCursor::new(body);
     ConnectionRecord::decode(&mut cursor)
 }
 
 
 pub const RPC_CONNECTION_LIST_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: crate::rac_wire::METHOD_CONNECTION_LIST_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_CONNECTION_LIST_RESP),
+    method_req: 0x32,
+    method_resp: Some(0x33),
+    requires_cluster_context: true,
+    requires_infobase_context: false,
+};
+
+pub const RPC_CONNECTION_LIST_BY_INFOBASE_META: crate::rpc::Meta = crate::rpc::Meta {
+    method_req: 0x34,
+    method_resp: Some(0x35),
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_CONNECTION_INFO_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: crate::rac_wire::METHOD_CONNECTION_INFO_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_CONNECTION_INFO_RESP),
+    method_req: 0x36,
+    method_resp: Some(0x37),
+    requires_cluster_context: true,
+    requires_infobase_context: false,
+};
+
+pub const RPC_CONNECTION_DISCONNECT_META: crate::rpc::Meta = crate::rpc::Meta {
+    method_req: 0x40,
+    method_resp: None,
     requires_cluster_context: true,
     requires_infobase_context: false,
 };

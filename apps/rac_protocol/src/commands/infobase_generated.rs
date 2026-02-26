@@ -3,6 +3,7 @@ use crate::error::RacError;
 use crate::codec::RecordCursor;
 use crate::error::Result;
 use serde::Serialize;
+use crate::rac_wire::encode_with_len_u8;
 
 #[derive(Debug, Serialize, Clone)]
 pub struct InfobaseSummary {
@@ -34,118 +35,158 @@ impl InfobaseSummary {
 }
 
 #[derive(Debug, Serialize, Clone)]
-pub struct InfobaseFieldsRecord {
+pub struct InfobaseInfoRecord {
     pub infobase: Uuid16,
-    pub fields: Vec<String>,
+    pub tag: u8,
+    pub unknown_u32_0: u32,
+    pub dbms: String,
+    pub name: String,
+    pub unknown_str_0: String,
+    pub db_server: String,
+    pub db_user: String,
+    pub unknown_str_1: String,
+    pub unknown_str_2: String,
+    pub unknown_bytes_0: [u8; 4],
+    pub denied_message: String,
+    pub denied_parameter: String,
+    pub unknown_str_3: String,
+    pub unknown_str_4: String,
+    pub unknown_u32_1: u32,
+    pub descr: String,
+    pub locale: String,
+    pub db_name: String,
+    pub permission_code: String,
+    pub tail: [u8; 28],
 }
 
-impl InfobaseFieldsRecord {
+impl InfobaseInfoRecord {
     pub fn decode(cursor: &mut RecordCursor<'_>) -> Result<Self> {
         let infobase = cursor.take_uuid()?;
-        let fields = {
-            let mut out = Vec::new();
-            while cursor.remaining_len() > 0 {
-                out.push(cursor.take_str8()?);
-            }
-            out
+        let tag = cursor.take_u8()?;
+        let unknown_u32_0 = cursor.take_u32_be()?;
+        let dbms = cursor.take_str8()?;
+        let name = cursor.take_str8()?;
+        let unknown_str_0 = cursor.take_str8()?;
+        let db_server = cursor.take_str8()?;
+        let db_user = cursor.take_str8()?;
+        let unknown_str_1 = cursor.take_str8()?;
+        let unknown_str_2 = cursor.take_str8()?;
+        let unknown_bytes_0 = {
+            let bytes = cursor.take_bytes(4)?;
+            let value: [u8; 4] = bytes.as_slice().try_into().map_err(|_| RacError::Decode("bytes_fixed"))?;
+            value
+        };
+        let denied_message = cursor.take_str8()?;
+        let denied_parameter = cursor.take_str8()?;
+        let unknown_str_3 = cursor.take_str8()?;
+        let unknown_str_4 = cursor.take_str8()?;
+        let unknown_u32_1 = cursor.take_u32_be()?;
+        let descr = cursor.take_str8()?;
+        let locale = cursor.take_str8()?;
+        let db_name = cursor.take_str8()?;
+        let permission_code = cursor.take_str8()?;
+        let tail = {
+            let bytes = cursor.take_bytes(28)?;
+            let value: [u8; 28] = bytes.as_slice().try_into().map_err(|_| RacError::Decode("bytes_fixed"))?;
+            value
         };
         Ok(Self {
             infobase,
-            fields,
+            tag,
+            unknown_u32_0,
+            dbms,
+            name,
+            unknown_str_0,
+            db_server,
+            db_user,
+            unknown_str_1,
+            unknown_str_2,
+            unknown_bytes_0,
+            denied_message,
+            denied_parameter,
+            unknown_str_3,
+            unknown_str_4,
+            unknown_u32_1,
+            descr,
+            locale,
+            db_name,
+            permission_code,
+            tail,
         })
     }
 }
 
-#[derive(Debug, Clone)]
-pub struct InfobaseSummaryListRequest {
-    pub cluster: Uuid16,
-}
-
-impl InfobaseSummaryListRequest {
-    pub fn encoded_len(&self) -> usize {
-        16
-    }
-
-    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
-        out.extend_from_slice(&self.cluster);
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct InfobaseSummaryInfoRequest {
+pub struct InfobaseSummaryUpdateRpc {
     pub cluster: Uuid16,
     pub infobase: Uuid16,
+    pub descr: String,
 }
 
-impl InfobaseSummaryInfoRequest {
-    pub fn encoded_len(&self) -> usize {
-        16 + 16
+impl crate::rpc::Request for InfobaseSummaryUpdateRpc {
+    type Response = crate::rpc::AckResponse;
+
+    fn meta(&self) -> crate::rpc::Meta {
+        RPC_INFOBASE_SUMMARY_UPDATE_META
     }
 
-    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
+    fn cluster(&self) -> Option<crate::Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
+        let mut out = Vec::with_capacity(16 + 16 + 1 + self.descr.len());
         out.extend_from_slice(&self.cluster);
         out.extend_from_slice(&self.infobase);
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct InfobaseInfoRequest {
-    pub cluster: Uuid16,
-    pub infobase: Uuid16,
-}
-
-impl InfobaseInfoRequest {
-    pub fn encoded_len(&self) -> usize {
-        16 + 16
-    }
-
-    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&self.infobase);
-        Ok(())
+        out.extend_from_slice(&encode_with_len_u8(self.descr.as_bytes())?);
+        Ok(out)
     }
 }
 
 
 
-pub fn parse_infobase_summary_info_body(body: &[u8]) -> Result<InfobaseFieldsRecord> {
+pub fn parse_infobase_summary_info_body(body: &[u8]) -> Result<InfobaseSummary> {
     if body.is_empty() {
         return Err(RacError::Decode("infobase summary info empty body"));
     }
-    let mut cursor = RecordCursor::new(body, 0);
-    InfobaseFieldsRecord::decode(&mut cursor)
+    let mut cursor = RecordCursor::new(body);
+    InfobaseSummary::decode(&mut cursor)
 }
 
-pub fn parse_infobase_info_body(body: &[u8]) -> Result<InfobaseFieldsRecord> {
+pub fn parse_infobase_info_body(body: &[u8]) -> Result<InfobaseInfoRecord> {
     if body.is_empty() {
         return Err(RacError::Decode("infobase info empty body"));
     }
-    let mut cursor = RecordCursor::new(body, 0);
-    InfobaseFieldsRecord::decode(&mut cursor)
+    let mut cursor = RecordCursor::new(body);
+    InfobaseInfoRecord::decode(&mut cursor)
 }
 
 
 pub const RPC_INFOBASE_SUMMARY_LIST_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: crate::rac_wire::METHOD_INFOBASE_SUMMARY_LIST_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_INFOBASE_SUMMARY_LIST_RESP),
+    method_req: 0x2a,
+    method_resp: Some(0x2b),
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_INFOBASE_SUMMARY_INFO_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: crate::rac_wire::METHOD_INFOBASE_SUMMARY_INFO_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_INFOBASE_SUMMARY_INFO_RESP),
+    method_req: 0x2e,
+    method_resp: Some(0x2f),
     requires_cluster_context: true,
     requires_infobase_context: true,
 };
 
 pub const RPC_INFOBASE_INFO_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: crate::rac_wire::METHOD_INFOBASE_INFO_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_INFOBASE_INFO_RESP),
+    method_req: 0x30,
+    method_resp: Some(0x31),
     requires_cluster_context: true,
     requires_infobase_context: true,
+};
+
+pub const RPC_INFOBASE_SUMMARY_UPDATE_META: crate::rpc::Meta = crate::rpc::Meta {
+    method_req: 0x27,
+    method_resp: None,
+    requires_cluster_context: true,
+    requires_infobase_context: false,
 };
 
 

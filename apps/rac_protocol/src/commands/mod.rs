@@ -85,7 +85,7 @@ where
     if body.is_empty() {
         return Ok(Vec::new());
     }
-    let mut cursor = RecordCursor::new(body, 0);
+    let mut cursor = RecordCursor::new(body);
     let count = cursor.take_u8()? as usize;
     let mut out = Vec::with_capacity(count);
     for _ in 0..count {
@@ -105,7 +105,7 @@ where
     if body.is_empty() {
         return Ok(Vec::new());
     }
-    let mut cursor = RecordCursor::new(body, 0);
+    let mut cursor = RecordCursor::new(body);
     let count = cursor.take_u8()? as usize;
     let mut out = Vec::with_capacity(count);
     for _ in 0..count {

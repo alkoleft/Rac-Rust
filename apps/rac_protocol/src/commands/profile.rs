@@ -56,7 +56,7 @@ fn parse_profile_list(body: &[u8]) -> Result<Vec<Uuid16>> {
     if body.is_empty() {
         return Ok(Vec::new());
     }
-    let mut cursor = RecordCursor::new(body, 0);
+    let mut cursor = RecordCursor::new(body);
     let count = cursor.take_u8()? as usize;
     let mut profiles = Vec::with_capacity(count);
     for _ in 0..count {

@@ -261,7 +261,7 @@ impl RacClient {
 }
 
 fn is_service_notice(payload: &[u8]) -> bool {
-    let mut cursor = RecordCursor::new(payload, 0);
+    let mut cursor = RecordCursor::new(payload);
     if cursor.remaining_len() < 4 {
         return false;
     }

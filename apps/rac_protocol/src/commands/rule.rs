@@ -412,7 +412,7 @@ fn parse_rule_list_records(body: &[u8]) -> Result<Vec<RuleRecord>> {
     if body.is_empty() {
         return Ok(Vec::new());
     }
-    let mut cursor = RecordCursor::new(body, 0);
+    let mut cursor = RecordCursor::new(body);
     let count = cursor.take_u8()? as usize;
     let mut records = Vec::with_capacity(count);
     for _ in 0..count {
@@ -425,7 +425,7 @@ fn parse_rule_info_body(body: &[u8]) -> Result<RuleRecord> {
     if body.is_empty() {
         return Err(RacError::Decode("rule info empty body"));
     }
-    let mut cursor = RecordCursor::new(body, 0);
+    let mut cursor = RecordCursor::new(body);
     parse_rule_record(&mut cursor)
 }
 

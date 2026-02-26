@@ -84,164 +84,13 @@ impl ServiceSettingIdRecord {
     }
 }
 
-#[derive(Debug, Clone)]
-pub struct ServiceSettingInfoRequest {
-    pub cluster: Uuid16,
-    pub server: Uuid16,
-    pub setting: Uuid16,
-}
-
-impl ServiceSettingInfoRequest {
-    pub fn encoded_len(&self) -> usize {
-        16 + 16 + 16
-    }
-
-    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&self.server);
-        out.extend_from_slice(&self.setting);
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct ServiceSettingListRequest {
-    pub cluster: Uuid16,
-    pub server: Uuid16,
-}
-
-impl ServiceSettingListRequest {
-    pub fn encoded_len(&self) -> usize {
-        16 + 16
-    }
-
-    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&self.server);
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct ServiceSettingInsertRequest {
-    pub cluster: Uuid16,
-    pub server: Uuid16,
-    pub service_name: String,
-    pub infobase_name: String,
-    pub service_data_dir: String,
-    pub active: u16,
-}
-
-impl ServiceSettingInsertRequest {
-    pub fn encoded_len(&self) -> usize {
-        16 + 16 + 16 + 1 + self.service_name.len() + 1 + self.infobase_name.len() + 1 + self.service_data_dir.len() + 2
-    }
-
-    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&self.server);
-        out.extend_from_slice(&[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-        out.extend_from_slice(&encode_with_len_u8(self.service_name.as_bytes())?);
-        out.extend_from_slice(&encode_with_len_u8(self.infobase_name.as_bytes())?);
-        out.extend_from_slice(&encode_with_len_u8(self.service_data_dir.as_bytes())?);
-        out.extend_from_slice(&self.active.to_be_bytes());
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct ServiceSettingUpdateRequest {
-    pub cluster: Uuid16,
-    pub server: Uuid16,
-    pub setting: Uuid16,
-    pub service_name: String,
-    pub infobase_name: String,
-    pub service_data_dir: String,
-    pub active: u16,
-}
-
-impl ServiceSettingUpdateRequest {
-    pub fn encoded_len(&self) -> usize {
-        16 + 16 + 16 + 1 + self.service_name.len() + 1 + self.infobase_name.len() + 1 + self.service_data_dir.len() + 2
-    }
-
-    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&self.server);
-        out.extend_from_slice(&self.setting);
-        out.extend_from_slice(&encode_with_len_u8(self.service_name.as_bytes())?);
-        out.extend_from_slice(&encode_with_len_u8(self.infobase_name.as_bytes())?);
-        out.extend_from_slice(&encode_with_len_u8(self.service_data_dir.as_bytes())?);
-        out.extend_from_slice(&self.active.to_be_bytes());
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct ServiceSettingRemoveRequest {
-    pub cluster: Uuid16,
-    pub server: Uuid16,
-    pub setting: Uuid16,
-}
-
-impl ServiceSettingRemoveRequest {
-    pub fn encoded_len(&self) -> usize {
-        16 + 16 + 16
-    }
-
-    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&self.server);
-        out.extend_from_slice(&self.setting);
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct ServiceSettingApplyRequest {
-    pub cluster: Uuid16,
-    pub server: Uuid16,
-}
-
-impl ServiceSettingApplyRequest {
-    pub fn encoded_len(&self) -> usize {
-        16 + 16
-    }
-
-    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&self.server);
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct ServiceSettingGetDataDirsRequest {
-    pub cluster: Uuid16,
-    pub server: Uuid16,
-    pub service_name: String,
-}
-
-impl ServiceSettingGetDataDirsRequest {
-    pub fn encoded_len(&self) -> usize {
-        16 + 16 + 1 + self.service_name.len()
-    }
-
-    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&self.server);
-        out.extend_from_slice(&encode_with_len_u8(self.service_name.as_bytes())?);
-        Ok(())
-    }
-}
-
 
 
 pub fn parse_service_setting_info_body(body: &[u8]) -> Result<ServiceSettingRecord> {
     if body.is_empty() {
         return Err(RacError::Decode("service setting info empty body"));
     }
-    let mut cursor = RecordCursor::new(body, 0);
+    let mut cursor = RecordCursor::new(body);
     ServiceSettingRecord::decode(&mut cursor)
 }
 
@@ -249,7 +98,7 @@ pub fn parse_service_setting_insert_body(body: &[u8]) -> Result<ServiceSettingId
     if body.is_empty() {
         return Err(RacError::Decode("service setting insert empty body"));
     }
-    let mut cursor = RecordCursor::new(body, 0);
+    let mut cursor = RecordCursor::new(body);
     ServiceSettingIdRecord::decode(&mut cursor)
 }
 
@@ -257,56 +106,56 @@ pub fn parse_service_setting_update_body(body: &[u8]) -> Result<ServiceSettingId
     if body.is_empty() {
         return Err(RacError::Decode("service setting update empty body"));
     }
-    let mut cursor = RecordCursor::new(body, 0);
+    let mut cursor = RecordCursor::new(body);
     ServiceSettingIdRecord::decode(&mut cursor)
 }
 
 
 pub const RPC_SERVICE_SETTING_INFO_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: crate::rac_wire::METHOD_SERVICE_SETTING_INFO_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_SERVICE_SETTING_INFO_RESP),
+    method_req: 0x89,
+    method_resp: Some(0x8a),
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_SERVICE_SETTING_LIST_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: crate::rac_wire::METHOD_SERVICE_SETTING_LIST_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_SERVICE_SETTING_LIST_RESP),
+    method_req: 0x8b,
+    method_resp: Some(0x8c),
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_SERVICE_SETTING_INSERT_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: crate::rac_wire::METHOD_SERVICE_SETTING_INSERT_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_SERVICE_SETTING_INSERT_RESP),
+    method_req: 0x8d,
+    method_resp: Some(0x8e),
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_SERVICE_SETTING_UPDATE_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: crate::rac_wire::METHOD_SERVICE_SETTING_UPDATE_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_SERVICE_SETTING_UPDATE_RESP),
+    method_req: 0x8d,
+    method_resp: Some(0x8e),
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_SERVICE_SETTING_REMOVE_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: crate::rac_wire::METHOD_SERVICE_SETTING_REMOVE_REQ,
+    method_req: 0x8f,
     method_resp: None,
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_SERVICE_SETTING_APPLY_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: crate::rac_wire::METHOD_SERVICE_SETTING_APPLY_REQ,
+    method_req: 0x90,
     method_resp: None,
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_SERVICE_SETTING_GET_DATA_DIRS_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: crate::rac_wire::METHOD_SERVICE_SETTING_GET_DATA_DIRS_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_SERVICE_SETTING_GET_DATA_DIRS_RESP),
+    method_req: 0x91,
+    method_resp: Some(0x92),
     requires_cluster_context: true,
     requires_infobase_context: false,
 };

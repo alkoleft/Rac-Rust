@@ -32,7 +32,7 @@ pub fn write_frame<W: Write>(writer: &mut W, opcode: u8, payload: &[u8]) -> io::
 
 pub fn parse_frames(data: &[u8]) -> Result<Vec<Frame>, WireError> {
     let mut frames = Vec::new();
-    let mut cursor = RecordCursor::new(data, 0);
+    let mut cursor = RecordCursor::new(data);
     while cursor.remaining_len() >= 2 {
         let opcode = cursor.take_u8()?;
         let (len, len_field_size) = decode_varuint_from_cursor(&mut cursor)?;

@@ -73,7 +73,7 @@ fn parse_lock_list_records(body: &[u8]) -> Result<Vec<LockRecord>> {
     if body.is_empty() {
         return Ok(Vec::new());
     }
-    let mut cursor = RecordCursor::new(body, 0);
+    let mut cursor = RecordCursor::new(body);
     let count = cursor.take_u8()? as usize;
     let mut records = Vec::with_capacity(count);
     for _ in 0..count {

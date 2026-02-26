@@ -33,61 +33,27 @@ impl ManagerRecord {
     }
 }
 
-#[derive(Debug, Clone)]
-pub struct ManagerListRequest {
-    pub cluster: Uuid16,
-}
-
-impl ManagerListRequest {
-    pub fn encoded_len(&self) -> usize {
-        16
-    }
-
-    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
-        out.extend_from_slice(&self.cluster);
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct ManagerInfoRequest {
-    pub cluster: Uuid16,
-    pub manager: Uuid16,
-}
-
-impl ManagerInfoRequest {
-    pub fn encoded_len(&self) -> usize {
-        16 + 16
-    }
-
-    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&self.manager);
-        Ok(())
-    }
-}
-
 
 
 pub fn parse_manager_info_body(body: &[u8]) -> Result<ManagerRecord> {
     if body.is_empty() {
         return Err(RacError::Decode("manager info empty body"));
     }
-    let mut cursor = RecordCursor::new(body, 0);
+    let mut cursor = RecordCursor::new(body);
     ManagerRecord::decode(&mut cursor)
 }
 
 
 pub const RPC_MANAGER_LIST_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: crate::rac_wire::METHOD_MANAGER_LIST_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_MANAGER_LIST_RESP),
+    method_req: 0x12,
+    method_resp: Some(0x13),
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_MANAGER_INFO_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: crate::rac_wire::METHOD_MANAGER_INFO_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_MANAGER_INFO_RESP),
+    method_req: 0x14,
+    method_resp: Some(0x15),
     requires_cluster_context: true,
     requires_infobase_context: false,
 };

@@ -24,11 +24,11 @@ fields = [
   { name = "errors_count_threshold", type = "u32_be", version = "11.0" },
   { name = "kill_problem_processes", type = "u8", version = "11.0" },
   { name = "kill_by_memory_with_dump", type = "u8", version = "11.0" },
-  { name = "allow_access_right_audit_events_recording", type = "u8", computed = "literal", source = "0", version = "16.0" },
-  { name = "ping_period", type = "u32_be", computed = "literal", source = "0", version = "16.0" },
-  { name = "ping_timeout", type = "u32_be", computed = "literal", source = "0", version = "16.0" },
-  { name = "restart_schedule_cron", type = "str8", computed = "literal", source = "String::new()", version = "16.0" },
-  { name = "restart_interval", type = "u32_be", computed = "literal", source = "0", version = "11.0" },
+  { name = "allow_access_right_audit_events_recording", type = "u8", source = "0", version = "16.0" },
+  { name = "ping_period", type = "u32_be", source = "0", version = "16.0" },
+  { name = "ping_timeout", type = "u32_be", source = "0", version = "16.0" },
+  { name = "restart_schedule_cron", type = "str8", source = "String::new()", version = "16.0" },
+  { name = "restart_interval", type = "u32_be", source = "0", version = "11.0" },
 ]
 
 [rpc.ClusterAuth]

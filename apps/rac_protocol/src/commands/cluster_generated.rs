@@ -71,12 +71,11 @@ impl ClusterRecord {
         let errors_count_threshold = cursor.take_u32_be()?;
         let kill_problem_processes = cursor.take_u8()?;
         let kill_by_memory_with_dump = cursor.take_u8()?;
-
-        let allow_access_right_audit_events_recording = 0;
-        let ping_period = 0;
-        let ping_timeout = 0;
-        let restart_schedule_cron = String::new();
-        let restart_interval = 0;
+        let allow_access_right_audit_events_recording = cursor.take_u8()?;
+        let ping_period = cursor.take_u32_be()?;
+        let ping_timeout = cursor.take_u32_be()?;
+        let restart_schedule_cron = cursor.take_str8()?;
+        let restart_interval = cursor.take_u32_be()?;
         Ok(Self {
             uuid,
             expiration_timeout,
@@ -267,7 +266,7 @@ pub fn parse_cluster_info_body(body: &[u8], tail_len: usize) -> Result<ClusterRe
     if body.is_empty() {
         return Err(RacError::Decode("cluster info empty body"));
     }
-    let mut cursor = RecordCursor::new(body, 0);
+    let mut cursor = RecordCursor::new(body);
     let record = ClusterRecord::decode(&mut cursor)?;
     if tail_len != 0 {
         let _tail = cursor.take_bytes(tail_len)?;
@@ -277,43 +276,43 @@ pub fn parse_cluster_info_body(body: &[u8], tail_len: usize) -> Result<ClusterRe
 
 
 pub const RPC_CLUSTER_AUTH_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: crate::rac_wire::METHOD_CLUSTER_AUTH_REQ,
+    method_req: 0x09,
     method_resp: None,
     requires_cluster_context: false,
     requires_infobase_context: false,
 };
 
 pub const RPC_CLUSTER_ADMIN_LIST_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: crate::rac_wire::METHOD_CLUSTER_ADMIN_LIST_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_CLUSTER_ADMIN_LIST_RESP),
+    method_req: 0x02,
+    method_resp: Some(0x03),
     requires_cluster_context: false,
     requires_infobase_context: false,
 };
 
 pub const RPC_CLUSTER_ADMIN_REGISTER_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: crate::rac_wire::METHOD_CLUSTER_ADMIN_REGISTER_REQ,
+    method_req: 0x05,
     method_resp: None,
     requires_cluster_context: false,
     requires_infobase_context: false,
 };
 
 pub const RPC_CLUSTER_ADMIN_REMOVE_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: crate::rac_wire::METHOD_CLUSTER_ADMIN_REMOVE_REQ,
+    method_req: 0x07,
     method_resp: None,
     requires_cluster_context: false,
     requires_infobase_context: false,
 };
 
 pub const RPC_CLUSTER_LIST_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: crate::rac_wire::METHOD_CLUSTER_LIST_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_CLUSTER_LIST_RESP),
+    method_req: 0x0b,
+    method_resp: Some(0x0c),
     requires_cluster_context: false,
     requires_infobase_context: false,
 };
 
 pub const RPC_CLUSTER_INFO_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: crate::rac_wire::METHOD_CLUSTER_INFO_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_CLUSTER_INFO_RESP),
+    method_req: 0x0d,
+    method_resp: Some(0x0e),
     requires_cluster_context: false,
     requires_infobase_context: false,
 };

@@ -249,7 +249,7 @@ fn parse_limit_list_body(body: &[u8]) -> Result<Vec<LimitRecord>> {
     if body.is_empty() {
         return Ok(Vec::new());
     }
-    let mut cursor = RecordCursor::new(body, 0);
+    let mut cursor = RecordCursor::new(body);
     let count = cursor.take_u8()? as usize;
     let mut limits = Vec::with_capacity(count);
     for _ in 0..count {
@@ -262,7 +262,7 @@ fn parse_limit_info_body(body: &[u8]) -> Result<LimitRecord> {
     if body.is_empty() {
         return Err(RacError::Decode("limit info empty body"));
     }
-    let mut cursor = RecordCursor::new(body, 0);
+    let mut cursor = RecordCursor::new(body);
     parse_limit_record(&mut cursor)
 }
 
@@ -272,7 +272,7 @@ fn parse_limit_record(cursor: &mut RecordCursor<'_>) -> Result<LimitRecord> {
 
 #[cfg(test)]
 fn parse_limit_update_ack(payload: &[u8]) -> Result<bool> {
-    let mut cursor = RecordCursor::new(payload, 0);
+    let mut cursor = RecordCursor::new(payload);
     if cursor.remaining_len() < 4 {
         return Err(crate::error::RacError::Decode("limit update ack truncated"));
     }
@@ -282,7 +282,7 @@ fn parse_limit_update_ack(payload: &[u8]) -> Result<bool> {
 
 #[cfg(test)]
 fn parse_limit_remove_ack(payload: &[u8]) -> Result<bool> {
-    let mut cursor = RecordCursor::new(payload, 0);
+    let mut cursor = RecordCursor::new(payload);
     if cursor.remaining_len() < 4 {
         return Err(crate::error::RacError::Decode("limit remove ack truncated"));
     }

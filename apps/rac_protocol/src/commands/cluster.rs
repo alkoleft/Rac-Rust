@@ -1,13 +1,13 @@
 use serde::Serialize;
 
 use crate::client::RacClient;
+use crate::codec::RecordCursor;
+use crate::error::RacError;
 use crate::error::Result;
 use crate::protocol::{ProtocolCodec, ProtocolVersion};
 use crate::rpc::Response;
 use crate::rpc::decode_utils::rpc_body;
 use crate::Uuid16;
-
-use super::parse_list_u8_tail;
 
 mod generated {
     include!("cluster_generated.rs");
@@ -16,7 +16,6 @@ mod generated {
 }
 
 pub use generated::{
-    parse_cluster_info_body,
     ClusterAdminRecord,
     ClusterAdminListResp,
     ClusterAdminListRpc,
@@ -63,7 +62,9 @@ pub fn cluster_admin_register(
         name,
         descr,
         pwd,
+        auth_tag: 0x01,
         auth_flags,
+        os_user: String::new(),
     })?;
     Ok(resp.acknowledged)
 }
@@ -80,6 +81,61 @@ pub fn cluster_admin_remove(
     Ok(resp.acknowledged)
 }
 
+fn decode_cluster_record(
+    cursor: &mut RecordCursor<'_>,
+    protocol_version: ProtocolVersion,
+) -> Result<ClusterRecord> {
+    let mut record = ClusterRecord::decode(cursor)?;
+    match protocol_version {
+        ProtocolVersion::V11_0 => {
+            record.restart_interval = cursor.take_u32_be()?;
+        }
+        ProtocolVersion::V16_0 => {
+            let allow_access_right_audit_events_recording = cursor.take_u8()?;
+            let _tail_padding = cursor.take_u8()?;
+            let _tail_u32_5 = cursor.take_u32_be()?;
+            let ping_period_raw = cursor.take_u32_be()?;
+            let ping_timeout_raw = cursor.take_u32_be()?;
+            let restart_schedule_len = (ping_timeout_raw & 0xff) as usize;
+            let restart_schedule_bytes = cursor.take_bytes(restart_schedule_len)?;
+            record.allow_access_right_audit_events_recording =
+                allow_access_right_audit_events_recording;
+            record.ping_period = ping_period_raw >> 8;
+            record.ping_timeout = ping_timeout_raw >> 8;
+            record.restart_schedule_cron =
+                String::from_utf8_lossy(&restart_schedule_bytes).to_string();
+        }
+    }
+    Ok(record)
+}
+
+fn parse_cluster_list_body(
+    body: &[u8],
+    protocol_version: ProtocolVersion,
+) -> Result<Vec<ClusterRecord>> {
+    if body.is_empty() {
+        return Ok(Vec::new());
+    }
+    let mut cursor = RecordCursor::new(body);
+    let count = cursor.take_u8()? as usize;
+    let mut out = Vec::with_capacity(count);
+    for _ in 0..count {
+        out.push(decode_cluster_record(&mut cursor, protocol_version)?);
+    }
+    Ok(out)
+}
+
+fn parse_cluster_info_body(
+    body: &[u8],
+    protocol_version: ProtocolVersion,
+) -> Result<ClusterRecord> {
+    if body.is_empty() {
+        return Err(RacError::Decode("cluster info empty body"));
+    }
+    let mut cursor = RecordCursor::new(body);
+    decode_cluster_record(&mut cursor, protocol_version)
+}
+
 #[derive(Debug, Serialize)]
 pub struct ClusterListResp {
     clusters: Vec<ClusterRecord>,
@@ -88,8 +144,7 @@ pub struct ClusterListResp {
 impl Response for ClusterListResp {
     fn decode(payload: &[u8], codec: &dyn ProtocolCodec) -> Result<Self> {
         let body = rpc_body(payload)?;
-        let tail_len = cluster_tail_len(codec.protocol_version());
-        let clusters = parse_list_u8_tail(body, tail_len, ClusterRecord::decode)?;
+        let clusters = parse_cluster_list_body(body, codec.protocol_version())?;
         Ok(Self { clusters })
     }
 }
@@ -107,8 +162,7 @@ pub struct ClusterInfoResp {
 impl Response for ClusterInfoResp {
     fn decode(payload: &[u8], codec: &dyn ProtocolCodec) -> Result<Self> {
         let body = rpc_body(payload)?;
-        let tail_len = cluster_tail_len(codec.protocol_version());
-        let cluster = parse_cluster_info_body(body, tail_len)?;
+        let cluster = parse_cluster_info_body(body, codec.protocol_version())?;
         Ok(Self { cluster })
     }
 }
@@ -116,13 +170,6 @@ impl Response for ClusterInfoResp {
 pub fn cluster_info(client: &mut RacClient, cluster: Uuid16) -> Result<ClusterRecord> {
     let resp = client.call_typed(ClusterInfoRpc { cluster })?;
     Ok(resp.cluster)
-}
-
-fn cluster_tail_len(protocol_version: ProtocolVersion) -> usize {
-    match protocol_version {
-        ProtocolVersion::V11_0 => 0,
-        ProtocolVersion::V16_0 => 32,
-    }
 }
 
 #[cfg(test)]
@@ -164,7 +211,9 @@ mod tests {
             name: "test_admin1".to_string(),
             descr: "test admin".to_string(),
             pwd: "test_pass1".to_string(),
+            auth_tag: 0x01,
             auth_flags: 0x01,
+            os_user: String::new(),
         };
         let protocol = ProtocolVersion::V16_0.boxed();
         let serialized = req.encode(protocol.as_ref()).expect("serialize");
@@ -203,6 +252,35 @@ mod tests {
         let serialized = req.encode(protocol.as_ref()).expect("serialize");
         assert_eq!(serialized.payload, expected);
         assert_eq!(serialized.expect_method, None);
+    }
+
+    #[test]
+    fn parse_cluster_list_restart_schedule_v16() {
+        let hex = include_str!(
+            "../../../../artifacts/rac/v16/v16_20260226_cluster_list_restart_schedule_response.hex"
+        );
+        let payload = decode_hex_str(hex);
+        let body = rpc_body(&payload).expect("rpc body");
+        let clusters = parse_cluster_list_body(body, ProtocolVersion::V16_0).expect("parse body");
+        assert_eq!(clusters.len(), 1);
+        assert_eq!(clusters[0].allow_access_right_audit_events_recording, 0);
+        assert_eq!(clusters[0].ping_period, 59999);
+        assert_eq!(clusters[0].ping_timeout, 65366);
+        assert_eq!(clusters[0].restart_schedule_cron, "0 3 * * 6");
+    }
+
+    #[test]
+    fn parse_cluster_info_restart_schedule_v16() {
+        let hex = include_str!(
+            "../../../../artifacts/rac/v16/v16_20260226_cluster_info_restart_schedule_response.hex"
+        );
+        let payload = decode_hex_str(hex);
+        let body = rpc_body(&payload).expect("rpc body");
+        let cluster = parse_cluster_info_body(body, ProtocolVersion::V16_0).expect("parse body");
+        assert_eq!(cluster.allow_access_right_audit_events_recording, 0);
+        assert_eq!(cluster.ping_period, 59999);
+        assert_eq!(cluster.ping_timeout, 65366);
+        assert_eq!(cluster.restart_schedule_cron, "0 3 * * 6");
     }
 
     // Additional cluster list/info capture assertions should be added when artifacts are present.

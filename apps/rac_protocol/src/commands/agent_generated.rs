@@ -87,6 +87,60 @@ impl crate::rpc::Request for AgentAdminListRpc {
     }
 }
 
+pub struct AgentAdminRegisterRpc {
+    pub name: String,
+    pub descr: String,
+    pub pwd: String,
+    pub auth_tag: u8,
+    pub auth_flags: u8,
+    pub os_user: String,
+}
+
+impl crate::rpc::Request for AgentAdminRegisterRpc {
+    type Response = crate::rpc::AckResponse;
+
+    fn meta(&self) -> crate::rpc::Meta {
+        RPC_AGENT_ADMIN_REGISTER_META
+    }
+
+    fn cluster(&self) -> Option<crate::Uuid16> {
+        None
+    }
+
+    fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
+        let mut out = Vec::with_capacity(1 + self.name.len() + 1 + self.descr.len() + 1 + self.pwd.len() + 1 + 1 + 1 + self.os_user.len());
+        out.extend_from_slice(&encode_with_len_u8(self.name.as_bytes())?);
+        out.extend_from_slice(&encode_with_len_u8(self.descr.as_bytes())?);
+        out.extend_from_slice(&encode_with_len_u8(self.pwd.as_bytes())?);
+        out.push(self.auth_tag);
+        out.push(self.auth_flags);
+        out.extend_from_slice(&encode_with_len_u8(self.os_user.as_bytes())?);
+        Ok(out)
+    }
+}
+
+pub struct AgentAdminRemoveRpc {
+    pub name: String,
+}
+
+impl crate::rpc::Request for AgentAdminRemoveRpc {
+    type Response = crate::rpc::AckResponse;
+
+    fn meta(&self) -> crate::rpc::Meta {
+        RPC_AGENT_ADMIN_REMOVE_META
+    }
+
+    fn cluster(&self) -> Option<crate::Uuid16> {
+        None
+    }
+
+    fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
+        let mut out = Vec::with_capacity(1 + self.name.len());
+        out.extend_from_slice(&encode_with_len_u8(self.name.as_bytes())?);
+        Ok(out)
+    }
+}
+
 pub struct AgentVersionRpc;
 
 impl crate::rpc::Request for AgentVersionRpc {
@@ -142,28 +196,42 @@ pub fn parse_agent_version_body(body: &[u8]) -> Result<AgentVersionRecord> {
     if body.is_empty() {
         return Err(RacError::Decode("agent version empty body"));
     }
-    let mut cursor = RecordCursor::new(body, 0);
+    let mut cursor = RecordCursor::new(body);
     AgentVersionRecord::decode(&mut cursor)
 }
 
 
 pub const RPC_AGENT_AUTH_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: crate::rac_wire::METHOD_AGENT_AUTH_REQ,
+    method_req: 0x08,
     method_resp: None,
     requires_cluster_context: false,
     requires_infobase_context: false,
 };
 
 pub const RPC_AGENT_ADMIN_LIST_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: crate::rac_wire::METHOD_AGENT_ADMIN_LIST_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_AGENT_ADMIN_LIST_RESP),
+    method_req: 0x00,
+    method_resp: Some(0x01),
+    requires_cluster_context: false,
+    requires_infobase_context: false,
+};
+
+pub const RPC_AGENT_ADMIN_REGISTER_META: crate::rpc::Meta = crate::rpc::Meta {
+    method_req: 0x04,
+    method_resp: None,
+    requires_cluster_context: false,
+    requires_infobase_context: false,
+};
+
+pub const RPC_AGENT_ADMIN_REMOVE_META: crate::rpc::Meta = crate::rpc::Meta {
+    method_req: 0x06,
+    method_resp: None,
     requires_cluster_context: false,
     requires_infobase_context: false,
 };
 
 pub const RPC_AGENT_VERSION_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: crate::rac_wire::METHOD_AGENT_VERSION_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_AGENT_VERSION_RESP),
+    method_req: 0x87,
+    method_resp: Some(0x88),
     requires_cluster_context: false,
     requires_infobase_context: false,
 };

@@ -152,7 +152,7 @@ impl ProtocolCodec for RacProtocolImpl {
         body.extend_from_slice(&cluster);
         body.extend_from_slice(&[0x00, 0x00]);
         Ok(SerializedRpc {
-            payload: encode_rpc(crate::rac_wire::METHOD_INFOBASE_CONTEXT, &body),
+            payload: encode_rpc(crate::rac_wire::METHOD_INFOBASE_AUTH, &body),
             expect_method: None,
         })
     }

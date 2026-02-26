@@ -84,7 +84,7 @@ pub fn cluster_auth_optional<'a>(
 }
 
 fn decode_auth_reply(payload: &[u8]) -> AuthReply {
-    let mut cursor = RecordCursor::new(payload, 0);
+    let mut cursor = RecordCursor::new(payload);
     if cursor.remaining_len() < 4 {
         return AuthReply {
             acknowledged: false,
@@ -141,7 +141,7 @@ fn parse_error_message(body: &[u8]) -> Option<String> {
 }
 
 fn parse_error_envelope(body: &[u8]) -> Option<String> {
-    let mut cursor = RecordCursor::new(body, 0);
+    let mut cursor = RecordCursor::new(body);
     cursor.take_str8_opt().ok()??;
     parse_message_variants(cursor.remaining_slice())
 }
@@ -149,114 +149,18 @@ fn parse_error_envelope(body: &[u8]) -> Option<String> {
 fn parse_message_variants(body: &[u8]) -> Option<String> {
     parse_str8(body)
         .or_else(|| parse_str8_opt(body))
-        .or_else(|| parse_str16_be(body))
-        .or_else(|| parse_str16_le(body))
-        .or_else(|| parse_str32_be(body))
-        .or_else(|| parse_code_and_str8(body))
-        .or_else(|| parse_code_and_str16_be(body))
-        .or_else(|| parse_code_and_str16_le(body))
-        .or_else(|| parse_code_and_str32_be(body))
-        .or_else(|| parse_code_and_rest_utf8(body))
-        .or_else(|| decode_message_from_bytes(body))
 }
 
 fn parse_str8(body: &[u8]) -> Option<String> {
-    let mut cursor = RecordCursor::new(body, 0);
+    let mut cursor = RecordCursor::new(body);
     let value = cursor.take_str8().ok()?;
     normalize_message(value)
 }
 
 fn parse_str8_opt(body: &[u8]) -> Option<String> {
-    let mut cursor = RecordCursor::new(body, 0);
+    let mut cursor = RecordCursor::new(body);
     let value = cursor.take_str8_opt().ok()??;
     normalize_message(value)
-}
-
-fn parse_str16_be(body: &[u8]) -> Option<String> {
-    parse_len_prefixed(body, |cursor| {
-        cursor.take_u16_be().ok().map(|value| value as usize)
-    })
-}
-
-fn parse_str16_le(body: &[u8]) -> Option<String> {
-    parse_len_prefixed(body, |cursor| {
-        cursor.take_u16_le().ok().map(|value| value as usize)
-    })
-}
-
-fn parse_str32_be(body: &[u8]) -> Option<String> {
-    parse_len_prefixed(body, |cursor| {
-        cursor
-            .take_u32_be()
-            .ok()
-            .and_then(|value| usize::try_from(value).ok())
-    })
-}
-
-fn parse_code_and_str8(body: &[u8]) -> Option<String> {
-    let mut cursor = RecordCursor::new(body, 0);
-    cursor.take_u32_be().ok()?;
-    let value = cursor.take_str8().ok()?;
-    normalize_message(value)
-}
-
-fn parse_code_and_str16_be(body: &[u8]) -> Option<String> {
-    parse_code_and_len_prefixed(body, |cursor| {
-        cursor.take_u16_be().ok().map(|value| value as usize)
-    })
-}
-
-fn parse_code_and_str16_le(body: &[u8]) -> Option<String> {
-    parse_code_and_len_prefixed(body, |cursor| {
-        cursor.take_u16_le().ok().map(|value| value as usize)
-    })
-}
-
-fn parse_code_and_str32_be(body: &[u8]) -> Option<String> {
-    parse_code_and_len_prefixed(body, |cursor| {
-        cursor
-            .take_u32_be()
-            .ok()
-            .and_then(|value| usize::try_from(value).ok())
-    })
-}
-
-fn parse_code_and_rest_utf8(body: &[u8]) -> Option<String> {
-    let mut cursor = RecordCursor::new(body, 0);
-    cursor.take_u32_be().ok()?;
-    decode_message_from_bytes(cursor.remaining_slice())
-}
-
-fn parse_len_prefixed<F>(body: &[u8], read_len: F) -> Option<String>
-where
-    F: FnOnce(&mut RecordCursor<'_>) -> Option<usize>,
-{
-    let mut cursor = RecordCursor::new(body, 0);
-    let len = read_len(&mut cursor)?;
-    if cursor.remaining_len() < len {
-        return None;
-    }
-    let bytes = cursor.take_bytes(len).ok()?;
-    decode_message_from_bytes(&bytes)
-}
-
-fn parse_code_and_len_prefixed<F>(body: &[u8], read_len: F) -> Option<String>
-where
-    F: FnOnce(&mut RecordCursor<'_>) -> Option<usize>,
-{
-    let mut cursor = RecordCursor::new(body, 0);
-    cursor.take_u32_be().ok()?;
-    let len = read_len(&mut cursor)?;
-    if cursor.remaining_len() < len {
-        return None;
-    }
-    let bytes = cursor.take_bytes(len).ok()?;
-    decode_message_from_bytes(&bytes)
-}
-
-fn decode_message_from_bytes(bytes: &[u8]) -> Option<String> {
-    let value = std::str::from_utf8(bytes).ok()?;
-    normalize_message(value.to_string())
 }
 
 fn normalize_message(value: String) -> Option<String> {

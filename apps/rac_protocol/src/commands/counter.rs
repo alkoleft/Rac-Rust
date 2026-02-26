@@ -454,7 +454,7 @@ fn parse_counter_list_body(body: &[u8]) -> Result<Vec<CounterRecord>> {
     if body.is_empty() {
         return Ok(Vec::new());
     }
-    let mut cursor = RecordCursor::new(body, 0);
+    let mut cursor = RecordCursor::new(body);
     let count = cursor.take_u8()? as usize;
     let mut records = Vec::with_capacity(count);
     for _ in 0..count {
@@ -464,7 +464,7 @@ fn parse_counter_list_body(body: &[u8]) -> Result<Vec<CounterRecord>> {
 }
 
 fn parse_counter_info_body(body: &[u8]) -> Result<CounterRecord> {
-    let mut cursor = RecordCursor::new(body, 0);
+    let mut cursor = RecordCursor::new(body);
     CounterRecord::decode(&mut cursor)
 }
 
@@ -472,7 +472,7 @@ fn parse_counter_values_body(body: &[u8]) -> Result<Vec<CounterValuesRecord>> {
     if body.is_empty() {
         return Ok(Vec::new());
     }
-    let mut cursor = RecordCursor::new(body, 0);
+    let mut cursor = RecordCursor::new(body);
     let count = cursor.take_u8()? as usize;
     let mut records = Vec::with_capacity(count);
     for _ in 0..count {
@@ -485,7 +485,7 @@ fn parse_counter_accumulated_values_body(body: &[u8]) -> Result<Vec<CounterValue
     if body.is_empty() {
         return Ok(Vec::new());
     }
-    let mut cursor = RecordCursor::new(body, 0);
+    let mut cursor = RecordCursor::new(body);
     let count = cursor.take_u8()? as usize;
     let mut records = Vec::with_capacity(count);
     for _ in 0..count {
@@ -496,7 +496,7 @@ fn parse_counter_accumulated_values_body(body: &[u8]) -> Result<Vec<CounterValue
 
 #[cfg(test)]
 fn parse_counter_update_ack(payload: &[u8]) -> Result<bool> {
-    let mut cursor = RecordCursor::new(payload, 0);
+    let mut cursor = RecordCursor::new(payload);
     if cursor.remaining_len() < 4 {
         return Err(crate::error::RacError::Decode("counter update ack truncated"));
     }
@@ -506,7 +506,7 @@ fn parse_counter_update_ack(payload: &[u8]) -> Result<bool> {
 
 #[cfg(test)]
 fn parse_counter_clear_ack(payload: &[u8]) -> Result<bool> {
-    let mut cursor = RecordCursor::new(payload, 0);
+    let mut cursor = RecordCursor::new(payload);
     if cursor.remaining_len() < 4 {
         return Err(crate::error::RacError::Decode("counter clear ack truncated"));
     }
@@ -516,7 +516,7 @@ fn parse_counter_clear_ack(payload: &[u8]) -> Result<bool> {
 
 #[cfg(test)]
 fn parse_counter_remove_ack(payload: &[u8]) -> Result<bool> {
-    let mut cursor = RecordCursor::new(payload, 0);
+    let mut cursor = RecordCursor::new(payload);
     if cursor.remaining_len() < 4 {
         return Err(crate::error::RacError::Decode("counter remove ack truncated"));
     }

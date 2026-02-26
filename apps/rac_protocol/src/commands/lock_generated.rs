@@ -71,28 +71,12 @@ impl LockRecordRaw {
     }
 }
 
-#[derive(Debug, Clone)]
-pub struct LockListRequest {
-    pub cluster: Uuid16,
-}
-
-impl LockListRequest {
-    pub fn encoded_len(&self) -> usize {
-        16
-    }
-
-    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
-        out.extend_from_slice(&self.cluster);
-        Ok(())
-    }
-}
-
 
 
 
 pub const RPC_LOCK_LIST_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: crate::rac_wire::METHOD_LOCK_LIST_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_LOCK_LIST_RESP),
+    method_req: 0x48,
+    method_resp: Some(0x49),
     requires_cluster_context: true,
     requires_infobase_context: false,
 };

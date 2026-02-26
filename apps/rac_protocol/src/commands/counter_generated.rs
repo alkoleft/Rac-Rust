@@ -121,224 +121,62 @@ impl CounterValuesRecord {
     }
 }
 
-#[derive(Debug, Clone)]
-pub struct CounterListRequest {
-    pub cluster: Uuid16,
-}
-
-impl CounterListRequest {
-    pub fn encoded_len(&self) -> usize {
-        16
-    }
-
-    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
-        out.extend_from_slice(&self.cluster);
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct CounterInfoRequest {
-    pub cluster: Uuid16,
-    pub counter: String,
-}
-
-impl CounterInfoRequest {
-    pub fn encoded_len(&self) -> usize {
-        16 + 1 + self.counter.len()
-    }
-
-    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&encode_with_len_u8(self.counter.as_bytes())?);
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct CounterUpdateRequest {
-    pub cluster: Uuid16,
-    pub name: String,
-    pub collection_time: u64,
-    pub group: u8,
-    pub filter_type: u8,
-    pub filter: String,
-    pub duration: u8,
-    pub cpu_time: u8,
-    pub duration_dbms: u8,
-    pub service: u8,
-    pub memory: u8,
-    pub read: u8,
-    pub write: u8,
-    pub dbms_bytes: u8,
-    pub call: u8,
-    pub number_of_active_sessions: u8,
-    pub number_of_sessions: u8,
-    pub descr: String,
-}
-
-impl CounterUpdateRequest {
-    pub fn encoded_len(&self) -> usize {
-        16 + 1 + self.name.len() + 8 + 1 + 1 + 1 + self.filter.len() + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + self.descr.len()
-    }
-
-    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&encode_with_len_u8(self.name.as_bytes())?);
-        out.extend_from_slice(&self.collection_time.to_be_bytes());
-        out.push(self.group);
-        out.push(self.filter_type);
-        out.extend_from_slice(&encode_with_len_u8(self.filter.as_bytes())?);
-        out.push(self.duration);
-        out.push(self.cpu_time);
-        out.push(self.duration_dbms);
-        out.push(self.service);
-        out.push(self.memory);
-        out.push(self.read);
-        out.push(self.write);
-        out.push(self.dbms_bytes);
-        out.push(self.call);
-        out.push(self.number_of_active_sessions);
-        out.push(self.number_of_sessions);
-        out.extend_from_slice(&encode_with_len_u8(self.descr.as_bytes())?);
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct CounterRemoveRequest {
-    pub cluster: Uuid16,
-    pub name: String,
-}
-
-impl CounterRemoveRequest {
-    pub fn encoded_len(&self) -> usize {
-        16 + 1 + self.name.len()
-    }
-
-    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&encode_with_len_u8(self.name.as_bytes())?);
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct CounterClearRequest {
-    pub cluster: Uuid16,
-    pub counter: String,
-    pub object: String,
-}
-
-impl CounterClearRequest {
-    pub fn encoded_len(&self) -> usize {
-        16 + 1 + self.counter.len() + 1 + self.object.len()
-    }
-
-    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&encode_with_len_u8(self.counter.as_bytes())?);
-        out.extend_from_slice(&encode_with_len_u8(self.object.as_bytes())?);
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct CounterValuesRequest {
-    pub cluster: Uuid16,
-    pub counter: String,
-    pub object: String,
-}
-
-impl CounterValuesRequest {
-    pub fn encoded_len(&self) -> usize {
-        16 + 1 + self.counter.len() + 1 + self.object.len()
-    }
-
-    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&encode_with_len_u8(self.counter.as_bytes())?);
-        out.extend_from_slice(&encode_with_len_u8(self.object.as_bytes())?);
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct CounterAccumulatedValuesRequest {
-    pub cluster: Uuid16,
-    pub counter: String,
-    pub object: String,
-}
-
-impl CounterAccumulatedValuesRequest {
-    pub fn encoded_len(&self) -> usize {
-        16 + 1 + self.counter.len() + 1 + self.object.len()
-    }
-
-    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&encode_with_len_u8(self.counter.as_bytes())?);
-        out.extend_from_slice(&encode_with_len_u8(self.object.as_bytes())?);
-        Ok(())
-    }
-}
-
 
 
 pub fn parse_counter_info_body(body: &[u8]) -> Result<CounterRecord> {
     if body.is_empty() {
         return Err(RacError::Decode("counter info empty body"));
     }
-    let mut cursor = RecordCursor::new(body, 0);
+    let mut cursor = RecordCursor::new(body);
     CounterRecord::decode(&mut cursor)
 }
 
 
 pub const RPC_COUNTER_LIST_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: crate::rac_wire::METHOD_COUNTER_LIST_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_COUNTER_LIST_RESP),
+    method_req: 0x76,
+    method_resp: Some(0x77),
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_COUNTER_INFO_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: crate::rac_wire::METHOD_COUNTER_INFO_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_COUNTER_INFO_RESP),
+    method_req: 0x78,
+    method_resp: Some(0x79),
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_COUNTER_UPDATE_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: crate::rac_wire::METHOD_COUNTER_UPDATE_REQ,
+    method_req: 0x7a,
     method_resp: None,
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_COUNTER_REMOVE_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: crate::rac_wire::METHOD_COUNTER_REMOVE_REQ,
+    method_req: 0x7b,
     method_resp: None,
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_COUNTER_CLEAR_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: crate::rac_wire::METHOD_COUNTER_CLEAR_REQ,
+    method_req: 0x84,
     method_resp: None,
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_COUNTER_VALUES_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: crate::rac_wire::METHOD_COUNTER_VALUES_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_COUNTER_VALUES_RESP),
+    method_req: 0x82,
+    method_resp: Some(0x83),
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_COUNTER_ACCUMULATED_VALUES_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: crate::rac_wire::METHOD_COUNTER_ACCUMULATED_VALUES_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_COUNTER_ACCUMULATED_VALUES_RESP),
+    method_req: 0x85,
+    method_resp: Some(0x86),
     requires_cluster_context: true,
     requires_infobase_context: false,
 };

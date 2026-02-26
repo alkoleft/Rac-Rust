@@ -464,7 +464,7 @@ fn parse_service_setting_list(body: &[u8]) -> Result<Vec<ServiceSettingRecord>> 
     if body.is_empty() {
         return Ok(Vec::new());
     }
-    let mut cursor = RecordCursor::new(body, 0);
+    let mut cursor = RecordCursor::new(body);
     let count = cursor.take_u8()? as usize;
     let mut records = Vec::with_capacity(count);
     for _ in 0..count {
@@ -477,7 +477,7 @@ fn parse_service_setting_info(body: &[u8]) -> Result<ServiceSettingRecord> {
     if body.is_empty() {
         return Err(RacError::Decode("service-setting info empty body"));
     }
-    let mut cursor = RecordCursor::new(body, 0);
+    let mut cursor = RecordCursor::new(body);
     parse_service_setting_record(&mut cursor)
 }
 
@@ -505,7 +505,7 @@ fn parse_service_setting_transfer_data_dirs(
     if body.is_empty() {
         return Ok(Vec::new());
     }
-    let mut cursor = RecordCursor::new(body, 0);
+    let mut cursor = RecordCursor::new(body);
     let count = cursor.take_u8()? as usize;
     let mut records = Vec::with_capacity(count);
     for _ in 0..count {

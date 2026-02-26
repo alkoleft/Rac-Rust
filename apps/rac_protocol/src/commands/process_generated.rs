@@ -142,61 +142,27 @@ impl ProcessRecord {
     }
 }
 
-#[derive(Debug, Clone)]
-pub struct ProcessListRequest {
-    pub cluster: Uuid16,
-}
-
-impl ProcessListRequest {
-    pub fn encoded_len(&self) -> usize {
-        16
-    }
-
-    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
-        out.extend_from_slice(&self.cluster);
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct ProcessInfoRequest {
-    pub cluster: Uuid16,
-    pub process: Uuid16,
-}
-
-impl ProcessInfoRequest {
-    pub fn encoded_len(&self) -> usize {
-        16 + 16
-    }
-
-    pub fn encode_body(&self, out: &mut Vec<u8>) -> Result<()> {
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&self.process);
-        Ok(())
-    }
-}
-
 
 
 pub fn parse_process_info_body(body: &[u8]) -> Result<ProcessRecord> {
     if body.is_empty() {
         return Err(RacError::Decode("process info empty body"));
     }
-    let mut cursor = RecordCursor::new(body, 0);
+    let mut cursor = RecordCursor::new(body);
     ProcessRecord::decode(&mut cursor)
 }
 
 
 pub const RPC_PROCESS_LIST_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: crate::rac_wire::METHOD_PROCESS_LIST_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_PROCESS_LIST_RESP),
+    method_req: 0x1d,
+    method_resp: Some(0x1e),
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_PROCESS_INFO_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: crate::rac_wire::METHOD_PROCESS_INFO_REQ,
-    method_resp: Some(crate::rac_wire::METHOD_PROCESS_INFO_RESP),
+    method_req: 0x1f,
+    method_resp: Some(0x20),
     requires_cluster_context: true,
     requires_infobase_context: false,
 };

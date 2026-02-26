@@ -123,7 +123,7 @@ fn parse_process_list_records(body: &[u8]) -> Result<Vec<ProcessRecord>> {
     if body.is_empty() {
         return Ok(Vec::new());
     }
-    let mut cursor = RecordCursor::new(body, 0);
+    let mut cursor = RecordCursor::new(body);
     let expected = cursor.take_u8()? as usize;
     if expected == 0 {
         return Ok(Vec::new());
@@ -136,7 +136,7 @@ fn parse_process_list_records(body: &[u8]) -> Result<Vec<ProcessRecord>> {
 }
 
 fn parse_process_record_1cv8c(data: &[u8]) -> Result<ProcessRecord> {
-    let mut cursor = RecordCursor::new(data, 0);
+    let mut cursor = RecordCursor::new(data);
     parse_process_record(&mut cursor)
 }
 

@@ -3,23 +3,23 @@
 Protocol version (service negotiation): `v8.service.Admin.Cluster` `16.0` (observed in captures).
 
 Sources (v11):
-- `artifacts/rac/v11_help/limit_help.txt`
-- `artifacts/rac/v11_help/limit_list.out`
-- `artifacts/rac/v11_help/limit_info.out`
+- `artifacts/rac/v11/help/limit_help.txt`
+- `artifacts/rac/v11/help/limit_list.out`
+- `artifacts/rac/v11/help/limit_info.out`
 - `docs/rac/documentation/rac_cli_method_map.generated.md` (method IDs)
 
 ## Limit List
 
 Source capture:
-- `artifacts/rac/v11_limit_list_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11_limit_list_ro_server_to_client.decode.txt`
+- `artifacts/rac/v11/v11_limit_list_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11/v11_limit_list_ro_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/v11_limit_list_ro_response.hex`
+- `artifacts/rac/v11/v11_limit_list_ro_response.hex`
 
 RAC output reference:
-- `artifacts/rac/v11_limit_list_ro_rac.out`
-- `artifacts/rac/v11_help/limit_list.out`
+- `artifacts/rac/v11/v11_limit_list_ro_rac.out`
+- `artifacts/rac/v11/help/limit_list.out`
 
 ### Поля ответа (из `rac`)
 
@@ -112,15 +112,15 @@ Notes:
 ## Limit Info
 
 Source capture:
-- `artifacts/rac/v11_limit_info_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11_limit_info_ro_server_to_client.decode.txt`
+- `artifacts/rac/v11/v11_limit_info_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11/v11_limit_info_ro_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/v11_limit_info_ro_response.hex`
+- `artifacts/rac/v11/v11_limit_info_ro_response.hex`
 
 RAC output reference:
-- `artifacts/rac/v11_limit_info_ro_rac.out`
-- `artifacts/rac/v11_help/limit_info.out`
+- `artifacts/rac/v11/v11_limit_info_ro_rac.out`
+- `artifacts/rac/v11/help/limit_info.out`
 
 ### Поля ответа (из `rac`)
 

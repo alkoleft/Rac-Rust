@@ -3,22 +3,22 @@
 Protocol version (service negotiation): `v8.service.Admin.Cluster` `11.0` (per v11 help).
 
 Sources (v11):
-- `artifacts/rac/v11_help/profile_help.txt`
-- `artifacts/rac/v11_help/profile_list.out`
-- `artifacts/rac/v11_profile_list_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11_profile_list_ro_server_to_client.decode.txt`
-- `artifacts/rac/v11_profile_list_ro_response.hex`
-- `artifacts/rac/v11_profile_list_ro_rac.out`
+- `artifacts/rac/v11/help/profile_help.txt`
+- `artifacts/rac/v11/help/profile_list.out`
+- `artifacts/rac/v11/v11_profile_list_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11/v11_profile_list_ro_server_to_client.decode.txt`
+- `artifacts/rac/v11/v11_profile_list_ro_response.hex`
+- `artifacts/rac/v11/v11_profile_list_ro_rac.out`
 
 ## Profile List
 
 Sources:
-- `artifacts/rac/v11_help/profile_help.txt`
-- `artifacts/rac/v11_help/profile_list.out`
-- `artifacts/rac/v11_profile_list_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11_profile_list_ro_server_to_client.decode.txt`
-- `artifacts/rac/v11_profile_list_ro_response.hex`
-- `artifacts/rac/v11_profile_list_ro_rac.out`
+- `artifacts/rac/v11/help/profile_help.txt`
+- `artifacts/rac/v11/help/profile_list.out`
+- `artifacts/rac/v11/v11_profile_list_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11/v11_profile_list_ro_server_to_client.decode.txt`
+- `artifacts/rac/v11/v11_profile_list_ro_response.hex`
+- `artifacts/rac/v11/v11_profile_list_ro_rac.out`
 
 ### RPC
 
@@ -45,7 +45,7 @@ Observed response prefix (payload hex): `01 00 00 01 5a 00`.
 ## Profile Update
 
 Sources:
-- `artifacts/rac/v11_help/profile_help.txt`
+- `artifacts/rac/v11/help/profile_help.txt`
 
 ### RPC
 
@@ -80,7 +80,7 @@ Not captured yet (likely ACK-only).
 ## Profile Remove
 
 Sources:
-- `artifacts/rac/v11_help/profile_help.txt`
+- `artifacts/rac/v11/help/profile_help.txt`
 
 ### RPC
 
@@ -104,7 +104,7 @@ Not captured yet (likely ACK-only).
 ## Profile ACL Directory List
 
 Sources:
-- `artifacts/rac/v11_help/profile_help.txt`
+- `artifacts/rac/v11/help/profile_help.txt`
 
 ### RPC
 
@@ -129,7 +129,7 @@ Not captured yet.
 ## Profile ACL Directory Update
 
 Sources:
-- `artifacts/rac/v11_help/profile_help.txt`
+- `artifacts/rac/v11/help/profile_help.txt`
 
 ### RPC
 
@@ -159,7 +159,7 @@ Not captured yet (likely ACK-only).
 ## Profile ACL Directory Remove
 
 Sources:
-- `artifacts/rac/v11_help/profile_help.txt`
+- `artifacts/rac/v11/help/profile_help.txt`
 
 ### RPC
 
@@ -185,7 +185,7 @@ Not captured yet (likely ACK-only).
 ## Profile ACL COM List
 
 Sources:
-- `artifacts/rac/v11_help/profile_help.txt`
+- `artifacts/rac/v11/help/profile_help.txt`
 
 ### RPC
 
@@ -210,7 +210,7 @@ Not captured yet.
 ## Profile ACL COM Update
 
 Sources:
-- `artifacts/rac/v11_help/profile_help.txt`
+- `artifacts/rac/v11/help/profile_help.txt`
 
 ### RPC
 
@@ -240,7 +240,7 @@ Not captured yet (likely ACK-only).
 ## Profile ACL COM Remove
 
 Sources:
-- `artifacts/rac/v11_help/profile_help.txt`
+- `artifacts/rac/v11/help/profile_help.txt`
 
 ### RPC
 
@@ -266,7 +266,7 @@ Not captured yet (likely ACK-only).
 ## Profile ACL Addin List
 
 Sources:
-- `artifacts/rac/v11_help/profile_help.txt`
+- `artifacts/rac/v11/help/profile_help.txt`
 
 ### RPC
 
@@ -291,7 +291,7 @@ Not captured yet.
 ## Profile ACL Addin Update
 
 Sources:
-- `artifacts/rac/v11_help/profile_help.txt`
+- `artifacts/rac/v11/help/profile_help.txt`
 
 ### RPC
 
@@ -319,7 +319,7 @@ Not captured yet (likely ACK-only).
 ## Profile ACL Addin Remove
 
 Sources:
-- `artifacts/rac/v11_help/profile_help.txt`
+- `artifacts/rac/v11/help/profile_help.txt`
 
 ### RPC
 
@@ -345,7 +345,7 @@ Not captured yet (likely ACK-only).
 ## Profile ACL Module List
 
 Sources:
-- `artifacts/rac/v11_help/profile_help.txt`
+- `artifacts/rac/v11/help/profile_help.txt`
 
 ### RPC
 
@@ -370,7 +370,7 @@ Not captured yet.
 ## Profile ACL Module Update
 
 Sources:
-- `artifacts/rac/v11_help/profile_help.txt`
+- `artifacts/rac/v11/help/profile_help.txt`
 
 ### RPC
 
@@ -398,7 +398,7 @@ Not captured yet (likely ACK-only).
 ## Profile ACL Module Remove
 
 Sources:
-- `artifacts/rac/v11_help/profile_help.txt`
+- `artifacts/rac/v11/help/profile_help.txt`
 
 ### RPC
 
@@ -424,7 +424,7 @@ Not captured yet (likely ACK-only).
 ## Profile ACL App List
 
 Sources:
-- `artifacts/rac/v11_help/profile_help.txt`
+- `artifacts/rac/v11/help/profile_help.txt`
 
 ### RPC
 
@@ -449,7 +449,7 @@ Not captured yet.
 ## Profile ACL App Update
 
 Sources:
-- `artifacts/rac/v11_help/profile_help.txt`
+- `artifacts/rac/v11/help/profile_help.txt`
 
 ### RPC
 
@@ -477,7 +477,7 @@ Not captured yet (likely ACK-only).
 ## Profile ACL App Remove
 
 Sources:
-- `artifacts/rac/v11_help/profile_help.txt`
+- `artifacts/rac/v11/help/profile_help.txt`
 
 ### RPC
 
@@ -503,7 +503,7 @@ Not captured yet (likely ACK-only).
 ## Profile ACL Inet List
 
 Sources:
-- `artifacts/rac/v11_help/profile_help.txt`
+- `artifacts/rac/v11/help/profile_help.txt`
 
 ### RPC
 
@@ -528,7 +528,7 @@ Not captured yet.
 ## Profile ACL Inet Update
 
 Sources:
-- `artifacts/rac/v11_help/profile_help.txt`
+- `artifacts/rac/v11/help/profile_help.txt`
 
 ### RPC
 
@@ -558,7 +558,7 @@ Not captured yet (likely ACK-only).
 ## Profile ACL Inet Remove
 
 Sources:
-- `artifacts/rac/v11_help/profile_help.txt`
+- `artifacts/rac/v11/help/profile_help.txt`
 
 ### RPC
 

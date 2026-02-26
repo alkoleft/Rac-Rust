@@ -3,11 +3,11 @@
 Protocol version (service negotiation): `v8.service.Admin.Cluster` `16.0` (observed in captures).
 
 Sources (v11):
-- `artifacts/rac/v11_help/infobase_help.txt`
-- `artifacts/rac/v11_help/infobase_list.out`
-- `artifacts/rac/v11_help/infobase_info.out`
-- `artifacts/rac/v11_help/infobase_summary_list.out`
-- `artifacts/rac/v11_help/infobase_summary_info.out`
+- `artifacts/rac/v11/help/infobase_help.txt`
+- `artifacts/rac/v11/help/infobase_list.out`
+- `artifacts/rac/v11/help/infobase_info.out`
+- `artifacts/rac/v11/help/infobase_summary_list.out`
+- `artifacts/rac/v11/help/infobase_summary_info.out`
 - `docs/rac/documentation/rac_cli_method_map.generated.md` (method IDs)
 
 Derived from `docs/rac/messages/rac_message_formats.md`.
@@ -28,7 +28,7 @@ Note:
 
 ### Infobase Summary List
 
-- **v11 output reference**: `artifacts/rac/v11_help/infobase_summary_list.out`
+- **v11 output reference**: `artifacts/rac/v11/help/infobase_summary_list.out`
 - **Request**: `0x09` (context), then method `0x2a`.
 - **Response**: method `0x2b`.
 - **Parameters**: `16 <cluster_uuid>`.
@@ -39,7 +39,7 @@ Note:
     - `u8 tag` (observed `0x2c`, meaning unknown).
     - `str8 descr` (observed `Description`).
     - `str8 name` (observed `yaxunit`).
-- **Evidence**: `artifacts/rac/v11_infobase_summary_list_ro_client_to_server.decode.txt`, `artifacts/rac/v11_infobase_summary_list_ro_server_to_client.decode.txt`, `artifacts/rac/v11_infobase_summary_list_ro_response.hex`, `artifacts/rac/v11_infobase_summary_list_ro_rac.out`.
+- **Evidence**: `artifacts/rac/v11/v11_infobase_summary_list_ro_client_to_server.decode.txt`, `artifacts/rac/v11/v11_infobase_summary_list_ro_server_to_client.decode.txt`, `artifacts/rac/v11/v11_infobase_summary_list_ro_response.hex`, `artifacts/rac/v11/v11_infobase_summary_list_ro_rac.out`.
 
 #### Поля ответа (из `rac`)
 
@@ -64,7 +64,7 @@ Observed request parameters for `rac infobase summary list` (v11).
 
 ### Infobase Info
 
-- **v11 output reference**: `artifacts/rac/v11_help/infobase_info.out`
+- **v11 output reference**: `artifacts/rac/v11/help/infobase_info.out`
 - **v11 capture status**: no `v11_` success capture yet; fields below require v11 confirmation.
 - **Request**: `0x09` (context), then method `0x30` (observed).
 - **Response**: method `0x31`.
@@ -136,7 +136,7 @@ Observed request parameters for `rac infobase info` (v11).
 
 ### Infobase Summary Info
 
-- **v11 output reference**: `artifacts/rac/v11_help/infobase_summary_info.out`
+- **v11 output reference**: `artifacts/rac/v11/help/infobase_summary_info.out`
 - **Request**: `0x09` (context), then method `0x2e`.
 - **Response**: method `0x2f`.
 - **Parameters**: `16 <cluster_uuid> <infobase_uuid>`.
@@ -161,7 +161,7 @@ Observed request parameters for `rac infobase summary info` (v11).
 ### Infobase Summary Update
 
 Sources:
-- `artifacts/rac/v11_help/infobase_help.txt` (command parameters)
+- `artifacts/rac/v11/help/infobase_help.txt` (command parameters)
 
 ### RPC
 
@@ -186,7 +186,7 @@ Output not captured yet. Likely ACK-only.
 ### Infobase Create
 
 Sources:
-- `artifacts/rac/v11_help/infobase_help.txt` (command parameters)
+- `artifacts/rac/v11/help/infobase_help.txt` (command parameters)
 
 ### RPC
 
@@ -222,7 +222,7 @@ Output not captured yet. Likely returns created `infobase` UUID or ACK-only.
 ### Infobase Update
 
 Sources:
-- `artifacts/rac/v11_help/infobase_help.txt` (command parameters)
+- `artifacts/rac/v11/help/infobase_help.txt` (command parameters)
 
 ### RPC
 
@@ -267,7 +267,7 @@ Output not captured yet. Likely ACK-only.
 ### Infobase Drop
 
 Sources:
-- `artifacts/rac/v11_help/infobase_help.txt` (command parameters)
+- `artifacts/rac/v11/help/infobase_help.txt` (command parameters)
 
 ### RPC
 

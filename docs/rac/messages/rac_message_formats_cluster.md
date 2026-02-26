@@ -3,23 +3,23 @@
 Protocol version (service negotiation): `v8.service.Admin.Cluster` `16.0` (observed in captures).
 
 Sources (v11):
-- `artifacts/rac/v11_help/cluster_help.txt`
-- `artifacts/rac/v11_help/cluster_list.out`
-- `artifacts/rac/v11_help/cluster_info.out`
+- `artifacts/rac/v11/help/cluster_help.txt`
+- `artifacts/rac/v11/help/cluster_list.out`
+- `artifacts/rac/v11/help/cluster_info.out`
 - `docs/rac/documentation/rac_cli_method_map.generated.md` (method IDs)
 
 ## Cluster List
 
 Source capture:
-- `artifacts/rac/v11_cluster_list_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11_cluster_list_ro_server_to_client.decode.txt`
+- `artifacts/rac/v11/v11_cluster_list_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11/v11_cluster_list_ro_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/v11_cluster_list_ro_response.hex`
+- `artifacts/rac/v11/v11_cluster_list_ro_response.hex`
 
 RAC output reference:
-- `artifacts/rac/v11_cluster_list_ro_rac.out`
-- `artifacts/rac/v11_help/cluster_list.out`
+- `artifacts/rac/v11/v11_cluster_list_ro_rac.out`
+- `artifacts/rac/v11/help/cluster_list.out`
 
 ## Fields From `rac` Output
 
@@ -135,13 +135,13 @@ From the observed record tail:
 ## Cluster Info
 
 Source capture:
-- `artifacts/rac/v11_cluster_info_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11_cluster_info_ro_server_to_client.decode.txt`
+- `artifacts/rac/v11/v11_cluster_info_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11/v11_cluster_info_ro_server_to_client.decode.txt`
 
 RAC output reference:
 - `rac cluster info --cluster <id>`
-- `artifacts/rac/v11_cluster_info_ro_rac.out`
-- `artifacts/rac/v11_help/cluster_info.out`
+- `artifacts/rac/v11/v11_cluster_info_ro_rac.out`
+- `artifacts/rac/v11/help/cluster_info.out`
 
 ## Fields From `rac` Output
 
@@ -179,7 +179,7 @@ Payload example:
 
 RAC output reference:
 - `rac cluster admin list --cluster <id> --cluster-user <user> --cluster-pwd <pwd>`
-- `artifacts/rac/v11_help/cluster_help.txt`
+- `artifacts/rac/v11/help/cluster_help.txt`
 
 ## Fields From `rac` Output
 
@@ -275,7 +275,7 @@ Offsets are relative to the start of the method body.
 ## Cluster Admin Remove
 
 Sources:
-- `artifacts/rac/v11_help/cluster_help.txt`
+- `artifacts/rac/v11/help/cluster_help.txt`
 
 ### RPC Envelope
 
@@ -299,7 +299,7 @@ Not captured yet (likely ACK-only).
 ## Cluster Insert
 
 Sources:
-- `artifacts/rac/v11_help/cluster_help.txt`
+- `artifacts/rac/v11/help/cluster_help.txt`
 
 ### RPC Envelope
 
@@ -334,7 +334,7 @@ Not captured yet (likely created `cluster` UUID or ACK-only).
 ## Cluster Update
 
 Sources:
-- `artifacts/rac/v11_help/cluster_help.txt`
+- `artifacts/rac/v11/help/cluster_help.txt`
 
 ### RPC Envelope
 
@@ -368,7 +368,7 @@ Not captured yet (likely ACK-only).
 ## Cluster Remove
 
 Sources:
-- `artifacts/rac/v11_help/cluster_help.txt`
+- `artifacts/rac/v11/help/cluster_help.txt`
 
 ### RPC Envelope
 

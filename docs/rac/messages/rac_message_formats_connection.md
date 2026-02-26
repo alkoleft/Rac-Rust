@@ -3,17 +3,17 @@
 Protocol version (service negotiation): `v8.service.Admin.Cluster` `16.0` (observed in captures).
 
 Sources (v11):
-- `artifacts/rac/v11_help/connection_help.txt`
-- `artifacts/rac/v11_help/connection_list.out`
-- `artifacts/rac/v11_help/connection_info.out`
+- `artifacts/rac/v11/help/connection_help.txt`
+- `artifacts/rac/v11/help/connection_list.out`
+- `artifacts/rac/v11/help/connection_info.out`
 - `docs/rac/documentation/rac_cli_method_map.generated.md` (method IDs)
 
 Source capture:
-- `artifacts/rac/v11_connection_list_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11_connection_list_ro_server_to_client.decode.txt`
+- `artifacts/rac/v11/v11_connection_list_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11/v11_connection_list_ro_server_to_client.decode.txt`
 
 RAC output reference:
-- `artifacts/rac/v11_connection_list_ro_rac.out`
+- `artifacts/rac/v11/v11_connection_list_ro_rac.out`
 
 ## Поля ответа (из `rac`)
 
@@ -104,7 +104,7 @@ Observed request parameters for `rac connection list` (v11 help).
 ## Connection Info
 
 Source (v11 output):
-- `artifacts/rac/v11_help/connection_info.out`
+- `artifacts/rac/v11/help/connection_info.out`
 
 ### RPC
 
@@ -129,7 +129,7 @@ Observed request parameters for `rac connection info` (v11 help).
 ## Connection Disconnect
 
 Sources:
-- `artifacts/rac/v11_help/connection_help.txt`
+- `artifacts/rac/v11/help/connection_help.txt`
 
 ### RPC
 

@@ -3,22 +3,22 @@
 Protocol version (service negotiation): `v8.service.Admin.Cluster` `11.0` (per v11 help).
 
 Sources (v11):
-- `artifacts/rac/v11_help/service_help.txt`
-- `artifacts/rac/v11_help/service_list.out`
-- `artifacts/rac/v11_service_list_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11_service_list_ro_server_to_client.decode.txt`
-- `artifacts/rac/v11_service_list_ro_response.hex`
-- `artifacts/rac/v11_service_list_ro_rac.out`
+- `artifacts/rac/v11/help/service_help.txt`
+- `artifacts/rac/v11/help/service_list.out`
+- `artifacts/rac/v11/v11_service_list_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11/v11_service_list_ro_server_to_client.decode.txt`
+- `artifacts/rac/v11/v11_service_list_ro_response.hex`
+- `artifacts/rac/v11/v11_service_list_ro_rac.out`
 
 ## Service List
 
 Sources:
-- `artifacts/rac/v11_help/service_help.txt`
-- `artifacts/rac/v11_help/service_list.out`
-- `artifacts/rac/v11_service_list_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11_service_list_ro_server_to_client.decode.txt`
-- `artifacts/rac/v11_service_list_ro_response.hex`
-- `artifacts/rac/v11_service_list_ro_rac.out`
+- `artifacts/rac/v11/help/service_help.txt`
+- `artifacts/rac/v11/help/service_list.out`
+- `artifacts/rac/v11/v11_service_list_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11/v11_service_list_ro_server_to_client.decode.txt`
+- `artifacts/rac/v11/v11_service_list_ro_response.hex`
+- `artifacts/rac/v11/v11_service_list_ro_rac.out`
 
 ### RPC
 

@@ -3,9 +3,9 @@
 Protocol version (service negotiation): `v8.service.Admin.Cluster` `16.0` (observed in captures).
 
 Sources (v11):
-- `artifacts/rac/v11_help/agent_help.txt`
-- `artifacts/rac/v11_help/agent_admin_list.out`
-- `artifacts/rac/v11_help/agent_version.out`
+- `artifacts/rac/v11/help/agent_help.txt`
+- `artifacts/rac/v11/help/agent_admin_list.out`
+- `artifacts/rac/v11/help/agent_version.out`
 - `docs/rac/documentation/rac_cli_method_map.generated.md` (method IDs)
 
 Aligned with current decoder implementation in `apps/rac_protocol/src/commands/agent_generated.rs`.
@@ -13,15 +13,15 @@ Aligned with current decoder implementation in `apps/rac_protocol/src/commands/a
 ## Agent Admin List
 
 Source capture:
-- `artifacts/rac/v11_agent_admin_list_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11_agent_admin_list_ro_server_to_client.decode.txt`
+- `artifacts/rac/v11/v11_agent_admin_list_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11/v11_agent_admin_list_ro_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/v11_agent_admin_list_ro_response.hex`
+- `artifacts/rac/v11/v11_agent_admin_list_ro_response.hex`
 
 RAC output reference:
-- `artifacts/rac/v11_agent_admin_list_ro_rac.out`
-- `artifacts/rac/v11_help/agent_admin_list.out`
+- `artifacts/rac/v11/v11_agent_admin_list_ro_rac.out`
+- `artifacts/rac/v11/help/agent_admin_list.out`
 
 ### Поля ответа (из `rac`)
 
@@ -76,7 +76,7 @@ Payload structure (response body):
 
 Sources:
 - `docs/rac/documentation/rac_cli_method_map.generated.md` (method IDs)
-- `artifacts/rac/v11_help/agent_version.out` (v11 output)
+- `artifacts/rac/v11/help/agent_version.out` (v11 output)
 
 Notes:
 - No capture for this command yet; layout is aligned with decoder behavior.
@@ -121,7 +121,7 @@ Offsets are relative to the start of the response body.
 ## Agent Admin Register
 
 Sources:
-- `artifacts/rac/v11_help/agent_help.txt`
+- `artifacts/rac/v11/help/agent_help.txt`
 
 ### RPC
 
@@ -148,7 +148,7 @@ Not captured yet (likely ACK-only).
 ## Agent Admin Remove
 
 Sources:
-- `artifacts/rac/v11_help/agent_help.txt`
+- `artifacts/rac/v11/help/agent_help.txt`
 
 ### RPC
 

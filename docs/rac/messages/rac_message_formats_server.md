@@ -3,23 +3,23 @@
 Protocol version (service negotiation): `v8.service.Admin.Cluster` `16.0` (observed in captures).
 
 Sources (v11):
-- `artifacts/rac/v11_help/server_help.txt`
-- `artifacts/rac/v11_help/server_list.out`
-- `artifacts/rac/v11_help/server_info.out`
+- `artifacts/rac/v11/help/server_help.txt`
+- `artifacts/rac/v11/help/server_list.out`
+- `artifacts/rac/v11/help/server_info.out`
 - `docs/rac/documentation/rac_cli_method_map.generated.md` (method IDs)
 
 ## Server List
 
 Source capture:
-- `artifacts/rac/v11_server_list_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11_server_list_ro_server_to_client.decode.txt`
+- `artifacts/rac/v11/v11_server_list_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11/v11_server_list_ro_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/v11_server_list_ro_response.hex`
+- `artifacts/rac/v11/v11_server_list_ro_response.hex`
 
 RAC output reference:
-- `artifacts/rac/v11_server_list_ro_rac.out`
-- `artifacts/rac/v11_help/server_list.out`
+- `artifacts/rac/v11/v11_server_list_ro_rac.out`
+- `artifacts/rac/v11/help/server_list.out`
 
 ### Поля ответа (из `rac`)
 
@@ -106,15 +106,15 @@ Notes:
 ## Server Info
 
 Source capture:
-- `artifacts/rac/v11_server_info_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11_server_info_ro_server_to_client.decode.txt`
+- `artifacts/rac/v11/v11_server_info_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11/v11_server_info_ro_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/v11_server_info_ro_response.hex`
+- `artifacts/rac/v11/v11_server_info_ro_response.hex`
 
 RAC output reference:
-- `artifacts/rac/v11_server_info_ro_rac.out`
-- `artifacts/rac/v11_help/server_info.out`
+- `artifacts/rac/v11/v11_server_info_ro_rac.out`
+- `artifacts/rac/v11/help/server_info.out`
 
 ### Поля ответа (из `rac`)
 
@@ -163,7 +163,7 @@ Payload structure (method body):
 ## Server Insert
 
 Sources:
-- `artifacts/rac/v11_help/server_help.txt`
+- `artifacts/rac/v11/help/server_help.txt`
 
 ### RPC
 
@@ -202,7 +202,7 @@ Not captured yet (likely created `server` UUID or ACK-only).
 ## Server Update
 
 Sources:
-- `artifacts/rac/v11_help/server_help.txt`
+- `artifacts/rac/v11/help/server_help.txt`
 
 ### RPC
 
@@ -238,7 +238,7 @@ Not captured yet (likely ACK-only).
 ## Server Remove
 
 Sources:
-- `artifacts/rac/v11_help/server_help.txt`
+- `artifacts/rac/v11/help/server_help.txt`
 
 ### RPC
 

@@ -3,20 +3,20 @@
 Protocol version (service negotiation): `v8.service.Admin.Cluster` `16.0` (observed in captures).
 
 Sources (v11):
-- `artifacts/rac/v11_help/session_help.txt`
-- `artifacts/rac/v11_help/session_list.out`
-- `artifacts/rac/v11_help/session_info.out`
-- `artifacts/rac/v11_help/session_info_licenses.out`
+- `artifacts/rac/v11/help/session_help.txt`
+- `artifacts/rac/v11/help/session_list.out`
+- `artifacts/rac/v11/help/session_info.out`
+- `artifacts/rac/v11/help/session_info_licenses.out`
 - `docs/rac/documentation/rac_cli_method_map.generated.md` (method IDs)
 
 Aligned with current decoder implementation in `apps/rac_protocol/src/commands/session.rs`.
 
 ## Sources
 
-- `artifacts/rac/v11_session_list_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11_session_list_ro_server_to_client.decode.txt`
-- `artifacts/rac/v11_session_list_ro_response.hex`
-- `artifacts/rac/v11_session_list_ro_rac.out`
+- `artifacts/rac/v11/v11_session_list_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11/v11_session_list_ro_server_to_client.decode.txt`
+- `artifacts/rac/v11/v11_session_list_ro_response.hex`
+- `artifacts/rac/v11/v11_session_list_ro_rac.out`
 
 ## Commands
 
@@ -68,7 +68,7 @@ Observed request parameters for `rac session info` (v11).
 ### Session Terminate
 
 Sources:
-- `artifacts/rac/v11_help/session_help.txt`
+- `artifacts/rac/v11/help/session_help.txt`
 
 #### RPC
 
@@ -93,7 +93,7 @@ Not captured yet (likely ACK-only).
 ### Session Interrupt Current Server Call
 
 Sources:
-- `artifacts/rac/v11_help/session_help.txt`
+- `artifacts/rac/v11/help/session_help.txt`
 
 #### RPC
 

@@ -3,23 +3,23 @@
 Protocol version (service negotiation): `v8.service.Admin.Cluster` `16.0` (observed in captures).
 
 Sources (v11):
-- `artifacts/rac/v11_help/process_help.txt`
-- `artifacts/rac/v11_help/process_list.out`
-- `artifacts/rac/v11_help/process_info.out`
+- `artifacts/rac/v11/help/process_help.txt`
+- `artifacts/rac/v11/help/process_list.out`
+- `artifacts/rac/v11/help/process_info.out`
 - `docs/rac/documentation/rac_cli_method_map.generated.md` (method IDs)
 
 ## Process List
 
 Source capture:
-- `artifacts/rac/v11_process_list_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11_process_list_ro_server_to_client.decode.txt`
+- `artifacts/rac/v11/v11_process_list_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11/v11_process_list_ro_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/v11_process_list_ro_response.hex`
+- `artifacts/rac/v11/v11_process_list_ro_response.hex`
 
 RAC output reference:
-- `artifacts/rac/v11_process_list_ro_rac.out`
-- `artifacts/rac/v11_help/process_list.out`
+- `artifacts/rac/v11/v11_process_list_ro_rac.out`
+- `artifacts/rac/v11/help/process_list.out`
 
 ### Fields From `rac` Output
 
@@ -98,14 +98,14 @@ Offsets are relative to the start of a record.
 ## Process List (`--licenses`)
 
 Source capture:
-- `artifacts/rac/v11_process_list_licenses_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11_process_list_licenses_ro_server_to_client.decode.txt`
+- `artifacts/rac/v11/v11_process_list_licenses_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11/v11_process_list_licenses_ro_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/v11_process_list_licenses_ro_response.hex`
+- `artifacts/rac/v11/v11_process_list_licenses_ro_response.hex`
 
 RAC output reference:
-- `artifacts/rac/v11_process_list_licenses_ro_rac.out`
+- `artifacts/rac/v11/v11_process_list_licenses_ro_rac.out`
 
 ### Fields From `rac` Output (`--licenses`)
 
@@ -183,15 +183,15 @@ Define `t0` as the byte immediately after `brief-presentation` (end of string). 
 ## Process Info
 
 Source capture:
-- `artifacts/rac/v11_process_info_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11_process_info_ro_server_to_client.decode.txt`
+- `artifacts/rac/v11/v11_process_info_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11/v11_process_info_ro_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/v11_process_info_ro_response.hex`
+- `artifacts/rac/v11/v11_process_info_ro_response.hex`
 
 RAC output reference:
-- `artifacts/rac/v11_process_info_ro_rac.out`
-- `artifacts/rac/v11_help/process_info.out`
+- `artifacts/rac/v11/v11_process_info_ro_rac.out`
+- `artifacts/rac/v11/help/process_info.out`
 
 ### Fields From `rac` Output
 
@@ -243,14 +243,14 @@ Offsets are relative to the start of the record.
 ## Process Info (`--licenses`)
 
 Source capture:
-- `artifacts/rac/v11_process_info_licenses_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11_process_info_licenses_ro_server_to_client.decode.txt`
+- `artifacts/rac/v11/v11_process_info_licenses_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11/v11_process_info_licenses_ro_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/v11_process_info_licenses_ro_response.hex`
+- `artifacts/rac/v11/v11_process_info_licenses_ro_response.hex`
 
 RAC output reference:
-- `artifacts/rac/v11_process_info_licenses_ro_rac.out`
+- `artifacts/rac/v11/v11_process_info_licenses_ro_rac.out`
 
 ### Fields From `rac` Output (`--licenses`)
 

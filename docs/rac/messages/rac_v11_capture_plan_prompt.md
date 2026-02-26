@@ -146,22 +146,22 @@
 Ниже — что уже есть в `artifacts/rac/` и чего нет. Это не заменяет новые захваты, а лишь фиксирует текущее состояние.
 
 Сейчас подтверждены захваты (v11):
-- `agent admin list` (см. `artifacts/rac/v11_agent_admin_list_ro_*`).
-- `cluster list` (см. `artifacts/rac/v11_cluster_list_ro_*`).
-- `cluster info` (см. `artifacts/rac/v11_cluster_info_ro_*`).
-- `cluster admin list` (см. `artifacts/rac/v11_cluster_admin_list_ro_*`).
-- `connection list` (см. `artifacts/rac/v11_connection_list_ro_*`).
-- `lock list` (см. `artifacts/rac/v11_lock_list_*_ro_*`).
-- `server list/info` (см. `artifacts/rac/v11_server_list_ro_*`, `artifacts/rac/v11_server_info_ro_*`).
-- `process list/info` + `--licenses` (см. `artifacts/rac/v11_process_*_ro_*`).
-- `rule list` (см. `artifacts/rac/v11_rule_list_ro_*`).
-- `counter list/info/values/accumulated-values` (см. `artifacts/rac/v11_counter_*_ro_*`).
-- `limit list/info` (см. `artifacts/rac/v11_limit_*_ro_*`).
-- `service list` (см. `artifacts/rac/v11_service_list_ro_*`).
-- `profile list` (см. `artifacts/rac/v11_profile_list_ro_*`).
-- `session list` (см. `artifacts/rac/v11_session_list_ro_*`).
-- `infobase summary list` (см. `artifacts/rac/v11_infobase_summary_list_ro_*`).
-- негативные сценарии (см. `artifacts/rac/v11_error_*`).
+- `agent admin list` (см. `artifacts/rac/v11/v11_agent_admin_list_ro_*`).
+- `cluster list` (см. `artifacts/rac/v11/v11_cluster_list_ro_*`).
+- `cluster info` (см. `artifacts/rac/v11/v11_cluster_info_ro_*`).
+- `cluster admin list` (см. `artifacts/rac/v11/v11_cluster_admin_list_ro_*`).
+- `connection list` (см. `artifacts/rac/v11/v11_connection_list_ro_*`).
+- `lock list` (см. `artifacts/rac/v11/v11_lock_list_*_ro_*`).
+- `server list/info` (см. `artifacts/rac/v11/v11_server_list_ro_*`, `artifacts/rac/v11/v11_server_info_ro_*`).
+- `process list/info` + `--licenses` (см. `artifacts/rac/v11/v11_process_*_ro_*`).
+- `rule list` (см. `artifacts/rac/v11/v11_rule_list_ro_*`).
+- `counter list/info/values/accumulated-values` (см. `artifacts/rac/v11/v11_counter_*_ro_*`).
+- `limit list/info` (см. `artifacts/rac/v11/v11_limit_*_ro_*`).
+- `service list` (см. `artifacts/rac/v11/v11_service_list_ro_*`).
+- `profile list` (см. `artifacts/rac/v11/v11_profile_list_ro_*`).
+- `session list` (см. `artifacts/rac/v11/v11_session_list_ro_*`).
+- `infobase summary list` (см. `artifacts/rac/v11/v11_infobase_summary_list_ro_*`).
+- негативные сценарии (см. `artifacts/rac/v11/v11_error_*`).
 
 Требуют новых захватов:
 - Все команды из раздела “Команды без захватов” (agent register/remove, cluster admin remove/insert/update/remove, connection disconnect, infobase summary update/create/update/drop, server insert/update/remove, session terminate/interrupt, profile update/remove/acl*).

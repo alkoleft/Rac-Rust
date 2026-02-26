@@ -3,23 +3,23 @@
 Protocol version (service negotiation): `v8.service.Admin.Cluster` `16.0` (observed in captures).
 
 Sources (v11):
-- `artifacts/rac/v11_help/counter_help.txt`
-- `artifacts/rac/v11_help/counter_list.out`
-- `artifacts/rac/v11_help/counter_info.out`
+- `artifacts/rac/v11/help/counter_help.txt`
+- `artifacts/rac/v11/help/counter_list.out`
+- `artifacts/rac/v11/help/counter_info.out`
 - `docs/rac/documentation/rac_cli_method_map.generated.md` (method IDs)
 
 ## Counter List
 
 Source capture:
-- `artifacts/rac/v11_counter_list_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11_counter_list_ro_server_to_client.decode.txt`
+- `artifacts/rac/v11/v11_counter_list_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11/v11_counter_list_ro_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/v11_counter_list_ro_response.hex`
+- `artifacts/rac/v11/v11_counter_list_ro_response.hex`
 
 RAC output reference:
-- `artifacts/rac/v11_counter_list_ro_rac.out`
-- `artifacts/rac/v11_help/counter_list.out`
+- `artifacts/rac/v11/v11_counter_list_ro_rac.out`
+- `artifacts/rac/v11/help/counter_list.out`
 
 ### Поля ответа (из `rac`)
 
@@ -110,15 +110,15 @@ Notes:
 ## Counter Info
 
 Source capture:
-- `artifacts/rac/v11_counter_info_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11_counter_info_ro_server_to_client.decode.txt`
+- `artifacts/rac/v11/v11_counter_info_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11/v11_counter_info_ro_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/v11_counter_info_ro_response.hex`
+- `artifacts/rac/v11/v11_counter_info_ro_response.hex`
 
 RAC output reference:
-- `artifacts/rac/v11_counter_info_ro_rac.out`
-- `artifacts/rac/v11_help/counter_info.out`
+- `artifacts/rac/v11/v11_counter_info_ro_rac.out`
+- `artifacts/rac/v11/help/counter_info.out`
 
 ### Поля ответа (из `rac`)
 
@@ -305,14 +305,14 @@ Notes:
 ## Counter Values
 
 Source capture:
-- `artifacts/rac/v11_counter_values_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11_counter_values_ro_server_to_client.decode.txt`
+- `artifacts/rac/v11/v11_counter_values_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11/v11_counter_values_ro_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/v11_counter_values_ro_response.hex`
+- `artifacts/rac/v11/v11_counter_values_ro_response.hex`
 
 RAC output reference:
-- `artifacts/rac/v11_counter_values_ro_rac.out`
+- `artifacts/rac/v11/v11_counter_values_ro_rac.out`
 
 ### Поля ответа (из `rac`)
 
@@ -396,14 +396,14 @@ Notes:
 ## Counter Accumulated Values
 
 Source capture:
-- `artifacts/rac/v11_counter_accumulated_values_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11_counter_accumulated_values_ro_server_to_client.decode.txt`
+- `artifacts/rac/v11/v11_counter_accumulated_values_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11/v11_counter_accumulated_values_ro_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/v11_counter_accumulated_values_ro_response.hex`
+- `artifacts/rac/v11/v11_counter_accumulated_values_ro_response.hex`
 
 RAC output reference:
-- `artifacts/rac/v11_counter_accumulated_values_ro_rac.out`
+- `artifacts/rac/v11/v11_counter_accumulated_values_ro_rac.out`
 
 ### Поля ответа (из `rac`)
 

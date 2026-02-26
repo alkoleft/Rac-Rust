@@ -9,11 +9,13 @@ Sources (v16):
 - `docs/rac/documentation/rac_cli_method_map.generated.md` (method IDs)
 
 Source capture:
-- `artifacts/rac/v11/v11_connection_list_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11/v11_connection_list_ro_server_to_client.decode.txt`
+- `artifacts/rac/v16/v16_20260226_051602_connection_list_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_051602_connection_list_server_to_client.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_connection_list_infobase_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_connection_list_infobase_server_to_client.decode.txt`
 
 RAC output reference:
-- `artifacts/rac/v11/v11_connection_list_ro_rac.out`
+- `artifacts/rac/v16/v16_20260226_051602_connection_list_rac.out`
 
 ## Поля ответа (из `rac`)
 
@@ -36,6 +38,10 @@ Observed field names in `rac connection list` output, with capture mapping statu
 Request method: `0x32` (after context `0x09`, `connection list --cluster <id>`)
 
 Response method: `0x33` (`connection list`)
+
+Infobase-filtered list:
+- request method: `0x34` (`connection list --infobase <id>`)
+- response method: `0x35`
 
 Payload structure (method body):
 - offset `0x00`: `count:u8` (observed `0x06`)
@@ -86,6 +92,8 @@ From the first record in the capture (connection `c030e65d-680a-41ed-a15a-6b8590
 ## Open Questions
 
 - Confirm `blocked_by_ls` by finding a non-zero value in a capture.
+- Confirm whether `--process` adds a process UUID to the request body (current capture has no `0x32/0x34` request).
+- Identify if `infobase-user`/`infobase-pwd` are ever sent in connection list requests (not present in current captures).
 
 ## Поля запроса (из `rac`)
 
@@ -93,17 +101,26 @@ Observed request parameters for `rac connection list` (v11 help).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 11.0 |
-| `cluster-user` | string | no | - | 11.0 |
-| `cluster-pwd` | string | no | - | 11.0 |
-| `process` | UUID | no | - | 11.0 |
-| `infobase` | UUID | no | - | 11.0 |
-| `infobase-user` | string | no | - | 11.0 |
-| `infobase-pwd` | string | no | - | 11.0 |
+| `cluster` | UUID | yes | 1 | 11.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
+| `process` | UUID | no | unknown | 11.0 |
+| `infobase` | UUID | yes | 2 | 11.0 |
+| `infobase-user` | string | no | unknown | 11.0 |
+| `infobase-pwd` | string | no | unknown | 11.0 |
+
+Payload structure (method body):
+- `0x32` (list all): `cluster_uuid[16]`
+- `0x34` (list by infobase): `cluster_uuid[16]` + `infobase_uuid[16]`
 
 ## Connection Info
 
-Source (v11 output):
+Source capture:
+- `artifacts/rac/v16/v16_20260226_053425_connection_info_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_connection_info_server_to_client.decode.txt`
+
+RAC output reference:
+- `artifacts/rac/v16/v16_20260226_053425_connection_info_rac.out`
 - `artifacts/rac/v16/help/connection_info.out`
 
 ### RPC
@@ -121,19 +138,23 @@ Observed request parameters for `rac connection info` (v11 help).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 11.0 |
-| `cluster-user` | string | no | - | 11.0 |
-| `cluster-pwd` | string | no | - | 11.0 |
-| `connection` | UUID | no | - | 11.0 |
+| `cluster` | UUID | yes | 1 | 11.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
+| `connection` | UUID | yes | 2 | 11.0 |
 
 ## Connection Disconnect
 
 Sources:
 - `artifacts/rac/v16/help/connection_help.txt`
+- `artifacts/rac/v16/v16_20260226_053425_connection_disconnect_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_connection_disconnect_server_to_client.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_connection_disconnect_rac.out`
 
 ### RPC
 
-Request/response method IDs: not captured yet (v11 help only).
+Request method: `0x40` (`connection disconnect`)
+Response: error observed (method `0xff`, `ClientNotFound`)
 
 ### Поля запроса (из `rac`)
 
@@ -141,14 +162,19 @@ Observed request parameters for `rac connection disconnect` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 11.0 |
-| `cluster-user` | string | no | - | 11.0 |
-| `cluster-pwd` | string | no | - | 11.0 |
-| `process` | UUID | no | - | 11.0 |
-| `connection` | UUID | no | - | 11.0 |
-| `infobase-user` | string | no | - | 11.0 |
-| `infobase-pwd` | string | no | - | 11.0 |
+| `cluster` | UUID | yes | 1 | 11.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
+| `process` | UUID | yes | 3 | 11.0 |
+| `connection` | UUID | yes | 2 | 11.0 |
+| `infobase-user` | string | yes (in auth/context `0x0a`) | 4 | 11.0 |
+| `infobase-pwd` | string | yes (in auth/context `0x0a`) | 5 | 11.0 |
+
+Payload structure (method body):
+- offset `0x00`: `cluster_uuid[16]`
+- offset `0x10`: `connection_uuid[16]`
+- offset `0x20`: `process_uuid[16]` (observed all zeros)
 
 ### Поля ответа
 
-Not captured yet (likely ACK-only).
+Error response observed (see capture); ACK-only not observed yet.

@@ -114,9 +114,9 @@ pub enum ClusterAdminCmd {
         #[arg(long)]
         cluster: String,
         #[arg(long)]
-        cluster_user: String,
+        cluster_user: Option<String>,
         #[arg(long)]
-        cluster_pwd: String,
+        cluster_pwd: Option<String>,
     },
     Register {
         addr: String,

@@ -2,7 +2,7 @@ use rac_protocol::client::{ClientConfig, RacClient};
 use rac_protocol::commands::{
     cluster_admin_list, cluster_admin_register, cluster_auth, cluster_info, cluster_list,
 };
-use rac_protocol::error::Result;
+use rac_protocol::error::{RacError, Result};
 
 use crate::rac_lite::cli::{ClusterAdminCmd, ClusterCmd};
 use crate::rac_lite::console_output as console;
@@ -32,7 +32,17 @@ pub fn run(json: bool, cfg: &ClientConfig, command: ClusterCmd) -> Result<()> {
             } => {
                 let cluster = parse_uuid_arg(&cluster)?;
                 let mut client = RacClient::connect(&addr, cfg.clone())?;
-                cluster_auth(&mut client, cluster, &cluster_user, &cluster_pwd)?;
+                match (cluster_user.as_deref(), cluster_pwd.as_deref()) {
+                    (Some(user), Some(pwd)) => {
+                        cluster_auth(&mut client, cluster, user, pwd)?;
+                    }
+                    (None, None) => {}
+                    _ => {
+                        return Err(RacError::Unsupported(
+                            "cluster-user and cluster-pwd must be provided together",
+                        ));
+                    }
+                }
                 let resp = cluster_admin_list(&mut client, cluster)?;
                 console::output(json, &resp, console::cluster_admin_list(&resp));
                 client.close()?;

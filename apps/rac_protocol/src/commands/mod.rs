@@ -47,7 +47,10 @@ pub use self::limit::{
     limit_info, limit_list, limit_remove, limit_update, LimitInfoResp, LimitInfoRpc, LimitListResp,
     LimitListRpc, LimitRecord, LimitRemoveRpc, LimitUpdateRpc,
 };
-pub use self::manager::{manager_info, manager_list, ManagerInfoResp, ManagerListResp, ManagerRecord};
+pub use self::manager::{
+    manager_info, manager_list, ManagerInfoResp, ManagerInfoRpc, ManagerListResp, ManagerListRpc,
+    ManagerRecord,
+};
 pub use self::process::{
     process_info, process_list, ProcessInfoResp, ProcessLicense, ProcessListResp, ProcessRecord,
 };

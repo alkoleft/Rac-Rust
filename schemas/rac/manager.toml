@@ -10,6 +10,7 @@ fields = [
 ]
 
 [rpc.ManagerList]
+response = "ManagerListResp"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid", version = "11.0" },
@@ -21,6 +22,7 @@ requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.ManagerInfo]
+response = "ManagerInfoResp"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid", version = "11.0" },
@@ -33,9 +35,9 @@ requires_cluster_context = true
 requires_infobase_context = false
 
 [response.ManagerList]
-body = { type = "list_u8", item = "ManagerRecord" }
+body = { type = "list_u8", item = "ManagerRecord", field = "managers", struct = true }
 tests = [{ name = "manager_list_response_hex", hex_path = "../../../../artifacts/rac/manager_list_response.hex", expect_len = 1, asserts = [{ index = 0, field = "host", value = "alko-home" }, { index = 0, field = "using", value = 1 }, { index = 0, field = "port", value = 0x0605 }, { index = 0, field = "pid", value = "314037" }] }]
 
 [response.ManagerInfo]
-body = { type = "record", item = "ManagerRecord" }
+body = { type = "record", item = "ManagerRecord", field = "record", struct = true }
 tests = [{ name = "manager_info_response_hex", hex_path = "../../../../artifacts/rac/manager_info_response.hex", asserts = [{ field = "host", value = "alko-home" }, { field = "using", value = 1 }, { field = "port", value = 0x0605 }, { field = "pid", value = "314037" }] }]

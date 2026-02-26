@@ -1,109 +1,21 @@
-use serde::Serialize;
-
 use crate::client::RacClient;
 use crate::error::Result;
-use crate::protocol::ProtocolCodec;
-use crate::rpc::{Meta, Request, Response};
-use crate::rpc::decode_utils::rpc_body;
-use crate::rac_wire::{
-    METHOD_MANAGER_INFO_REQ, METHOD_MANAGER_INFO_RESP, METHOD_MANAGER_LIST_REQ,
-    METHOD_MANAGER_LIST_RESP,
-};
 use crate::Uuid16;
-
-use super::parse_list_u8;
 
 mod generated {
     include!("manager_generated.rs");
 }
 
-pub use generated::ManagerRecord;
-use generated::parse_manager_info_body;
-
-#[derive(Debug, Serialize)]
-pub struct ManagerListResp {
-    pub managers: Vec<ManagerRecord>,
-}
-
-#[derive(Debug, Serialize)]
-pub struct ManagerInfoResp {
-    pub manager: ManagerRecord,
-}
-
-struct ManagerListRpc {
-    cluster: Uuid16,
-}
-
-impl Request for ManagerListRpc {
-    type Response = ManagerListResp;
-
-    fn meta(&self) -> Meta {
-        Meta {
-            method_req: METHOD_MANAGER_LIST_REQ,
-            method_resp: Some(METHOD_MANAGER_LIST_RESP),
-            requires_cluster_context: true,
-            requires_infobase_context: false,
-        }
-    }
-
-    fn cluster(&self) -> Option<Uuid16> {
-        Some(self.cluster)
-    }
-
-    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
-        Ok(self.cluster.to_vec())
-    }
-}
-
-impl Response for ManagerListResp {
-    fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
-        let body = rpc_body(payload)?;
-        Ok(Self {
-            managers: parse_list_u8(body, ManagerRecord::decode)?,
-        })
-    }
-}
+pub use generated::{
+    ManagerInfoResp,
+    ManagerInfoRpc,
+    ManagerListResp,
+    ManagerListRpc,
+    ManagerRecord,
+};
 
 pub fn manager_list(client: &mut RacClient, cluster: Uuid16) -> Result<ManagerListResp> {
     client.call_typed(ManagerListRpc { cluster })
-}
-
-struct ManagerInfoRpc {
-    cluster: Uuid16,
-    manager: Uuid16,
-}
-
-impl Request for ManagerInfoRpc {
-    type Response = ManagerInfoResp;
-
-    fn meta(&self) -> Meta {
-        Meta {
-            method_req: METHOD_MANAGER_INFO_REQ,
-            method_resp: Some(METHOD_MANAGER_INFO_RESP),
-            requires_cluster_context: true,
-            requires_infobase_context: false,
-        }
-    }
-
-    fn cluster(&self) -> Option<Uuid16> {
-        Some(self.cluster)
-    }
-
-    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(32);
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&self.manager);
-        Ok(out)
-    }
-}
-
-impl Response for ManagerInfoResp {
-    fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
-        let body = rpc_body(payload)?;
-        Ok(Self {
-            manager: parse_manager_info_body(body)?,
-        })
-    }
 }
 
 pub fn manager_info(
@@ -117,7 +29,8 @@ pub fn manager_info(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::commands::rpc_body;
+    use crate::protocol::ProtocolVersion;
+    use crate::rpc::Response;
 
     fn decode_hex_str(input: &str) -> Vec<u8> {
         hex::decode(input.trim()).expect("hex decode")
@@ -137,9 +50,10 @@ mod tests {
     fn parse_manager_list_from_capture() {
         let hex = include_str!("../../../../artifacts/rac/manager_list_response.hex");
         let payload = decode_hex_str(hex);
-        let body = rpc_body(&payload).expect("rpc body");
-        let managers = parse_list_u8(body, ManagerRecord::decode).expect("parse list");
+        let protocol = ProtocolVersion::V16_0.boxed();
+        let resp = ManagerListResp::decode(&payload, protocol.as_ref()).expect("parse response");
 
+        let managers = resp.managers;
         assert_eq!(managers.len(), 1);
         assert_eq!(
             managers[0].manager,
@@ -159,9 +73,10 @@ mod tests {
     fn parse_manager_info_from_capture() {
         let hex = include_str!("../../../../artifacts/rac/manager_info_response.hex");
         let payload = decode_hex_str(hex);
-        let body = rpc_body(&payload).expect("rpc body");
-        let manager = parse_manager_info_body(body).expect("parse info");
+        let protocol = ProtocolVersion::V16_0.boxed();
+        let resp = ManagerInfoResp::decode(&payload, protocol.as_ref()).expect("parse response");
 
+        let manager = resp.record;
         assert_eq!(
             manager.manager,
             [

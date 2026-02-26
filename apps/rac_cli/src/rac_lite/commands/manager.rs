@@ -24,7 +24,7 @@ pub fn run(json: bool, cfg: &ClientConfig, command: ManagerCmd) -> Result<()> {
             let manager = parse_uuid_arg(&manager)?;
             let mut client = RacClient::connect(&addr, cfg.clone())?;
             let resp = manager_info(&mut client, cluster, manager)?;
-            console::output(json, &resp, console::manager_info(&resp.manager));
+            console::output(json, &resp, console::manager_info(&resp.record));
             client.close()?;
         }
     }

@@ -11,14 +11,14 @@ Sources (v16):
 ## Limit List
 
 Source capture:
-- `artifacts/rac/v11/v11_limit_list_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11/v11_limit_list_ro_server_to_client.decode.txt`
+- `artifacts/rac/v16/v16_20260226_051629_limit_list_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_051629_limit_list_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/v11/v11_limit_list_ro_response.hex`
+- `artifacts/rac/v16/v16_20260226_051629_limit_list_response.hex`
 
 RAC output reference:
-- `artifacts/rac/v11/v11_limit_list_ro_rac.out`
+- `artifacts/rac/v16/v16_20260226_051629_limit_list_rac.out`
 - `artifacts/rac/v16/help/limit_list.out`
 
 ### Поля ответа (из `rac`)
@@ -112,14 +112,14 @@ Notes:
 ## Limit Info
 
 Source capture:
-- `artifacts/rac/v11/v11_limit_info_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11/v11_limit_info_ro_server_to_client.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_limit_info_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_limit_info_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/v11/v11_limit_info_ro_response.hex`
+- `artifacts/rac/v16/v16_20260226_053425_limit_info_response.hex`
 
 RAC output reference:
-- `artifacts/rac/v11/v11_limit_info_ro_rac.out`
+- `artifacts/rac/v16/v16_20260226_053425_limit_info_rac.out`
 - `artifacts/rac/v16/help/limit_info.out`
 
 ### Поля ответа (из `rac`)
@@ -210,13 +210,14 @@ Notes:
 ## Limit Update
 
 Source capture:
-- `logs/session_1771357031_3632890_127_0_0_1_54092/server_to_client.stream.bin`
+- `artifacts/rac/v16/v16_20260226_053425_limit_update_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_limit_update_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/v16/limit_update_response.hex`
+- `artifacts/rac/v16/v16_20260226_053425_limit_update_response.hex`
 
 RAC output reference:
-- `artifacts/rac/v16/limit_update_rac.out`
+- `artifacts/rac/v16/v16_20260226_053425_limit_update_rac.out`
 
 ### Поля ответа (из `rac`)
 
@@ -306,13 +307,14 @@ Notes:
 ## Limit Remove
 
 Source capture:
-- `logs/session_1771357081_3633977_127_0_0_1_49364/server_to_client.stream.bin`
+- `artifacts/rac/v16/v16_20260226_053425_limit_remove_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_limit_remove_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/v16/limit_remove_response.hex`
+- `artifacts/rac/v16/v16_20260226_053425_limit_remove_response.hex`
 
 RAC output reference:
-- `artifacts/rac/v16/limit_remove_rac.out`
+- `artifacts/rac/v16/v16_20260226_053425_limit_remove_rac.out`
 
 ### Поля ответа (из `rac`)
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "RAC Schemas & Codegen"
+  short_description: "Update schemas/rac TOML and regenerate code"
+  default_prompt: "Update RAC protocol schemas and regenerate codegen, using inline rpc/request fields and sequential parsing rules."

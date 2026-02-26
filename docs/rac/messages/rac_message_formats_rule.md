@@ -70,13 +70,14 @@ Offsets are relative to the start of the request body.
 ## Rule List
 
 Source capture:
-- `logs/session_1771359927_3672817_127_0_0_1_35116/server_to_client.stream.bin`
+- `artifacts/rac/v11_rule_list_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11_rule_list_ro_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/rule_list_response.hex`
+- `artifacts/rac/v11_rule_list_ro_response.hex`
 
 RAC output reference:
-- `artifacts/rac/rule_list_rac.out`
+- `artifacts/rac/v11_rule_list_ro_rac.out`
 
 ### Поля ответа (из `rac`)
 

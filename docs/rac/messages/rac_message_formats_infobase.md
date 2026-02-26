@@ -39,7 +39,7 @@ Note:
     - `u8 tag` (observed `0x2c`, meaning unknown).
     - `str8 descr` (observed `Description`).
     - `str8 name` (observed `yaxunit`).
-- **Evidence**: `logs/session_1771110787_484272_127_0_0_1_34530`.
+- **Evidence**: `artifacts/rac/v11_infobase_summary_list_ro_client_to_server.decode.txt`, `artifacts/rac/v11_infobase_summary_list_ro_server_to_client.decode.txt`, `artifacts/rac/v11_infobase_summary_list_ro_response.hex`, `artifacts/rac/v11_infobase_summary_list_ro_rac.out`.
 
 #### Поля ответа (из `rac`)
 
@@ -65,6 +65,7 @@ Observed request parameters for `rac infobase summary list` (v11).
 ### Infobase Info
 
 - **v11 output reference**: `artifacts/rac/v11_help/infobase_info.out`
+- **v11 capture status**: no `v11_` success capture yet; fields below require v11 confirmation.
 - **Request**: `0x09` (context), then method `0x30` (observed).
 - **Response**: method `0x31`.
 - **Parameters**: `16 <cluster_uuid> <infobase_uuid>`.

@@ -11,13 +11,14 @@ Sources (v11):
 ## Counter List
 
 Source capture:
-- `logs/session_1771345707_3496864_127_0_0_1_36988/server_to_client.stream.bin`
+- `artifacts/rac/v11_counter_list_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11_counter_list_ro_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/counter_list_response.hex`
+- `artifacts/rac/v11_counter_list_ro_response.hex`
 
 RAC output reference:
-- `artifacts/rac/counter_list_rac.out`
+- `artifacts/rac/v11_counter_list_ro_rac.out`
 - `artifacts/rac/v11_help/counter_list.out`
 
 ### Поля ответа (из `rac`)
@@ -109,13 +110,14 @@ Notes:
 ## Counter Info
 
 Source capture:
-- `logs/session_1771346558_3508152_127_0_0_1_59276/server_to_client.stream.bin`
+- `artifacts/rac/v11_counter_info_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11_counter_info_ro_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/counter_info_codex_tmp_response.hex`
+- `artifacts/rac/v11_counter_info_ro_response.hex`
 
 RAC output reference:
-- `artifacts/rac/counter_info_codex_tmp_rac.out`
+- `artifacts/rac/v11_counter_info_ro_rac.out`
 - `artifacts/rac/v11_help/counter_info.out`
 
 ### Поля ответа (из `rac`)
@@ -303,13 +305,14 @@ Notes:
 ## Counter Values
 
 Source capture:
-- `logs/session_1771346561_3508283_127_0_0_1_59282/server_to_client.stream.bin`
+- `artifacts/rac/v11_counter_values_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11_counter_values_ro_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/counter_values_codex_tmp_response.hex`
+- `artifacts/rac/v11_counter_values_ro_response.hex`
 
 RAC output reference:
-- `artifacts/rac/counter_values_codex_tmp_rac.out`
+- `artifacts/rac/v11_counter_values_ro_rac.out`
 
 ### Поля ответа (из `rac`)
 
@@ -393,13 +396,14 @@ Notes:
 ## Counter Accumulated Values
 
 Source capture:
-- `logs/session_1771346565_3508409_127_0_0_1_59296/server_to_client.stream.bin`
+- `artifacts/rac/v11_counter_accumulated_values_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11_counter_accumulated_values_ro_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/counter_accumulated_values_codex_tmp_response.hex`
+- `artifacts/rac/v11_counter_accumulated_values_ro_response.hex`
 
 RAC output reference:
-- `artifacts/rac/counter_accumulated_values_codex_tmp_rac.out`
+- `artifacts/rac/v11_counter_accumulated_values_ro_rac.out`
 
 ### Поля ответа (из `rac`)
 

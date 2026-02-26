@@ -9,10 +9,11 @@ Sources (v11):
 - `docs/rac/documentation/rac_cli_method_map.generated.md` (method IDs)
 
 Source capture:
-- `logs/session_1771281887_2714678_127_0_0_1_59850/server_to_client.stream.bin`
+- `artifacts/rac/v11_connection_list_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11_connection_list_ro_server_to_client.decode.txt`
 
 RAC output reference:
-- `/tmp/rac_connection_list_cluster_valid.out`
+- `artifacts/rac/v11_connection_list_ro_rac.out`
 
 ## Поля ответа (из `rac`)
 

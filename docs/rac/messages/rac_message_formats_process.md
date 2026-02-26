@@ -11,13 +11,14 @@ Sources (v11):
 ## Process List
 
 Source capture:
-- `logs/session_1771287567_2788242_127_0_0_1_42314/server_to_client.stream.bin`
+- `artifacts/rac/v11_process_list_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11_process_list_ro_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/process_list_response.hex`
+- `artifacts/rac/v11_process_list_ro_response.hex`
 
 RAC output reference:
-- `artifacts/rac/process_list_rac.out`
+- `artifacts/rac/v11_process_list_ro_rac.out`
 - `artifacts/rac/v11_help/process_list.out`
 
 ### Fields From `rac` Output
@@ -97,13 +98,14 @@ Offsets are relative to the start of a record.
 ## Process List (`--licenses`)
 
 Source capture:
-- `logs/session_1771288283_2797451_127_0_0_1_55460/server_to_client.stream.bin`
+- `artifacts/rac/v11_process_list_licenses_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11_process_list_licenses_ro_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/process_list_licenses_response.hex`
+- `artifacts/rac/v11_process_list_licenses_ro_response.hex`
 
 RAC output reference:
-- `artifacts/rac/process_list_licenses_rac.out`
+- `artifacts/rac/v11_process_list_licenses_ro_rac.out`
 
 ### Fields From `rac` Output (`--licenses`)
 
@@ -181,13 +183,14 @@ Define `t0` as the byte immediately after `brief-presentation` (end of string). 
 ## Process Info
 
 Source capture:
-- `logs/session_1771287578_2788405_127_0_0_1_40088/server_to_client.stream.bin`
+- `artifacts/rac/v11_process_info_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11_process_info_ro_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/process_info_response.hex`
+- `artifacts/rac/v11_process_info_ro_response.hex`
 
 RAC output reference:
-- `artifacts/rac/process_info_rac.out`
+- `artifacts/rac/v11_process_info_ro_rac.out`
 - `artifacts/rac/v11_help/process_info.out`
 
 ### Fields From `rac` Output
@@ -240,13 +243,14 @@ Offsets are relative to the start of the record.
 ## Process Info (`--licenses`)
 
 Source capture:
-- `logs/session_1771288300_2797644_127_0_0_1_33814/server_to_client.stream.bin`
+- `artifacts/rac/v11_process_info_licenses_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11_process_info_licenses_ro_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/process_info_licenses_response.hex`
+- `artifacts/rac/v11_process_info_licenses_ro_response.hex`
 
 RAC output reference:
-- `artifacts/rac/process_info_licenses_rac.out`
+- `artifacts/rac/v11_process_info_licenses_ro_rac.out`
 
 ### Fields From `rac` Output (`--licenses`)
 

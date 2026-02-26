@@ -13,11 +13,10 @@ Aligned with current decoder implementation in `apps/rac_protocol/src/commands/s
 
 ## Sources
 
-- `artifacts/rac/session_list_response.hex`
-- `artifacts/rac/session_info_response.hex`
-- `artifacts/rac/session_info_response_load.hex`
-- `artifacts/rac/session_info_response_1cv8c.hex`
-- `artifacts/rac/session_info_response_1cv8c_dbproc.hex`
+- `artifacts/rac/v11_session_list_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11_session_list_ro_server_to_client.decode.txt`
+- `artifacts/rac/v11_session_list_ro_response.hex`
+- `artifacts/rac/v11_session_list_ro_rac.out`
 
 ## Commands
 
@@ -52,6 +51,7 @@ Observed request parameters for `rac session list` (v11).
 - **Response**: method `0x46`.
 - **Parameters**: `16 <cluster_uuid> <session_uuid>`.
 - **Response body layout**: a single session record using the same layout as in Session List.
+- **v11 capture status**: no `v11_` payload capture yet; fields below still require v11 confirmation.
 
 #### Поля запроса (из `rac`)
 

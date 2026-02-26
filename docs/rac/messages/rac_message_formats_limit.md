@@ -11,13 +11,14 @@ Sources (v11):
 ## Limit List
 
 Source capture:
-- `logs/session_1771357573_3640379_127_0_0_1_55990/server_to_client.stream.bin`
+- `artifacts/rac/v11_limit_list_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11_limit_list_ro_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/limit_list_nonempty_response.hex`
+- `artifacts/rac/v11_limit_list_ro_response.hex`
 
 RAC output reference:
-- `artifacts/rac/limit_list_nonempty_rac.out`
+- `artifacts/rac/v11_limit_list_ro_rac.out`
 - `artifacts/rac/v11_help/limit_list.out`
 
 ### Поля ответа (из `rac`)
@@ -111,13 +112,14 @@ Notes:
 ## Limit Info
 
 Source capture:
-- `logs/session_1771357076_3633832_127_0_0_1_53240/server_to_client.stream.bin`
+- `artifacts/rac/v11_limit_info_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11_limit_info_ro_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/limit_info_response.hex`
+- `artifacts/rac/v11_limit_info_ro_response.hex`
 
 RAC output reference:
-- `artifacts/rac/limit_info_rac.out`
+- `artifacts/rac/v11_limit_info_ro_rac.out`
 - `artifacts/rac/v11_help/limit_info.out`
 
 ### Поля ответа (из `rac`)

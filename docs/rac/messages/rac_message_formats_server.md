@@ -11,13 +11,14 @@ Sources (v11):
 ## Server List
 
 Source capture:
-- `logs/session_1771332744_3330575_127_0_0_1_36510/server_to_client.stream.bin`
+- `artifacts/rac/v11_server_list_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11_server_list_ro_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/server_list_response.hex`
+- `artifacts/rac/v11_server_list_ro_response.hex`
 
 RAC output reference:
-- `artifacts/rac/server_list_rac.out`
+- `artifacts/rac/v11_server_list_ro_rac.out`
 - `artifacts/rac/v11_help/server_list.out`
 
 ### Поля ответа (из `rac`)
@@ -105,13 +106,14 @@ Notes:
 ## Server Info
 
 Source capture:
-- `logs/session_1771332748_3330658_127_0_0_1_59386/server_to_client.stream.bin`
+- `artifacts/rac/v11_server_info_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11_server_info_ro_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/server_info_response.hex`
+- `artifacts/rac/v11_server_info_ro_response.hex`
 
 RAC output reference:
-- `artifacts/rac/server_info_rac.out`
+- `artifacts/rac/v11_server_info_ro_rac.out`
 - `artifacts/rac/v11_help/server_info.out`
 
 ### Поля ответа (из `rac`)

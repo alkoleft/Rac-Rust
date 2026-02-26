@@ -13,14 +13,14 @@ Aligned with current decoder implementation in `apps/rac_protocol/src/commands/a
 ## Agent Admin List
 
 Source capture:
-- `logs/session_1771343284_3463051_127_0_0_1_40136/client_to_server.stream.bin`
-- `logs/session_1771343284_3463051_127_0_0_1_40136/server_to_client.stream.bin`
+- `artifacts/rac/v11_agent_admin_list_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11_agent_admin_list_ro_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/agent_admin_list_response.hex`
+- `artifacts/rac/v11_agent_admin_list_ro_response.hex`
 
 RAC output reference:
-- `artifacts/rac/agent_admin_list_rac.out`
+- `artifacts/rac/v11_agent_admin_list_ro_rac.out`
 - `artifacts/rac/v11_help/agent_admin_list.out`
 
 ### Поля ответа (из `rac`)

@@ -11,19 +11,14 @@ Sources (v11):
 ## Cluster List
 
 Source capture:
-- `logs/session_1771809087_3655605_127_0_0_1_44760` (baseline)
-- `logs/session_1771809193_3656488_127_0_0_1_55892` (custom values)
-- `logs/session_1771809286_3657216_127_0_0_1_33354` (flag toggle)
+- `artifacts/rac/v11_cluster_list_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11_cluster_list_ro_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/cluster_list_response_baseline.hex`
-- `artifacts/rac/cluster_list_response_custom.hex`
-- `artifacts/rac/cluster_list_response_flags.hex`
+- `artifacts/rac/v11_cluster_list_ro_response.hex`
 
 RAC output reference:
-- `artifacts/rac/cluster_list_baseline_rac.out`
-- `artifacts/rac/cluster_list_custom_rac.out`
-- `artifacts/rac/cluster_list_flags_rac.out`
+- `artifacts/rac/v11_cluster_list_ro_rac.out`
 - `artifacts/rac/v11_help/cluster_list.out`
 
 ## Fields From `rac` Output
@@ -140,10 +135,12 @@ From the observed record tail:
 ## Cluster Info
 
 Source capture:
-- `logs/session_1771110778_484133_127_0_0_1_39376`
+- `artifacts/rac/v11_cluster_info_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11_cluster_info_ro_server_to_client.decode.txt`
 
 RAC output reference:
 - `rac cluster info --cluster <id>`
+- `artifacts/rac/v11_cluster_info_ro_rac.out`
 - `artifacts/rac/v11_help/cluster_info.out`
 
 ## Fields From `rac` Output

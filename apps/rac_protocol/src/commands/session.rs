@@ -1,106 +1,22 @@
-use serde::Serialize;
-
 use crate::client::RacClient;
-use crate::codec::RecordCursor;
-use crate::error::{RacError, Result};
-use crate::protocol::ProtocolCodec;
-use crate::rpc::{Meta, Request, Response};
-use crate::rpc::decode_utils::rpc_body;
-use crate::rac_wire::{
-    METHOD_SESSION_INFO_REQ, METHOD_SESSION_INFO_RESP, METHOD_SESSION_LIST_REQ,
-    METHOD_SESSION_LIST_RESP,
-};
+use crate::error::Result;
 use crate::Uuid16;
-
-use super::call_body;
-use super::parse_list_u8;
 
 mod generated {
     include!("session_generated.rs");
 }
 
-pub use generated::{SessionLicense, SessionRecord};
-
-#[derive(Debug, Serialize)]
-pub struct SessionListResp {
-    pub sessions: Vec<Uuid16>,
-    pub records: Vec<SessionRecord>,
-}
-
-#[derive(Debug, Serialize)]
-pub struct SessionInfoResp {
-    pub session: Uuid16,
-    pub record: SessionRecord,
-    pub fields: Vec<String>,
-}
-
-struct SessionListRpc {
-    cluster: Uuid16,
-}
-
-impl Request for SessionListRpc {
-    type Response = SessionListResp;
-
-    fn meta(&self) -> Meta {
-        Meta {
-            method_req: METHOD_SESSION_LIST_REQ,
-            method_resp: Some(METHOD_SESSION_LIST_RESP),
-            requires_cluster_context: true,
-            requires_infobase_context: false,
-        }
-    }
-
-    fn cluster(&self) -> Option<Uuid16> {
-        Some(self.cluster)
-    }
-
-    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
-        Ok(self.cluster.to_vec())
-    }
-}
-
-impl Response for SessionListResp {
-    fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
-        let body = rpc_body(payload)?;
-        let records = parse_session_list_records(body)?;
-        Ok(Self {
-            sessions: records.iter().map(|r| r.session).collect(),
-            records,
-        })
-    }
-}
+pub use generated::{
+    SessionInfoResp,
+    SessionInfoRpc,
+    SessionLicense,
+    SessionListResp,
+    SessionListRpc,
+    SessionRecord,
+};
 
 pub fn session_list(client: &mut RacClient, cluster: Uuid16) -> Result<SessionListResp> {
     client.call_typed(SessionListRpc { cluster })
-}
-
-struct SessionInfoRpc {
-    cluster: Uuid16,
-    session: Uuid16,
-}
-
-impl Request for SessionInfoRpc {
-    type Response = Vec<u8>;
-
-    fn meta(&self) -> Meta {
-        Meta {
-            method_req: METHOD_SESSION_INFO_REQ,
-            method_resp: Some(METHOD_SESSION_INFO_RESP),
-            requires_cluster_context: true,
-            requires_infobase_context: false,
-        }
-    }
-
-    fn cluster(&self) -> Option<Uuid16> {
-        Some(self.cluster)
-    }
-
-    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(32);
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&self.session);
-        Ok(out)
-    }
 }
 
 pub fn session_info(
@@ -108,67 +24,15 @@ pub fn session_info(
     cluster: Uuid16,
     session: Uuid16,
 ) -> Result<SessionInfoResp> {
-    let body = call_body(client, SessionInfoRpc { cluster, session })?;
-    let record = parse_session_record_for_info(&body, session)?;
-    let fields = collect_session_fields(&record);
-    Ok(SessionInfoResp {
-        session: record.session,
-        record,
-        fields,
-    })
-}
-
-fn parse_session_record_for_info(data: &[u8], requested_session: Uuid16) -> Result<SessionRecord> {
-    let record = generated::parse_session_info_body(data)?;
-    if record.session != requested_session {
-        return Err(RacError::Decode(
-            "session info record does not match requested session",
-        ));
-    }
-    Ok(record)
-}
-
-fn parse_session_list_records(body: &[u8]) -> Result<Vec<SessionRecord>> {
-    parse_list_u8(body, SessionRecord::decode)
-}
-
-fn parse_session_record_1cv8c(data: &[u8]) -> Result<SessionRecord> {
-    let mut cursor = RecordCursor::new(data);
-    SessionRecord::decode(&mut cursor)
-}
-
-fn collect_session_fields(record: &SessionRecord) -> Vec<String> {
-    let mut out = Vec::new();
-    push_if_nonempty(&mut out, &record.app_id);
-    push_if_nonempty(&mut out, &record.db_proc_info);
-    push_if_nonempty(&mut out, &record.db_proc_took_at);
-    push_if_nonempty(&mut out, &record.host);
-    push_if_nonempty(&mut out, &record.locale);
-    push_if_nonempty(&mut out, &record.user_name);
-    push_if_nonempty(&mut out, &record.started_at);
-    push_if_nonempty(&mut out, &record.last_active_at);
-    push_if_nonempty(&mut out, &record.client_ip);
-    push_if_nonempty(&mut out, &record.current_service_name);
-    push_if_nonempty(&mut out, &record.data_separation);
-    push_if_nonempty(&mut out, &record.license.file_name);
-    push_if_nonempty(&mut out, &record.license.brief_presentation);
-    push_if_nonempty(&mut out, &record.license.full_presentation);
-    push_if_nonempty(&mut out, &record.license.server_address);
-    push_if_nonempty(&mut out, &record.license.process_id);
-    push_if_nonempty(&mut out, &record.license.key_series);
-    out
-}
-
-fn push_if_nonempty(out: &mut Vec<String>, value: &str) {
-    if !value.is_empty() {
-        out.push(value.to_string());
-    }
+    client.call_typed(SessionInfoRpc { cluster, session })
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::commands::rpc_body;
+    use crate::protocol::ProtocolVersion;
+    use crate::rpc::Response;
 
     fn decode_hex_str(input: &str) -> Vec<u8> {
         hex::decode(input.trim()).expect("hex decode")
@@ -178,8 +42,10 @@ mod tests {
     fn parse_session_list_sessions_from_golden_capture() {
         let hex = include_str!("../../../../artifacts/rac/session_list_response.hex");
         let payload = decode_hex_str(hex);
-        let body = rpc_body(&payload).expect("rpc body");
-        let records = parse_session_list_records(body).expect("session list parse");
+        let protocol = ProtocolVersion::V16_0.boxed();
+        let resp = SessionListResp::decode(&payload, protocol.as_ref())
+            .expect("session list parse");
+        let records = resp.records;
         let sessions: Vec<_> = records.iter().map(|r| r.session).collect();
 
         assert_eq!(sessions.len(), 3);
@@ -210,7 +76,7 @@ mod tests {
         let hex = include_str!("../../../../artifacts/rac/session_info_response.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
-        let record = parse_session_record_1cv8c(body).expect("session info parse");
+        let record = generated::parse_session_info_body(body).expect("session info parse");
 
         assert_eq!(
             record.session,
@@ -231,10 +97,7 @@ mod tests {
         let hex = include_str!("../../../../artifacts/rac/session_info_response_1cv8c.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
-        let requested =
-            crate::rac_wire::parse_uuid("25510e27-f24a-4586-9ac9-9f7837c0dea1").expect("uuid");
-        let record =
-            parse_session_record_for_info(body, requested).expect("session info 1cv8c parse");
+        let record = generated::parse_session_info_body(body).expect("session info 1cv8c parse");
 
         assert_eq!(
             record.session,
@@ -264,10 +127,8 @@ mod tests {
         let hex = include_str!("../../../../artifacts/rac/session_info_response_1cv8c_dbproc.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
-        let requested =
-            crate::rac_wire::parse_uuid("25510e27-f24a-4586-9ac9-9f7837c0dea1").expect("uuid");
-        let record = parse_session_record_for_info(body, requested)
-            .expect("session info 1cv8c dbproc parse");
+        let record =
+            generated::parse_session_info_body(body).expect("session info 1cv8c dbproc parse");
 
         assert_eq!(
             record.connection,

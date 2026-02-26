@@ -71,6 +71,7 @@ fields = [
 ]
 
 [rpc.SessionList]
+response = "SessionListResp"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid", version = "11.0" },
@@ -82,6 +83,7 @@ requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.SessionInfo]
+response = "SessionInfoResp"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid", version = "11.0" },
@@ -120,7 +122,7 @@ requires_cluster_context = true
 requires_infobase_context = false
 
 [response.SessionList]
-body = { type = "list_u8", item = "SessionRecord" }
+body = { type = "list_u8", item = "SessionRecord", field = "records", struct = true }
 
 [response.SessionInfo]
-body = { type = "record", item = "SessionRecord" }
+body = { type = "record", item = "SessionRecord", field = "record", struct = true }

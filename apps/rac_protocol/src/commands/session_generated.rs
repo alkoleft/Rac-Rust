@@ -6,6 +6,13 @@ use crate::error::Result;
 use serde::Serialize;
 use crate::rac_wire::encode_with_len_u8;
 
+pub const METHOD_SESSION_LIST_REQ: u8 = 0x41;
+pub const METHOD_SESSION_LIST_RESP: u8 = 0x42;
+pub const METHOD_SESSION_INFO_REQ: u8 = 0x45;
+pub const METHOD_SESSION_INFO_RESP: u8 = 0x46;
+pub const METHOD_SESSION_TERMINATE_REQ: u8 = 0x47;
+pub const METHOD_SESSION_INTERRUPT_CURRENT_SERVER_CALL_REQ: u8 = 0x75;
+
 #[derive(Debug, Serialize, Default, Clone)]
 pub struct SessionLicense {
     pub file_name: String,
@@ -217,6 +224,52 @@ impl SessionRecord {
     }
 }
 
+pub struct SessionListRpc {
+    pub cluster: Uuid16,
+}
+
+impl crate::rpc::Request for SessionListRpc {
+    type Response = SessionListResp;
+
+    fn meta(&self) -> crate::rpc::Meta {
+        RPC_SESSION_LIST_META
+    }
+
+    fn cluster(&self) -> Option<crate::Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
+        let mut out = Vec::with_capacity(16);
+        out.extend_from_slice(&self.cluster);
+        Ok(out)
+    }
+}
+
+pub struct SessionInfoRpc {
+    pub cluster: Uuid16,
+    pub session: Uuid16,
+}
+
+impl crate::rpc::Request for SessionInfoRpc {
+    type Response = SessionInfoResp;
+
+    fn meta(&self) -> crate::rpc::Meta {
+        RPC_SESSION_INFO_META
+    }
+
+    fn cluster(&self) -> Option<crate::Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
+        let mut out = Vec::with_capacity(16 + 16);
+        out.extend_from_slice(&self.cluster);
+        out.extend_from_slice(&self.session);
+        Ok(out)
+    }
+}
+
 pub struct SessionTerminateRpc {
     pub cluster: Uuid16,
     pub session: Uuid16,
@@ -270,6 +323,35 @@ impl crate::rpc::Request for SessionInterruptCurrentServerCallRpc {
 }
 
 
+#[derive(Debug, Serialize)]
+pub struct SessionListResp {
+    pub records: Vec<SessionRecord>,
+}
+
+impl crate::rpc::Response for SessionListResp {
+    fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
+        let body = crate::rpc::decode_utils::rpc_body(payload)?;
+        Ok(Self {
+            records: crate::commands::parse_list_u8(body, SessionRecord::decode)?,
+        })
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct SessionInfoResp {
+    pub record: SessionRecord,
+}
+
+impl crate::rpc::Response for SessionInfoResp {
+    fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
+        let body = crate::rpc::decode_utils::rpc_body(payload)?;
+        let record = parse_session_info_body(body)?;
+        Ok(Self {
+            record: record,
+        })
+    }
+}
+
 
 pub fn parse_session_info_body(body: &[u8]) -> Result<SessionRecord> {
     if body.is_empty() {
@@ -281,28 +363,28 @@ pub fn parse_session_info_body(body: &[u8]) -> Result<SessionRecord> {
 
 
 pub const RPC_SESSION_LIST_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: 0x41,
-    method_resp: Some(0x42),
+    method_req: METHOD_SESSION_LIST_REQ,
+    method_resp: Some(METHOD_SESSION_LIST_RESP),
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_SESSION_INFO_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: 0x45,
-    method_resp: Some(0x46),
+    method_req: METHOD_SESSION_INFO_REQ,
+    method_resp: Some(METHOD_SESSION_INFO_RESP),
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_SESSION_TERMINATE_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: 0x47,
+    method_req: METHOD_SESSION_TERMINATE_REQ,
     method_resp: None,
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_SESSION_INTERRUPT_CURRENT_SERVER_CALL_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: 0x75,
+    method_req: METHOD_SESSION_INTERRUPT_CURRENT_SERVER_CALL_REQ,
     method_resp: None,
     requires_cluster_context: true,
     requires_infobase_context: false,

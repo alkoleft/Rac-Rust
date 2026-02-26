@@ -7,7 +7,7 @@ use rac_protocol::commands::{
 };
 use rac_protocol::error::Result;
 
-use crate::rac_lite::auth::cluster_auth_optional;
+use rac_protocol::commands::cluster_auth_optional;
 use crate::rac_lite::cli::ServiceSettingCmd;
 use crate::rac_lite::console_output as console;
 use crate::rac_lite::parse::parse_uuid_arg;

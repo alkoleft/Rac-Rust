@@ -1,4 +1,3 @@
-mod auth;
 mod cli;
 mod commands;
 mod console_output;

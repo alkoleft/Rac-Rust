@@ -4,6 +4,7 @@ use crate::error::Result;
 use crate::rpc::Request;
 pub(crate) use crate::rpc::decode_utils::{parse_uuid_body, rpc_body};
 
+mod auth;
 pub mod agent;
 pub mod cluster;
 pub mod connection;
@@ -22,6 +23,7 @@ pub mod service_setting;
 pub use self::agent::{
     agent_admin_list, agent_version, AgentAdminListResp, AgentAdminRecord,
 };
+pub use self::auth::{agent_auth_optional, cluster_auth_optional, AuthPair};
 pub use self::cluster::{
     cluster_admin_list, cluster_admin_register, cluster_auth, cluster_info, cluster_list,
     ClusterAdminRecord, ClusterRecord,

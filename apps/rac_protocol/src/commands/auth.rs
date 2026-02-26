@@ -1,14 +1,16 @@
-use rac_protocol::client::RacClient;
-use rac_protocol::commands::{cluster_auth, AgentAuthRpc};
-use rac_protocol::error::{RacError, Result};
-use rac_protocol::Uuid16;
+use crate::client::RacClient;
+use crate::error::{RacError, Result};
+use crate::Uuid16;
+
+use super::agent::AgentAuthRpc;
+use super::cluster::ClusterAuthRpc;
 
 pub struct AuthPair<'a> {
     pub user: &'a str,
     pub pwd: &'a str,
 }
 
-fn resolve_user_pwd<'a>(
+fn resolve_auth_pair<'a>(
     user: Option<&'a str>,
     pwd: Option<&'a str>,
     missing_msg: &'static str,
@@ -25,7 +27,7 @@ pub fn agent_auth_optional<'a>(
     user: Option<&'a str>,
     pwd: Option<&'a str>,
 ) -> Result<AuthPair<'a>> {
-    let creds = resolve_user_pwd(
+    let creds = resolve_auth_pair(
         user,
         pwd,
         "agent-user and agent-pwd must be provided together",
@@ -48,13 +50,17 @@ pub fn cluster_auth_optional<'a>(
     user: Option<&'a str>,
     pwd: Option<&'a str>,
 ) -> Result<AuthPair<'a>> {
-    let creds = resolve_user_pwd(
+    let creds = resolve_auth_pair(
         user,
         pwd,
         "cluster-user and cluster-pwd must be provided together",
     )?;
-    let ok = cluster_auth(client, cluster, creds.user, creds.pwd)?;
-    if !ok {
+    let resp = client.call_typed(ClusterAuthRpc {
+        cluster,
+        user: creds.user.to_string(),
+        pwd: creds.pwd.to_string(),
+    })?;
+    if !resp.acknowledged {
         return Err(RacError::Unsupported(
             "cluster auth rejected (provide --cluster-user/--cluster-pwd)",
         ));

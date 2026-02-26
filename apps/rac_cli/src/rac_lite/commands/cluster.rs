@@ -1,9 +1,10 @@
 use rac_protocol::client::{ClientConfig, RacClient};
-use rac_protocol::commands::{cluster_admin_list, cluster_admin_register, cluster_info, cluster_list};
+use rac_protocol::commands::{
+    cluster_admin_list, cluster_admin_register, cluster_auth_optional, cluster_info, cluster_list,
+};
 use rac_protocol::error::Result;
 
 use crate::rac_lite::cli::{ClusterAdminCmd, ClusterCmd};
-use crate::rac_lite::auth::cluster_auth_optional;
 use crate::rac_lite::console_output as console;
 use crate::rac_lite::parse::{parse_auth_flags, parse_uuid_arg};
 

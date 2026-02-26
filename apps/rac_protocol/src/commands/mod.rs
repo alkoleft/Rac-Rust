@@ -44,8 +44,8 @@ pub use self::infobase::{
 };
 pub use self::lock::{lock_list, LockListResp, LockRecord};
 pub use self::limit::{
-    limit_info, limit_list, limit_remove, limit_update, LimitInfoResp, LimitListResp, LimitRecord,
-    LimitRemoveResp, LimitUpdateReq, LimitUpdateResp,
+    limit_info, limit_list, limit_remove, limit_update, LimitInfoResp, LimitInfoRpc, LimitListResp,
+    LimitListRpc, LimitRecord, LimitRemoveRpc, LimitUpdateRpc,
 };
 pub use self::manager::{manager_info, manager_list, ManagerInfoResp, ManagerListResp, ManagerRecord};
 pub use self::process::{

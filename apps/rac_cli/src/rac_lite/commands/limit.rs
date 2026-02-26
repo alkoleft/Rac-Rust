@@ -1,5 +1,7 @@
 use rac_protocol::client::{ClientConfig, RacClient};
-use rac_protocol::commands::{limit_info, limit_list, limit_remove, limit_update, LimitUpdateReq};
+use rac_protocol::commands::{
+    limit_info, limit_list, limit_remove, limit_update, LimitRemoveRpc, LimitUpdateRpc,
+};
 use rac_protocol::error::Result;
 
 use rac_protocol::commands::cluster_auth_optional;
@@ -50,7 +52,8 @@ pub fn run(json: bool, cfg: &ClientConfig, command: LimitCmd) -> Result<()> {
             descr,
         } => {
             let cluster = parse_uuid_arg(&cluster)?;
-            let req = LimitUpdateReq {
+            let req = LimitUpdateRpc {
+                cluster,
                 name,
                 counter,
                 action: parse_limit_action(&action)?,
@@ -75,7 +78,7 @@ pub fn run(json: bool, cfg: &ClientConfig, command: LimitCmd) -> Result<()> {
                 cluster_user.as_deref(),
                 cluster_pwd.as_deref(),
             )?;
-            let resp = limit_update(&mut client, cluster, creds.user, creds.pwd, req)?;
+            let resp = limit_update(&mut client, creds.user, creds.pwd, req)?;
             console::output(json, &resp, console::limit_update(&resp));
             client.close()?;
         }
@@ -94,7 +97,12 @@ pub fn run(json: bool, cfg: &ClientConfig, command: LimitCmd) -> Result<()> {
                 cluster_user.as_deref(),
                 cluster_pwd.as_deref(),
             )?;
-            let resp = limit_remove(&mut client, cluster, creds.user, creds.pwd, &name)?;
+            let resp = limit_remove(
+                &mut client,
+                creds.user,
+                creds.pwd,
+                LimitRemoveRpc { cluster, name },
+            )?;
             console::output(json, &resp, console::limit_remove(&resp));
             client.close()?;
         }

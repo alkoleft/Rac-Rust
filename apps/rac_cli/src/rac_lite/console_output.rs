@@ -4,11 +4,11 @@ use serde::Serialize;
 
 use rac_protocol::commands::{
     AgentAdminRecord, ClusterAdminRecord, ClusterRecord, ConnectionRecord, CounterRecord,
-    CounterValuesRecord, InfobaseSummary, LimitRecord, LimitRemoveResp, LimitUpdateResp, LockRecord,
-    ManagerRecord, ProcessLicense, ProcessRecord, RuleApplyResp, RuleInsertResp, RuleRecord,
-    RuleRemoveResp, RuleUpdateResp, ServerRecord, ServiceSettingApplyResp,
-    ServiceSettingInsertResp, ServiceSettingRecord, ServiceSettingRemoveResp,
-    ServiceSettingTransferDataDirRecord, ServiceSettingUpdateResp, SessionLicense, SessionRecord,
+    CounterValuesRecord, InfobaseSummary, LimitRecord, LockRecord, ManagerRecord, ProcessLicense,
+    ProcessRecord, RuleApplyResp, RuleInsertResp, RuleRecord, RuleRemoveResp, RuleUpdateResp,
+    ServerRecord, ServiceSettingApplyResp, ServiceSettingInsertResp, ServiceSettingRecord,
+    ServiceSettingRemoveResp, ServiceSettingTransferDataDirRecord, ServiceSettingUpdateResp,
+    SessionLicense, SessionRecord,
 };
 use rac_protocol::rpc::AckResponse;
 use rac_protocol::rac_wire::format_uuid;
@@ -333,18 +333,18 @@ pub fn limit_info(item: &LimitRecord) -> LimitInfoDisplay<'_> {
 }
 
 pub struct LimitUpdateDisplay<'a> {
-    resp: &'a LimitUpdateResp,
+    resp: &'a AckResponse,
 }
 
-pub fn limit_update(resp: &LimitUpdateResp) -> LimitUpdateDisplay<'_> {
+pub fn limit_update(resp: &AckResponse) -> LimitUpdateDisplay<'_> {
     LimitUpdateDisplay { resp }
 }
 
 pub struct LimitRemoveDisplay<'a> {
-    resp: &'a LimitRemoveResp,
+    resp: &'a AckResponse,
 }
 
-pub fn limit_remove(resp: &LimitRemoveResp) -> LimitRemoveDisplay<'_> {
+pub fn limit_remove(resp: &AckResponse) -> LimitRemoveDisplay<'_> {
     LimitRemoveDisplay { resp }
 }
 

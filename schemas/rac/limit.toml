@@ -20,6 +20,7 @@ fields = [
 ]
 
 [rpc.LimitList]
+response = "LimitListResp"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid", version = "11.0" },
@@ -31,6 +32,7 @@ requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.LimitInfo]
+response = "LimitInfoResp"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid", version = "11.0" },
@@ -43,6 +45,7 @@ requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.LimitUpdate]
+response = "AckResponse"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid", version = "11.0" },
@@ -69,6 +72,7 @@ requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.LimitRemove]
+response = "AckResponse"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid", version = "11.0" },
@@ -80,7 +84,7 @@ requires_cluster_context = true
 requires_infobase_context = false
 
 [response.LimitList]
-body = { type = "list_u8", item = "LimitRecord" }
+body = { type = "list_u8", item = "LimitRecord", field = "limits", struct = true }
 
 [response.LimitInfo]
-body = { type = "record", item = "LimitRecord" }
+body = { type = "record", item = "LimitRecord", field = "record", struct = true }

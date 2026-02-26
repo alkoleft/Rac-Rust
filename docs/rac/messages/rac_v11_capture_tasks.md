@@ -44,6 +44,15 @@
 - [x] lock list --connection <id>
 - [x] lock list --infobase <id>
 
+## Read-only: ошибки (негативные сценарии)
+
+- [x] session list --cluster-user badpwd
+- [x] cluster info --cluster <несуществующий uuid>
+- [x] session info --session <несуществующий uuid>
+- [x] session info --session <некорректный uuid>
+- [x] connection info --connection <несуществующий uuid>
+- [x] infobase info --infobase <несуществующий uuid>
+
 ## Документация
 
 - [~] Обновить `docs/rac/messages/rac_message_formats_*.md` по новым захватам

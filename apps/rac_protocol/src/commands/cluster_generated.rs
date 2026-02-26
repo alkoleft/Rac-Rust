@@ -48,6 +48,11 @@ pub struct ClusterRecord {
     pub errors_count_threshold: u32,
     pub kill_problem_processes: u8,
     pub kill_by_memory_with_dump: u8,
+    pub allow_access_right_audit_events_recording: u8,
+    pub ping_period: u32,
+    pub ping_timeout: u32,
+    pub restart_schedule_cron: String,
+    pub restart_interval: u32,
 }
 
 impl ClusterRecord {
@@ -66,6 +71,12 @@ impl ClusterRecord {
         let errors_count_threshold = cursor.take_u32_be()?;
         let kill_problem_processes = cursor.take_u8()?;
         let kill_by_memory_with_dump = cursor.take_u8()?;
+
+        let allow_access_right_audit_events_recording = 0;
+        let ping_period = 0;
+        let ping_timeout = 0;
+        let restart_schedule_cron = String::new();
+        let restart_interval = 0;
         Ok(Self {
             uuid,
             expiration_timeout,
@@ -81,6 +92,11 @@ impl ClusterRecord {
             errors_count_threshold,
             kill_problem_processes,
             kill_by_memory_with_dump,
+            allow_access_right_audit_events_recording,
+            ping_period,
+            ping_timeout,
+            restart_schedule_cron,
+            restart_interval,
         })
     }
 }
@@ -138,7 +154,9 @@ pub struct ClusterAdminRegisterRpc {
     pub name: String,
     pub descr: String,
     pub pwd: String,
+    pub auth_tag: u8,
     pub auth_flags: u8,
+    pub os_user: String,
 }
 
 impl crate::rpc::Request for ClusterAdminRegisterRpc {
@@ -153,13 +171,38 @@ impl crate::rpc::Request for ClusterAdminRegisterRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16 + 1 + self.name.len() + 1 + self.descr.len() + 1 + self.pwd.len() + 1 + 2);
+        let mut out = Vec::with_capacity(16 + 1 + self.name.len() + 1 + self.descr.len() + 1 + self.pwd.len() + 1 + 1 + 1 + self.os_user.len());
         out.extend_from_slice(&self.cluster);
         out.extend_from_slice(&encode_with_len_u8(self.name.as_bytes())?);
         out.extend_from_slice(&encode_with_len_u8(self.descr.as_bytes())?);
         out.extend_from_slice(&encode_with_len_u8(self.pwd.as_bytes())?);
+        out.push(self.auth_tag);
         out.push(self.auth_flags);
-        out.extend_from_slice(&[0, 0]);
+        out.extend_from_slice(&encode_with_len_u8(self.os_user.as_bytes())?);
+        Ok(out)
+    }
+}
+
+pub struct ClusterAdminRemoveRpc {
+    pub cluster: Uuid16,
+    pub name: String,
+}
+
+impl crate::rpc::Request for ClusterAdminRemoveRpc {
+    type Response = crate::rpc::AckResponse;
+
+    fn meta(&self) -> crate::rpc::Meta {
+        RPC_CLUSTER_ADMIN_REMOVE_META
+    }
+
+    fn cluster(&self) -> Option<crate::Uuid16> {
+        None
+    }
+
+    fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
+        let mut out = Vec::with_capacity(16 + 1 + self.name.len());
+        out.extend_from_slice(&self.cluster);
+        out.extend_from_slice(&encode_with_len_u8(self.name.as_bytes())?);
         Ok(out)
     }
 }
@@ -249,6 +292,13 @@ pub const RPC_CLUSTER_ADMIN_LIST_META: crate::rpc::Meta = crate::rpc::Meta {
 
 pub const RPC_CLUSTER_ADMIN_REGISTER_META: crate::rpc::Meta = crate::rpc::Meta {
     method_req: crate::rac_wire::METHOD_CLUSTER_ADMIN_REGISTER_REQ,
+    method_resp: None,
+    requires_cluster_context: false,
+    requires_infobase_context: false,
+};
+
+pub const RPC_CLUSTER_ADMIN_REMOVE_META: crate::rpc::Meta = crate::rpc::Meta {
+    method_req: crate::rac_wire::METHOD_CLUSTER_ADMIN_REMOVE_REQ,
     method_resp: None,
     requires_cluster_context: false,
     requires_infobase_context: false,

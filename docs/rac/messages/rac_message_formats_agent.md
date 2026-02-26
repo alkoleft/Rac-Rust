@@ -29,10 +29,10 @@ Observed field names in `rac agent admin list` output, with capture mapping stat
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `name` | string | yes | 1 | 16.0 |
-| `descr` | string | yes | 2 | 16.0 |
-| `auth` | enum/flags | yes | 3 | 16.0 |
-| `os-user` | string | yes | 4 | 16.0 |
+| `name` | string | yes | 1 | 11.0 |
+| `descr` | string | yes | 2 | 11.0 |
+| `auth` | enum/flags | yes | 3 | 11.0 |
+| `os-user` | string | yes | 4 | 11.0 |
 
 ### RPC
 
@@ -45,8 +45,8 @@ Observed request parameters for `rac agent admin list`.
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `agent-user` | string | yes (auth call `0x08`) | 1 | 16.0 |
-| `agent-pwd` | string | yes (auth call `0x08`) | 2 | 16.0 |
+| `agent-user` | string | yes (auth call `0x08`) | 1 | 11.0 |
+| `agent-pwd` | string | yes (auth call `0x08`) | 2 | 11.0 |
 
 Payload structure (method body):
 - empty body (observed only RPC header)
@@ -99,7 +99,7 @@ Payload structure (method body):
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `version` | string | yes | 1 | 16.0 |
+| `version` | string | yes | 1 | 11.0 |
 
 ### Record Layout (Observed, v16.0)
 
@@ -142,13 +142,13 @@ Observed request parameters for `rac agent admin register` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `agent-user` | string | yes (auth call `0x08`) | 1 | 16.0 |
-| `agent-pwd` | string | yes (auth call `0x08`) | 2 | 16.0 |
-| `name` | string | yes | 1 | 16.0 |
-| `descr` | string | yes | 2 | 16.0 |
-| `pwd` | string | yes | 3 | 16.0 |
-| `auth` | flags | yes | 4 | 16.0 |
-| `os-user` | string | yes | 5 | 16.0 |
+| `agent-user` | string | yes (auth call `0x08`) | 1 | 11.0 |
+| `agent-pwd` | string | yes (auth call `0x08`) | 2 | 11.0 |
+| `name` | string | yes | 1 | 11.0 |
+| `descr` | string | yes | 2 | 11.0 |
+| `pwd` | string | yes | 3 | 11.0 |
+| `auth` | flags | yes | 4 | 11.0 |
+| `os-user` | string | yes | 5 | 11.0 |
 
 Payload structure (method body):
 - offset `0x00`: `name_len:u8`
@@ -185,9 +185,9 @@ Observed request parameters for `rac agent admin remove` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `agent-user` | string | yes (auth call `0x08`) | 1 | 16.0 |
-| `agent-pwd` | string | yes (auth call `0x08`) | 2 | 16.0 |
-| `name` | string | yes | 1 | 16.0 |
+| `agent-user` | string | yes (auth call `0x08`) | 1 | 11.0 |
+| `agent-pwd` | string | yes (auth call `0x08`) | 2 | 11.0 |
+| `name` | string | yes | 1 | 11.0 |
 
 Payload structure (method body):
 - offset `0x00`: `name_len:u8`

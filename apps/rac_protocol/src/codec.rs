@@ -9,8 +9,8 @@ pub struct RecordCursor<'a> {
 }
 
 impl<'a> RecordCursor<'a> {
-    pub fn new(data: &'a [u8], off: usize) -> Self {
-        Self { data, off }
+    pub fn new(data: &'a [u8]) -> Self {
+        Self { data, off: 0 }
     }
 
     pub fn remaining_len(&self) -> usize {

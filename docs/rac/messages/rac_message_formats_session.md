@@ -15,10 +15,30 @@ Aligned with current decoder implementation in `apps/rac_protocol/src/commands/s
 
 ## Sources
 
-- `artifacts/rac/v11/v11_session_list_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11/v11_session_list_ro_server_to_client.decode.txt`
-- `artifacts/rac/v11/v11_session_list_ro_response.hex`
-- `artifacts/rac/v11/v11_session_list_ro_rac.out`
+- `artifacts/rac/v16/v16_20260226_051602_session_list_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_051602_session_list_server_to_client.decode.txt`
+- `artifacts/rac/v16/v16_20260226_051602_session_list_response.hex`
+- `artifacts/rac/v16/v16_20260226_051602_session_list_rac.out`
+- `artifacts/rac/v16/v16_20260226_053425_session_list_licenses_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_session_list_licenses_server_to_client.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_session_list_licenses_response.hex`
+- `artifacts/rac/v16/v16_20260226_053425_session_list_licenses_rac.out`
+- `artifacts/rac/v16/v16_20260226_053425_session_info_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_session_info_server_to_client.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_session_info_response.hex`
+- `artifacts/rac/v16/v16_20260226_053425_session_info_rac.out`
+- `artifacts/rac/v16/v16_20260226_053425_session_info_licenses_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_session_info_licenses_server_to_client.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_session_info_licenses_response.hex`
+- `artifacts/rac/v16/v16_20260226_053425_session_info_licenses_rac.out`
+- `artifacts/rac/v16/v16_20260226_053425_session_terminate_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_session_terminate_server_to_client.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_session_terminate_response.hex`
+- `artifacts/rac/v16/v16_20260226_053425_session_terminate_rac.out`
+- `artifacts/rac/v16/v16_20260226_053425_session_interrupt_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_session_interrupt_server_to_client.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_session_interrupt_response.hex`
+- `artifacts/rac/v16/v16_20260226_053425_session_interrupt_rac.out`
 
 ## Commands
 
@@ -38,8 +58,8 @@ Observed request parameters for `rac session list` (v16).
 | `cluster` | UUID | yes | 1 | 11.0 |
 | `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
 | `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
-| `infobase` | UUID | yes | 4 | 11.0 |
-| `licenses` | flag | no | - | 11.0 |
+| `infobase` | UUID | no | unknown | 11.0 |
+| `licenses` | flag | no | unknown | 11.0 |
 
 **Record boundary detection (current decoder):**
 
@@ -53,7 +73,6 @@ Observed request parameters for `rac session list` (v16).
 - **Response**: method `0x46`.
 - **Parameters**: `16 <cluster_uuid> <session_uuid>`.
 - **Response body layout**: a single session record using the same layout as in Session List.
-- **v11 capture status**: no `v11_` payload capture yet; fields below still require v11 confirmation.
 
 #### Поля запроса (из `rac`)
 
@@ -64,8 +83,8 @@ Observed request parameters for `rac session info` (v16).
 | `cluster` | UUID | yes | 1 | 11.0 |
 | `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
 | `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
-| `session` | UUID | yes | 4 | 11.0 |
-| `licenses` | flag | yes (see `session_info_licenses.out`) | 5 | 11.0 |
+| `session` | UUID | yes | 2 | 11.0 |
+| `licenses` | flag | no | unknown | 11.0 |
 
 ### Session Terminate
 
@@ -74,7 +93,8 @@ Sources:
 
 #### RPC
 
-Request/response method IDs: not captured yet (v11 help only).
+Request method: `0x47` (`session terminate`)
+Response: error observed (method `0xff`, `SessionNotFound`)
 
 #### Поля запроса (из `rac`)
 
@@ -82,15 +102,21 @@ Observed request parameters for `rac session terminate` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 11.0 |
-| `cluster-user` | string | no | - | 11.0 |
-| `cluster-pwd` | string | no | - | 11.0 |
-| `session` | UUID | no | - | 11.0 |
-| `error-message` | string | no | - | 11.0 |
+| `cluster` | UUID | yes | 1 | 11.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
+| `session` | UUID | yes | 2 | 11.0 |
+| `error-message` | string | yes | 3 | 11.0 |
+
+Payload structure (method body):
+- offset `0x00`: `cluster_uuid[16]`
+- offset `0x10`: `session_uuid[16]` (observed all zeros)
+- offset `0x20`: `error_message_len:u8`
+- offset `0x21`: `error_message[error_message_len]`
 
 #### Поля ответа
 
-Not captured yet (likely ACK-only).
+Error response observed (see capture); ACK-only not observed yet.
 
 ### Session Interrupt Current Server Call
 
@@ -99,7 +125,8 @@ Sources:
 
 #### RPC
 
-Request/response method IDs: not captured yet (v11 help only).
+Request method: `0x75` (`session interrupt-current-server-call`)
+Response: error observed (method `0xff`, `SessionNotFound`)
 
 #### Поля запроса (из `rac`)
 
@@ -107,15 +134,21 @@ Observed request parameters for `rac session interrupt-current-server-call` (v16
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 11.0 |
-| `cluster-user` | string | no | - | 11.0 |
-| `cluster-pwd` | string | no | - | 11.0 |
-| `session` | UUID | no | - | 11.0 |
-| `error-message` | string | no | - | 11.0 |
+| `cluster` | UUID | yes | 1 | 11.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
+| `session` | UUID | yes | 2 | 11.0 |
+| `error-message` | string | yes | 3 | 11.0 |
+
+Payload structure (method body):
+- offset `0x00`: `cluster_uuid[16]`
+- offset `0x10`: `session_uuid[16]` (observed all zeros)
+- offset `0x20`: `error_message_len:u8`
+- offset `0x21`: `error_message[error_message_len]`
 
 #### Поля ответа
 
-Not captured yet (likely ACK-only).
+Error response observed (see capture); ACK-only not observed yet.
 
 ### Поля ответа (из `rac`)
 

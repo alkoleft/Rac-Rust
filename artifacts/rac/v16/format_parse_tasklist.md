@@ -24,7 +24,10 @@
 
 **Connection**
 - [ ] `rac connection list`: захват с ненулевым `blocked-by-ls` для подтверждения поля `blocked_by_ls`.
-- [ ] `rac connection list`: захват с параметрами `--process/--infobase/--infobase-user/--infobase-pwd` для определения порядка полей запроса.
+- [ ] `rac connection list`: захват с `--process` для определения порядка полей запроса.
+- [ ] `rac connection list`: захват с `--infobase` для определения порядка полей запроса.
+- [ ] `rac connection list`: захват с `--infobase-user` для определения порядка полей запроса.
+- [ ] `rac connection list`: захват с `--infobase-pwd` для определения порядка полей запроса.
 - [ ] `rac connection info`: захват запроса/ответа для определения порядка полей запроса.
 - [ ] `rac connection disconnect`: получить захват запроса/ответа, восстановить порядок полей.
 

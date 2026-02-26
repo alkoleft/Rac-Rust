@@ -21,6 +21,7 @@ Define or update RAC protocol schemas and regenerate the corresponding Rust code
 - Responses belong in `[response.*]`; generate a response struct only when `body.struct = true`.
 - Use `field` on response bodies to control list/record field names.
 - Set minimal `version` for every field and every RPC entry.
+- Never use `*_default` field types; always specify concrete types (e.g., `u32_be`, `str8`).
 - Keep schemas codegen-friendly: avoid `super::` references and minimize manual types.
 - Parsing must be strictly sequential and based on `RecordCursor`; do not rely on scan helpers.
 

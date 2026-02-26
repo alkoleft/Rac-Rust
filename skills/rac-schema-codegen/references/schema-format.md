@@ -53,3 +53,4 @@ fields = [
 - Keep schemas codegen-friendly: avoid `super::` references and minimize manual types.
 - Response bodies may set `field = "<name>"` to control the generated field name.
 - Always set minimal `version` on RPCs and fields.
+- Never use `*_default` field types; always specify concrete types.

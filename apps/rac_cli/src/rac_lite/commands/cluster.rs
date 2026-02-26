@@ -32,16 +32,20 @@ pub fn run(json: bool, cfg: &ClientConfig, command: ClusterCmd) -> Result<()> {
             } => {
                 let cluster = parse_uuid_arg(&cluster)?;
                 let mut client = RacClient::connect(&addr, cfg.clone())?;
-                match (cluster_user.as_deref(), cluster_pwd.as_deref()) {
-                    (Some(user), Some(pwd)) => {
-                        cluster_auth(&mut client, cluster, user, pwd)?;
-                    }
-                    (None, None) => {}
+                let (user, pwd) = match (cluster_user.as_deref(), cluster_pwd.as_deref()) {
+                    (Some(user), Some(pwd)) => (user, pwd),
+                    (None, None) => ("", ""),
                     _ => {
                         return Err(RacError::Unsupported(
                             "cluster-user and cluster-pwd must be provided together",
                         ));
                     }
+                };
+                let authed = cluster_auth(&mut client, cluster, user, pwd)?;
+                if !authed {
+                    return Err(RacError::Unsupported(
+                        "cluster auth rejected (provide --cluster-user/--cluster-pwd)",
+                    ));
                 }
                 let resp = cluster_admin_list(&mut client, cluster)?;
                 console::output(json, &resp, console::cluster_admin_list(&resp));

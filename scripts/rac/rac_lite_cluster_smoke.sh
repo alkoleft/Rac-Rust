@@ -63,7 +63,7 @@ echo "RAC endpoint: $ADDR"
 list_tmp="$(mktemp)"
 echo "==> cluster list"
 echo "+ $RAC_LITE_BIN cluster list $ADDR"
-$RAC_LITE_BIN cluster list $ADDR 2>&1
+"$RAC_LITE_BIN" cluster list "$ADDR" 2>&1 | tee "$list_tmp"
 list_status=${PIPESTATUS[0]}
 if [[ $list_status -ne 0 ]]; then
   echo "Command failed with exit code $list_status"
@@ -72,7 +72,11 @@ fi
 echo
 
 if [[ -z "$CLUSTER_UUID" ]]; then
-  CLUSTER_UUID="$(rg -o -m1 '[0-9a-fA-F-]{36}' "$list_tmp" || true)"
+  if command -v rg >/dev/null 2>&1; then
+    CLUSTER_UUID="$(rg -o -m1 '[0-9a-fA-F-]{36}' "$list_tmp" || true)"
+  else
+    CLUSTER_UUID="$(grep -Eo -m1 '[0-9a-fA-F-]{36}' "$list_tmp" || true)"
+  fi
 fi
 rm -f "$list_tmp"
 

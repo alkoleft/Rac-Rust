@@ -52,10 +52,10 @@
 - [ ] `rac process info --licenses`: определить `gap_license_0` и подтвердить хвостовые поля `use`/`reserve`/`memory-excess-time`. — Статус: захват [~], анализ [x], описание [x]
 
 **Server**
-- [ ] `rac server list`: определить назначения `gap_1..gap_6` (ожидаемые `memory-limit`, `connections-limit`, `safe-working-processes-memory-limit`), подтвердить порядок `port-range` и поведение `gap_7` с непустым `restart-schedule`. — Статус: захват [~], анализ [ ], описание [ ]
-- [ ] `rac server info`: определить назначения `gap_1..gap_6` (ожидаемые `memory-limit`, `connections-limit`, `safe-working-processes-memory-limit`), подтвердить порядок `port-range` и поведение `gap_7` с непустым `restart-schedule`. — Статус: захват [~], анализ [ ], описание [ ]
+- [ ] `rac server list`: определить назначения `gap_1..gap_6` (ожидаемые `memory-limit`, `connections-limit`, `safe-working-processes-memory-limit`), подтвердить порядок `port-range` и поведение `gap_7` с непустым `restart-schedule`. — Статус: захват [~], анализ [x], описание [x]
+- [ ] `rac server info`: определить назначения `gap_1..gap_6` (ожидаемые `memory-limit`, `connections-limit`, `safe-working-processes-memory-limit`), подтвердить порядок `port-range` и поведение `gap_7` с непустым `restart-schedule`. — Статус: захват [~], анализ [x], описание [x]
 - [ ] `rac server insert`: получить захват запроса/ответа, восстановить порядок полей. — Статус: захват [ ], анализ [ ], описание [ ]
-- [ ] `rac server update`: получить захват запроса/ответа, восстановить порядок полей. — Статус: захват [x], анализ [ ], описание [ ]
+- [ ] `rac server update`: получить захват запроса/ответа, восстановить порядок полей. — Статус: захват [x], анализ [x], описание [x]
 - [ ] `rac server remove`: получить захват запроса/ответа, восстановить порядок полей. — Статус: захват [ ], анализ [ ], описание [ ]
 
 **Session**

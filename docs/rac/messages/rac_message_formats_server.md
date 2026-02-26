@@ -11,14 +11,14 @@ Sources (v16):
 ## Server List
 
 Source capture:
-- `artifacts/rac/v11/v11_server_list_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11/v11_server_list_ro_server_to_client.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_server_list_after_update_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_server_list_after_update_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/v11/v11_server_list_ro_response.hex`
+- `artifacts/rac/v16/v16_20260226_053425_server_list_after_update_response.hex`
 
 RAC output reference:
-- `artifacts/rac/v11/v11_server_list_ro_rac.out`
+- `artifacts/rac/v16/v16_20260226_053425_server_list_after_update_rac.out`
 - `artifacts/rac/v16/help/server_list.out`
 
 ### Поля ответа (из `rac`)
@@ -106,14 +106,14 @@ Notes:
 ## Server Info
 
 Source capture:
-- `artifacts/rac/v11/v11_server_info_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11/v11_server_info_ro_server_to_client.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_server_info_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_server_info_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/v11/v11_server_info_ro_response.hex`
+- `artifacts/rac/v16/v16_20260226_053425_server_info_response.hex`
 
 RAC output reference:
-- `artifacts/rac/v11/v11_server_info_ro_rac.out`
+- `artifacts/rac/v16/v16_20260226_053425_server_info_rac.out`
 - `artifacts/rac/v16/help/server_info.out`
 
 ### Поля ответа (из `rac`)
@@ -164,10 +164,13 @@ Payload structure (method body):
 
 Sources:
 - `artifacts/rac/v16/help/server_help.txt`
+- `artifacts/rac/v16/v16_20260226_053425_server_update_nonzero_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_server_update_nonzero_server_to_client.decode.txt`
 
 ### RPC
 
-Request/response method IDs: not captured yet (v11 help only).
+Request method: `0x1a` (`server update`)
+Response method: `0x1b` (server UUID)
 
 ### Поля запроса (из `rac`)
 
@@ -175,25 +178,25 @@ Observed request parameters for `rac server insert` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 11.0 |
-| `cluster-user` | string | no | - | 11.0 |
-| `cluster-pwd` | string | no | - | 11.0 |
-| `agent-host` | string | no | - | 11.0 |
-| `agent-port` | u16 | no | - | 11.0 |
-| `port-range` | string (`min:max`) | no | - | 11.0 |
-| `name` | string | no | - | 11.0 |
-| `using` | enum (`main`, `normal`) | no | - | 11.0 |
-| `infobases-limit` | u32 | no | - | 11.0 |
-| `memory-limit` | u32 | no | - | 11.0 |
-| `connections-limit` | u32 | no | - | 11.0 |
-| `cluster-port` | u16 | no | - | 11.0 |
-| `dedicate-managers` | enum (`all`, `none`) | no | - | 11.0 |
-| `safe-working-processes-memory-limit` | u64 | no | - | 11.0 |
-| `safe-call-memory-limit` | u64 | no | - | 11.0 |
-| `critical-total-memory` | u64 | no | - | 11.0 |
-| `temporary-allowed-total-memory` | u64 | no | - | 11.0 |
-| `temporary-allowed-total-memory-time-limit` | u32 | no | - | 11.0 |
-| `service-principal-name` | string | no | - | 11.0 |
+| `cluster` | UUID | no | unknown | 11.0 |
+| `cluster-user` | string | no | unknown | 11.0 |
+| `cluster-pwd` | string | no | unknown | 11.0 |
+| `agent-host` | string | no | unknown | 11.0 |
+| `agent-port` | u16 | no | unknown | 11.0 |
+| `port-range` | string (`min:max`) | no | unknown | 11.0 |
+| `name` | string | no | unknown | 11.0 |
+| `using` | enum (`main`, `normal`) | no | unknown | 11.0 |
+| `infobases-limit` | u32 | no | unknown | 11.0 |
+| `memory-limit` | u32 | no | unknown | 11.0 |
+| `connections-limit` | u32 | no | unknown | 11.0 |
+| `cluster-port` | u16 | no | unknown | 11.0 |
+| `dedicate-managers` | enum (`all`, `none`) | no | unknown | 11.0 |
+| `safe-working-processes-memory-limit` | u64 | no | unknown | 11.0 |
+| `safe-call-memory-limit` | u64 | no | unknown | 11.0 |
+| `critical-total-memory` | u64 | no | unknown | 11.0 |
+| `temporary-allowed-total-memory` | u64 | no | unknown | 11.0 |
+| `temporary-allowed-total-memory-time-limit` | u32 | no | unknown | 11.0 |
+| `service-principal-name` | string | no | unknown | 11.0 |
 
 ### Поля ответа
 
@@ -214,26 +217,30 @@ Observed request parameters for `rac server update` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 11.0 |
-| `cluster-user` | string | no | - | 11.0 |
-| `cluster-pwd` | string | no | - | 11.0 |
-| `server` | UUID | no | - | 11.0 |
-| `port-range` | string (`min:max`) | no | - | 11.0 |
-| `using` | enum (`main`, `normal`) | no | - | 11.0 |
-| `infobases-limit` | u32 | no | - | 11.0 |
-| `memory-limit` | u32 | no | - | 11.0 |
-| `connections-limit` | u32 | no | - | 11.0 |
-| `dedicate-managers` | enum (`all`, `none`) | no | - | 11.0 |
-| `safe-working-processes-memory-limit` | u64 | no | - | 11.0 |
-| `safe-call-memory-limit` | u64 | no | - | 11.0 |
-| `critical-total-memory` | u64 | no | - | 11.0 |
-| `temporary-allowed-total-memory` | u64 | no | - | 11.0 |
-| `temporary-allowed-total-memory-time-limit` | u32 | no | - | 11.0 |
-| `service-principal-name` | string | no | - | 11.0 |
+| `cluster` | UUID | yes | 1 | 11.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
+| `server` | UUID | yes | 2 | 11.0 |
+| `port-range` | string (`min:max`) | yes | unknown | 11.0 |
+| `using` | enum (`main`, `normal`) | yes | unknown | 11.0 |
+| `infobases-limit` | u32 | yes | unknown | 11.0 |
+| `memory-limit` | u32 | yes | unknown | 11.0 |
+| `connections-limit` | u32 | yes | unknown | 11.0 |
+| `dedicate-managers` | enum (`all`, `none`) | yes | unknown | 11.0 |
+| `safe-working-processes-memory-limit` | u64 | yes | unknown | 11.0 |
+| `safe-call-memory-limit` | u64 | yes | unknown | 11.0 |
+| `critical-total-memory` | u64 | yes | unknown | 11.0 |
+| `temporary-allowed-total-memory` | u64 | yes | unknown | 11.0 |
+| `temporary-allowed-total-memory-time-limit` | u32 | yes | unknown | 11.0 |
+| `service-principal-name` | string | yes | unknown | 11.0 |
 
 ### Поля ответа
 
-Not captured yet (likely ACK-only).
+### Поля ответа
+
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `server` | UUID | yes | 1 | 11.0 |
 
 ## Server Remove
 
@@ -250,10 +257,10 @@ Observed request parameters for `rac server remove` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 11.0 |
-| `cluster-user` | string | no | - | 11.0 |
-| `cluster-pwd` | string | no | - | 11.0 |
-| `server` | UUID | no | - | 11.0 |
+| `cluster` | UUID | no | unknown | 11.0 |
+| `cluster-user` | string | no | unknown | 11.0 |
+| `cluster-pwd` | string | no | unknown | 11.0 |
+| `server` | UUID | no | unknown | 11.0 |
 
 ### Поля ответа
 

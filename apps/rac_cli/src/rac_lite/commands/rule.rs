@@ -5,6 +5,7 @@ use rac_protocol::commands::{
 };
 use rac_protocol::error::Result;
 
+use crate::rac_lite::auth::cluster_auth_optional;
 use crate::rac_lite::cli::RuleCmd;
 use crate::rac_lite::console_output as console;
 use crate::rac_lite::parse::{parse_rule_apply_mode, parse_uuid_arg};
@@ -21,7 +22,13 @@ pub fn run(json: bool, cfg: &ClientConfig, command: RuleCmd) -> Result<()> {
             let cluster = parse_uuid_arg(&cluster)?;
             let mode = parse_rule_apply_mode(&mode)?;
             let mut client = RacClient::connect(&addr, cfg.clone())?;
-            let resp = rule_apply(&mut client, cluster, &cluster_user, &cluster_pwd, mode)?;
+            let creds = cluster_auth_optional(
+                &mut client,
+                cluster,
+                cluster_user.as_deref(),
+                cluster_pwd.as_deref(),
+            )?;
+            let resp = rule_apply(&mut client, cluster, creds.user, creds.pwd, mode)?;
             console::output(json, &resp, console::rule_apply(&resp));
             client.close()?;
         }
@@ -35,7 +42,13 @@ pub fn run(json: bool, cfg: &ClientConfig, command: RuleCmd) -> Result<()> {
             let cluster = parse_uuid_arg(&cluster)?;
             let server = parse_uuid_arg(&server)?;
             let mut client = RacClient::connect(&addr, cfg.clone())?;
-            let resp = rule_list(&mut client, cluster, &cluster_user, &cluster_pwd, server)?;
+            let creds = cluster_auth_optional(
+                &mut client,
+                cluster,
+                cluster_user.as_deref(),
+                cluster_pwd.as_deref(),
+            )?;
+            let resp = rule_list(&mut client, cluster, creds.user, creds.pwd, server)?;
             console::output(json, &resp, console::rule_list(&resp.records));
             client.close()?;
         }
@@ -51,7 +64,13 @@ pub fn run(json: bool, cfg: &ClientConfig, command: RuleCmd) -> Result<()> {
             let server = parse_uuid_arg(&server)?;
             let rule = parse_uuid_arg(&rule)?;
             let mut client = RacClient::connect(&addr, cfg.clone())?;
-            let resp = rule_info(&mut client, cluster, &cluster_user, &cluster_pwd, server, rule)?;
+            let creds = cluster_auth_optional(
+                &mut client,
+                cluster,
+                cluster_user.as_deref(),
+                cluster_pwd.as_deref(),
+            )?;
+            let resp = rule_info(&mut client, cluster, creds.user, creds.pwd, server, rule)?;
             console::output(json, &resp, console::rule_info(&resp.record));
             client.close()?;
         }
@@ -80,7 +99,13 @@ pub fn run(json: bool, cfg: &ClientConfig, command: RuleCmd) -> Result<()> {
                 application_ext,
                 priority,
             };
-            let resp = rule_insert(&mut client, cluster, &cluster_user, &cluster_pwd, req)?;
+            let creds = cluster_auth_optional(
+                &mut client,
+                cluster,
+                cluster_user.as_deref(),
+                cluster_pwd.as_deref(),
+            )?;
+            let resp = rule_insert(&mut client, cluster, creds.user, creds.pwd, req)?;
             console::output(json, &resp, console::rule_insert(&resp));
             client.close()?;
         }
@@ -112,7 +137,13 @@ pub fn run(json: bool, cfg: &ClientConfig, command: RuleCmd) -> Result<()> {
                 application_ext,
                 priority,
             };
-            let resp = rule_update(&mut client, cluster, &cluster_user, &cluster_pwd, req)?;
+            let creds = cluster_auth_optional(
+                &mut client,
+                cluster,
+                cluster_user.as_deref(),
+                cluster_pwd.as_deref(),
+            )?;
+            let resp = rule_update(&mut client, cluster, creds.user, creds.pwd, req)?;
             console::output(json, &resp, console::rule_update(&resp));
             client.close()?;
         }
@@ -128,7 +159,13 @@ pub fn run(json: bool, cfg: &ClientConfig, command: RuleCmd) -> Result<()> {
             let server = parse_uuid_arg(&server)?;
             let rule = parse_uuid_arg(&rule)?;
             let mut client = RacClient::connect(&addr, cfg.clone())?;
-            let resp = rule_remove(&mut client, cluster, &cluster_user, &cluster_pwd, server, rule)?;
+            let creds = cluster_auth_optional(
+                &mut client,
+                cluster,
+                cluster_user.as_deref(),
+                cluster_pwd.as_deref(),
+            )?;
+            let resp = rule_remove(&mut client, cluster, creds.user, creds.pwd, server, rule)?;
             console::output(json, &resp, console::rule_remove(&resp));
             client.close()?;
         }

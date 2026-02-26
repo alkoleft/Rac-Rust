@@ -85,9 +85,9 @@ pub enum AgentAdminCmd {
     List {
         addr: String,
         #[arg(long)]
-        agent_user: String,
+        agent_user: Option<String>,
         #[arg(long)]
-        agent_pwd: String,
+        agent_pwd: Option<String>,
     },
 }
 
@@ -123,9 +123,9 @@ pub enum ClusterAdminCmd {
         #[arg(long)]
         cluster: String,
         #[arg(long)]
-        cluster_user: String,
+        cluster_user: Option<String>,
         #[arg(long)]
-        cluster_pwd: String,
+        cluster_pwd: Option<String>,
         #[arg(long)]
         name: String,
         #[arg(long)]
@@ -281,9 +281,9 @@ pub enum CounterCmd {
         #[arg(long)]
         cluster: String,
         #[arg(long)]
-        cluster_user: String,
+        cluster_user: Option<String>,
         #[arg(long)]
-        cluster_pwd: String,
+        cluster_pwd: Option<String>,
         #[arg(long)]
         counter: String,
         #[arg(long, default_value = "")]
@@ -294,9 +294,9 @@ pub enum CounterCmd {
         #[arg(long)]
         cluster: String,
         #[arg(long)]
-        cluster_user: String,
+        cluster_user: Option<String>,
         #[arg(long)]
-        cluster_pwd: String,
+        cluster_pwd: Option<String>,
         #[arg(long)]
         name: String,
     },
@@ -305,9 +305,9 @@ pub enum CounterCmd {
         #[arg(long)]
         cluster: String,
         #[arg(long)]
-        cluster_user: String,
+        cluster_user: Option<String>,
         #[arg(long)]
-        cluster_pwd: String,
+        cluster_pwd: Option<String>,
         #[arg(long)]
         counter: String,
         #[arg(long, default_value = "")]
@@ -318,9 +318,9 @@ pub enum CounterCmd {
         #[arg(long)]
         cluster: String,
         #[arg(long)]
-        cluster_user: String,
+        cluster_user: Option<String>,
         #[arg(long)]
-        cluster_pwd: String,
+        cluster_pwd: Option<String>,
         #[arg(long)]
         counter: String,
         #[arg(long, default_value = "")]
@@ -331,9 +331,9 @@ pub enum CounterCmd {
         #[arg(long)]
         cluster: String,
         #[arg(long)]
-        cluster_user: String,
+        cluster_user: Option<String>,
         #[arg(long)]
-        cluster_pwd: String,
+        cluster_pwd: Option<String>,
         #[arg(long)]
         name: String,
         #[arg(long)]
@@ -390,9 +390,9 @@ pub enum LimitCmd {
         #[arg(long)]
         cluster: String,
         #[arg(long)]
-        cluster_user: String,
+        cluster_user: Option<String>,
         #[arg(long)]
-        cluster_pwd: String,
+        cluster_pwd: Option<String>,
         #[arg(long)]
         name: String,
         #[arg(long)]
@@ -431,9 +431,9 @@ pub enum LimitCmd {
         #[arg(long)]
         cluster: String,
         #[arg(long)]
-        cluster_user: String,
+        cluster_user: Option<String>,
         #[arg(long)]
-        cluster_pwd: String,
+        cluster_pwd: Option<String>,
         #[arg(long)]
         name: String,
     },
@@ -446,9 +446,9 @@ pub enum RuleCmd {
         #[arg(long)]
         cluster: String,
         #[arg(long)]
-        cluster_user: String,
+        cluster_user: Option<String>,
         #[arg(long)]
-        cluster_pwd: String,
+        cluster_pwd: Option<String>,
         #[arg(long, default_value = "full")]
         mode: String,
     },
@@ -457,9 +457,9 @@ pub enum RuleCmd {
         #[arg(long)]
         cluster: String,
         #[arg(long)]
-        cluster_user: String,
+        cluster_user: Option<String>,
         #[arg(long)]
-        cluster_pwd: String,
+        cluster_pwd: Option<String>,
         #[arg(long)]
         server: String,
     },
@@ -468,9 +468,9 @@ pub enum RuleCmd {
         #[arg(long)]
         cluster: String,
         #[arg(long)]
-        cluster_user: String,
+        cluster_user: Option<String>,
         #[arg(long)]
-        cluster_pwd: String,
+        cluster_pwd: Option<String>,
         #[arg(long)]
         server: String,
         #[arg(long)]
@@ -481,9 +481,9 @@ pub enum RuleCmd {
         #[arg(long)]
         cluster: String,
         #[arg(long)]
-        cluster_user: String,
+        cluster_user: Option<String>,
         #[arg(long)]
-        cluster_pwd: String,
+        cluster_pwd: Option<String>,
         #[arg(long)]
         server: String,
         #[arg(long)]
@@ -504,9 +504,9 @@ pub enum RuleCmd {
         #[arg(long)]
         cluster: String,
         #[arg(long)]
-        cluster_user: String,
+        cluster_user: Option<String>,
         #[arg(long)]
-        cluster_pwd: String,
+        cluster_pwd: Option<String>,
         #[arg(long)]
         server: String,
         #[arg(long)]
@@ -529,9 +529,9 @@ pub enum RuleCmd {
         #[arg(long)]
         cluster: String,
         #[arg(long)]
-        cluster_user: String,
+        cluster_user: Option<String>,
         #[arg(long)]
-        cluster_pwd: String,
+        cluster_pwd: Option<String>,
         #[arg(long)]
         server: String,
         #[arg(long)]
@@ -546,9 +546,9 @@ pub enum ServiceSettingCmd {
         #[arg(long)]
         cluster: String,
         #[arg(long)]
-        cluster_user: String,
+        cluster_user: Option<String>,
         #[arg(long)]
-        cluster_pwd: String,
+        cluster_pwd: Option<String>,
         #[arg(long)]
         server: String,
     },
@@ -557,9 +557,9 @@ pub enum ServiceSettingCmd {
         #[arg(long)]
         cluster: String,
         #[arg(long)]
-        cluster_user: String,
+        cluster_user: Option<String>,
         #[arg(long)]
-        cluster_pwd: String,
+        cluster_pwd: Option<String>,
         #[arg(long)]
         server: String,
         #[arg(long)]
@@ -570,9 +570,9 @@ pub enum ServiceSettingCmd {
         #[arg(long)]
         cluster: String,
         #[arg(long)]
-        cluster_user: String,
+        cluster_user: Option<String>,
         #[arg(long)]
-        cluster_pwd: String,
+        cluster_pwd: Option<String>,
         #[arg(long)]
         server: String,
         #[arg(long)]
@@ -591,9 +591,9 @@ pub enum ServiceSettingCmd {
         #[arg(long)]
         cluster: String,
         #[arg(long)]
-        cluster_user: String,
+        cluster_user: Option<String>,
         #[arg(long)]
-        cluster_pwd: String,
+        cluster_pwd: Option<String>,
         #[arg(long)]
         server: String,
         #[arg(long)]
@@ -606,9 +606,9 @@ pub enum ServiceSettingCmd {
         #[arg(long)]
         cluster: String,
         #[arg(long)]
-        cluster_user: String,
+        cluster_user: Option<String>,
         #[arg(long)]
-        cluster_pwd: String,
+        cluster_pwd: Option<String>,
         #[arg(long)]
         server: String,
         #[arg(long)]
@@ -619,9 +619,9 @@ pub enum ServiceSettingCmd {
         #[arg(long)]
         cluster: String,
         #[arg(long)]
-        cluster_user: String,
+        cluster_user: Option<String>,
         #[arg(long)]
-        cluster_pwd: String,
+        cluster_pwd: Option<String>,
         #[arg(long)]
         server: String,
     },
@@ -630,9 +630,9 @@ pub enum ServiceSettingCmd {
         #[arg(long)]
         cluster: String,
         #[arg(long)]
-        cluster_user: String,
+        cluster_user: Option<String>,
         #[arg(long)]
-        cluster_pwd: String,
+        cluster_pwd: Option<String>,
         #[arg(long)]
         server: String,
         #[arg(long, default_value = "")]

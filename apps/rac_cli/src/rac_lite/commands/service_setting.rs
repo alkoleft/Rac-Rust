@@ -1,12 +1,13 @@
 use rac_protocol::client::{ClientConfig, RacClient};
 use rac_protocol::commands::{
-    cluster_auth, service_setting_apply, service_setting_get_service_data_dirs_for_transfer,
-    service_setting_info, service_setting_info_no_auth, service_setting_insert,
-    service_setting_list, service_setting_remove, service_setting_update_no_auth,
-    ServiceSettingInsertReq, ServiceSettingUpdateReq,
+    service_setting_apply, service_setting_get_service_data_dirs_for_transfer, service_setting_info,
+    service_setting_info_no_auth, service_setting_insert, service_setting_list,
+    service_setting_remove, service_setting_update_no_auth, ServiceSettingInsertReq,
+    ServiceSettingUpdateReq,
 };
 use rac_protocol::error::Result;
 
+use crate::rac_lite::auth::cluster_auth_optional;
 use crate::rac_lite::cli::ServiceSettingCmd;
 use crate::rac_lite::console_output as console;
 use crate::rac_lite::parse::parse_uuid_arg;
@@ -23,11 +24,17 @@ pub fn run(json: bool, cfg: &ClientConfig, command: ServiceSettingCmd) -> Result
             let cluster = parse_uuid_arg(&cluster)?;
             let server = parse_uuid_arg(&server)?;
             let mut client = RacClient::connect(&addr, cfg.clone())?;
+            let creds = cluster_auth_optional(
+                &mut client,
+                cluster,
+                cluster_user.as_deref(),
+                cluster_pwd.as_deref(),
+            )?;
             let resp = service_setting_list(
                 &mut client,
                 cluster,
-                &cluster_user,
-                &cluster_pwd,
+                creds.user,
+                creds.pwd,
                 server,
             )?;
             console::output(json, &resp, console::service_setting_list(&resp.records));
@@ -45,11 +52,17 @@ pub fn run(json: bool, cfg: &ClientConfig, command: ServiceSettingCmd) -> Result
             let server = parse_uuid_arg(&server)?;
             let setting = parse_uuid_arg(&setting)?;
             let mut client = RacClient::connect(&addr, cfg.clone())?;
+            let creds = cluster_auth_optional(
+                &mut client,
+                cluster,
+                cluster_user.as_deref(),
+                cluster_pwd.as_deref(),
+            )?;
             let resp = service_setting_info(
                 &mut client,
                 cluster,
-                &cluster_user,
-                &cluster_pwd,
+                creds.user,
+                creds.pwd,
                 server,
                 setting,
             )?;
@@ -79,11 +92,17 @@ pub fn run(json: bool, cfg: &ClientConfig, command: ServiceSettingCmd) -> Result
                 service_data_dir,
                 active,
             };
+            let creds = cluster_auth_optional(
+                &mut client,
+                cluster,
+                cluster_user.as_deref(),
+                cluster_pwd.as_deref(),
+            )?;
             let resp = service_setting_insert(
                 &mut client,
                 cluster,
-                &cluster_user,
-                &cluster_pwd,
+                creds.user,
+                creds.pwd,
                 req,
             )?;
             console::output(json, &resp, console::service_setting_insert(&resp));
@@ -102,7 +121,12 @@ pub fn run(json: bool, cfg: &ClientConfig, command: ServiceSettingCmd) -> Result
             let server = parse_uuid_arg(&server)?;
             let setting = parse_uuid_arg(&setting)?;
             let mut client = RacClient::connect(&addr, cfg.clone())?;
-            cluster_auth(&mut client, cluster, &cluster_user, &cluster_pwd)?;
+            let _creds = cluster_auth_optional(
+                &mut client,
+                cluster,
+                cluster_user.as_deref(),
+                cluster_pwd.as_deref(),
+            )?;
             let info = service_setting_info_no_auth(&mut client, cluster, server, setting)?;
             let req = ServiceSettingUpdateReq {
                 server,
@@ -128,11 +152,17 @@ pub fn run(json: bool, cfg: &ClientConfig, command: ServiceSettingCmd) -> Result
             let server = parse_uuid_arg(&server)?;
             let setting = parse_uuid_arg(&setting)?;
             let mut client = RacClient::connect(&addr, cfg.clone())?;
+            let creds = cluster_auth_optional(
+                &mut client,
+                cluster,
+                cluster_user.as_deref(),
+                cluster_pwd.as_deref(),
+            )?;
             let resp = service_setting_remove(
                 &mut client,
                 cluster,
-                &cluster_user,
-                &cluster_pwd,
+                creds.user,
+                creds.pwd,
                 server,
                 setting,
             )?;
@@ -149,11 +179,17 @@ pub fn run(json: bool, cfg: &ClientConfig, command: ServiceSettingCmd) -> Result
             let cluster = parse_uuid_arg(&cluster)?;
             let server = parse_uuid_arg(&server)?;
             let mut client = RacClient::connect(&addr, cfg.clone())?;
+            let creds = cluster_auth_optional(
+                &mut client,
+                cluster,
+                cluster_user.as_deref(),
+                cluster_pwd.as_deref(),
+            )?;
             let resp = service_setting_apply(
                 &mut client,
                 cluster,
-                &cluster_user,
-                &cluster_pwd,
+                creds.user,
+                creds.pwd,
                 server,
             )?;
             console::output(json, &resp, console::service_setting_apply(&resp));
@@ -170,11 +206,17 @@ pub fn run(json: bool, cfg: &ClientConfig, command: ServiceSettingCmd) -> Result
             let cluster = parse_uuid_arg(&cluster)?;
             let server = parse_uuid_arg(&server)?;
             let mut client = RacClient::connect(&addr, cfg.clone())?;
+            let creds = cluster_auth_optional(
+                &mut client,
+                cluster,
+                cluster_user.as_deref(),
+                cluster_pwd.as_deref(),
+            )?;
             let resp = service_setting_get_service_data_dirs_for_transfer(
                 &mut client,
                 cluster,
-                &cluster_user,
-                &cluster_pwd,
+                creds.user,
+                creds.pwd,
                 server,
                 &service_name,
             )?;

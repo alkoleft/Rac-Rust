@@ -5,6 +5,7 @@ use rac_protocol::commands::{
 };
 use rac_protocol::error::Result;
 
+use crate::rac_lite::auth::cluster_auth_optional;
 use crate::rac_lite::cli::CounterCmd;
 use crate::rac_lite::console_output as console;
 use crate::rac_lite::parse::{
@@ -41,11 +42,17 @@ pub fn run(json: bool, cfg: &ClientConfig, command: CounterCmd) -> Result<()> {
         } => {
             let cluster = parse_uuid_arg(&cluster)?;
             let mut client = RacClient::connect(&addr, cfg.clone())?;
+            let creds = cluster_auth_optional(
+                &mut client,
+                cluster,
+                cluster_user.as_deref(),
+                cluster_pwd.as_deref(),
+            )?;
             let resp = counter_clear(
                 &mut client,
                 cluster,
-                &cluster_user,
-                &cluster_pwd,
+                creds.user,
+                creds.pwd,
                 &counter,
                 &object,
             )?;
@@ -61,7 +68,13 @@ pub fn run(json: bool, cfg: &ClientConfig, command: CounterCmd) -> Result<()> {
         } => {
             let cluster = parse_uuid_arg(&cluster)?;
             let mut client = RacClient::connect(&addr, cfg.clone())?;
-            let resp = counter_remove(&mut client, cluster, &cluster_user, &cluster_pwd, &name)?;
+            let creds = cluster_auth_optional(
+                &mut client,
+                cluster,
+                cluster_user.as_deref(),
+                cluster_pwd.as_deref(),
+            )?;
+            let resp = counter_remove(&mut client, cluster, creds.user, creds.pwd, &name)?;
             console::output(json, &resp, console::counter_remove(&resp));
             client.close()?;
         }
@@ -75,11 +88,17 @@ pub fn run(json: bool, cfg: &ClientConfig, command: CounterCmd) -> Result<()> {
         } => {
             let cluster = parse_uuid_arg(&cluster)?;
             let mut client = RacClient::connect(&addr, cfg.clone())?;
+            let creds = cluster_auth_optional(
+                &mut client,
+                cluster,
+                cluster_user.as_deref(),
+                cluster_pwd.as_deref(),
+            )?;
             let resp = counter_values(
                 &mut client,
                 cluster,
-                &cluster_user,
-                &cluster_pwd,
+                creds.user,
+                creds.pwd,
                 &counter,
                 &object,
             )?;
@@ -136,7 +155,13 @@ pub fn run(json: bool, cfg: &ClientConfig, command: CounterCmd) -> Result<()> {
                 descr,
             };
             let mut client = RacClient::connect(&addr, cfg.clone())?;
-            let resp = counter_update(&mut client, cluster, &cluster_user, &cluster_pwd, req)?;
+            let creds = cluster_auth_optional(
+                &mut client,
+                cluster,
+                cluster_user.as_deref(),
+                cluster_pwd.as_deref(),
+            )?;
+            let resp = counter_update(&mut client, cluster, creds.user, creds.pwd, req)?;
             console::output(json, &resp, console::counter_update(&resp));
             client.close()?;
         }
@@ -150,11 +175,17 @@ pub fn run(json: bool, cfg: &ClientConfig, command: CounterCmd) -> Result<()> {
         } => {
             let cluster = parse_uuid_arg(&cluster)?;
             let mut client = RacClient::connect(&addr, cfg.clone())?;
+            let creds = cluster_auth_optional(
+                &mut client,
+                cluster,
+                cluster_user.as_deref(),
+                cluster_pwd.as_deref(),
+            )?;
             let resp = counter_accumulated_values(
                 &mut client,
                 cluster,
-                &cluster_user,
-                &cluster_pwd,
+                creds.user,
+                creds.pwd,
                 &counter,
                 &object,
             )?;

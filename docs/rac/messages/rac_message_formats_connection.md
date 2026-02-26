@@ -21,15 +21,15 @@ Observed field names in `rac connection list` output, with capture mapping statu
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `connection` | UUID | yes | 1 | 16.0 |
-| `application` | string | yes | 2 | 16.0 |
-| `connected-at` | datetime (u64 ticks, 100us since 0001-01-01) | yes | 3 (inside `blocked_by_ls + connected_at`) | 16.0 |
-| `conn-id` | u32 | yes | 3 | 16.0 |
-| `host` | string | yes | 4 | 16.0 |
-| `infobase` | UUID (nullable) | yes | 5 | 16.0 |
-| `process` | UUID | yes | 6 | 16.0 |
-| `session-number` | u32 | yes | 7 (tail) | 16.0 |
-| `blocked-by-ls` | u32 | hypothesis (maps to `blocked_by_ls`) | 3 (inside `blocked_by_ls`) | 16.0 |
+| `connection` | UUID | yes | 1 | 11.0 |
+| `application` | string | yes | 2 | 11.0 |
+| `connected-at` | datetime (u64 ticks, 100us since 0001-01-01) | yes | 3 (inside `blocked_by_ls + connected_at`) | 11.0 |
+| `conn-id` | u32 | yes | 3 | 11.0 |
+| `host` | string | yes | 4 | 11.0 |
+| `infobase` | UUID (nullable) | yes | 5 | 11.0 |
+| `process` | UUID | yes | 6 | 11.0 |
+| `session-number` | u32 | yes | 7 (tail) | 11.0 |
+| `blocked-by-ls` | u32 | hypothesis (maps to `blocked_by_ls`) | 3 (inside `blocked_by_ls`) | 11.0 |
 
 ## RPC
 
@@ -93,13 +93,13 @@ Observed request parameters for `rac connection list` (v11 help).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 16.0 |
-| `cluster-user` | string | no | - | 16.0 |
-| `cluster-pwd` | string | no | - | 16.0 |
-| `process` | UUID | no | - | 16.0 |
-| `infobase` | UUID | no | - | 16.0 |
-| `infobase-user` | string | no | - | 16.0 |
-| `infobase-pwd` | string | no | - | 16.0 |
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `process` | UUID | no | - | 11.0 |
+| `infobase` | UUID | no | - | 11.0 |
+| `infobase-user` | string | no | - | 11.0 |
+| `infobase-pwd` | string | no | - | 11.0 |
 
 ## Connection Info
 
@@ -121,10 +121,10 @@ Observed request parameters for `rac connection info` (v11 help).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 16.0 |
-| `cluster-user` | string | no | - | 16.0 |
-| `cluster-pwd` | string | no | - | 16.0 |
-| `connection` | UUID | no | - | 16.0 |
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `connection` | UUID | no | - | 11.0 |
 
 ## Connection Disconnect
 
@@ -141,13 +141,13 @@ Observed request parameters for `rac connection disconnect` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 16.0 |
-| `cluster-user` | string | no | - | 16.0 |
-| `cluster-pwd` | string | no | - | 16.0 |
-| `process` | UUID | no | - | 16.0 |
-| `connection` | UUID | no | - | 16.0 |
-| `infobase-user` | string | no | - | 16.0 |
-| `infobase-pwd` | string | no | - | 16.0 |
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `process` | UUID | no | - | 11.0 |
+| `connection` | UUID | no | - | 11.0 |
+| `infobase-user` | string | no | - | 11.0 |
+| `infobase-pwd` | string | no | - | 11.0 |
 
 ### Поля ответа
 

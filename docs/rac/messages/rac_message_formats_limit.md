@@ -27,22 +27,22 @@ Observed field names in `rac limit list` output, with capture mapping status.
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `name` | string | yes | 1 | 16.0 |
-| `counter` | string | yes | 2 | 16.0 |
-| `action` | enum (u8) | yes | 3 | 16.0 |
-| `duration` | u64_be | yes | 4 | 16.0 |
-| `cpu-time` | u64_be | yes | 5 | 16.0 |
-| `memory` | u64_be | yes | 6 | 16.0 |
-| `read` | u64_be | yes | 7 | 16.0 |
-| `write` | u64_be | yes | 8 | 16.0 |
-| `duration-dbms` | u64_be | yes | 9 | 16.0 |
-| `dbms-bytes` | u64_be | yes | 10 | 16.0 |
-| `service` | u64_be | yes | 11 | 16.0 |
-| `call` | u64_be | yes | 12 | 16.0 |
-| `number-of-active-sessions` | u64_be | yes | 13 | 16.0 |
-| `number-of-sessions` | u64_be | yes | 14 | 16.0 |
-| `error-message` | string | yes | 15 | 16.0 |
-| `descr` | string | yes | 16 | 16.0 |
+| `name` | string | yes | 1 | 11.0 |
+| `counter` | string | yes | 2 | 11.0 |
+| `action` | enum (u8) | yes | 3 | 11.0 |
+| `duration` | u64_be | yes | 4 | 11.0 |
+| `cpu-time` | u64_be | yes | 5 | 11.0 |
+| `memory` | u64_be | yes | 6 | 11.0 |
+| `read` | u64_be | yes | 7 | 11.0 |
+| `write` | u64_be | yes | 8 | 11.0 |
+| `duration-dbms` | u64_be | yes | 9 | 11.0 |
+| `dbms-bytes` | u64_be | yes | 10 | 11.0 |
+| `service` | u64_be | yes | 11 | 11.0 |
+| `call` | u64_be | yes | 12 | 11.0 |
+| `number-of-active-sessions` | u64_be | yes | 13 | 11.0 |
+| `number-of-sessions` | u64_be | yes | 14 | 11.0 |
+| `error-message` | string | yes | 15 | 11.0 |
+| `descr` | string | yes | 16 | 11.0 |
 
 ### RPC
 
@@ -59,9 +59,9 @@ Observed request parameters for `rac limit list`.
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | yes | 1 | 16.0 |
-| `cluster-user` | string | yes | 2 | 16.0 |
-| `cluster-pwd` | string | yes | 3 | 16.0 |
+| `cluster` | UUID | yes | 1 | 11.0 |
+| `cluster-user` | string | yes | 2 | 11.0 |
+| `cluster-pwd` | string | yes | 3 | 11.0 |
 
 Notes:
 - `cluster-user`/`cluster-pwd` are sent via the context setter (`rpc_method_id=0x09`) before the `limit list` request. Order in that context payload: `cluster`, `cluster-user`, `cluster-pwd`.
@@ -128,22 +128,22 @@ Observed field names in `rac limit info` output, with capture mapping status.
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `name` | string | yes | 1 | 16.0 |
-| `counter` | string | yes | 2 | 16.0 |
-| `action` | enum (u8) | yes | 3 | 16.0 |
-| `duration` | u64_be | yes | 4 | 16.0 |
-| `cpu-time` | u64_be | yes | 5 | 16.0 |
-| `memory` | u64_be | yes | 6 | 16.0 |
-| `read` | u64_be | yes | 7 | 16.0 |
-| `write` | u64_be | yes | 8 | 16.0 |
-| `duration-dbms` | u64_be | yes | 9 | 16.0 |
-| `dbms-bytes` | u64_be | yes | 10 | 16.0 |
-| `service` | u64_be | yes | 11 | 16.0 |
-| `call` | u64_be | yes | 12 | 16.0 |
-| `number-of-active-sessions` | u64_be | yes | 13 | 16.0 |
-| `number-of-sessions` | u64_be | yes | 14 | 16.0 |
-| `error-message` | string | yes | 15 | 16.0 |
-| `descr` | string | yes | 16 | 16.0 |
+| `name` | string | yes | 1 | 11.0 |
+| `counter` | string | yes | 2 | 11.0 |
+| `action` | enum (u8) | yes | 3 | 11.0 |
+| `duration` | u64_be | yes | 4 | 11.0 |
+| `cpu-time` | u64_be | yes | 5 | 11.0 |
+| `memory` | u64_be | yes | 6 | 11.0 |
+| `read` | u64_be | yes | 7 | 11.0 |
+| `write` | u64_be | yes | 8 | 11.0 |
+| `duration-dbms` | u64_be | yes | 9 | 11.0 |
+| `dbms-bytes` | u64_be | yes | 10 | 11.0 |
+| `service` | u64_be | yes | 11 | 11.0 |
+| `call` | u64_be | yes | 12 | 11.0 |
+| `number-of-active-sessions` | u64_be | yes | 13 | 11.0 |
+| `number-of-sessions` | u64_be | yes | 14 | 11.0 |
+| `error-message` | string | yes | 15 | 11.0 |
+| `descr` | string | yes | 16 | 11.0 |
 
 ### RPC
 
@@ -160,10 +160,10 @@ Observed request parameters for `rac limit info`.
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | yes | 1 | 16.0 |
-| `limit` | string | yes | 2 | 16.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 3 | 16.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 4 | 16.0 |
+| `cluster` | UUID | yes | 1 | 11.0 |
+| `limit` | string | yes | 2 | 11.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 4 | 11.0 |
 
 ### Record Layout (Observed)
 
@@ -224,7 +224,7 @@ RAC output reference:
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `ack` | u32_be | yes | 1 | 16.0 |
+| `ack` | u32_be | yes | 1 | 11.0 |
 
 ### RPC
 
@@ -241,25 +241,25 @@ Observed request parameters for `rac limit update`.
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | yes | 1 | 16.0 |
-| `name` | string | yes | 2 | 16.0 |
-| `counter` | string | yes | 3 | 16.0 |
-| `action` | enum (u8) | yes | 4 | 16.0 |
-| `duration` | u64_be | yes | 5 | 16.0 |
-| `cpu-time` | u64_be | yes | 6 | 16.0 |
-| `memory` | u64_be | yes | 7 | 16.0 |
-| `read` | u64_be | yes | 8 | 16.0 |
-| `write` | u64_be | yes | 9 | 16.0 |
-| `duration-dbms` | u64_be | yes | 10 | 16.0 |
-| `dbms-bytes` | u64_be | yes | 11 | 16.0 |
-| `service` | u64_be | yes | 12 | 16.0 |
-| `call` | u64_be | yes | 13 | 16.0 |
-| `number-of-active-sessions` | u64_be | yes | 14 | 16.0 |
-| `number-of-sessions` | u64_be | yes | 15 | 16.0 |
-| `error-message` | string | yes | 16 | 16.0 |
-| `descr` | string | yes | 17 | 16.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 18 | 16.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 19 | 16.0 |
+| `cluster` | UUID | yes | 1 | 11.0 |
+| `name` | string | yes | 2 | 11.0 |
+| `counter` | string | yes | 3 | 11.0 |
+| `action` | enum (u8) | yes | 4 | 11.0 |
+| `duration` | u64_be | yes | 5 | 11.0 |
+| `cpu-time` | u64_be | yes | 6 | 11.0 |
+| `memory` | u64_be | yes | 7 | 11.0 |
+| `read` | u64_be | yes | 8 | 11.0 |
+| `write` | u64_be | yes | 9 | 11.0 |
+| `duration-dbms` | u64_be | yes | 10 | 11.0 |
+| `dbms-bytes` | u64_be | yes | 11 | 11.0 |
+| `service` | u64_be | yes | 12 | 11.0 |
+| `call` | u64_be | yes | 13 | 11.0 |
+| `number-of-active-sessions` | u64_be | yes | 14 | 11.0 |
+| `number-of-sessions` | u64_be | yes | 15 | 11.0 |
+| `error-message` | string | yes | 16 | 11.0 |
+| `descr` | string | yes | 17 | 11.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 18 | 11.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 19 | 11.0 |
 
 ### Record Layout (Observed)
 
@@ -320,7 +320,7 @@ RAC output reference:
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `ack` | u32_be | yes | 1 | 16.0 |
+| `ack` | u32_be | yes | 1 | 11.0 |
 
 ### RPC
 
@@ -337,10 +337,10 @@ Observed request parameters for `rac limit remove`.
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | yes | 1 | 16.0 |
-| `name` | string | yes | 2 | 16.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 3 | 16.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 4 | 16.0 |
+| `cluster` | UUID | yes | 1 | 11.0 |
+| `name` | string | yes | 2 | 11.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 4 | 11.0 |
 
 ### Hypotheses
 

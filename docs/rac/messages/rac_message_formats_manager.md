@@ -26,12 +26,12 @@ Observed field names in `rac manager list` output, with capture mapping status.
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `manager` | UUID | yes | 1 | 16.0 |
-| `descr` | string | yes | 2 | 16.0 |
-| `host` | string | yes | 3 | 16.0 |
-| `using` | enum (u32) | yes | 4 | 16.0 |
-| `port` | u16 | yes | 5 | 16.0 |
-| `pid` | string (digits) | yes | 6 | 16.0 |
+| `manager` | UUID | yes | 1 | 11.0 |
+| `descr` | string | yes | 2 | 11.0 |
+| `host` | string | yes | 3 | 11.0 |
+| `using` | enum (u32) | yes | 4 | 11.0 |
+| `port` | u16 | yes | 5 | 11.0 |
+| `pid` | string (digits) | yes | 6 | 11.0 |
 
 ### RPC
 
@@ -44,9 +44,9 @@ Observed request parameters for `rac manager list`.
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | yes | 1 | 16.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 16.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 16.0 |
+| `cluster` | UUID | yes | 1 | 11.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
 
 Payload structure (method body):
 - offset `0x00`: `count:u8` (observed `0x01`)
@@ -98,10 +98,10 @@ Observed request parameters for `rac manager info`.
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | yes | 1 | 16.0 |
-| `manager` | UUID | yes | 2 | 16.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 3 | 16.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 4 | 16.0 |
+| `cluster` | UUID | yes | 1 | 11.0 |
+| `manager` | UUID | yes | 2 | 11.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 4 | 11.0 |
 
 Payload structure (method body):
 - single record in the same layout as `manager list` (no leading count byte)

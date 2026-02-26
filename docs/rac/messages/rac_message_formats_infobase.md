@@ -47,9 +47,9 @@ Observed field names in `rac infobase summary list` output (v16), with capture m
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `infobase` | UUID | yes | 1 | 16.0 |
-| `name` | string | yes | 2 | 16.0 |
-| `descr` | string | yes | 3 | 16.0 |
+| `infobase` | UUID | yes | 1 | 11.0 |
+| `name` | string | yes | 2 | 11.0 |
+| `descr` | string | yes | 3 | 11.0 |
 
 #### Поля запроса (из `rac`)
 
@@ -57,9 +57,9 @@ Observed request parameters for `rac infobase summary list` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | yes | 1 | 16.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 16.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 16.0 |
+| `cluster` | UUID | yes | 1 | 11.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
 
 
 ### Infobase Info
@@ -100,27 +100,27 @@ Observed field names in `rac infobase info` output (v16), with capture mapping s
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `infobase` | UUID | yes | 1 | 16.0 |
-| `name` | string | yes | 2 | 16.0 |
-| `dbms` | string | yes | 3 | 16.0 |
-| `db-server` | string | yes | 4 | 16.0 |
-| `db-name` | string | yes | 5 | 16.0 |
-| `db-user` | string | yes | 6 | 16.0 |
-| `security-level` | u32 | yes | 7 | 16.0 |
-| `license-distribution` | enum (`allow/deny`) | yes | 8 | 16.0 |
-| `scheduled-jobs-deny` | enum (`on/off`) | yes | 9 | 16.0 |
-| `sessions-deny` | enum (`on/off`) | yes | 10 | 16.0 |
-| `denied-from` | datetime | yes | 11 | 16.0 |
-| `denied-message` | string | yes | 12 | 16.0 |
-| `denied-parameter` | string | yes | 13 | 16.0 |
-| `denied-to` | datetime | yes | 14 | 16.0 |
-| `permission-code` | string | yes | 15 | 16.0 |
-| `external-session-manager-connection-string` | string | yes | 16 | 16.0 |
-| `external-session-manager-required` | enum (`yes/no`) | yes | 17 | 16.0 |
-| `security-profile-name` | string | yes | 18 | 16.0 |
-| `safe-mode-security-profile-name` | string | yes | 19 | 16.0 |
-| `reserve-working-processes` | enum (`yes/no`) | yes | 20 | 16.0 |
-| `descr` | string | yes | 21 | 16.0 |
+| `infobase` | UUID | yes | 1 | 11.0 |
+| `name` | string | yes | 2 | 11.0 |
+| `dbms` | string | yes | 3 | 11.0 |
+| `db-server` | string | yes | 4 | 11.0 |
+| `db-name` | string | yes | 5 | 11.0 |
+| `db-user` | string | yes | 6 | 11.0 |
+| `security-level` | u32 | yes | 7 | 11.0 |
+| `license-distribution` | enum (`allow/deny`) | yes | 8 | 11.0 |
+| `scheduled-jobs-deny` | enum (`on/off`) | yes | 9 | 11.0 |
+| `sessions-deny` | enum (`on/off`) | yes | 10 | 11.0 |
+| `denied-from` | datetime | yes | 11 | 11.0 |
+| `denied-message` | string | yes | 12 | 11.0 |
+| `denied-parameter` | string | yes | 13 | 11.0 |
+| `denied-to` | datetime | yes | 14 | 11.0 |
+| `permission-code` | string | yes | 15 | 11.0 |
+| `external-session-manager-connection-string` | string | yes | 16 | 11.0 |
+| `external-session-manager-required` | enum (`yes/no`) | yes | 17 | 11.0 |
+| `security-profile-name` | string | yes | 18 | 11.0 |
+| `safe-mode-security-profile-name` | string | yes | 19 | 11.0 |
+| `reserve-working-processes` | enum (`yes/no`) | yes | 20 | 11.0 |
+| `descr` | string | yes | 21 | 11.0 |
 
 #### Поля запроса (из `rac`)
 
@@ -128,10 +128,10 @@ Observed request parameters for `rac infobase info` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | yes | 1 | 16.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 16.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 16.0 |
-| `infobase` | UUID | yes | 4 | 16.0 |
+| `cluster` | UUID | yes | 1 | 11.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
+| `infobase` | UUID | yes | 4 | 11.0 |
 
 
 ### Infobase Summary Info
@@ -153,10 +153,10 @@ Observed request parameters for `rac infobase summary info` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | yes | 1 | 16.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 16.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 16.0 |
-| `infobase` | UUID | yes | 4 | 16.0 |
+| `cluster` | UUID | yes | 1 | 11.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
+| `infobase` | UUID | yes | 4 | 11.0 |
 
 ### Infobase Summary Update
 
@@ -173,11 +173,11 @@ Observed request parameters for `rac infobase summary update` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 16.0 |
-| `cluster-user` | string | no | - | 16.0 |
-| `cluster-pwd` | string | no | - | 16.0 |
-| `infobase` | UUID | no | - | 16.0 |
-| `descr` | string | no | - | 16.0 |
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `infobase` | UUID | no | - | 11.0 |
+| `descr` | string | no | - | 11.0 |
 
 ### Поля ответа
 
@@ -198,22 +198,22 @@ Observed request parameters for `rac infobase create` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 16.0 |
-| `cluster-user` | string | no | - | 16.0 |
-| `cluster-pwd` | string | no | - | 16.0 |
-| `create-database` | flag | no | - | 16.0 |
-| `name` | string | no | - | 16.0 |
-| `dbms` | enum | no | - | 16.0 |
-| `db-server` | string | no | - | 16.0 |
-| `db-name` | string | no | - | 16.0 |
-| `locale` | string | no | - | 16.0 |
-| `db-user` | string | no | - | 16.0 |
-| `db-pwd` | string | no | - | 16.0 |
-| `descr` | string | no | - | 16.0 |
-| `date-offset` | string | no | - | 16.0 |
-| `security-level` | u32 | no | - | 16.0 |
-| `scheduled-jobs-deny` | enum (`on/off`) | no | - | 16.0 |
-| `license-distribution` | enum (`deny/allow`) | no | - | 16.0 |
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `create-database` | flag | no | - | 11.0 |
+| `name` | string | no | - | 11.0 |
+| `dbms` | enum | no | - | 11.0 |
+| `db-server` | string | no | - | 11.0 |
+| `db-name` | string | no | - | 11.0 |
+| `locale` | string | no | - | 11.0 |
+| `db-user` | string | no | - | 11.0 |
+| `db-pwd` | string | no | - | 11.0 |
+| `descr` | string | no | - | 11.0 |
+| `date-offset` | string | no | - | 11.0 |
+| `security-level` | u32 | no | - | 11.0 |
+| `scheduled-jobs-deny` | enum (`on/off`) | no | - | 11.0 |
+| `license-distribution` | enum (`deny/allow`) | no | - | 11.0 |
 
 ### Поля ответа
 
@@ -234,31 +234,31 @@ Observed request parameters for `rac infobase update` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 16.0 |
-| `cluster-user` | string | no | - | 16.0 |
-| `cluster-pwd` | string | no | - | 16.0 |
-| `infobase` | UUID | no | - | 16.0 |
-| `infobase-user` | string | no | - | 16.0 |
-| `infobase-pwd` | string | no | - | 16.0 |
-| `dbms` | enum | no | - | 16.0 |
-| `db-server` | string | no | - | 16.0 |
-| `db-name` | string | no | - | 16.0 |
-| `db-user` | string | no | - | 16.0 |
-| `db-pwd` | string | no | - | 16.0 |
-| `descr` | string | no | - | 16.0 |
-| `denied-from` | datetime | no | - | 16.0 |
-| `denied-message` | string | no | - | 16.0 |
-| `denied-parameter` | string | no | - | 16.0 |
-| `denied-to` | datetime | no | - | 16.0 |
-| `permission-code` | string | no | - | 16.0 |
-| `sessions-deny` | enum (`on/off`) | no | - | 16.0 |
-| `scheduled-jobs-deny` | enum (`on/off`) | no | - | 16.0 |
-| `license-distribution` | enum (`deny/allow`) | no | - | 16.0 |
-| `external-session-manager-connection-string` | string | no | - | 16.0 |
-| `external-session-manager-required` | enum (`yes/no`) | no | - | 16.0 |
-| `reserve-working-processes` | enum (`yes/no`) | no | - | 16.0 |
-| `security-profile-name` | string | no | - | 16.0 |
-| `safe-mode-security-profile-name` | string | no | - | 16.0 |
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `infobase` | UUID | no | - | 11.0 |
+| `infobase-user` | string | no | - | 11.0 |
+| `infobase-pwd` | string | no | - | 11.0 |
+| `dbms` | enum | no | - | 11.0 |
+| `db-server` | string | no | - | 11.0 |
+| `db-name` | string | no | - | 11.0 |
+| `db-user` | string | no | - | 11.0 |
+| `db-pwd` | string | no | - | 11.0 |
+| `descr` | string | no | - | 11.0 |
+| `denied-from` | datetime | no | - | 11.0 |
+| `denied-message` | string | no | - | 11.0 |
+| `denied-parameter` | string | no | - | 11.0 |
+| `denied-to` | datetime | no | - | 11.0 |
+| `permission-code` | string | no | - | 11.0 |
+| `sessions-deny` | enum (`on/off`) | no | - | 11.0 |
+| `scheduled-jobs-deny` | enum (`on/off`) | no | - | 11.0 |
+| `license-distribution` | enum (`deny/allow`) | no | - | 11.0 |
+| `external-session-manager-connection-string` | string | no | - | 11.0 |
+| `external-session-manager-required` | enum (`yes/no`) | no | - | 11.0 |
+| `reserve-working-processes` | enum (`yes/no`) | no | - | 11.0 |
+| `security-profile-name` | string | no | - | 11.0 |
+| `safe-mode-security-profile-name` | string | no | - | 11.0 |
 
 ### Поля ответа
 
@@ -279,14 +279,14 @@ Observed request parameters for `rac infobase drop` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 16.0 |
-| `cluster-user` | string | no | - | 16.0 |
-| `cluster-pwd` | string | no | - | 16.0 |
-| `infobase` | UUID | no | - | 16.0 |
-| `infobase-user` | string | no | - | 16.0 |
-| `infobase-pwd` | string | no | - | 16.0 |
-| `drop-database` | flag | no | - | 16.0 |
-| `clear-database` | flag | no | - | 16.0 |
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `infobase` | UUID | no | - | 11.0 |
+| `infobase-user` | string | no | - | 11.0 |
+| `infobase-pwd` | string | no | - | 11.0 |
+| `drop-database` | flag | no | - | 11.0 |
+| `clear-database` | flag | no | - | 11.0 |
 
 ### Поля ответа
 

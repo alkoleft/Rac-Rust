@@ -32,9 +32,9 @@ Observed request parameters for `rac profile list` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | yes | 1 | 16.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 16.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 16.0 |
+| `cluster` | UUID | yes | 1 | 11.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
 
 ### Поля ответа
 
@@ -57,21 +57,21 @@ Observed request parameters for `rac profile update` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 16.0 |
-| `cluster-user` | string | no | - | 16.0 |
-| `cluster-pwd` | string | no | - | 16.0 |
-| `name` | string | no | - | 16.0 |
-| `descr` | string | no | - | 16.0 |
-| `config` | bool (`yes/no`) | no | - | 16.0 |
-| `priv` | bool (`yes/no`) | no | - | 16.0 |
-| `full-privileged-mode` | bool (`yes/no`) | no | - | 16.0 |
-| `privileged-mode-roles` | string (list) | no | - | 16.0 |
-| `crypto` | bool (`yes/no`) | no | - | 16.0 |
-| `right-extension` | bool (`yes/no`) | no | - | 16.0 |
-| `right-extension-definition-roles` | string (list) | no | - | 16.0 |
-| `all-modules-extension` | bool (`yes/no`) | no | - | 16.0 |
-| `modules-available-for-extension` | string (list) | no | - | 16.0 |
-| `modules-not-available-for-extension` | string (list) | no | - | 16.0 |
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `name` | string | no | - | 11.0 |
+| `descr` | string | no | - | 11.0 |
+| `config` | bool (`yes/no`) | no | - | 11.0 |
+| `priv` | bool (`yes/no`) | no | - | 11.0 |
+| `full-privileged-mode` | bool (`yes/no`) | no | - | 11.0 |
+| `privileged-mode-roles` | string (list) | no | - | 11.0 |
+| `crypto` | bool (`yes/no`) | no | - | 11.0 |
+| `right-extension` | bool (`yes/no`) | no | - | 11.0 |
+| `right-extension-definition-roles` | string (list) | no | - | 11.0 |
+| `all-modules-extension` | bool (`yes/no`) | no | - | 11.0 |
+| `modules-available-for-extension` | string (list) | no | - | 11.0 |
+| `modules-not-available-for-extension` | string (list) | no | - | 11.0 |
 
 ### Поля ответа
 
@@ -92,10 +92,10 @@ Observed request parameters for `rac profile remove` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 16.0 |
-| `cluster-user` | string | no | - | 16.0 |
-| `cluster-pwd` | string | no | - | 16.0 |
-| `name` | string | no | - | 16.0 |
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `name` | string | no | - | 11.0 |
 
 ### Поля ответа
 
@@ -116,11 +116,11 @@ Observed request parameters for `rac profile acl directory list` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 16.0 |
-| `cluster-user` | string | no | - | 16.0 |
-| `cluster-pwd` | string | no | - | 16.0 |
-| `name` | string (profile) | no | - | 16.0 |
-| `access` | enum (`list`, `full`) | no | - | 16.0 |
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `name` | string (profile) | no | - | 11.0 |
+| `access` | enum (`list`, `full`) | no | - | 11.0 |
 
 ### Поля ответа
 
@@ -141,16 +141,16 @@ Observed request parameters for `rac profile acl directory update` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 16.0 |
-| `cluster-user` | string | no | - | 16.0 |
-| `cluster-pwd` | string | no | - | 16.0 |
-| `name` | string (profile) | no | - | 16.0 |
-| `access` | enum (`list`, `full`) | no | - | 16.0 |
-| `alias` | string (URL) | no | - | 16.0 |
-| `descr` | string | no | - | 16.0 |
-| `physicalPath` | string (URL) | no | - | 16.0 |
-| `allowedRead` | bool (`yes/no`) | no | - | 16.0 |
-| `allowedWrite` | bool (`yes/no`) | no | - | 16.0 |
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `name` | string (profile) | no | - | 11.0 |
+| `access` | enum (`list`, `full`) | no | - | 11.0 |
+| `alias` | string (URL) | no | - | 11.0 |
+| `descr` | string | no | - | 11.0 |
+| `physicalPath` | string (URL) | no | - | 11.0 |
+| `allowedRead` | bool (`yes/no`) | no | - | 11.0 |
+| `allowedWrite` | bool (`yes/no`) | no | - | 11.0 |
 
 ### Поля ответа
 
@@ -171,12 +171,12 @@ Observed request parameters for `rac profile acl directory remove` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 16.0 |
-| `cluster-user` | string | no | - | 16.0 |
-| `cluster-pwd` | string | no | - | 16.0 |
-| `name` | string (profile) | no | - | 16.0 |
-| `access` | enum (`list`, `full`) | no | - | 16.0 |
-| `alias` | string (URL) | no | - | 16.0 |
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `name` | string (profile) | no | - | 11.0 |
+| `access` | enum (`list`, `full`) | no | - | 11.0 |
+| `alias` | string (URL) | no | - | 11.0 |
 
 ### Поля ответа
 
@@ -197,11 +197,11 @@ Observed request parameters for `rac profile acl com list` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 16.0 |
-| `cluster-user` | string | no | - | 16.0 |
-| `cluster-pwd` | string | no | - | 16.0 |
-| `name` | string (profile) | no | - | 16.0 |
-| `access` | enum (`list`, `full`) | no | - | 16.0 |
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `name` | string (profile) | no | - | 11.0 |
+| `access` | enum (`list`, `full`) | no | - | 11.0 |
 
 ### Поля ответа
 
@@ -222,16 +222,16 @@ Observed request parameters for `rac profile acl com update` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 16.0 |
-| `cluster-user` | string | no | - | 16.0 |
-| `cluster-pwd` | string | no | - | 16.0 |
-| `name` | string (profile) | no | - | 16.0 |
-| `access` | enum (`list`, `full`) | no | - | 16.0 |
-| `com-name` | string | no | - | 16.0 |
-| `descr` | string | no | - | 16.0 |
-| `fileName` | string (URL) | no | - | 16.0 |
-| `id` | UUID | no | - | 16.0 |
-| `host` | string (URL) | no | - | 16.0 |
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `name` | string (profile) | no | - | 11.0 |
+| `access` | enum (`list`, `full`) | no | - | 11.0 |
+| `com-name` | string | no | - | 11.0 |
+| `descr` | string | no | - | 11.0 |
+| `fileName` | string (URL) | no | - | 11.0 |
+| `id` | UUID | no | - | 11.0 |
+| `host` | string (URL) | no | - | 11.0 |
 
 ### Поля ответа
 
@@ -252,12 +252,12 @@ Observed request parameters for `rac profile acl com remove` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 16.0 |
-| `cluster-user` | string | no | - | 16.0 |
-| `cluster-pwd` | string | no | - | 16.0 |
-| `name` | string (profile) | no | - | 16.0 |
-| `access` | enum (`list`, `full`) | no | - | 16.0 |
-| `com-name` | string | no | - | 16.0 |
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `name` | string (profile) | no | - | 11.0 |
+| `access` | enum (`list`, `full`) | no | - | 11.0 |
+| `com-name` | string | no | - | 11.0 |
 
 ### Поля ответа
 
@@ -278,11 +278,11 @@ Observed request parameters for `rac profile acl addin list` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 16.0 |
-| `cluster-user` | string | no | - | 16.0 |
-| `cluster-pwd` | string | no | - | 16.0 |
-| `name` | string (profile) | no | - | 16.0 |
-| `access` | enum (`list`, `full`) | no | - | 16.0 |
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `name` | string (profile) | no | - | 11.0 |
+| `access` | enum (`list`, `full`) | no | - | 11.0 |
 
 ### Поля ответа
 
@@ -303,14 +303,14 @@ Observed request parameters for `rac profile acl addin update` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 16.0 |
-| `cluster-user` | string | no | - | 16.0 |
-| `cluster-pwd` | string | no | - | 16.0 |
-| `name` | string (profile) | no | - | 16.0 |
-| `access` | enum (`list`, `full`) | no | - | 16.0 |
-| `addin-name` | string | no | - | 16.0 |
-| `descr` | string | no | - | 16.0 |
-| `hash` | string (base64) | no | - | 16.0 |
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `name` | string (profile) | no | - | 11.0 |
+| `access` | enum (`list`, `full`) | no | - | 11.0 |
+| `addin-name` | string | no | - | 11.0 |
+| `descr` | string | no | - | 11.0 |
+| `hash` | string (base64) | no | - | 11.0 |
 
 ### Поля ответа
 
@@ -331,12 +331,12 @@ Observed request parameters for `rac profile acl addin remove` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 16.0 |
-| `cluster-user` | string | no | - | 16.0 |
-| `cluster-pwd` | string | no | - | 16.0 |
-| `name` | string (profile) | no | - | 16.0 |
-| `access` | enum (`list`, `full`) | no | - | 16.0 |
-| `addin-name` | string | no | - | 16.0 |
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `name` | string (profile) | no | - | 11.0 |
+| `access` | enum (`list`, `full`) | no | - | 11.0 |
+| `addin-name` | string | no | - | 11.0 |
 
 ### Поля ответа
 
@@ -357,11 +357,11 @@ Observed request parameters for `rac profile acl module list` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 16.0 |
-| `cluster-user` | string | no | - | 16.0 |
-| `cluster-pwd` | string | no | - | 16.0 |
-| `name` | string (profile) | no | - | 16.0 |
-| `access` | enum (`list`, `full`) | no | - | 16.0 |
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `name` | string (profile) | no | - | 11.0 |
+| `access` | enum (`list`, `full`) | no | - | 11.0 |
 
 ### Поля ответа
 
@@ -382,14 +382,14 @@ Observed request parameters for `rac profile acl module update` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 16.0 |
-| `cluster-user` | string | no | - | 16.0 |
-| `cluster-pwd` | string | no | - | 16.0 |
-| `name` | string (profile) | no | - | 16.0 |
-| `access` | enum (`list`, `full`) | no | - | 16.0 |
-| `module-name` | string | no | - | 16.0 |
-| `descr` | string | no | - | 16.0 |
-| `hash` | string (base64) | no | - | 16.0 |
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `name` | string (profile) | no | - | 11.0 |
+| `access` | enum (`list`, `full`) | no | - | 11.0 |
+| `module-name` | string | no | - | 11.0 |
+| `descr` | string | no | - | 11.0 |
+| `hash` | string (base64) | no | - | 11.0 |
 
 ### Поля ответа
 
@@ -410,12 +410,12 @@ Observed request parameters for `rac profile acl module remove` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 16.0 |
-| `cluster-user` | string | no | - | 16.0 |
-| `cluster-pwd` | string | no | - | 16.0 |
-| `name` | string (profile) | no | - | 16.0 |
-| `access` | enum (`list`, `full`) | no | - | 16.0 |
-| `module-name` | string | no | - | 16.0 |
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `name` | string (profile) | no | - | 11.0 |
+| `access` | enum (`list`, `full`) | no | - | 11.0 |
+| `module-name` | string | no | - | 11.0 |
 
 ### Поля ответа
 
@@ -436,11 +436,11 @@ Observed request parameters for `rac profile acl app list` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 16.0 |
-| `cluster-user` | string | no | - | 16.0 |
-| `cluster-pwd` | string | no | - | 16.0 |
-| `name` | string (profile) | no | - | 16.0 |
-| `access` | enum (`list`, `full`) | no | - | 16.0 |
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `name` | string (profile) | no | - | 11.0 |
+| `access` | enum (`list`, `full`) | no | - | 11.0 |
 
 ### Поля ответа
 
@@ -461,14 +461,14 @@ Observed request parameters for `rac profile acl app update` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 16.0 |
-| `cluster-user` | string | no | - | 16.0 |
-| `cluster-pwd` | string | no | - | 16.0 |
-| `name` | string (profile) | no | - | 16.0 |
-| `access` | enum (`list`, `full`) | no | - | 16.0 |
-| `app-name` | string | no | - | 16.0 |
-| `descr` | string | no | - | 16.0 |
-| `wild` | string (URL) | no | - | 16.0 |
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `name` | string (profile) | no | - | 11.0 |
+| `access` | enum (`list`, `full`) | no | - | 11.0 |
+| `app-name` | string | no | - | 11.0 |
+| `descr` | string | no | - | 11.0 |
+| `wild` | string (URL) | no | - | 11.0 |
 
 ### Поля ответа
 
@@ -489,12 +489,12 @@ Observed request parameters for `rac profile acl app remove` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 16.0 |
-| `cluster-user` | string | no | - | 16.0 |
-| `cluster-pwd` | string | no | - | 16.0 |
-| `name` | string (profile) | no | - | 16.0 |
-| `access` | enum (`list`, `full`) | no | - | 16.0 |
-| `app-name` | string | no | - | 16.0 |
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `name` | string (profile) | no | - | 11.0 |
+| `access` | enum (`list`, `full`) | no | - | 11.0 |
+| `app-name` | string | no | - | 11.0 |
 
 ### Поля ответа
 
@@ -515,11 +515,11 @@ Observed request parameters for `rac profile acl inet list` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 16.0 |
-| `cluster-user` | string | no | - | 16.0 |
-| `cluster-pwd` | string | no | - | 16.0 |
-| `name` | string (profile) | no | - | 16.0 |
-| `access` | enum (`list`, `full`) | no | - | 16.0 |
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `name` | string (profile) | no | - | 11.0 |
+| `access` | enum (`list`, `full`) | no | - | 11.0 |
 
 ### Поля ответа
 
@@ -540,16 +540,16 @@ Observed request parameters for `rac profile acl inet update` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 16.0 |
-| `cluster-user` | string | no | - | 16.0 |
-| `cluster-pwd` | string | no | - | 16.0 |
-| `name` | string (profile) | no | - | 16.0 |
-| `access` | enum (`list`, `full`) | no | - | 16.0 |
-| `inet-name` | string | no | - | 16.0 |
-| `descr` | string | no | - | 16.0 |
-| `protocol` | string | no | - | 16.0 |
-| `url` | string (URL) | no | - | 16.0 |
-| `port` | u32 | no | - | 16.0 |
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `name` | string (profile) | no | - | 11.0 |
+| `access` | enum (`list`, `full`) | no | - | 11.0 |
+| `inet-name` | string | no | - | 11.0 |
+| `descr` | string | no | - | 11.0 |
+| `protocol` | string | no | - | 11.0 |
+| `url` | string (URL) | no | - | 11.0 |
+| `port` | u32 | no | - | 11.0 |
 
 ### Поля ответа
 
@@ -570,12 +570,12 @@ Observed request parameters for `rac profile acl inet remove` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 16.0 |
-| `cluster-user` | string | no | - | 16.0 |
-| `cluster-pwd` | string | no | - | 16.0 |
-| `name` | string (profile) | no | - | 16.0 |
-| `access` | enum (`list`, `full`) | no | - | 16.0 |
-| `inet-name` | string | no | - | 16.0 |
+| `cluster` | UUID | no | - | 11.0 |
+| `cluster-user` | string | no | - | 11.0 |
+| `cluster-pwd` | string | no | - | 11.0 |
+| `name` | string (profile) | no | - | 11.0 |
+| `access` | enum (`list`, `full`) | no | - | 11.0 |
+| `inet-name` | string | no | - | 11.0 |
 
 ### Поля ответа
 

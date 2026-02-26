@@ -29,10 +29,10 @@ Observed field names in `rac agent admin list` output, with capture mapping stat
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `name` | string | yes | 1 | 16.0 |
-| `auth` | enum/string | no | 2 | 16.0 |
-| `os-user` | string | no | 3 | 16.0 |
-| `descr` | string | no | 4 | 16.0 |
+| `name` | string | yes | 1 | 11.0 |
+| `auth` | enum/string | no | 2 | 11.0 |
+| `os-user` | string | no | 3 | 11.0 |
+| `descr` | string | no | 4 | 11.0 |
 
 ### RPC
 
@@ -45,8 +45,8 @@ Observed request parameters for `rac agent admin list`.
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `agent-user` | string | yes (auth call `0x08`) | 1 | 16.0 |
-| `agent-pwd` | string | yes (auth call `0x08`) | 2 | 16.0 |
+| `agent-user` | string | yes (auth call `0x08`) | 1 | 11.0 |
+| `agent-pwd` | string | yes (auth call `0x08`) | 2 | 11.0 |
 
 Payload structure (method body):
 - empty body (observed only RPC header)
@@ -93,7 +93,7 @@ Payload structure (method body):
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `version` | string | no | 1 | 16.0 |
+| `version` | string | no | 1 | 11.0 |
 
 ### Record Layout (Decoder-Based)
 
@@ -133,13 +133,13 @@ Observed request parameters for `rac agent admin register` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `agent-user` | string | no | - | 16.0 |
-| `agent-pwd` | string | no | - | 16.0 |
-| `name` | string | no | - | 16.0 |
-| `pwd` | string | no | - | 16.0 |
-| `descr` | string | no | - | 16.0 |
-| `auth` | enum (`pwd`, `os`) | no | - | 16.0 |
-| `os-user` | string | no | - | 16.0 |
+| `agent-user` | string | no | - | 11.0 |
+| `agent-pwd` | string | no | - | 11.0 |
+| `name` | string | no | - | 11.0 |
+| `pwd` | string | no | - | 11.0 |
+| `descr` | string | no | - | 11.0 |
+| `auth` | enum (`pwd`, `os`) | no | - | 11.0 |
+| `os-user` | string | no | - | 11.0 |
 
 ### Поля ответа
 
@@ -160,9 +160,9 @@ Observed request parameters for `rac agent admin remove` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `agent-user` | string | no | - | 16.0 |
-| `agent-pwd` | string | no | - | 16.0 |
-| `name` | string | no | - | 16.0 |
+| `agent-user` | string | no | - | 11.0 |
+| `agent-pwd` | string | no | - | 11.0 |
+| `name` | string | no | - | 11.0 |
 
 ### Поля ответа
 

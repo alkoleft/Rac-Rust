@@ -24,7 +24,7 @@ RAC output reference:
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `ack` | u32_be | yes | 1 | 16.0 |
+| `ack` | u32_be | yes | 1 | 11.0 |
 
 ### RPC
 
@@ -41,10 +41,10 @@ Observed request parameters for `rac rule apply`.
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | yes (auth/context `0x09`, request `0x51`) | 1 | 16.0 |
-| `full/partial` | enum (u32_be) | yes (request `0x51`) | 2 | 16.0 |
-| `cluster-user` | string | yes (auth/context `0x09`) | 3 | 16.0 |
-| `cluster-pwd` | string | yes (auth/context `0x09`) | 4 | 16.0 |
+| `cluster` | UUID | yes (auth/context `0x09`, request `0x51`) | 1 | 11.0 |
+| `full/partial` | enum (u32_be) | yes (request `0x51`) | 2 | 11.0 |
+| `cluster-user` | string | yes (auth/context `0x09`) | 3 | 11.0 |
+| `cluster-pwd` | string | yes (auth/context `0x09`) | 4 | 11.0 |
 
 ### Record Layout (Observed)
 
@@ -85,12 +85,12 @@ Observed field names in `rac rule list` output, with capture mapping status.
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `rule` | UUID | yes | 1 | 16.0 |
-| `object-type` | u32_be | yes | 2 | 16.0 |
-| `infobase-name` | string | yes | 3 | 16.0 |
-| `rule-type` | enum (u8) | yes | 4 | 16.0 |
-| `application-ext` | string | yes | 5 | 16.0 |
-| `priority` | u32_be | yes | 6 | 16.0 |
+| `rule` | UUID | yes | 1 | 11.0 |
+| `object-type` | u32_be | yes | 2 | 11.0 |
+| `infobase-name` | string | yes | 3 | 11.0 |
+| `rule-type` | enum (u8) | yes | 4 | 11.0 |
+| `application-ext` | string | yes | 5 | 11.0 |
+| `priority` | u32_be | yes | 6 | 11.0 |
 
 ### RPC
 
@@ -108,10 +108,10 @@ Observed request parameters for `rac rule list`.
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | yes (auth/context `0x09`, request `0x55`) | 1 | 16.0 |
-| `server` | UUID | yes (request `0x55`) | 2 | 16.0 |
-| `cluster-user` | string | yes (auth/context `0x09`) | 3 | 16.0 |
-| `cluster-pwd` | string | yes (auth/context `0x09`) | 4 | 16.0 |
+| `cluster` | UUID | yes (auth/context `0x09`, request `0x55`) | 1 | 11.0 |
+| `server` | UUID | yes (request `0x55`) | 2 | 11.0 |
+| `cluster-user` | string | yes (auth/context `0x09`) | 3 | 11.0 |
+| `cluster-pwd` | string | yes (auth/context `0x09`) | 4 | 11.0 |
 
 ### Record Layout (Observed)
 
@@ -157,12 +157,12 @@ Observed field names in `rac rule info` output, with capture mapping status.
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `rule` | UUID | yes | 1 | 16.0 |
-| `object-type` | u32_be | yes | 2 | 16.0 |
-| `infobase-name` | string | yes | 3 | 16.0 |
-| `rule-type` | enum (u8) | yes | 4 | 16.0 |
-| `application-ext` | string | yes | 5 | 16.0 |
-| `priority` | u32_be | yes | 6 | 16.0 |
+| `rule` | UUID | yes | 1 | 11.0 |
+| `object-type` | u32_be | yes | 2 | 11.0 |
+| `infobase-name` | string | yes | 3 | 11.0 |
+| `rule-type` | enum (u8) | yes | 4 | 11.0 |
+| `application-ext` | string | yes | 5 | 11.0 |
+| `priority` | u32_be | yes | 6 | 11.0 |
 
 ### RPC
 
@@ -180,11 +180,11 @@ Observed request parameters for `rac rule info`.
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | yes (auth/context `0x09`, request `0x57`) | 1 | 16.0 |
-| `server` | UUID | yes (request `0x57`) | 2 | 16.0 |
-| `rule` | UUID | yes (request `0x57`) | 3 | 16.0 |
-| `cluster-user` | string | yes (auth/context `0x09`) | 4 | 16.0 |
-| `cluster-pwd` | string | yes (auth/context `0x09`) | 5 | 16.0 |
+| `cluster` | UUID | yes (auth/context `0x09`, request `0x57`) | 1 | 11.0 |
+| `server` | UUID | yes (request `0x57`) | 2 | 11.0 |
+| `rule` | UUID | yes (request `0x57`) | 3 | 11.0 |
+| `cluster-user` | string | yes (auth/context `0x09`) | 4 | 11.0 |
+| `cluster-pwd` | string | yes (auth/context `0x09`) | 5 | 11.0 |
 
 ### Record Layout (Observed)
 
@@ -230,7 +230,7 @@ Observed field names in `rac rule insert` output, with capture mapping status.
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `rule` | UUID | yes | 1 | 16.0 |
+| `rule` | UUID | yes | 1 | 11.0 |
 
 ### RPC
 
@@ -255,16 +255,16 @@ Observed request parameters for `rac rule insert`.
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | yes (auth/context `0x09`, request `0x52`) | 1 | 16.0 |
-| `server` | UUID | yes (request `0x52`) | 2 | 16.0 |
-| `position` | u32_be | yes (request `0x52`) | 3 | 16.0 |
-| `object-type` | u32_be | yes (request `0x52`) | 4 | 16.0 |
-| `infobase-name` | string | yes (request `0x52`) | 5 | 16.0 |
-| `rule-type` | enum (u8) | yes (request `0x52`) | 6 | 16.0 |
-| `application-ext` | string | yes (request `0x52`) | 7 | 16.0 |
-| `priority` | u32_be | yes (request `0x52`) | 8 | 16.0 |
-| `cluster-user` | string | yes (auth/context `0x09`) | 9 | 16.0 |
-| `cluster-pwd` | string | yes (auth/context `0x09`) | 10 | 16.0 |
+| `cluster` | UUID | yes (auth/context `0x09`, request `0x52`) | 1 | 11.0 |
+| `server` | UUID | yes (request `0x52`) | 2 | 11.0 |
+| `position` | u32_be | yes (request `0x52`) | 3 | 11.0 |
+| `object-type` | u32_be | yes (request `0x52`) | 4 | 11.0 |
+| `infobase-name` | string | yes (request `0x52`) | 5 | 11.0 |
+| `rule-type` | enum (u8) | yes (request `0x52`) | 6 | 11.0 |
+| `application-ext` | string | yes (request `0x52`) | 7 | 11.0 |
+| `priority` | u32_be | yes (request `0x52`) | 8 | 11.0 |
+| `cluster-user` | string | yes (auth/context `0x09`) | 9 | 11.0 |
+| `cluster-pwd` | string | yes (auth/context `0x09`) | 10 | 11.0 |
 
 ### Record Layout (Observed)
 
@@ -303,7 +303,7 @@ RAC output reference:
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `rule` | UUID | yes | 1 | 16.0 |
+| `rule` | UUID | yes | 1 | 11.0 |
 
 ### RPC
 
@@ -328,17 +328,17 @@ Observed request parameters for `rac rule update`.
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | yes (auth/context `0x09`, request `0x52`) | 1 | 16.0 |
-| `server` | UUID | yes (request `0x52`) | 2 | 16.0 |
-| `rule` | UUID | yes (request `0x52`) | 3 | 16.0 |
-| `position` | u32_be | yes (request `0x52`) | 4 | 16.0 |
-| `object-type` | u32_be | yes (request `0x52`) | 5 | 16.0 |
-| `infobase-name` | string | yes (request `0x52`) | 6 | 16.0 |
-| `rule-type` | enum (u8) | yes (request `0x52`) | 7 | 16.0 |
-| `application-ext` | string | yes (request `0x52`) | 8 | 16.0 |
-| `priority` | u32_be | yes (request `0x52`) | 9 | 16.0 |
-| `cluster-user` | string | yes (auth/context `0x09`) | 10 | 16.0 |
-| `cluster-pwd` | string | yes (auth/context `0x09`) | 11 | 16.0 |
+| `cluster` | UUID | yes (auth/context `0x09`, request `0x52`) | 1 | 11.0 |
+| `server` | UUID | yes (request `0x52`) | 2 | 11.0 |
+| `rule` | UUID | yes (request `0x52`) | 3 | 11.0 |
+| `position` | u32_be | yes (request `0x52`) | 4 | 11.0 |
+| `object-type` | u32_be | yes (request `0x52`) | 5 | 11.0 |
+| `infobase-name` | string | yes (request `0x52`) | 6 | 11.0 |
+| `rule-type` | enum (u8) | yes (request `0x52`) | 7 | 11.0 |
+| `application-ext` | string | yes (request `0x52`) | 8 | 11.0 |
+| `priority` | u32_be | yes (request `0x52`) | 9 | 11.0 |
+| `cluster-user` | string | yes (auth/context `0x09`) | 10 | 11.0 |
+| `cluster-pwd` | string | yes (auth/context `0x09`) | 11 | 11.0 |
 
 ### Record Layout (Observed)
 
@@ -377,7 +377,7 @@ RAC output reference:
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `ack` | u32_be | yes | 1 | 16.0 |
+| `ack` | u32_be | yes | 1 | 11.0 |
 
 ### RPC
 
@@ -395,11 +395,11 @@ Observed request parameters for `rac rule remove`.
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | yes (auth/context `0x09`, request `0x54`) | 1 | 16.0 |
-| `server` | UUID | yes (request `0x54`) | 2 | 16.0 |
-| `rule` | UUID | yes (request `0x54`) | 3 | 16.0 |
-| `cluster-user` | string | yes (auth/context `0x09`) | 4 | 16.0 |
-| `cluster-pwd` | string | yes (auth/context `0x09`) | 5 | 16.0 |
+| `cluster` | UUID | yes (auth/context `0x09`, request `0x54`) | 1 | 11.0 |
+| `server` | UUID | yes (request `0x54`) | 2 | 11.0 |
+| `rule` | UUID | yes (request `0x54`) | 3 | 11.0 |
+| `cluster-user` | string | yes (auth/context `0x09`) | 4 | 11.0 |
+| `cluster-pwd` | string | yes (auth/context `0x09`) | 5 | 11.0 |
 
 ### Record Layout (Observed)
 

@@ -32,9 +32,9 @@ Observed request parameters for `rac service list` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | yes | 1 | 16.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 16.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 16.0 |
+| `cluster` | UUID | yes | 1 | 11.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
 
 ### Поля ответа
 
@@ -42,7 +42,7 @@ Observed field names in `rac service list` output (v16), with capture mapping st
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `name` | string | yes | 1 | 16.0 |
-| `main-only` | u32 | yes | 2 | 16.0 |
-| `manager` | UUID | yes | 3 | 16.0 |
-| `descr` | string | yes | 4 | 16.0 |
+| `name` | string | yes | 1 | 11.0 |
+| `main-only` | u32 | yes | 2 | 11.0 |
+| `manager` | UUID | yes | 3 | 11.0 |
+| `descr` | string | yes | 4 | 11.0 |

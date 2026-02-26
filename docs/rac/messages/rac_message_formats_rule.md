@@ -10,13 +10,14 @@ Sources (v16):
 ## Rule Apply
 
 Source capture:
-- `logs/session_1771359945_3673197_127_0_0_1_36476/server_to_client.stream.bin`
+- `artifacts/rac/v16/v16_20260226_053425_rule_apply_partial_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_rule_apply_partial_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/v16/rule_apply_response.hex`
+- `artifacts/rac/v16/v16_20260226_053425_rule_apply_partial_response.hex`
 
 RAC output reference:
-- `artifacts/rac/v16/rule_apply_rac.out`
+- `artifacts/rac/v16/v16_20260226_053425_rule_apply_partial_rac.out`
 
 ### Поля ответа (из `rac`)
 
@@ -53,31 +54,23 @@ Offsets are relative to the start of the request body.
 | Offset | Size | Field | Type | Notes |
 |---|---|---|---|---|
 | `0x00` | `16` | `cluster` | UUID | |
-| `0x10` | `4` | `apply_mode` | u32_be | `1` = `--full`, capture only |
-
-### Hypotheses
-
-- `apply_mode` is an enum where `0` might mean `--partial`.
+| `0x10` | `4` | `apply_mode` | u32_be | `0` = `--partial`, `1` = `--full` |
 
 ### Open Questions
 
-- Confirm `--partial` encoding by capturing `apply --partial`.
-
-### Gap Analysis (Required)
-
-- Capture `rule apply --partial` to verify the enum value.
+- Confirm whether other apply modes exist beyond `0` (`--partial`) and `1` (`--full`).
 
 ## Rule List
 
 Source capture:
-- `artifacts/rac/v11/v11_rule_list_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11/v11_rule_list_ro_server_to_client.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_rule_list_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_rule_list_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/v11/v11_rule_list_ro_response.hex`
+- `artifacts/rac/v16/v16_20260226_053425_rule_list_response.hex`
 
 RAC output reference:
-- `artifacts/rac/v11/v11_rule_list_ro_rac.out`
+- `artifacts/rac/v16/v16_20260226_053425_rule_list_rac.out`
 
 ### Поля ответа (из `rac`)
 
@@ -143,13 +136,14 @@ Offsets are relative to the start of a record.
 ## Rule Info
 
 Source capture:
-- `logs/session_1771359933_3672979_127_0_0_1_35118/server_to_client.stream.bin`
+- `artifacts/rac/v16/v16_20260226_053425_rule_info_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_rule_info_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/v16/rule_info_response.hex`
+- `artifacts/rac/v16/v16_20260226_053425_rule_info_response.hex`
 
 RAC output reference:
-- `artifacts/rac/v16/rule_info_rac.out`
+- `artifacts/rac/v16/v16_20260226_053425_rule_info_rac.out`
 
 ### Поля ответа (из `rac`)
 
@@ -216,13 +210,14 @@ Offsets are relative to the start of the record.
 ## Rule Insert
 
 Source capture:
-- `logs/session_1771359718_3669811_127_0_0_1_50010/server_to_client.stream.bin`
+- `artifacts/rac/v16/v16_20260226_053425_rule_insert_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_rule_insert_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/v16/rule_insert_response.hex`
+- `artifacts/rac/v16/v16_20260226_053425_rule_insert_response.hex`
 
 RAC output reference:
-- `artifacts/rac/v16/rule_insert_rac.out`
+- `artifacts/rac/v16/v16_20260226_053425_rule_insert_rac.out`
 
 ### Поля ответа (из `rac`)
 
@@ -289,13 +284,14 @@ Offsets are relative to the start of the response body.
 ## Rule Update
 
 Source capture:
-- `logs/session_1771359941_3673129_127_0_0_1_36460/server_to_client.stream.bin`
+- `artifacts/rac/v16/v16_20260226_053425_rule_update_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_rule_update_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/v16/rule_update_response.hex`
+- `artifacts/rac/v16/v16_20260226_053425_rule_update_response.hex`
 
 RAC output reference:
-- `artifacts/rac/v16/rule_update_rac.out`
+- `artifacts/rac/v16/v16_20260226_053425_rule_update_rac.out`
 
 ### Поля ответа (из `rac`)
 
@@ -363,13 +359,14 @@ Offsets are relative to the start of the response body.
 ## Rule Remove
 
 Source capture:
-- `logs/session_1771359950_3673267_127_0_0_1_56154/server_to_client.stream.bin`
+- `artifacts/rac/v16/v16_20260226_053425_rule_remove_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_rule_remove_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/v16/rule_remove_response.hex`
+- `artifacts/rac/v16/v16_20260226_053425_rule_remove_response.hex`
 
 RAC output reference:
-- `artifacts/rac/v16/rule_remove_rac.out`
+- `artifacts/rac/v16/v16_20260226_053425_rule_remove_rac.out`
 
 ### Поля ответа (из `rac`)
 

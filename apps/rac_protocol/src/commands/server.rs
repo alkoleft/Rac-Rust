@@ -1,108 +1,21 @@
-use serde::Serialize;
-
 use crate::client::RacClient;
-use crate::codec::RecordCursor;
-use crate::error::{RacError, Result};
-use crate::protocol::ProtocolCodec;
-use crate::rpc::{Meta, Request, Response};
-use crate::rpc::decode_utils::rpc_body;
-use crate::rac_wire::{
-    METHOD_SERVER_INFO_REQ, METHOD_SERVER_INFO_RESP, METHOD_SERVER_LIST_REQ,
-    METHOD_SERVER_LIST_RESP,
-};
+use crate::error::Result;
 use crate::Uuid16;
-
 
 mod generated {
     include!("server_generated.rs");
 }
 
-pub use generated::ServerRecord;
-
-#[derive(Debug, Serialize)]
-pub struct ServerListResp {
-    pub servers: Vec<ServerRecord>,
-}
-
-#[derive(Debug, Serialize)]
-pub struct ServerInfoResp {
-    pub server: ServerRecord,
-}
-
-struct ServerListRpc {
-    cluster: Uuid16,
-}
-
-impl Request for ServerListRpc {
-    type Response = ServerListResp;
-
-    fn meta(&self) -> Meta {
-        Meta {
-            method_req: METHOD_SERVER_LIST_REQ,
-            method_resp: Some(METHOD_SERVER_LIST_RESP),
-            requires_cluster_context: true,
-            requires_infobase_context: false,
-        }
-    }
-
-    fn cluster(&self) -> Option<Uuid16> {
-        Some(self.cluster)
-    }
-
-    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
-        Ok(self.cluster.to_vec())
-    }
-}
-
-impl Response for ServerListResp {
-    fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
-        let body = rpc_body(payload)?;
-        let servers = parse_server_list(body)?;
-        Ok(Self { servers })
-    }
-}
+pub use generated::{
+    ServerInfoResp,
+    ServerInfoRpc,
+    ServerListResp,
+    ServerListRpc,
+    ServerRecord,
+};
 
 pub fn server_list(client: &mut RacClient, cluster: Uuid16) -> Result<ServerListResp> {
     client.call_typed(ServerListRpc { cluster })
-}
-
-struct ServerInfoRpc {
-    cluster: Uuid16,
-    server: Uuid16,
-}
-
-impl Request for ServerInfoRpc {
-    type Response = ServerInfoResp;
-
-    fn meta(&self) -> Meta {
-        Meta {
-            method_req: METHOD_SERVER_INFO_REQ,
-            method_resp: Some(METHOD_SERVER_INFO_RESP),
-            requires_cluster_context: true,
-            requires_infobase_context: false,
-        }
-    }
-
-    fn cluster(&self) -> Option<Uuid16> {
-        Some(self.cluster)
-    }
-
-    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(32);
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&self.server);
-        Ok(out)
-    }
-}
-
-impl Response for ServerInfoResp {
-    fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
-        let body = rpc_body(payload)?;
-        let mut cursor = RecordCursor::new(body);
-        Ok(Self {
-            server: parse_server_record(&mut cursor)?,
-        })
-    }
 }
 
 pub fn server_info(
@@ -113,30 +26,11 @@ pub fn server_info(
     client.call_typed(ServerInfoRpc { cluster, server })
 }
 
-fn parse_server_list(body: &[u8]) -> Result<Vec<ServerRecord>> {
-    if body.is_empty() {
-        return Ok(Vec::new());
-    }
-    let mut cursor = RecordCursor::new(body);
-    let count = cursor.take_u8()? as usize;
-    let mut servers = Vec::with_capacity(count);
-    for _ in 0..count {
-        servers.push(parse_server_record(&mut cursor)?);
-    }
-    Ok(servers)
-}
-
-fn parse_server_record(cursor: &mut RecordCursor<'_>) -> Result<ServerRecord> {
-    if cursor.remaining_len() < 16 {
-        return Err(RacError::Decode("server record truncated"));
-    }
-    ServerRecord::decode(cursor)
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::commands::rpc_body;
+    use crate::protocol::ProtocolVersion;
+    use crate::rpc::Response;
 
     fn decode_hex_str(input: &str) -> Vec<u8> {
         hex::decode(input.trim()).expect("hex decode")
@@ -155,9 +49,10 @@ mod tests {
     fn parse_server_list_from_capture() {
         let hex = include_str!("../../../../artifacts/rac/server_list_response.hex");
         let payload = decode_hex_str(hex);
-        let body = rpc_body(&payload).expect("rpc body");
-        let servers = parse_server_list(body).expect("parse list");
+        let protocol = ProtocolVersion::V16_0.boxed();
+        let resp = ServerListResp::decode(&payload, protocol.as_ref()).expect("parse list");
 
+        let servers = resp.servers;
         assert_eq!(servers.len(), 1);
         let server = &servers[0];
         assert_eq!(
@@ -197,9 +92,9 @@ mod tests {
     fn parse_server_info_from_capture() {
         let hex = include_str!("../../../../artifacts/rac/server_info_response.hex");
         let payload = decode_hex_str(hex);
-        let body = rpc_body(&payload).expect("rpc body");
-        let mut cursor = RecordCursor::new(body);
-        let server = parse_server_record(&mut cursor).expect("parse info");
+        let protocol = ProtocolVersion::V16_0.boxed();
+        let resp = ServerInfoResp::decode(&payload, protocol.as_ref()).expect("parse info");
+        let server = resp.record;
 
         assert_eq!(
             server.server,

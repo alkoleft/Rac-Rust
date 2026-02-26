@@ -76,7 +76,13 @@ pub use self::rule::{
     RuleUpdateRpc,
 };
 pub use self::server::{
-    server_info, server_list, ServerInfoResp, ServerListResp, ServerRecord,
+    server_info,
+    server_list,
+    ServerInfoResp,
+    ServerInfoRpc,
+    ServerListResp,
+    ServerListRpc,
+    ServerRecord,
 };
 pub use self::session::{
     session_info, session_list, SessionInfoResp, SessionLicense, SessionListResp, SessionRecord,

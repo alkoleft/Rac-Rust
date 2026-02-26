@@ -4,6 +4,11 @@ use crate::codec::RecordCursor;
 use crate::error::Result;
 use serde::Serialize;
 
+pub const METHOD_SERVER_LIST_REQ: u8 = 0x16;
+pub const METHOD_SERVER_LIST_RESP: u8 = 0x17;
+pub const METHOD_SERVER_INFO_REQ: u8 = 0x18;
+pub const METHOD_SERVER_INFO_RESP: u8 = 0x19;
+
 #[derive(Debug, Serialize, Clone)]
 pub struct ServerRecord {
     pub server: Uuid16,
@@ -90,6 +95,81 @@ impl ServerRecord {
     }
 }
 
+pub struct ServerListRpc {
+    pub cluster: Uuid16,
+}
+
+impl crate::rpc::Request for ServerListRpc {
+    type Response = ServerListResp;
+
+    fn meta(&self) -> crate::rpc::Meta {
+        RPC_SERVER_LIST_META
+    }
+
+    fn cluster(&self) -> Option<crate::Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
+        let mut out = Vec::with_capacity(16);
+        out.extend_from_slice(&self.cluster);
+        Ok(out)
+    }
+}
+
+pub struct ServerInfoRpc {
+    pub cluster: Uuid16,
+    pub server: Uuid16,
+}
+
+impl crate::rpc::Request for ServerInfoRpc {
+    type Response = ServerInfoResp;
+
+    fn meta(&self) -> crate::rpc::Meta {
+        RPC_SERVER_INFO_META
+    }
+
+    fn cluster(&self) -> Option<crate::Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
+        let mut out = Vec::with_capacity(16 + 16);
+        out.extend_from_slice(&self.cluster);
+        out.extend_from_slice(&self.server);
+        Ok(out)
+    }
+}
+
+
+#[derive(Debug, Serialize)]
+pub struct ServerListResp {
+    pub servers: Vec<ServerRecord>,
+}
+
+impl crate::rpc::Response for ServerListResp {
+    fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
+        let body = crate::rpc::decode_utils::rpc_body(payload)?;
+        Ok(Self {
+            servers: crate::commands::parse_list_u8(body, ServerRecord::decode)?,
+        })
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct ServerInfoResp {
+    pub record: ServerRecord,
+}
+
+impl crate::rpc::Response for ServerInfoResp {
+    fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
+        let body = crate::rpc::decode_utils::rpc_body(payload)?;
+        let record = parse_server_info_body(body)?;
+        Ok(Self {
+            record: record,
+        })
+    }
+}
 
 
 pub fn parse_server_info_body(body: &[u8]) -> Result<ServerRecord> {
@@ -102,15 +182,15 @@ pub fn parse_server_info_body(body: &[u8]) -> Result<ServerRecord> {
 
 
 pub const RPC_SERVER_LIST_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: 0x16,
-    method_resp: Some(0x17),
+    method_req: METHOD_SERVER_LIST_REQ,
+    method_resp: Some(METHOD_SERVER_LIST_RESP),
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_SERVER_INFO_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: 0x18,
-    method_resp: Some(0x19),
+    method_req: METHOD_SERVER_INFO_REQ,
+    method_resp: Some(METHOD_SERVER_INFO_RESP),
     requires_cluster_context: true,
     requires_infobase_context: false,
 };

@@ -29,6 +29,7 @@ fields = [
 ]
 
 [rpc.ServerList]
+response = "ServerListResp"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid", version = "11.0" },
@@ -40,6 +41,7 @@ requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.ServerInfo]
+response = "ServerInfoResp"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid", version = "11.0" },
@@ -52,7 +54,7 @@ requires_cluster_context = true
 requires_infobase_context = false
 
 [response.ServerList]
-body = { type = "list_u8", item = "ServerRecord" }
+body = { type = "list_u8", item = "ServerRecord", field = "servers", struct = true }
 
 [response.ServerInfo]
-body = { type = "record", item = "ServerRecord" }
+body = { type = "record", item = "ServerRecord", field = "record", struct = true }

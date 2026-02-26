@@ -33,8 +33,6 @@ Observed request parameters for `rac service list` (v16).
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
 | `cluster` | UUID | yes | 1 | 11.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
 
 ### Поля ответа
 

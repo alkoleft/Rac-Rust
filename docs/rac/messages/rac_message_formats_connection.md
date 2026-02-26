@@ -102,12 +102,8 @@ Observed request parameters for `rac connection list` (v11 help).
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
 | `cluster` | UUID | yes | 1 | 11.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
 | `process` | UUID | no | unknown | 11.0 |
 | `infobase` | UUID | yes | 2 | 11.0 |
-| `infobase-user` | string | no | unknown | 11.0 |
-| `infobase-pwd` | string | no | unknown | 11.0 |
 
 Payload structure (method body):
 - `0x32` (list all): `cluster_uuid[16]`
@@ -139,8 +135,6 @@ Observed request parameters for `rac connection info` (v11 help).
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
 | `cluster` | UUID | yes | 1 | 11.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
 | `connection` | UUID | yes | 2 | 11.0 |
 
 ## Connection Disconnect
@@ -163,12 +157,8 @@ Observed request parameters for `rac connection disconnect` (v16).
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
 | `cluster` | UUID | yes | 1 | 11.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
 | `process` | UUID | yes | 3 | 11.0 |
 | `connection` | UUID | yes | 2 | 11.0 |
-| `infobase-user` | string | yes (in auth/context `0x0a`) | 4 | 11.0 |
-| `infobase-pwd` | string | yes (in auth/context `0x0a`) | 5 | 11.0 |
 
 Payload structure (method body):
 - offset `0x00`: `cluster_uuid[16]`

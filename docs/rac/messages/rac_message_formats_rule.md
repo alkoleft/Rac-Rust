@@ -44,8 +44,6 @@ Observed request parameters for `rac rule apply`.
 | --- | --- | --- | --- | --- |
 | `cluster` | UUID | yes (auth/context `0x09`, request `0x51`) | 1 | 11.0 |
 | `full/partial` | enum (u32_be) | yes (request `0x51`) | 2 | 11.0 |
-| `cluster-user` | string | yes (auth/context `0x09`) | 3 | 11.0 |
-| `cluster-pwd` | string | yes (auth/context `0x09`) | 4 | 11.0 |
 
 ### Record Layout (Observed)
 
@@ -103,8 +101,6 @@ Observed request parameters for `rac rule list`.
 | --- | --- | --- | --- | --- |
 | `cluster` | UUID | yes (auth/context `0x09`, request `0x55`) | 1 | 11.0 |
 | `server` | UUID | yes (request `0x55`) | 2 | 11.0 |
-| `cluster-user` | string | yes (auth/context `0x09`) | 3 | 11.0 |
-| `cluster-pwd` | string | yes (auth/context `0x09`) | 4 | 11.0 |
 
 ### Record Layout (Observed)
 
@@ -177,8 +173,6 @@ Observed request parameters for `rac rule info`.
 | `cluster` | UUID | yes (auth/context `0x09`, request `0x57`) | 1 | 11.0 |
 | `server` | UUID | yes (request `0x57`) | 2 | 11.0 |
 | `rule` | UUID | yes (request `0x57`) | 3 | 11.0 |
-| `cluster-user` | string | yes (auth/context `0x09`) | 4 | 11.0 |
-| `cluster-pwd` | string | yes (auth/context `0x09`) | 5 | 11.0 |
 
 ### Record Layout (Observed)
 
@@ -258,8 +252,6 @@ Observed request parameters for `rac rule insert`.
 | `rule-type` | enum (u8) | yes (request `0x52`) | 6 | 11.0 |
 | `application-ext` | string | yes (request `0x52`) | 7 | 11.0 |
 | `priority` | u32_be | yes (request `0x52`) | 8 | 11.0 |
-| `cluster-user` | string | yes (auth/context `0x09`) | 9 | 11.0 |
-| `cluster-pwd` | string | yes (auth/context `0x09`) | 10 | 11.0 |
 
 ### Record Layout (Observed)
 
@@ -333,8 +325,6 @@ Observed request parameters for `rac rule update`.
 | `rule-type` | enum (u8) | yes (request `0x52`) | 7 | 11.0 |
 | `application-ext` | string | yes (request `0x52`) | 8 | 11.0 |
 | `priority` | u32_be | yes (request `0x52`) | 9 | 11.0 |
-| `cluster-user` | string | yes (auth/context `0x09`) | 10 | 11.0 |
-| `cluster-pwd` | string | yes (auth/context `0x09`) | 11 | 11.0 |
 
 ### Record Layout (Observed)
 
@@ -395,8 +385,6 @@ Observed request parameters for `rac rule remove`.
 | `cluster` | UUID | yes (auth/context `0x09`, request `0x54`) | 1 | 11.0 |
 | `server` | UUID | yes (request `0x54`) | 2 | 11.0 |
 | `rule` | UUID | yes (request `0x54`) | 3 | 11.0 |
-| `cluster-user` | string | yes (auth/context `0x09`) | 4 | 11.0 |
-| `cluster-pwd` | string | yes (auth/context `0x09`) | 5 | 11.0 |
 
 ### Record Layout (Observed)
 

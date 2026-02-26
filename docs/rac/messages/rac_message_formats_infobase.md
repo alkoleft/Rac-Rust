@@ -57,8 +57,6 @@ Observed request parameters for `rac infobase summary list` (v16).
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
 | `cluster` | UUID | yes | 1 | 11.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
 
 
 ### Infobase Info
@@ -127,8 +125,6 @@ Observed request parameters for `rac infobase info` (v16).
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
 | `cluster` | UUID | yes | 1 | 11.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
 | `infobase` | UUID | yes | 2 | 11.0 |
 
 
@@ -155,8 +151,6 @@ Observed request parameters for `rac infobase summary info` (v16).
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
 | `cluster` | UUID | yes | 1 | 11.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
 | `infobase` | UUID | yes | 2 | 11.0 |
 
 ### Infobase Summary Update
@@ -178,8 +172,6 @@ Observed request parameters for `rac infobase summary update` (v16).
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
 | `cluster` | UUID | yes | 1 | 11.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
 | `infobase` | UUID | yes | 2 | 11.0 |
 | `descr` | string | yes | 3 | 11.0 |
 
@@ -209,8 +201,6 @@ Observed request parameters for `rac infobase create` (v16).
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
 | `cluster` | UUID | no | unknown | 11.0 |
-| `cluster-user` | string | no | unknown | 11.0 |
-| `cluster-pwd` | string | no | unknown | 11.0 |
 | `create-database` | flag | no | unknown | 11.0 |
 | `name` | string | no | unknown | 11.0 |
 | `dbms` | enum | no | unknown | 11.0 |
@@ -245,11 +235,7 @@ Observed request parameters for `rac infobase update` (v16).
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
 | `cluster` | UUID | no | unknown | 11.0 |
-| `cluster-user` | string | no | unknown | 11.0 |
-| `cluster-pwd` | string | no | unknown | 11.0 |
 | `infobase` | UUID | no | unknown | 11.0 |
-| `infobase-user` | string | no | unknown | 11.0 |
-| `infobase-pwd` | string | no | unknown | 11.0 |
 | `dbms` | enum | no | unknown | 11.0 |
 | `db-server` | string | no | unknown | 11.0 |
 | `db-name` | string | no | unknown | 11.0 |
@@ -301,11 +287,7 @@ Observed request parameters for `rac infobase drop` (v16).
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
 | `cluster` | UUID | no | unknown | 11.0 |
-| `cluster-user` | string | no | unknown | 11.0 |
-| `cluster-pwd` | string | no | unknown | 11.0 |
 | `infobase` | UUID | no | unknown | 11.0 |
-| `infobase-user` | string | no | unknown | 11.0 |
-| `infobase-pwd` | string | no | unknown | 11.0 |
 | `drop-database` | flag | no | unknown | 11.0 |
 | `clear-database` | flag | no | unknown | 11.0 |
 

@@ -58,8 +58,6 @@ Observed request parameters for `rac server list`.
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
 | `cluster` | UUID | yes | 1 | 11.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
 
 Payload structure (method body):
 - offset `0x00`: `count:u8` (observed `0x01`)
@@ -133,8 +131,6 @@ Observed request parameters for `rac server info`.
 | --- | --- | --- | --- | --- |
 | `cluster` | UUID | yes | 1 | 11.0 |
 | `server` | UUID | yes | 2 | 11.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 4 | 11.0 |
 
 Payload structure (method body):
 - single record in the same layout as `server list` (no leading count byte)
@@ -179,8 +175,6 @@ Observed request parameters for `rac server insert` (v16).
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
 | `cluster` | UUID | no | unknown | 11.0 |
-| `cluster-user` | string | no | unknown | 11.0 |
-| `cluster-pwd` | string | no | unknown | 11.0 |
 | `agent-host` | string | no | unknown | 11.0 |
 | `agent-port` | u16 | no | unknown | 11.0 |
 | `port-range` | string (`min:max`) | no | unknown | 11.0 |
@@ -218,8 +212,6 @@ Observed request parameters for `rac server update` (v16).
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
 | `cluster` | UUID | yes | 1 | 11.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
 | `server` | UUID | yes | 2 | 11.0 |
 | `port-range` | string (`min:max`) | yes | unknown | 11.0 |
 | `using` | enum (`main`, `normal`) | yes | unknown | 11.0 |
@@ -258,8 +250,6 @@ Observed request parameters for `rac server remove` (v16).
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
 | `cluster` | UUID | no | unknown | 11.0 |
-| `cluster-user` | string | no | unknown | 11.0 |
-| `cluster-pwd` | string | no | unknown | 11.0 |
 | `server` | UUID | no | unknown | 11.0 |
 
 ### Поля ответа

@@ -60,8 +60,6 @@ Observed request parameters for `rac limit list`.
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
 | `cluster` | UUID | yes | 1 | 11.0 |
-| `cluster-user` | string | yes | 2 | 11.0 |
-| `cluster-pwd` | string | yes | 3 | 11.0 |
 
 Notes:
 - `cluster-user`/`cluster-pwd` are sent via the context setter (`rpc_method_id=0x09`) before the `limit list` request. Order in that context payload: `cluster`, `cluster-user`, `cluster-pwd`.
@@ -162,8 +160,6 @@ Observed request parameters for `rac limit info`.
 | --- | --- | --- | --- | --- |
 | `cluster` | UUID | yes | 1 | 11.0 |
 | `limit` | string | yes | 2 | 11.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 4 | 11.0 |
 
 ### Record Layout (Observed)
 
@@ -259,8 +255,6 @@ Observed request parameters for `rac limit update`.
 | `number-of-sessions` | u64_be | yes | 15 | 11.0 |
 | `error-message` | string | yes | 16 | 11.0 |
 | `descr` | string | yes | 17 | 11.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 18 | 11.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 19 | 11.0 |
 
 ### Record Layout (Observed)
 
@@ -341,8 +335,6 @@ Observed request parameters for `rac limit remove`.
 | --- | --- | --- | --- | --- |
 | `cluster` | UUID | yes | 1 | 11.0 |
 | `name` | string | yes | 2 | 11.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 4 | 11.0 |
 
 ### Hypotheses
 

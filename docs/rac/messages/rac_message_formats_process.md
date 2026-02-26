@@ -60,8 +60,6 @@ Observed request parameters for `rac process list`.
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
 | `cluster` | UUID | yes | 1 | 11.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
 
 Payload structure (method body):
 - offset `0x00`: `count:u8` (observed `0x01`)
@@ -210,8 +208,6 @@ Observed request parameters for `rac process info`.
 | --- | --- | --- | --- | --- |
 | `cluster` | UUID | yes | 1 | 11.0 |
 | `process` | UUID | yes | 2 | 11.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 4 | 11.0 |
 
 Payload structure (method body):
 - single record in the same layout as `process list` (no leading count byte)

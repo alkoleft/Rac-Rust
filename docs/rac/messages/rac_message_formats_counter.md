@@ -60,8 +60,6 @@ Observed request parameters for `rac counter list`.
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
 | `cluster` | UUID | yes | 1 | 11.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
 
 ### Record Layout (Observed)
 
@@ -160,8 +158,6 @@ Observed request parameters for `rac counter info`.
 | --- | --- | --- | --- | --- |
 | `cluster` | UUID | yes | 1 | 11.0 |
 | `counter` | string | yes | 2 | 11.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 4 | 11.0 |
 
 ### Record Layout (Observed)
 
@@ -241,8 +237,6 @@ Observed request parameters for `rac counter update`.
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
 | `cluster` | UUID | yes | 1 | 11.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
 | `name` | string | yes | 4 | 11.0 |
 | `collection-time` | u64_be | yes | 5 | 11.0 |
 | `group` | enum (u8) | yes | 6 | 11.0 |
@@ -354,8 +348,6 @@ Observed request parameters for `rac counter values`.
 | `cluster` | UUID | yes | 1 | 11.0 |
 | `counter` | string | yes | 2 | 11.0 |
 | `object` | string | yes (empty, `len=0`) | 3 | 11.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 4 | 11.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 5 | 11.0 |
 
 ### Record Layout (Observed)
 
@@ -445,8 +437,6 @@ Observed request parameters for `rac counter accumulated-values`.
 | `cluster` | UUID | yes | 1 | 11.0 |
 | `counter` | string | yes | 2 | 11.0 |
 | `object` | string | yes (empty, `len=0`) | 3 | 11.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 4 | 11.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 5 | 11.0 |
 
 ### Record Layout (Observed)
 
@@ -524,8 +514,6 @@ Observed request parameters for `rac counter clear`.
 | `cluster` | UUID | yes | 1 | 11.0 |
 | `counter` | string | yes | 2 | 11.0 |
 | `object` | string | yes (empty, `len=0`) | 3 | 11.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 4 | 11.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 5 | 11.0 |
 
 ### Hypotheses
 
@@ -576,8 +564,6 @@ Observed request parameters for `rac counter remove`.
 | --- | --- | --- | --- | --- |
 | `cluster` | UUID | yes | 1 | 11.0 |
 | `name` | string | yes | 2 | 11.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 4 | 11.0 |
 
 ### Hypotheses
 

@@ -45,8 +45,6 @@ Observed request parameters for `rac service-setting list`.
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
 | `cluster` | UUID | yes (auth/context `0x09`, request `0x8b`) | 1 | 16.0 |
-| `cluster-user` | string | yes (auth/context `0x09`) | 2 | 16.0 |
-| `cluster-pwd` | string | yes (auth/context `0x09`) | 3 | 16.0 |
 | `server` | UUID | yes (request `0x8b`) | 4 | 16.0 |
 
 ### Record Layout (Observed)
@@ -104,8 +102,6 @@ Observed request parameters for `rac service-setting info`.
 | `cluster` | UUID | yes (auth/context `0x09`, request `0x89`) | 1 | 16.0 |
 | `server` | UUID | yes (request `0x89`) | 2 | 16.0 |
 | `setting` | UUID | yes (request `0x89`) | 3 | 16.0 |
-| `cluster-user` | string | yes (auth/context `0x09`) | 4 | 16.0 |
-| `cluster-pwd` | string | yes (auth/context `0x09`) | 5 | 16.0 |
 
 ### Record Layout (Observed)
 
@@ -165,8 +161,6 @@ Observed request parameters for `rac service-setting insert`.
 | `infobase-name` | string | yes (empty string, len=0) | 5 | 16.0 |
 | `service-data-dir` | string | yes | 6 | 16.0 |
 | `active` | bool (u16?) | yes (default `0x0000`) | 7 | 16.0 |
-| `cluster-user` | string | yes (auth/context `0x09`) | 8 | 16.0 |
-| `cluster-pwd` | string | yes (auth/context `0x09`) | 9 | 16.0 |
 
 ### Record Layout (Observed)
 
@@ -229,8 +223,6 @@ Observed request parameters for `rac service-setting update`.
 | `infobase-name` | string | yes (empty string, len=0) | 5 | 16.0 |
 | `service-data-dir` | string | yes | 6 | 16.0 |
 | `active` | bool (u16?) | yes (default `0x0000`) | 7 | 16.0 |
-| `cluster-user` | string | yes (auth/context `0x09`) | 8 | 16.0 |
-| `cluster-pwd` | string | yes (auth/context `0x09`) | 9 | 16.0 |
 
 ### Record Layout (Observed)
 
@@ -289,8 +281,6 @@ Observed request parameters for `rac service-setting get-service-data-dirs-for-t
 | `cluster` | UUID | yes (auth/context `0x09`, request `0x91`) | 1 | 16.0 |
 | `server` | UUID | yes (request `0x91`) | 2 | 16.0 |
 | `service-name` | string | yes | 3 | 16.0 |
-| `cluster-user` | string | yes (auth/context `0x09`) | 4 | 16.0 |
-| `cluster-pwd` | string | yes (auth/context `0x09`) | 5 | 16.0 |
 
 ### Record Layout (Observed)
 
@@ -347,8 +337,6 @@ Observed request parameters for `rac service-setting remove`.
 | `cluster` | UUID | yes (auth/context `0x09`, request `0x8f`) | 1 | 16.0 |
 | `server` | UUID | yes (request `0x8f`) | 2 | 16.0 |
 | `setting` | UUID | yes (request `0x8f`) | 3 | 16.0 |
-| `cluster-user` | string | yes (auth/context `0x09`) | 4 | 16.0 |
-| `cluster-pwd` | string | yes (auth/context `0x09`) | 5 | 16.0 |
 
 ### Record Layout (Observed)
 
@@ -396,8 +384,6 @@ Observed request parameters for `rac service-setting apply`.
 | --- | --- | --- | --- | --- |
 | `cluster` | UUID | yes (auth/context `0x09`, request `0x90`) | 1 | 16.0 |
 | `server` | UUID | yes (request `0x90`) | 2 | 16.0 |
-| `cluster-user` | string | yes (auth/context `0x09`) | 3 | 16.0 |
-| `cluster-pwd` | string | yes (auth/context `0x09`) | 4 | 16.0 |
 
 ### Record Layout (Observed)
 

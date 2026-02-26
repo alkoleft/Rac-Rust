@@ -82,8 +82,6 @@ Observed request parameters for `rac lock list`.
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
 | `cluster` | UUID | yes | 1 | 11.0 |
-| `cluster-user` | string | yes | 2 | 11.0 |
-| `cluster-pwd` | string | yes | 3 | 11.0 |
 | `infobase` | UUID | yes | 2 | 11.0 |
 | `connection` | UUID | yes | 2 | 11.0 |
 | `session` | UUID | no (payload matches `--cluster` only) | unknown | 11.0 |

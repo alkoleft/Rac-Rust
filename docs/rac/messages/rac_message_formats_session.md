@@ -56,8 +56,6 @@ Observed request parameters for `rac session list` (v16).
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
 | `cluster` | UUID | yes | 1 | 11.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
 | `infobase` | UUID | no | unknown | 11.0 |
 | `licenses` | flag | no | unknown | 11.0 |
 
@@ -81,8 +79,6 @@ Observed request parameters for `rac session info` (v16).
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
 | `cluster` | UUID | yes | 1 | 11.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
 | `session` | UUID | yes | 2 | 11.0 |
 | `licenses` | flag | no | unknown | 11.0 |
 
@@ -103,8 +99,6 @@ Observed request parameters for `rac session terminate` (v16).
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
 | `cluster` | UUID | yes | 1 | 11.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
 | `session` | UUID | yes | 2 | 11.0 |
 | `error-message` | string | yes | 3 | 11.0 |
 
@@ -135,8 +129,6 @@ Observed request parameters for `rac session interrupt-current-server-call` (v16
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
 | `cluster` | UUID | yes | 1 | 11.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
 | `session` | UUID | yes | 2 | 11.0 |
 | `error-message` | string | yes | 3 | 11.0 |
 

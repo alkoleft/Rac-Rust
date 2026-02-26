@@ -1,55 +1,51 @@
 [record.ServerRecord]
 derive = ["Debug", "Serialize", "Clone"]
 fields = [
-  { name = "server", type = "uuid" },
-  { name = "agent_host", type = "str8" },
-  { name = "agent_port", type = "u16_be" },
-  { name = "name", type = "str8" },
-  { name = "using", type = "u32_le" },
-  { name = "dedicate_managers", type = "u32_le" },
-  { name = "gap_1", type = "u32_le" },
-  { name = "safe_call_memory_limit", type = "u32_be" },
-  { name = "gap_2", type = "u32_le" },
-  { name = "infobases_limit", type = "u32_le" },
-  { name = "gap_3", type = "u32_le" },
-  { name = "gap_4", type = "u32_le" },
-  { name = "gap_4_pad", type = "u8" },
-  { name = "cluster_port", type = "u16_be" },
-  { name = "connections_limit", type = "u16_le" },
-  { name = "port_range_end", type = "u16_be" },
-  { name = "port_range_start", type = "u16_be" },
-  { name = "critical_total_memory", type = "u64_be" },
-  { name = "gap_5", type = "u32_be" },
-  { name = "temporary_allowed_total_memory", type = "u32_be" },
-  { name = "gap_6", type = "u32_be" },
-  { name = "temporary_allowed_total_memory_time_limit", type = "u32_be" },
-  { name = "service_principal_name", type = "str8" },
-  { name = "restart_schedule", type = "str8" },
-  { name = "gap_7", type = "u8" },
-]
-
-[request.ServerListRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-]
-
-[request.ServerInfoRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-  { name = "server", type = "uuid" },
+  { name = "server", type = "uuid", version = "11.0" },
+  { name = "agent_host", type = "str8", version = "11.0" },
+  { name = "agent_port", type = "u16_be", version = "11.0" },
+  { name = "name", type = "str8", version = "11.0" },
+  { name = "using", type = "u32_le", version = "11.0" },
+  { name = "dedicate_managers", type = "u32_le", version = "11.0" },
+  { name = "gap_1", type = "u32_le", version = "11.0" },
+  { name = "safe_call_memory_limit", type = "u32_be", version = "11.0" },
+  { name = "gap_2", type = "u32_le", version = "11.0" },
+  { name = "infobases_limit", type = "u32_le", version = "11.0" },
+  { name = "gap_3", type = "u32_le", version = "11.0" },
+  { name = "gap_4", type = "u32_le", version = "11.0" },
+  { name = "gap_4_pad", type = "u8", version = "11.0" },
+  { name = "cluster_port", type = "u16_be", version = "11.0" },
+  { name = "connections_limit", type = "u16_le", version = "11.0" },
+  { name = "port_range_end", type = "u16_be", version = "11.0" },
+  { name = "port_range_start", type = "u16_be", version = "11.0" },
+  { name = "critical_total_memory", type = "u64_be", version = "11.0" },
+  { name = "gap_5", type = "u32_be", version = "11.0" },
+  { name = "temporary_allowed_total_memory", type = "u32_be", version = "11.0" },
+  { name = "gap_6", type = "u32_be", version = "11.0" },
+  { name = "temporary_allowed_total_memory_time_limit", type = "u32_be", version = "11.0" },
+  { name = "service_principal_name", type = "str8", version = "11.0" },
+  { name = "restart_schedule", type = "str8", version = "11.0" },
+  { name = "gap_7", type = "u8", version = "11.0" },
 ]
 
 [rpc.ServerList]
-request = "ServerListRequest"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x16
 method_resp = 0x17
 requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.ServerInfo]
-request = "ServerInfoRequest"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+  { name = "server", type = "uuid", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x18
 method_resp = 0x19
 requires_cluster_context = true

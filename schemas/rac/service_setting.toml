@@ -1,136 +1,122 @@
 [record.ServiceSettingRecord]
 derive = ["Debug", "Serialize", "Clone"]
 fields = [
-  { name = "setting", type = "uuid" },
-  { name = "service_name", type = "str8" },
-  { name = "infobase_name", type = "str8" },
-  { name = "service_data_dir", type = "str8" },
-  { name = "active", type = "u16_be_bool" },
+  { name = "setting", type = "uuid", version = "11.0" },
+  { name = "service_name", type = "str8", version = "11.0" },
+  { name = "infobase_name", type = "str8", version = "11.0" },
+  { name = "service_data_dir", type = "str8", version = "11.0" },
+  { name = "active", type = "u16_be_bool", version = "11.0" },
 ]
 
 [record.ServiceSettingTransferDataDirRecord]
 derive = ["Debug", "Serialize", "Clone"]
 fields = [
-  { name = "service_name", type = "str8" },
-  { name = "user", type = "str8" },
-  { name = "source_dir_len", type = "u8", skip = true },
-  { name = "source_dir_flag", type = "u8" },
-  { name = "source_dir", type = "str_len_u8", len_source = "source_dir_len" },
-  { name = "target_dir_len", type = "u8", skip = true },
-  { name = "target_dir_flag", type = "u8" },
-  { name = "target_dir", type = "str_len_u8", len_source = "target_dir_len" },
+  { name = "service_name", type = "str8", version = "11.0" },
+  { name = "user", type = "str8", version = "11.0" },
+  { name = "source_dir_len", type = "u8", skip = true, version = "11.0" },
+  { name = "source_dir_flag", type = "u8", version = "11.0" },
+  { name = "source_dir", type = "str_len_u8", len_source = "source_dir_len", version = "11.0" },
+  { name = "target_dir_len", type = "u8", skip = true, version = "11.0" },
+  { name = "target_dir_flag", type = "u8", version = "11.0" },
+  { name = "target_dir", type = "str_len_u8", len_source = "target_dir_len", version = "11.0" },
 ]
 
 [record.ServiceSettingIdRecord]
 derive = ["Debug", "Serialize", "Clone"]
 fields = [
-  { name = "setting", type = "uuid" },
-]
-
-[request.ServiceSettingInfoRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-  { name = "server", type = "uuid" },
-  { name = "setting", type = "uuid" },
-]
-
-[request.ServiceSettingListRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-  { name = "server", type = "uuid" },
-]
-
-[request.ServiceSettingInsertRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-  { name = "server", type = "uuid" },
-  { name = "padding", type = "bytes_fixed", literal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], len = 16 },
-  { name = "service_name", type = "str8" },
-  { name = "infobase_name", type = "str8" },
-  { name = "service_data_dir", type = "str8" },
-  { name = "active", type = "u16_be" },
-]
-
-[request.ServiceSettingUpdateRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-  { name = "server", type = "uuid" },
-  { name = "setting", type = "uuid" },
-  { name = "service_name", type = "str8" },
-  { name = "infobase_name", type = "str8" },
-  { name = "service_data_dir", type = "str8" },
-  { name = "active", type = "u16_be" },
-]
-
-[request.ServiceSettingRemoveRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-  { name = "server", type = "uuid" },
-  { name = "setting", type = "uuid" },
-]
-
-[request.ServiceSettingApplyRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-  { name = "server", type = "uuid" },
-]
-
-[request.ServiceSettingGetDataDirsRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-  { name = "server", type = "uuid" },
-  { name = "service_name", type = "str8" },
+  { name = "setting", type = "uuid", version = "11.0" },
 ]
 
 [rpc.ServiceSettingInfo]
-request = "ServiceSettingInfoRequest"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+  { name = "server", type = "uuid", version = "11.0" },
+  { name = "setting", type = "uuid", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x89
 method_resp = 0x8a
 requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.ServiceSettingList]
-request = "ServiceSettingListRequest"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+  { name = "server", type = "uuid", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x8b
 method_resp = 0x8c
 requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.ServiceSettingInsert]
-request = "ServiceSettingInsertRequest"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+  { name = "server", type = "uuid", version = "11.0" },
+  { name = "padding", type = "bytes_fixed", literal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], len = 16, version = "11.0" },
+  { name = "service_name", type = "str8", version = "11.0" },
+  { name = "infobase_name", type = "str8", version = "11.0" },
+  { name = "service_data_dir", type = "str8", version = "11.0" },
+  { name = "active", type = "u16_be", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x8d
 method_resp = 0x8e
 requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.ServiceSettingUpdate]
-request = "ServiceSettingUpdateRequest"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+  { name = "server", type = "uuid", version = "11.0" },
+  { name = "setting", type = "uuid", version = "11.0" },
+  { name = "service_name", type = "str8", version = "11.0" },
+  { name = "infobase_name", type = "str8", version = "11.0" },
+  { name = "service_data_dir", type = "str8", version = "11.0" },
+  { name = "active", type = "u16_be", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x8d
 method_resp = 0x8e
 requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.ServiceSettingRemove]
-request = "ServiceSettingRemoveRequest"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+  { name = "server", type = "uuid", version = "11.0" },
+  { name = "setting", type = "uuid", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x8f
 requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.ServiceSettingApply]
-request = "ServiceSettingApplyRequest"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+  { name = "server", type = "uuid", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x90
 requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.ServiceSettingGetDataDirs]
-request = "ServiceSettingGetDataDirsRequest"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+  { name = "server", type = "uuid", version = "11.0" },
+  { name = "service_name", type = "str8", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x91
 method_resp = 0x92
 requires_cluster_context = true

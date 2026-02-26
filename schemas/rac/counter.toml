@@ -1,152 +1,138 @@
 [record.CounterRecord]
 derive = ["Debug", "Serialize", "Clone"]
 fields = [
-  { name = "name", type = "str8" },
-  { name = "collection_time", type = "u64_be" },
-  { name = "group", type = "u8" },
-  { name = "filter_type", type = "u8" },
-  { name = "filter", type = "str8" },
-  { name = "duration", type = "u8" },
-  { name = "cpu_time", type = "u8" },
-  { name = "duration_dbms", type = "u8" },
-  { name = "service", type = "u8" },
-  { name = "memory", type = "u8" },
-  { name = "read", type = "u8" },
-  { name = "write", type = "u8" },
-  { name = "dbms_bytes", type = "u8" },
-  { name = "call", type = "u8" },
-  { name = "number_of_active_sessions", type = "u8" },
-  { name = "number_of_sessions", type = "u8" },
-  { name = "descr", type = "str8" },
+  { name = "name", type = "str8", version = "11.0" },
+  { name = "collection_time", type = "u64_be", version = "11.0" },
+  { name = "group", type = "u8", version = "11.0" },
+  { name = "filter_type", type = "u8", version = "11.0" },
+  { name = "filter", type = "str8", version = "11.0" },
+  { name = "duration", type = "u8", version = "11.0" },
+  { name = "cpu_time", type = "u8", version = "11.0" },
+  { name = "duration_dbms", type = "u8", version = "11.0" },
+  { name = "service", type = "u8", version = "11.0" },
+  { name = "memory", type = "u8", version = "11.0" },
+  { name = "read", type = "u8", version = "11.0" },
+  { name = "write", type = "u8", version = "11.0" },
+  { name = "dbms_bytes", type = "u8", version = "11.0" },
+  { name = "call", type = "u8", version = "11.0" },
+  { name = "number_of_active_sessions", type = "u8", version = "11.0" },
+  { name = "number_of_sessions", type = "u8", version = "11.0" },
+  { name = "descr", type = "str8", version = "11.0" },
 ]
 
 [record.CounterValuesRecord]
 derive = ["Debug", "Serialize", "Clone"]
 fields = [
-  { name = "object", type = "str8" },
-  { name = "collection_time", type = "u64_be" },
-  { name = "duration", type = "u64_be" },
-  { name = "cpu_time", type = "u64_be" },
-  { name = "memory", type = "u64_be" },
-  { name = "read", type = "u64_be" },
-  { name = "write", type = "u64_be" },
-  { name = "duration_dbms", type = "u64_be" },
-  { name = "dbms_bytes", type = "u64_be" },
-  { name = "service", type = "u64_be" },
-  { name = "call", type = "u64_be" },
-  { name = "number_of_active_sessions", type = "u64_be" },
-  { name = "number_of_sessions", type = "u64_be" },
-  { name = "time", type = "datetime_u64_be" },
-]
-
-[request.CounterListRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-]
-
-[request.CounterInfoRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-  { name = "counter", type = "str8" },
-]
-
-[request.CounterUpdateRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-  { name = "name", type = "str8" },
-  { name = "collection_time", type = "u64_be" },
-  { name = "group", type = "u8" },
-  { name = "filter_type", type = "u8" },
-  { name = "filter", type = "str8" },
-  { name = "duration", type = "u8" },
-  { name = "cpu_time", type = "u8" },
-  { name = "duration_dbms", type = "u8" },
-  { name = "service", type = "u8" },
-  { name = "memory", type = "u8" },
-  { name = "read", type = "u8" },
-  { name = "write", type = "u8" },
-  { name = "dbms_bytes", type = "u8" },
-  { name = "call", type = "u8" },
-  { name = "number_of_active_sessions", type = "u8" },
-  { name = "number_of_sessions", type = "u8" },
-  { name = "descr", type = "str8" },
-]
-
-[request.CounterRemoveRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-  { name = "name", type = "str8" },
-]
-
-[request.CounterClearRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-  { name = "counter", type = "str8" },
-  { name = "object", type = "str8" },
-]
-
-[request.CounterValuesRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-  { name = "counter", type = "str8" },
-  { name = "object", type = "str8" },
-]
-
-[request.CounterAccumulatedValuesRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-  { name = "counter", type = "str8" },
-  { name = "object", type = "str8" },
+  { name = "object", type = "str8", version = "11.0" },
+  { name = "collection_time", type = "u64_be", version = "11.0" },
+  { name = "duration", type = "u64_be", version = "11.0" },
+  { name = "cpu_time", type = "u64_be", version = "11.0" },
+  { name = "memory", type = "u64_be", version = "11.0" },
+  { name = "read", type = "u64_be", version = "11.0" },
+  { name = "write", type = "u64_be", version = "11.0" },
+  { name = "duration_dbms", type = "u64_be", version = "11.0" },
+  { name = "dbms_bytes", type = "u64_be", version = "11.0" },
+  { name = "service", type = "u64_be", version = "11.0" },
+  { name = "call", type = "u64_be", version = "11.0" },
+  { name = "number_of_active_sessions", type = "u64_be", version = "11.0" },
+  { name = "number_of_sessions", type = "u64_be", version = "11.0" },
+  { name = "time", type = "datetime_u64_be", version = "11.0" },
 ]
 
 [rpc.CounterList]
-request = "CounterListRequest"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x76
 method_resp = 0x77
 requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.CounterInfo]
-request = "CounterInfoRequest"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+  { name = "counter", type = "str8", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x78
 method_resp = 0x79
 requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.CounterUpdate]
-request = "CounterUpdateRequest"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+  { name = "name", type = "str8", version = "11.0" },
+  { name = "collection_time", type = "u64_be", version = "11.0" },
+  { name = "group", type = "u8", version = "11.0" },
+  { name = "filter_type", type = "u8", version = "11.0" },
+  { name = "filter", type = "str8", version = "11.0" },
+  { name = "duration", type = "u8", version = "11.0" },
+  { name = "cpu_time", type = "u8", version = "11.0" },
+  { name = "duration_dbms", type = "u8", version = "11.0" },
+  { name = "service", type = "u8", version = "11.0" },
+  { name = "memory", type = "u8", version = "11.0" },
+  { name = "read", type = "u8", version = "11.0" },
+  { name = "write", type = "u8", version = "11.0" },
+  { name = "dbms_bytes", type = "u8", version = "11.0" },
+  { name = "call", type = "u8", version = "11.0" },
+  { name = "number_of_active_sessions", type = "u8", version = "11.0" },
+  { name = "number_of_sessions", type = "u8", version = "11.0" },
+  { name = "descr", type = "str8", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x7a
 requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.CounterRemove]
-request = "CounterRemoveRequest"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+  { name = "name", type = "str8", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x7b
 requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.CounterClear]
-request = "CounterClearRequest"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+  { name = "counter", type = "str8", version = "11.0" },
+  { name = "object", type = "str8", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x84
 requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.CounterValues]
-request = "CounterValuesRequest"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+  { name = "counter", type = "str8", version = "11.0" },
+  { name = "object", type = "str8", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x82
 method_resp = 0x83
 requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.CounterAccumulatedValues]
-request = "CounterAccumulatedValuesRequest"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+  { name = "counter", type = "str8", version = "11.0" },
+  { name = "object", type = "str8", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x85
 method_resp = 0x86
 requires_cluster_context = true

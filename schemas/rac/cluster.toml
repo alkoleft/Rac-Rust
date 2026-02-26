@@ -1,10 +1,10 @@
 [record.ClusterAdminRecord]
 derive = ["Debug", "Serialize", "Clone"]
 fields = [
-  { name = "name", type = "str8" },
-  { name = "unknown_tag", type = "u8" },
-  { name = "unknown_flags", type = "u32_be" },
-  { name = "unknown_tail", type = "bytes_fixed", len = 3 },
+  { name = "name", type = "str8", version = "11.0" },
+  { name = "unknown_tag", type = "u8", version = "11.0" },
+  { name = "unknown_flags", type = "u32_be", version = "11.0" },
+  { name = "unknown_tail", type = "bytes_fixed", len = 3, version = "11.0" },
 ]
 
 [record.ClusterRecord]
@@ -30,10 +30,11 @@ fields = [
 response = "AckResponse"
 derive = ["Debug", "Clone"]
 fields = [
-  { name = "cluster", type = "uuid" },
-  { name = "user", type = "str8" },
-  { name = "pwd", type = "str8" },
+  { name = "cluster", type = "uuid", version = "11.0" },
+  { name = "user", type = "str8", version = "11.0" },
+  { name = "pwd", type = "str8", version = "11.0" },
 ]
+version = "11.0"
 method_req = 0x09
 requires_cluster_context = false
 requires_infobase_context = false
@@ -42,8 +43,9 @@ requires_infobase_context = false
 response = "ClusterAdminListResp"
 derive = ["Debug", "Clone"]
 fields = [
-  { name = "cluster", type = "uuid" },
+  { name = "cluster", type = "uuid", version = "11.0" },
 ]
+version = "11.0"
 method_req = 0x02
 method_resp = 0x03
 requires_cluster_context = false
@@ -53,14 +55,15 @@ requires_infobase_context = false
 response = "AckResponse"
 derive = ["Debug", "Clone"]
 fields = [
-  { name = "cluster", type = "uuid" },
-  { name = "name", type = "str8" },
-  { name = "descr", type = "str8" },
-  { name = "pwd", type = "str8" },
-  { name = "auth_tag", type = "u8" },
-  { name = "auth_flags", type = "u8" },
-  { name = "os_user", type = "str8" },
+  { name = "cluster", type = "uuid", version = "11.0" },
+  { name = "name", type = "str8", version = "11.0" },
+  { name = "descr", type = "str8", version = "11.0" },
+  { name = "pwd", type = "str8", version = "11.0" },
+  { name = "auth_tag", type = "u8", version = "11.0" },
+  { name = "auth_flags", type = "u8", version = "11.0" },
+  { name = "os_user", type = "str8", version = "11.0" },
 ]
+version = "11.0"
 method_req = 0x05
 requires_cluster_context = false
 requires_infobase_context = false
@@ -69,15 +72,17 @@ requires_infobase_context = false
 response = "AckResponse"
 derive = ["Debug", "Clone"]
 fields = [
-  { name = "cluster", type = "uuid" },
-  { name = "name", type = "str8" },
+  { name = "cluster", type = "uuid", version = "11.0" },
+  { name = "name", type = "str8", version = "11.0" },
 ]
+version = "11.0"
 method_req = 0x07
 requires_cluster_context = false
 requires_infobase_context = false
 
 [rpc.ClusterList]
 response = "ClusterListResp"
+version = "11.0"
 method_req = 0x0b
 method_resp = 0x0c
 requires_cluster_context = false
@@ -87,8 +92,9 @@ requires_infobase_context = false
 response = "ClusterInfoResp"
 derive = ["Debug", "Clone"]
 fields = [
-  { name = "cluster", type = "uuid" },
+  { name = "cluster", type = "uuid", version = "11.0" },
 ]
+version = "11.0"
 method_req = 0x0d
 method_resp = 0x0e
 requires_cluster_context = false

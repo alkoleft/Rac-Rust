@@ -1,88 +1,80 @@
 [record.LimitRecord]
 derive = ["Debug", "Serialize", "Clone"]
 fields = [
-  { name = "name", type = "str8" },
-  { name = "counter", type = "str8" },
-  { name = "action", type = "u8" },
-  { name = "duration", type = "u64_be" },
-  { name = "cpu_time", type = "u64_be" },
-  { name = "memory", type = "u64_be" },
-  { name = "read", type = "u64_be" },
-  { name = "write", type = "u64_be" },
-  { name = "duration_dbms", type = "u64_be" },
-  { name = "dbms_bytes", type = "u64_be" },
-  { name = "service", type = "u64_be" },
-  { name = "call", type = "u64_be" },
-  { name = "number_of_active_sessions", type = "u64_be" },
-  { name = "number_of_sessions", type = "u64_be" },
-  { name = "error_message", type = "str8" },
-  { name = "descr", type = "str8" },
-]
-
-[request.LimitListRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-]
-
-[request.LimitInfoRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-  { name = "name", type = "str8" },
-]
-
-[request.LimitUpdateRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-  { name = "name", type = "str8" },
-  { name = "counter", type = "str8" },
-  { name = "action", type = "u8" },
-  { name = "duration", type = "u64_be" },
-  { name = "cpu_time", type = "u64_be" },
-  { name = "memory", type = "u64_be" },
-  { name = "read", type = "u64_be" },
-  { name = "write", type = "u64_be" },
-  { name = "duration_dbms", type = "u64_be" },
-  { name = "dbms_bytes", type = "u64_be" },
-  { name = "service", type = "u64_be" },
-  { name = "call", type = "u64_be" },
-  { name = "number_of_active_sessions", type = "u64_be" },
-  { name = "number_of_sessions", type = "u64_be" },
-  { name = "error_message", type = "str8" },
-  { name = "descr", type = "str8" },
-]
-
-[request.LimitRemoveRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-  { name = "name", type = "str8" },
+  { name = "name", type = "str8", version = "11.0" },
+  { name = "counter", type = "str8", version = "11.0" },
+  { name = "action", type = "u8", version = "11.0" },
+  { name = "duration", type = "u64_be", version = "11.0" },
+  { name = "cpu_time", type = "u64_be", version = "11.0" },
+  { name = "memory", type = "u64_be", version = "11.0" },
+  { name = "read", type = "u64_be", version = "11.0" },
+  { name = "write", type = "u64_be", version = "11.0" },
+  { name = "duration_dbms", type = "u64_be", version = "11.0" },
+  { name = "dbms_bytes", type = "u64_be", version = "11.0" },
+  { name = "service", type = "u64_be", version = "11.0" },
+  { name = "call", type = "u64_be", version = "11.0" },
+  { name = "number_of_active_sessions", type = "u64_be", version = "11.0" },
+  { name = "number_of_sessions", type = "u64_be", version = "11.0" },
+  { name = "error_message", type = "str8", version = "11.0" },
+  { name = "descr", type = "str8", version = "11.0" },
 ]
 
 [rpc.LimitList]
-request = "LimitListRequest"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x7c
 method_resp = 0x7d
 requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.LimitInfo]
-request = "LimitInfoRequest"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+  { name = "name", type = "str8", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x7e
 method_resp = 0x7f
 requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.LimitUpdate]
-request = "LimitUpdateRequest"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+  { name = "name", type = "str8", version = "11.0" },
+  { name = "counter", type = "str8", version = "11.0" },
+  { name = "action", type = "u8", version = "11.0" },
+  { name = "duration", type = "u64_be", version = "11.0" },
+  { name = "cpu_time", type = "u64_be", version = "11.0" },
+  { name = "memory", type = "u64_be", version = "11.0" },
+  { name = "read", type = "u64_be", version = "11.0" },
+  { name = "write", type = "u64_be", version = "11.0" },
+  { name = "duration_dbms", type = "u64_be", version = "11.0" },
+  { name = "dbms_bytes", type = "u64_be", version = "11.0" },
+  { name = "service", type = "u64_be", version = "11.0" },
+  { name = "call", type = "u64_be", version = "11.0" },
+  { name = "number_of_active_sessions", type = "u64_be", version = "11.0" },
+  { name = "number_of_sessions", type = "u64_be", version = "11.0" },
+  { name = "error_message", type = "str8", version = "11.0" },
+  { name = "descr", type = "str8", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x80
 requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.LimitRemove]
-request = "LimitRemoveRequest"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+  { name = "name", type = "str8", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x81
 requires_cluster_context = true
 requires_infobase_context = false

@@ -1,128 +1,120 @@
 [record.SessionLicense]
 derive = ["Debug", "Serialize", "Default", "Clone"]
 fields = [
-  { name = "file_name", type = "str8_default" },
-  { name = "full_presentation", type = "str8_default" },
-  { name = "issued_by_server", type = "bool_default" },
-  { name = "license_type", type = "u32_be_default" },
-  { name = "max_users_all", type = "u32_be_default" },
-  { name = "max_users_current", type = "u32_be_default" },
-  { name = "network_key", type = "u8_bool" },
-  { name = "server_address", type = "str8_default" },
-  { name = "process_id", type = "str8_default" },
-  { name = "server_port", type = "u32_be_default" },
-  { name = "key_series", type = "str8_default" },
-  { name = "brief_presentation", type = "str8_default" },
+  { name = "file_name", type = "str8", version = "11.0"},
+  { name = "full_presentation", type = "str8", version = "11.0"},
+  { name = "issued_by_server", type = "u8_bool", version = "11.0"},
+  { name = "license_type", type = "u32_be", version = "11.0"},
+  { name = "max_users_all", type = "u32_be", version = "11.0"},
+  { name = "max_users_current", type = "u32_be", version = "11.0"},
+  { name = "network_key", type = "u8_bool", version = "11.0"},
+  { name = "server_address", type = "str8", version = "11.0"},
+  { name = "process_id", type = "str8", version = "11.0"},
+  { name = "server_port", type = "u32_be", version = "11.0"},
+  { name = "key_series", type = "str8", version = "11.0"},
+  { name = "brief_presentation", type = "str8", version = "11.0"},
 ]
 
 [record.SessionRecord]
 derive = ["Debug", "Serialize", "Clone"]
 fields = [
-  { name = "session", type = "uuid" },
-  { name = "app_id", type = "str8" },
-  { name = "blocked_by_dbms", type = "u32_be_default" },
-  { name = "blocked_by_ls", type = "u32_be_default" },
-  { name = "bytes_all", type = "u64_be_default" },
-  { name = "bytes_last_5min", type = "u64_be_default" },
-  { name = "calls_all", type = "u32_be_default" },
-  { name = "calls_last_5min", type = "u64_be_default" },
-  { name = "connection", type = "uuid_default" },
-  { name = "dbms_bytes_all", type = "u64_be_default" },
-  { name = "dbms_bytes_last_5min", type = "u64_be_default" },
-  { name = "db_proc_info", type = "str8_default" },
-  { name = "db_proc_took", type = "u32_be_default" },
-  { name = "db_proc_took_at", type = "datetime_u64_be_default" },
-  { name = "duration_all", type = "u32_be_default" },
-  { name = "duration_all_dbms", type = "u32_be_default" },
-  { name = "duration_current", type = "u32_be_default" },
-  { name = "duration_current_dbms", type = "u32_be_default" },
-  { name = "duration_last_5min", type = "u64_be_default" },
-  { name = "duration_last_5min_dbms", type = "u64_be_default" },
-  { name = "host", type = "str8_default" },
-  { name = "infobase", type = "uuid_default" },
-  { name = "last_active_at", type = "datetime_u64_be_default" },
-  { name = "hibernate", type = "bool_default" },
-  { name = "passive_session_hibernate_time", type = "u32_be_default" },
-  { name = "hibernate_session_terminate_time", type = "u32_be_default" },
-  { name = "license", type = "record_u8_first", item = "SessionLicense" },
-  { name = "locale", type = "str8_default" },
-  { name = "process", type = "uuid_default" },
-  { name = "session_id", type = "u32_be_default" },
-  { name = "started_at", type = "datetime_u64_be_default" },
-  { name = "user_name", type = "str8_default" },
-  { name = "memory_current", type = "u64_be_default" },
-  { name = "memory_last_5min", type = "u64_be_default" },
-  { name = "memory_total", type = "u64_be_default" },
-  { name = "read_current", type = "u64_be_default" },
-  { name = "read_last_5min", type = "u64_be_default" },
-  { name = "read_total", type = "u64_be_default" },
-  { name = "write_current", type = "u64_be_default" },
-  { name = "write_last_5min", type = "u64_be_default" },
-  { name = "write_total", type = "u64_be_default" },
-  { name = "duration_current_service", type = "u32_be_default" },
-  { name = "duration_last_5min_service", type = "u64_be_default" },
-  { name = "duration_all_service", type = "u32_be_default" },
-  { name = "current_service_name", type = "str8_default" },
-  { name = "cpu_time_current", type = "u64_be_default" },
-  { name = "cpu_time_last_5min", type = "u64_be_default" },
-  { name = "cpu_time_total", type = "u64_be_default" },
-  { name = "data_separation", type = "str8_default" },
-  { name = "client_ip", type = "str8_default" },
-]
-
-[request.SessionListRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-]
-
-[request.SessionInfoRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-  { name = "session", type = "uuid" },
-]
-
-[request.SessionTerminateRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-  { name = "session", type = "uuid" },
-  { name = "error_message", type = "str8" },
-]
-
-[request.SessionInterruptCurrentServerCallRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-  { name = "session", type = "uuid" },
-  { name = "error_message", type = "str8" },
+  { name = "session", type = "uuid", version = "11.0"},
+  { name = "app_id", type = "str8", version = "11.0"},
+  { name = "blocked_by_dbms", type = "u32_be", version = "11.0"},
+  { name = "blocked_by_ls", type = "u32_be", version = "11.0"},
+  { name = "bytes_all", type = "u64_be", version = "11.0"},
+  { name = "bytes_last_5min", type = "u64_be", version = "11.0"},
+  { name = "calls_all", type = "u32_be", version = "11.0"},
+  { name = "calls_last_5min", type = "u64_be", version = "11.0"},
+  { name = "connection", type = "uuid", version = "11.0"},
+  { name = "dbms_bytes_all", type = "u64_be", version = "11.0"},
+  { name = "dbms_bytes_last_5min", type = "u64_be", version = "11.0"},
+  { name = "db_proc_info", type = "str8", version = "11.0"},
+  { name = "db_proc_took", type = "u32_be", version = "11.0"},
+  { name = "db_proc_took_at", type = "datetime_u64_be", version = "11.0"},
+  { name = "duration_all", type = "u32_be", version = "11.0"},
+  { name = "duration_all_dbms", type = "u32_be", version = "11.0"},
+  { name = "duration_current", type = "u32_be", version = "11.0"},
+  { name = "duration_current_dbms", type = "u32_be", version = "11.0"},
+  { name = "duration_last_5min", type = "u64_be", version = "11.0"},
+  { name = "duration_last_5min_dbms", type = "u64_be", version = "11.0"},
+  { name = "host", type = "str8", version = "11.0"},
+  { name = "infobase", type = "uuid", version = "11.0"},
+  { name = "last_active_at", type = "datetime_u64_be", version = "11.0"},
+  { name = "hibernate", type = "u8_bool", version = "11.0"},
+  { name = "passive_session_hibernate_time", type = "u32_be", version = "11.0"},
+  { name = "hibernate_session_terminate_time", type = "u32_be", version = "11.0"},
+  { name = "license", type = "record_u8_first", item = "SessionLicense", version = "11.0"},
+  { name = "locale", type = "str8", version = "11.0"},
+  { name = "process", type = "uuid", version = "11.0"},
+  { name = "session_id", type = "u32_be", version = "11.0"},
+  { name = "started_at", type = "datetime_u64_be", version = "11.0"},
+  { name = "user_name", type = "str8", version = "11.0"},
+  { name = "memory_current", type = "u64_be", version = "11.0"},
+  { name = "memory_last_5min", type = "u64_be", version = "11.0"},
+  { name = "memory_total", type = "u64_be", version = "11.0"},
+  { name = "read_current", type = "u64_be", version = "11.0"},
+  { name = "read_last_5min", type = "u64_be", version = "11.0"},
+  { name = "read_total", type = "u64_be", version = "11.0"},
+  { name = "write_current", type = "u64_be", version = "11.0"},
+  { name = "write_last_5min", type = "u64_be", version = "11.0"},
+  { name = "write_total", type = "u64_be", version = "11.0"},
+  { name = "duration_current_service", type = "u32_be", version = "11.0"},
+  { name = "duration_last_5min_service", type = "u64_be", version = "11.0"},
+  { name = "duration_all_service", type = "u32_be", version = "11.0"},
+  { name = "current_service_name", type = "str8", version = "11.0"},
+  { name = "cpu_time_current", type = "u64_be", version = "11.0"},
+  { name = "cpu_time_last_5min", type = "u64_be", version = "11.0"},
+  { name = "cpu_time_total", type = "u64_be", version = "11.0"},
+  { name = "data_separation", type = "str8", version = "11.0"},
+  { name = "client_ip", type = "str8", version = "11.0"},
 ]
 
 [rpc.SessionList]
-request = "SessionListRequest"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x41
 method_resp = 0x42
 requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.SessionInfo]
-request = "SessionInfoRequest"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+  { name = "session", type = "uuid", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x45
 method_resp = 0x46
 requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.SessionTerminate]
-request = "SessionTerminateRequest"
 response = "AckResponse"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+  { name = "session", type = "uuid", version = "11.0" },
+  { name = "error_message", type = "str8", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x47
 requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.SessionInterruptCurrentServerCall]
-request = "SessionInterruptCurrentServerCallRequest"
 response = "AckResponse"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+  { name = "session", type = "uuid", version = "11.0" },
+  { name = "error_message", type = "str8", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x75
 requires_cluster_context = true
 requires_infobase_context = false

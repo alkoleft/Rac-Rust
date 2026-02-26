@@ -1,69 +1,61 @@
 [record.ConnectionRecord]
 derive = ["Debug", "Serialize", "Clone"]
 fields = [
-  { name = "connection", type = "uuid" },
-  { name = "application", type = "str8" },
-  { name = "blocked_by_ls", type = "u32_be" },
-  { name = "connected_at", type = "datetime_u64_be" },
-  { name = "conn_id", type = "u32_be" },
-  { name = "host", type = "str8" },
-  { name = "infobase", type = "uuid" },
-  { name = "process", type = "uuid" },
-  { name = "session_number", type = "u32_be" },
-]
-
-[request.ConnectionListRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-]
-
-[request.ConnectionInfoRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-  { name = "connection", type = "uuid" },
-]
-
-[request.ConnectionListByInfobaseRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-  { name = "infobase", type = "uuid" },
-]
-
-[request.ConnectionDisconnectRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-  { name = "connection", type = "uuid" },
-  { name = "process", type = "uuid" },
+  { name = "connection", type = "uuid", version = "11.0" },
+  { name = "application", type = "str8", version = "11.0" },
+  { name = "blocked_by_ls", type = "u32_be", version = "11.0" },
+  { name = "connected_at", type = "datetime_u64_be", version = "11.0" },
+  { name = "conn_id", type = "u32_be", version = "11.0" },
+  { name = "host", type = "str8", version = "11.0" },
+  { name = "infobase", type = "uuid", version = "11.0" },
+  { name = "process", type = "uuid", version = "11.0" },
+  { name = "session_number", type = "u32_be", version = "11.0" },
 ]
 
 [rpc.ConnectionList]
-request = "ConnectionListRequest"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x32
 method_resp = 0x33
 requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.ConnectionListByInfobase]
-request = "ConnectionListByInfobaseRequest"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+  { name = "infobase", type = "uuid", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x34
 method_resp = 0x35
 requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.ConnectionInfo]
-request = "ConnectionInfoRequest"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+  { name = "connection", type = "uuid", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x36
 method_resp = 0x37
 requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.ConnectionDisconnect]
-request = "ConnectionDisconnectRequest"
 response = "AckResponse"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+  { name = "connection", type = "uuid", version = "11.0" },
+  { name = "process", type = "uuid", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x40
 requires_cluster_context = true
 requires_infobase_context = false

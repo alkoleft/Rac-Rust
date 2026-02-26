@@ -1,36 +1,32 @@
 [record.ManagerRecord]
 derive = ["Debug", "Serialize", "Clone"]
 fields = [
-  { name = "manager", type = "uuid" },
-  { name = "descr", type = "str8" },
-  { name = "host", type = "str8" },
-  { name = "using", type = "u32_be" },
-  { name = "port", type = "u16_be" },
-  { name = "pid", type = "str8" },
-]
-
-[request.ManagerListRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-]
-
-[request.ManagerInfoRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-  { name = "manager", type = "uuid" },
+  { name = "manager", type = "uuid", version = "11.0" },
+  { name = "descr", type = "str8", version = "11.0" },
+  { name = "host", type = "str8", version = "11.0" },
+  { name = "using", type = "u32_be", version = "11.0" },
+  { name = "port", type = "u16_be", version = "11.0" },
+  { name = "pid", type = "str8", version = "11.0" },
 ]
 
 [rpc.ManagerList]
-request = "ManagerListRequest"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x12
 method_resp = 0x13
 requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.ManagerInfo]
-request = "ManagerInfoRequest"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+  { name = "manager", type = "uuid", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x14
 method_resp = 0x15
 requires_cluster_context = true

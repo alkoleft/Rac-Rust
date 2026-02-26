@@ -1,21 +1,19 @@
 [record.LockRecordRaw]
 derive = ["Debug", "Serialize", "Clone"]
 fields = [
-  { name = "connection", type = "uuid" },
-  { name = "descr", type = "lock_descr" },
-  { name = "locked_at", type = "datetime_u64_be" },
-  { name = "session", type = "uuid" },
-  { name = "object", type = "uuid" },
-]
-
-[request.LockListRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
+  { name = "connection", type = "uuid", version = "11.0" },
+  { name = "descr", type = "lock_descr", version = "11.0" },
+  { name = "locked_at", type = "datetime_u64_be", version = "11.0" },
+  { name = "session", type = "uuid", version = "11.0" },
+  { name = "object", type = "uuid", version = "11.0" },
 ]
 
 [rpc.LockList]
-request = "LockListRequest"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x48
 method_resp = 0x49
 requires_cluster_context = true

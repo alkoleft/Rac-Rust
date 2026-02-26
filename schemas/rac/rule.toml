@@ -1,115 +1,103 @@
 [record.RuleRecord]
 derive = ["Debug", "Serialize", "Clone"]
 fields = [
-  { name = "rule", type = "uuid" },
-  { name = "object_type", type = "u32_be" },
-  { name = "infobase_name", type = "str8" },
-  { name = "rule_type", type = "u8" },
-  { name = "application_ext", type = "str8" },
-  { name = "priority", type = "u32_be" },
+  { name = "rule", type = "uuid", version = "11.0" },
+  { name = "object_type", type = "u32_be", version = "11.0" },
+  { name = "infobase_name", type = "str8", version = "11.0" },
+  { name = "rule_type", type = "u8", version = "11.0" },
+  { name = "application_ext", type = "str8", version = "11.0" },
+  { name = "priority", type = "u32_be", version = "11.0" },
 ]
 
 [record.RuleIdRecord]
 derive = ["Debug", "Serialize", "Clone"]
 fields = [
-  { name = "rule", type = "uuid" },
-]
-
-[request.RuleListRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-  { name = "server", type = "uuid" },
-]
-
-[request.RuleInfoRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-  { name = "server", type = "uuid" },
-  { name = "rule", type = "uuid" },
-]
-
-[request.RuleApplyRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-  { name = "mode", type = "u32_be" },
-]
-
-[request.RuleRemoveRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-  { name = "server", type = "uuid" },
-  { name = "rule", type = "uuid" },
-]
-
-[request.RuleInsertRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-  { name = "server", type = "uuid" },
-  { name = "rule", type = "uuid" },
-  { name = "position", type = "u32_be" },
-  { name = "object_type", type = "u32_be" },
-  { name = "infobase_name", type = "str8" },
-  { name = "rule_type", type = "u8" },
-  { name = "application_ext", type = "str8" },
-  { name = "priority", type = "u32_be" },
-]
-
-[request.RuleUpdateRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-  { name = "server", type = "uuid" },
-  { name = "rule", type = "uuid" },
-  { name = "position", type = "u32_be" },
-  { name = "object_type", type = "u32_be" },
-  { name = "infobase_name", type = "str8" },
-  { name = "rule_type", type = "u8" },
-  { name = "application_ext", type = "str8" },
-  { name = "priority", type = "u32_be" },
+  { name = "rule", type = "uuid", version = "11.0" },
 ]
 
 [rpc.RuleList]
-request = "RuleListRequest"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+  { name = "server", type = "uuid", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x55
 method_resp = 0x56
 requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.RuleInfo]
-request = "RuleInfoRequest"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+  { name = "server", type = "uuid", version = "11.0" },
+  { name = "rule", type = "uuid", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x57
 method_resp = 0x58
 requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.RuleApply]
-request = "RuleApplyRequest"
 response = "AckResponse"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+  { name = "mode", type = "u32_be", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x51
 requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.RuleRemove]
-request = "RuleRemoveRequest"
 response = "AckResponse"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+  { name = "server", type = "uuid", version = "11.0" },
+  { name = "rule", type = "uuid", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x54
 requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.RuleInsert]
-request = "RuleInsertRequest"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+  { name = "server", type = "uuid", version = "11.0" },
+  { name = "rule", type = "uuid", version = "11.0" },
+  { name = "position", type = "u32_be", version = "11.0" },
+  { name = "object_type", type = "u32_be", version = "11.0" },
+  { name = "infobase_name", type = "str8", version = "11.0" },
+  { name = "rule_type", type = "u8", version = "11.0" },
+  { name = "application_ext", type = "str8", version = "11.0" },
+  { name = "priority", type = "u32_be", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x52
 method_resp = 0x53
 requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.RuleUpdate]
-request = "RuleUpdateRequest"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+  { name = "server", type = "uuid", version = "11.0" },
+  { name = "rule", type = "uuid", version = "11.0" },
+  { name = "position", type = "u32_be", version = "11.0" },
+  { name = "object_type", type = "u32_be", version = "11.0" },
+  { name = "infobase_name", type = "str8", version = "11.0" },
+  { name = "rule_type", type = "u8", version = "11.0" },
+  { name = "application_ext", type = "str8", version = "11.0" },
+  { name = "priority", type = "u32_be", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x52
 method_resp = 0x53
 requires_cluster_context = true

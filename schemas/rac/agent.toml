@@ -1,31 +1,33 @@
 [record.AgentAdminRecord]
 derive = ["Debug", "Serialize", "Clone"]
 fields = [
-  { name = "name", type = "str8" },
-  { name = "unknown_tag", type = "u8" },
-  { name = "unknown_flags", type = "u32_be" },
-  { name = "unknown_tail", type = "bytes_fixed", len = 3 },
+  { name = "name", type = "str8", version = "11.0" },
+  { name = "unknown_tag", type = "u8", version = "11.0" },
+  { name = "unknown_flags", type = "u32_be", version = "11.0" },
+  { name = "unknown_tail", type = "bytes_fixed", len = 3, version = "11.0" },
 ]
 
 [record.AgentVersionRecord]
 derive = ["Debug", "Serialize", "Clone"]
 fields = [
-  { name = "version", type = "str8" },
+  { name = "version", type = "str8", version = "11.0" },
 ]
 
 [rpc.AgentAuth]
 response = "AckResponse"
 derive = ["Debug", "Clone"]
 fields = [
-  { name = "user", type = "str8" },
-  { name = "pwd", type = "str8" },
+  { name = "user", type = "str8", version = "11.0" },
+  { name = "pwd", type = "str8", version = "11.0" },
 ]
+version = "11.0"
 method_req = 0x08
 requires_cluster_context = false
 requires_infobase_context = false
 
 [rpc.AgentAdminList]
 response = "AgentAdminListResp"
+version = "11.0"
 method_req = 0x00
 method_resp = 0x01
 requires_cluster_context = false
@@ -35,13 +37,14 @@ requires_infobase_context = false
 response = "AckResponse"
 derive = ["Debug", "Clone"]
 fields = [
-  { name = "name", type = "str8" },
-  { name = "descr", type = "str8" },
-  { name = "pwd", type = "str8" },
-  { name = "auth_tag", type = "u8" },
-  { name = "auth_flags", type = "u8" },
-  { name = "os_user", type = "str8" },
+  { name = "name", type = "str8", version = "11.0" },
+  { name = "descr", type = "str8", version = "11.0" },
+  { name = "pwd", type = "str8", version = "11.0" },
+  { name = "auth_tag", type = "u8", version = "11.0" },
+  { name = "auth_flags", type = "u8", version = "11.0" },
+  { name = "os_user", type = "str8", version = "11.0" },
 ]
+version = "11.0"
 method_req = 0x04
 requires_cluster_context = false
 requires_infobase_context = false
@@ -50,8 +53,9 @@ requires_infobase_context = false
 response = "AckResponse"
 derive = ["Debug", "Clone"]
 fields = [
-  { name = "name", type = "str8" },
+  { name = "name", type = "str8", version = "11.0" },
 ]
+version = "11.0"
 method_req = 0x06
 requires_cluster_context = false
 requires_infobase_context = false
@@ -60,6 +64,7 @@ requires_infobase_context = false
 response = "AgentVersionResp"
 derive = ["Debug", "Clone"]
 fields = []
+version = "11.0"
 method_req = 0x87
 method_resp = 0x88
 requires_cluster_context = false

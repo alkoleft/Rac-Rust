@@ -1,89 +1,81 @@
 [record.InfobaseSummary]
 derive = ["Debug", "Serialize", "Clone"]
 fields = [
-  { name = "infobase", type = "uuid" },
-  { name = "descr", type = "str_len_u8_or_2c" },
-  { name = "name", type = "str_len_u8" },
+  { name = "infobase", type = "uuid", version = "11.0" },
+  { name = "descr", type = "str_len_u8_or_2c", version = "11.0" },
+  { name = "name", type = "str_len_u8", version = "11.0" },
 ]
 
 [record.InfobaseInfoRecord]
 derive = ["Debug", "Serialize", "Clone"]
 fields = [
-  { name = "infobase", type = "uuid" },
-  { name = "tag", type = "u8" },
-  { name = "unknown_u32_0", type = "u32_be" },
-  { name = "dbms", type = "str8" },
-  { name = "name", type = "str8" },
-  { name = "unknown_str_0", type = "str8" },
-  { name = "db_server", type = "str8" },
-  { name = "db_user", type = "str8" },
-  { name = "unknown_str_1", type = "str8" },
-  { name = "unknown_str_2", type = "str8" },
-  { name = "unknown_bytes_0", type = "bytes_fixed", len = 4 },
-  { name = "denied_message", type = "str8" },
-  { name = "denied_parameter", type = "str8" },
-  { name = "unknown_str_3", type = "str8" },
-  { name = "unknown_str_4", type = "str8" },
-  { name = "unknown_u32_1", type = "u32_be" },
-  { name = "descr", type = "str8" },
-  { name = "locale", type = "str8" },
-  { name = "db_name", type = "str8" },
-  { name = "permission_code", type = "str8" },
-  { name = "tail", type = "bytes_fixed", len = 28 },
-]
-
-[request.InfobaseSummaryListRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-]
-
-[request.InfobaseSummaryInfoRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-  { name = "infobase", type = "uuid" },
-]
-
-[request.InfobaseInfoRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-  { name = "infobase", type = "uuid" },
-]
-
-[request.InfobaseSummaryUpdateRequest]
-derive = ["Debug", "Clone"]
-fields = [
-  { name = "cluster", type = "uuid" },
-  { name = "infobase", type = "uuid" },
-  { name = "descr", type = "str8" },
+  { name = "infobase", type = "uuid", version = "11.0" },
+  { name = "tag", type = "u8", version = "11.0" },
+  { name = "unknown_u32_0", type = "u32_be", version = "11.0" },
+  { name = "dbms", type = "str8", version = "11.0" },
+  { name = "name", type = "str8", version = "11.0" },
+  { name = "unknown_str_0", type = "str8", version = "11.0" },
+  { name = "db_server", type = "str8", version = "11.0" },
+  { name = "db_user", type = "str8", version = "11.0" },
+  { name = "unknown_str_1", type = "str8", version = "11.0" },
+  { name = "unknown_str_2", type = "str8", version = "11.0" },
+  { name = "unknown_bytes_0", type = "bytes_fixed", len = 4, version = "11.0" },
+  { name = "denied_message", type = "str8", version = "11.0" },
+  { name = "denied_parameter", type = "str8", version = "11.0" },
+  { name = "unknown_str_3", type = "str8", version = "11.0" },
+  { name = "unknown_str_4", type = "str8", version = "11.0" },
+  { name = "unknown_u32_1", type = "u32_be", version = "11.0" },
+  { name = "descr", type = "str8", version = "11.0" },
+  { name = "locale", type = "str8", version = "11.0" },
+  { name = "db_name", type = "str8", version = "11.0" },
+  { name = "permission_code", type = "str8", version = "11.0" },
+  { name = "tail", type = "bytes_fixed", len = 28, version = "11.0" },
 ]
 
 [rpc.InfobaseSummaryList]
-request = "InfobaseSummaryListRequest"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x2a
 method_resp = 0x2b
 requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.InfobaseSummaryInfo]
-request = "InfobaseSummaryInfoRequest"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+  { name = "infobase", type = "uuid", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x2e
 method_resp = 0x2f
 requires_cluster_context = true
 requires_infobase_context = true
 
 [rpc.InfobaseInfo]
-request = "InfobaseInfoRequest"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+  { name = "infobase", type = "uuid", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x30
 method_resp = 0x31
 requires_cluster_context = true
 requires_infobase_context = true
 
 [rpc.InfobaseSummaryUpdate]
-request = "InfobaseSummaryUpdateRequest"
 response = "AckResponse"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+  { name = "infobase", type = "uuid", version = "11.0" },
+  { name = "descr", type = "str8", version = "11.0" },
+]
+version = "11.0"
 method_req = 0x27
 requires_cluster_context = true
 requires_infobase_context = false

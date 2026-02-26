@@ -44,6 +44,7 @@ fields = [
 ]
 
 [rpc.ProcessList]
+response = "ProcessListResp"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid", version = "11.0" },
@@ -55,6 +56,7 @@ requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.ProcessInfo]
+response = "ProcessInfoResp"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid", version = "11.0" },
@@ -67,7 +69,7 @@ requires_cluster_context = true
 requires_infobase_context = false
 
 [response.ProcessList]
-body = { type = "list_u8", item = "ProcessRecord" }
+body = { type = "list_u8", item = "ProcessRecord", field = "records", struct = true }
 
 [response.ProcessInfo]
-body = { type = "record", item = "ProcessRecord" }
+body = { type = "record", item = "ProcessRecord", field = "record", struct = true }

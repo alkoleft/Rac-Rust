@@ -1,114 +1,22 @@
-use serde::Serialize;
-
 use crate::client::RacClient;
-use crate::codec::RecordCursor;
-use crate::error::{RacError, Result};
-use crate::protocol::ProtocolCodec;
-use crate::rpc::{Meta, Request, Response};
-use crate::rpc::decode_utils::rpc_body;
-use crate::rac_wire::{
-    METHOD_PROCESS_INFO_REQ, METHOD_PROCESS_INFO_RESP, METHOD_PROCESS_LIST_REQ,
-    METHOD_PROCESS_LIST_RESP,
-};
+use crate::error::Result;
 use crate::Uuid16;
-
 
 mod generated {
     include!("process_generated.rs");
 }
 
-pub use generated::{ProcessLicense, ProcessRecord};
-
-#[derive(Debug, Serialize)]
-pub struct ProcessListResp {
-    pub processes: Vec<Uuid16>,
-    pub records: Vec<ProcessRecord>,
-}
-
-#[derive(Debug, Serialize)]
-pub struct ProcessInfoResp {
-    pub process: Uuid16,
-    pub record: ProcessRecord,
-}
-
-struct ProcessListRpc {
-    cluster: Uuid16,
-}
-
-impl Request for ProcessListRpc {
-    type Response = ProcessListResp;
-
-    fn meta(&self) -> Meta {
-        Meta {
-            method_req: METHOD_PROCESS_LIST_REQ,
-            method_resp: Some(METHOD_PROCESS_LIST_RESP),
-            requires_cluster_context: true,
-            requires_infobase_context: false,
-        }
-    }
-
-    fn cluster(&self) -> Option<Uuid16> {
-        Some(self.cluster)
-    }
-
-    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
-        Ok(self.cluster.to_vec())
-    }
-}
-
-impl Response for ProcessListResp {
-    fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
-        let body = rpc_body(payload)?;
-        let records = parse_process_list_records(body)?;
-        Ok(Self {
-            processes: records.iter().map(|r| r.process).collect(),
-            records,
-        })
-    }
-}
+pub use generated::{
+    ProcessInfoResp,
+    ProcessInfoRpc,
+    ProcessLicense,
+    ProcessListResp,
+    ProcessListRpc,
+    ProcessRecord,
+};
 
 pub fn process_list(client: &mut RacClient, cluster: Uuid16) -> Result<ProcessListResp> {
     client.call_typed(ProcessListRpc { cluster })
-}
-
-struct ProcessInfoRpc {
-    cluster: Uuid16,
-    process: Uuid16,
-}
-
-impl Request for ProcessInfoRpc {
-    type Response = ProcessInfoResp;
-
-    fn meta(&self) -> Meta {
-        Meta {
-            method_req: METHOD_PROCESS_INFO_REQ,
-            method_resp: Some(METHOD_PROCESS_INFO_RESP),
-            requires_cluster_context: true,
-            requires_infobase_context: false,
-        }
-    }
-
-    fn cluster(&self) -> Option<Uuid16> {
-        Some(self.cluster)
-    }
-
-    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(32);
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&self.process);
-        Ok(out)
-    }
-}
-
-impl Response for ProcessInfoResp {
-    fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
-        let body = rpc_body(payload)?;
-        let record = parse_process_record_1cv8c(body)?;
-        Ok(Self {
-            process: record.process,
-            record,
-        })
-    }
 }
 
 pub fn process_info(
@@ -119,37 +27,10 @@ pub fn process_info(
     client.call_typed(ProcessInfoRpc { cluster, process })
 }
 
-fn parse_process_list_records(body: &[u8]) -> Result<Vec<ProcessRecord>> {
-    if body.is_empty() {
-        return Ok(Vec::new());
-    }
-    let mut cursor = RecordCursor::new(body);
-    let expected = cursor.take_u8()? as usize;
-    if expected == 0 {
-        return Ok(Vec::new());
-    }
-    let mut records = Vec::with_capacity(expected);
-    for _ in 0..expected {
-        records.push(parse_process_record(&mut cursor)?);
-    }
-    Ok(records)
-}
-
-fn parse_process_record_1cv8c(data: &[u8]) -> Result<ProcessRecord> {
-    let mut cursor = RecordCursor::new(data);
-    parse_process_record(&mut cursor)
-}
-
-fn parse_process_record(cursor: &mut RecordCursor<'_>) -> Result<ProcessRecord> {
-    if cursor.remaining_len() < 16 {
-        return Err(RacError::Decode("process record truncated"));
-    }
-    ProcessRecord::decode(cursor)
-}
-
 #[cfg(test)]
 mod tests {
-    use super::{parse_process_list_records, parse_process_record_1cv8c};
+    use super::*;
+    use crate::commands::parse_list_u8;
     use crate::commands::rpc_body;
 
     fn decode_hex_str(input: &str) -> Vec<u8> {
@@ -170,7 +51,7 @@ mod tests {
         let hex = include_str!("../../../../artifacts/rac/process_list_response.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
-        let records = parse_process_list_records(body).expect("process list");
+        let records = parse_list_u8(body, ProcessRecord::decode).expect("process list");
         assert_eq!(records.len(), 1);
         let record = &records[0];
         assert_eq!(
@@ -221,7 +102,7 @@ mod tests {
         let hex = include_str!("../../../../artifacts/rac/process_info_response.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
-        let record = parse_process_record_1cv8c(body).expect("process info");
+        let record = generated::parse_process_info_body(body).expect("process info");
         assert_eq!(
             record.process,
             *b"\xf7\x7f,\x1d\x1e[HU\xa0\xb9\x949\x0c\xcdL\xe5"
@@ -238,7 +119,7 @@ mod tests {
         let hex = include_str!("../../../../artifacts/rac/process_list_licenses_response.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
-        let records = parse_process_list_records(body).expect("process list");
+        let records = parse_list_u8(body, ProcessRecord::decode).expect("process list");
         assert_eq!(records.len(), 1);
         let record = &records[0];
         assert_eq!(
@@ -276,7 +157,7 @@ mod tests {
         let hex = include_str!("../../../../artifacts/rac/process_info_licenses_response.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
-        let record = parse_process_record_1cv8c(body).expect("process info licenses");
+        let record = generated::parse_process_info_body(body).expect("process info licenses");
         assert_eq!(
             record.process,
             *b"\xf7\x7f,\x1d\x1e[HU\xa0\xb9\x949\x0c\xcdL\xe5"

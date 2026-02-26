@@ -1298,23 +1298,99 @@ pub fn cluster_list(clusters: &[ClusterRecord]) -> ClusterListDisplay<'_> {
     ClusterListDisplay { clusters }
 }
 
+fn load_balancing_mode_name(value: u32) -> &'static str {
+    match value {
+        1 => "memory",
+        _ => "performance",
+    }
+}
+
 impl Display for ClusterListDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let out = list_to_string("clusters", self.clusters, 5, MoreLabel::Default, |out, idx, cluster| {
+        let mut out = String::new();
+        for (idx, cluster) in self.clusters.iter().enumerate() {
+            if idx > 0 {
+                out.push('\n');
+            }
+            outln!(&mut out, "cluster                                   : {}", format_uuid(&cluster.uuid));
+            outln!(&mut out, "host                                      : {}", display_str(&cluster.host));
+            outln!(&mut out, "port                                      : {}", cluster.port);
             outln!(
-                out,
-                "cluster_uuid[{idx}]: {}",
-                format_uuid(&cluster.uuid)
+                &mut out,
+                "name                                      : \"{}\"",
+                display_str(&cluster.display_name)
             );
-            outln!(out, "cluster_host[{idx}]: {}", cluster.host);
-            outln!(out, "cluster_port[{idx}]: {}", cluster.port);
-            outln!(out, "cluster_name[{idx}]: {}", cluster.display_name);
             outln!(
-                out,
-                "cluster_expiration_timeout[{idx}]: {}",
+                &mut out,
+                "expiration-timeout                        : {}",
                 cluster.expiration_timeout
             );
-        });
+            outln!(
+                &mut out,
+                "lifetime-limit                            : {}",
+                cluster.lifetime_limit
+            );
+            outln!(
+                &mut out,
+                "max-memory-size                           : {}",
+                cluster.max_memory_size
+            );
+            outln!(
+                &mut out,
+                "max-memory-time-limit                     : {}",
+                cluster.max_memory_time_limit
+            );
+            outln!(
+                &mut out,
+                "security-level                            : {}",
+                cluster.security_level
+            );
+            outln!(
+                &mut out,
+                "session-fault-tolerance-level             : {}",
+                cluster.session_fault_tolerance_level
+            );
+            outln!(
+                &mut out,
+                "load-balancing-mode                       : {}",
+                load_balancing_mode_name(cluster.load_balancing_mode)
+            );
+            outln!(
+                &mut out,
+                "errors-count-threshold                    : {}",
+                cluster.errors_count_threshold
+            );
+            outln!(
+                &mut out,
+                "kill-problem-processes                    : {}",
+                cluster.kill_problem_processes
+            );
+            outln!(
+                &mut out,
+                "kill-by-memory-with-dump                  : {}",
+                cluster.kill_by_memory_with_dump
+            );
+            outln!(
+                &mut out,
+                "allow-access-right-audit-events-recording : {}",
+                cluster.allow_access_right_audit_events_recording
+            );
+            outln!(
+                &mut out,
+                "ping-period                               : {}",
+                cluster.ping_period
+            );
+            outln!(
+                &mut out,
+                "ping-timeout                              : {}",
+                cluster.ping_timeout
+            );
+            outln!(
+                &mut out,
+                "restart-schedule                          : \"{}\"",
+                display_str(&cluster.restart_schedule_cron)
+            );
+        }
         write_trimmed(f, &out)
     }
 }
@@ -1332,16 +1408,85 @@ impl Display for ClusterInfoDisplay<'_> {
         let mut out = String::new();
         outln!(
             &mut out,
-            "cluster_uuid: {}",
+            "cluster                                   : {}",
             format_uuid(&self.cluster.uuid)
         );
-        outln!(&mut out, "host: {}", self.cluster.host);
-        outln!(&mut out, "port: {}", self.cluster.port);
-        outln!(&mut out, "display_name: {}", self.cluster.display_name);
+        outln!(&mut out, "host                                      : {}", display_str(&self.cluster.host));
+        outln!(&mut out, "port                                      : {}", self.cluster.port);
         outln!(
             &mut out,
-            "expiration_timeout: {}",
+            "name                                      : \"{}\"",
+            display_str(&self.cluster.display_name)
+        );
+        outln!(
+            &mut out,
+            "expiration-timeout                        : {}",
             self.cluster.expiration_timeout
+        );
+        outln!(
+            &mut out,
+            "lifetime-limit                            : {}",
+            self.cluster.lifetime_limit
+        );
+        outln!(
+            &mut out,
+            "max-memory-size                           : {}",
+            self.cluster.max_memory_size
+        );
+        outln!(
+            &mut out,
+            "max-memory-time-limit                     : {}",
+            self.cluster.max_memory_time_limit
+        );
+        outln!(
+            &mut out,
+            "security-level                            : {}",
+            self.cluster.security_level
+        );
+        outln!(
+            &mut out,
+            "session-fault-tolerance-level             : {}",
+            self.cluster.session_fault_tolerance_level
+        );
+        outln!(
+            &mut out,
+            "load-balancing-mode                       : {}",
+            load_balancing_mode_name(self.cluster.load_balancing_mode)
+        );
+        outln!(
+            &mut out,
+            "errors-count-threshold                    : {}",
+            self.cluster.errors_count_threshold
+        );
+        outln!(
+            &mut out,
+            "kill-problem-processes                    : {}",
+            self.cluster.kill_problem_processes
+        );
+        outln!(
+            &mut out,
+            "kill-by-memory-with-dump                  : {}",
+            self.cluster.kill_by_memory_with_dump
+        );
+        outln!(
+            &mut out,
+            "allow-access-right-audit-events-recording : {}",
+            self.cluster.allow_access_right_audit_events_recording
+        );
+        outln!(
+            &mut out,
+            "ping-period                               : {}",
+            self.cluster.ping_period
+        );
+        outln!(
+            &mut out,
+            "ping-timeout                              : {}",
+            self.cluster.ping_timeout
+        );
+        outln!(
+            &mut out,
+            "restart-schedule                          : \"{}\"",
+            display_str(&self.cluster.restart_schedule_cron)
         );
         write_trimmed(f, &out)
     }

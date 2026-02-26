@@ -449,14 +449,22 @@ dependencies = [
 ]
 
 [[package]]
-name = "rac_protocol"
+name = "rac_cli"
 version = "0.1.0"
 dependencies = [
  "clap",
+ "rac_protocol",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "rac_protocol"
+version = "0.1.0"
+dependencies = [
  "hex",
  "log",
  "serde",
- "serde_json",
  "toml",
  "uuid",
 ]

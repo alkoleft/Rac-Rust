@@ -28,13 +28,13 @@ where
 
 pub fn info_display_to_string<F>(
     label: &str,
-    uuid: &crate::Uuid16,
+    uuid: &rac_protocol::Uuid16,
     fields: &[String],
     max: usize,
     format_uuid: F,
 ) -> String
 where
-    F: FnOnce(&crate::Uuid16) -> String,
+    F: FnOnce(&rac_protocol::Uuid16) -> String,
 {
     let mut out = String::new();
     let _ = writeln!(&mut out, "{label}: {}", format_uuid(uuid));

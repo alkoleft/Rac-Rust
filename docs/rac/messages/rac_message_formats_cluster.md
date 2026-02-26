@@ -13,13 +13,21 @@ Sources (v16):
 Source capture:
 - `artifacts/rac/v16/v16_20260226_053425_cluster_list_after_update_client_to_server.decode.txt`
 - `artifacts/rac/v16/v16_20260226_053425_cluster_list_after_update_server_to_client.decode.txt`
+- `artifacts/rac/v16/v16_20260226_cluster_list_ping_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_cluster_list_ping_server_to_client.decode.txt`
+- `artifacts/rac/v16/v16_20260226_cluster_list_restart_schedule_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_cluster_list_restart_schedule_server_to_client.decode.txt`
 
 Payload example:
 - `artifacts/rac/v16/v16_20260226_053425_cluster_list_after_update_response.hex`
+- `artifacts/rac/v16/v16_20260226_cluster_list_ping_response.hex`
+- `artifacts/rac/v16/v16_20260226_cluster_list_restart_schedule_response.hex`
 
 RAC output reference:
 - `artifacts/rac/v16/v16_20260226_053425_cluster_list_after_update_rac.out`
 - `artifacts/rac/v16/help/cluster_list.out`
+- `artifacts/rac/v16/v16_20260226_cluster_list_ping_rac.out`
+- `artifacts/rac/v16/v16_20260226_cluster_list_restart_schedule_rac.out`
 
 ## Fields From `rac` Output
 
@@ -41,10 +49,11 @@ Observed field names in `rac cluster list` output, with capture mapping status.
 | `errors-count-threshold` | u32 | yes | 12 | 11.0 |
 | `kill-problem-processes` | u8 | yes | 13 | 11.0 |
 | `kill-by-memory-with-dump` | u8 | yes | 14 | 11.0 |
-| `allow-access-right-audit-events-recording` | unknown | no | 15 | 11.0 |
-| `ping-period` | unknown | no | 16 | 16.0 |
-| `ping-timeout` | unknown | no | 17 | 16.0 |
-| `restart-schedule` | unknown | no | 18 | 11.0 |
+| `allow-access-right-audit-events-recording` | u8 | yes | 15 | 11.0 |
+| `ping-period` | u32 | yes | 16 | 16.0 |
+| `ping-timeout` | u32 | yes | 17 | 16.0 |
+| `restart-schedule` | string | yes | 18 | 16.0 |
+| `restart-schedule` | u32 | yes | 18 | 11.0 |
 
 ## RPC Envelope
 
@@ -101,7 +110,26 @@ Offsets are relative to the start of a record.
 - `0x1f + host_len` `max_memory_time_limit:u32_be`
 - `0x23 + host_len` `name_len:u8`
 - `0x24 + host_len` `name[name_len]`
-- `0x24 + host_len + name_len` `tail[32]` (8 x `u32` unknown)
+- `0x24 + host_len + name_len` `tail[32]` (8 x `u32`, includes `ping-timeout` high bytes + `restart-schedule-len`)
+- `0x24 + host_len + name_len + 0x20` `restart-schedule` (string, length = `tail[0x1f]`)
+
+### Tail Slot Mapping (Observed, v16.0, partial)
+
+Tail is 8 x `u32` after `name`. Offsets are relative to tail start.
+
+| Tail Offset | Size | Field | Type | Notes |
+|---|---|---|---|---|
+| `0x00` | `4` | `security-level` | u32_be | matches v11 order, observed `0` |
+| `0x04` | `4` | `session-fault-tolerance-level` | u32_be | observed `0` |
+| `0x08` | `4` | `load-balancing-mode` | u32_be | observed `0` (`performance`) |
+| `0x0c` | `4` | `errors-count-threshold` | u32_be | observed `0` |
+| `0x10` | `1` | `kill-problem-processes` | u8 | observed `1` (byte 0 of `u32` @ `0x10`) |
+| `0x11` | `1` | `kill-by-memory-with-dump` | u8 | observed `0` (byte 1 of `u32` @ `0x10`) |
+| `0x12` | `1` | `allow-access-right-audit-events-recording` | u8 | observed `0` (byte 2 of `u32` @ `0x10`) |
+| `0x14` | `4` | `tail_u32_5` | u32_be | observed `0x00010000` |
+| `0x18` | `4` | `ping-period-raw` | u32_be | `ping-period = raw >> 8` (low byte reserved), observed `0x00000100` for `ping-period=1` and `0x00ea5f00` for `ping-period=59999` |
+| `0x1c` | `3` | `ping-timeout-raw` | u24_be | `ping-timeout = raw`, stored in the high 3 bytes of the last `u32` |
+| `0x1f` | `1` | `restart-schedule-len` | u8 | length of `restart-schedule` string |
 
 ## Tail Example (Bytes, v11.0)
 
@@ -116,19 +144,20 @@ Flag toggle (kill-problem-processes=1, kill-by-memory=0):
 
 ## Tail Example (Bytes, v16.0)
 
-From the observed record tail:
-- `00000000 00000000 00000000 00000000 01000000 00010000 00000000 00000000`
+From the observed record tail (ping-period=1, ping-timeout=2, restart-schedule-len=0):
+- `00000000 00000000 00000000 00000000 01000000 00010000 00000100 00000200`
+
+From the observed record tail (ping-period=59999, ping-timeout=65366, restart-schedule-len=9):
+- `00000000 00000000 00000000 00000000 00010000 00010000 00ea5f00 00ff5609`
 
 ## Open Questions
 
 - Confirm `errors-count-threshold` (`u32`) by setting a non-zero value in a list capture.
-- Identify which `tail[32]` slots map to `security-level`, `session-fault-tolerance-level`, `load-balancing-mode`, `kill-*` flags, and `allow-access-right-audit-events-recording`.
-- Locate `ping-period`, `ping-timeout`, and `restart-schedule` in the response body (not yet mapped to explicit offsets).
+- Identify the semantic meaning of `tail_u32_5` (currently observed as `0x00010000`).
 
 ## Gap Analysis (Required)
 
 - `errors-count-threshold` needs a non-zero list capture to confirm its exact slot within `tail[32]`.
-- `allow-access-right-audit-events-recording`, `ping-period`, `ping-timeout`, and `restart-schedule` are present in `rac` output but not mapped to exact offsets in v16 response payloads.
 
 
 ## Cluster Info
@@ -136,11 +165,17 @@ From the observed record tail:
 Source capture:
 - `artifacts/rac/v16/v16_20260226_053425_cluster_info_client_to_server.decode.txt`
 - `artifacts/rac/v16/v16_20260226_053425_cluster_info_server_to_client.decode.txt`
+- `artifacts/rac/v16/v16_20260226_cluster_info_ping_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_cluster_info_ping_server_to_client.decode.txt`
+- `artifacts/rac/v16/v16_20260226_cluster_info_restart_schedule_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_cluster_info_restart_schedule_server_to_client.decode.txt`
 
 RAC output reference:
 - `rac cluster info --cluster <id>`
 - `artifacts/rac/v16/v16_20260226_053425_cluster_info_rac.out`
 - `artifacts/rac/v16/help/cluster_info.out`
+- `artifacts/rac/v16/v16_20260226_cluster_info_ping_rac.out`
+- `artifacts/rac/v16/v16_20260226_cluster_info_restart_schedule_rac.out`
 
 ## Fields From `rac` Output
 

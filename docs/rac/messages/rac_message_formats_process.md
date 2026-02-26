@@ -2,10 +2,10 @@
 
 Protocol version (service negotiation): `v8.service.Admin.Cluster` `16.0` (observed in captures).
 
-Sources (v11):
-- `artifacts/rac/v11/help/process_help.txt`
-- `artifacts/rac/v11/help/process_list.out`
-- `artifacts/rac/v11/help/process_info.out`
+Sources (v16):
+- `artifacts/rac/v16/help/process_help.txt`
+- `artifacts/rac/v16/help/process_list.out`
+- `artifacts/rac/v16/help/process_info.out`
 - `docs/rac/documentation/rac_cli_method_map.generated.md` (method IDs)
 
 ## Process List
@@ -19,7 +19,7 @@ Payload example:
 
 RAC output reference:
 - `artifacts/rac/v11/v11_process_list_ro_rac.out`
-- `artifacts/rac/v11/help/process_list.out`
+- `artifacts/rac/v16/help/process_list.out`
 
 ### Fields From `rac` Output
 
@@ -27,26 +27,26 @@ Observed field names in `rac process list` output, with capture mapping status.
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `process` | UUID | yes | 1 | 11.0 |
-| `host` | string | yes | 2 | 11.0 |
-| `port` | u16 | yes | 10 | 11.0 |
-| `pid` | string (digits) | yes | 13 | 11.0 |
+| `process` | UUID | yes | 1 | 16.0 |
+| `host` | string | yes | 2 | 16.0 |
+| `port` | u16 | yes | 10 | 16.0 |
+| `pid` | string (digits) | yes | 13 | 16.0 |
 | `turned-on` | bool | hypothesis | - | 16.0 |
-| `running` | bool | yes | 17 | 11.0 |
-| `started-at` | datetime | yes | 16 | 11.0 |
-| `use` | enum | yes | 14 | 11.0 |
+| `running` | bool | yes | 17 | 16.0 |
+| `started-at` | datetime | yes | 16 | 16.0 |
+| `use` | enum | yes | 14 | 16.0 |
 | `available-performance` | u32 | yes | 18 | 16.0 |
-| `capacity` | u32 | yes | 3 | 11.0 |
-| `connections` | u32 | yes | 4 | 11.0 |
-| `memory-size` | u32 | yes | 12 | 11.0 |
-| `memory-excess-time` | u32 | hypothesis | 11 | 11.0 |
-| `selection-size` | u32 | yes | 15 | 11.0 |
-| `avg-call-time` | f64 | yes | 5 | 11.0 |
-| `avg-db-call-time` | f64 | yes | 6 | 11.0 |
-| `avg-lock-call-time` | f64 | yes | 7 | 11.0 |
-| `avg-server-call-time` | f64 | yes | 8 | 11.0 |
-| `avg-threads` | f64 | yes | 9 | 11.0 |
-| `reserve` | bool | hypothesis | 19 | 11.0 |
+| `capacity` | u32 | yes | 3 | 16.0 |
+| `connections` | u32 | yes | 4 | 16.0 |
+| `memory-size` | u32 | yes | 12 | 16.0 |
+| `memory-excess-time` | u32 | hypothesis | 11 | 16.0 |
+| `selection-size` | u32 | yes | 15 | 16.0 |
+| `avg-call-time` | f64 | yes | 5 | 16.0 |
+| `avg-db-call-time` | f64 | yes | 6 | 16.0 |
+| `avg-lock-call-time` | f64 | yes | 7 | 16.0 |
+| `avg-server-call-time` | f64 | yes | 8 | 16.0 |
+| `avg-threads` | f64 | yes | 9 | 16.0 |
+| `reserve` | bool | hypothesis | 19 | 16.0 |
 
 ### RPC Envelope
 
@@ -59,9 +59,9 @@ Observed request parameters for `rac process list`.
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | yes | 1 | 11.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
+| `cluster` | UUID | yes | 1 | 16.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 16.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 16.0 |
 
 Payload structure (method body):
 - offset `0x00`: `count:u8` (observed `0x01`)
@@ -191,7 +191,7 @@ Payload example:
 
 RAC output reference:
 - `artifacts/rac/v11/v11_process_info_ro_rac.out`
-- `artifacts/rac/v11/help/process_info.out`
+- `artifacts/rac/v16/help/process_info.out`
 
 ### Fields From `rac` Output
 
@@ -208,10 +208,10 @@ Observed request parameters for `rac process info`.
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | yes | 1 | 11.0 |
-| `process` | UUID | yes | 2 | 11.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 4 | 11.0 |
+| `cluster` | UUID | yes | 1 | 16.0 |
+| `process` | UUID | yes | 2 | 16.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 3 | 16.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 4 | 16.0 |
 
 Payload structure (method body):
 - single record in the same layout as `process list` (no leading count byte)

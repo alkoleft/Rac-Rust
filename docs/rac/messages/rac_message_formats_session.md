@@ -2,11 +2,11 @@
 
 Protocol version (service negotiation): `v8.service.Admin.Cluster` `16.0` (observed in captures).
 
-Sources (v11/v16):
-- `artifacts/rac/v11/help/session_help.txt`
-- `artifacts/rac/v11/help/session_list.out`
-- `artifacts/rac/v11/help/session_info.out`
-- `artifacts/rac/v11/help/session_info_licenses.out`
+Sources (v16):
+- `artifacts/rac/v16/help/session_help.txt`
+- `artifacts/rac/v16/help/session_list.out`
+- `artifacts/rac/v16/help/session_info.out`
+- `artifacts/rac/v16/help/session_info_licenses.out`
 - `artifacts/rac/v16/help/session_help.txt`
 - `artifacts/rac/v16/help/session_list.out`
 - `docs/rac/documentation/rac_cli_method_map.generated.md` (method IDs)
@@ -31,15 +31,15 @@ Aligned with current decoder implementation in `apps/rac_protocol/src/commands/s
 
 #### Поля запроса (из `rac`)
 
-Observed request parameters for `rac session list` (v11).
+Observed request parameters for `rac session list` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | yes | 1 | 11.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
-| `infobase` | UUID | yes | 4 | 11.0 |
-| `licenses` | flag | no | - | 11.0 |
+| `cluster` | UUID | yes | 1 | 16.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 16.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 16.0 |
+| `infobase` | UUID | yes | 4 | 16.0 |
+| `licenses` | flag | no | - | 16.0 |
 
 **Record boundary detection (current decoder):**
 
@@ -57,20 +57,20 @@ Observed request parameters for `rac session list` (v11).
 
 #### Поля запроса (из `rac`)
 
-Observed request parameters for `rac session info` (v11).
+Observed request parameters for `rac session info` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | yes | 1 | 11.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
-| `session` | UUID | yes | 4 | 11.0 |
-| `licenses` | flag | yes (see `session_info_licenses.out`) | 5 | 11.0 |
+| `cluster` | UUID | yes | 1 | 16.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 16.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 16.0 |
+| `session` | UUID | yes | 4 | 16.0 |
+| `licenses` | flag | yes (see `session_info_licenses.out`) | 5 | 16.0 |
 
 ### Session Terminate
 
 Sources:
-- `artifacts/rac/v11/help/session_help.txt`
+- `artifacts/rac/v16/help/session_help.txt`
 
 #### RPC
 
@@ -78,15 +78,15 @@ Request/response method IDs: not captured yet (v11 help only).
 
 #### Поля запроса (из `rac`)
 
-Observed request parameters for `rac session terminate` (v11).
+Observed request parameters for `rac session terminate` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 11.0 |
-| `cluster-user` | string | no | - | 11.0 |
-| `cluster-pwd` | string | no | - | 11.0 |
-| `session` | UUID | no | - | 11.0 |
-| `error-message` | string | no | - | 11.0 |
+| `cluster` | UUID | no | - | 16.0 |
+| `cluster-user` | string | no | - | 16.0 |
+| `cluster-pwd` | string | no | - | 16.0 |
+| `session` | UUID | no | - | 16.0 |
+| `error-message` | string | no | - | 16.0 |
 
 #### Поля ответа
 
@@ -95,7 +95,7 @@ Not captured yet (likely ACK-only).
 ### Session Interrupt Current Server Call
 
 Sources:
-- `artifacts/rac/v11/help/session_help.txt`
+- `artifacts/rac/v16/help/session_help.txt`
 
 #### RPC
 
@@ -103,15 +103,15 @@ Request/response method IDs: not captured yet (v11 help only).
 
 #### Поля запроса (из `rac`)
 
-Observed request parameters for `rac session interrupt-current-server-call` (v11).
+Observed request parameters for `rac session interrupt-current-server-call` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `cluster` | UUID | no | - | 11.0 |
-| `cluster-user` | string | no | - | 11.0 |
-| `cluster-pwd` | string | no | - | 11.0 |
-| `session` | UUID | no | - | 11.0 |
-| `error-message` | string | no | - | 11.0 |
+| `cluster` | UUID | no | - | 16.0 |
+| `cluster-user` | string | no | - | 16.0 |
+| `cluster-pwd` | string | no | - | 16.0 |
+| `session` | UUID | no | - | 16.0 |
+| `error-message` | string | no | - | 16.0 |
 
 #### Поля ответа
 
@@ -180,56 +180,56 @@ Fields are read sequentially by the decoder. When the payload ends early, the de
 
 | Field | Type | Optional | Notes | Version |
 | --- | --- | --- | --- | --- |
-| `session` | `uuid16` | no | Record start anchor. | 11.0 |
-| `app-id` | `str8` | no | Examples: `Designer`, `1CV8C`, `SystemBackgroundJob`. | 11.0 |
-| `counters.blocked-by-dbms` | `u32_be` | yes | Present in the stream, but still being interpreted. Missing values default to `0`. | 11.0 |
-| `counters.blocked-by-ls` | `u32_be` | yes | Present in the stream, but still being interpreted. Missing values default to `0`. | 11.0 |
-| `counters.bytes-all` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
-| `counters.bytes-last-5min` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
-| `counters.calls-all` | `u32_be` | yes | Missing values default to `0`. | 11.0 |
-| `counters.calls-last-5min` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
-| `connection` | `uuid16` | yes | Missing values default to zero UUID. | 11.0 |
-| `counters.dbms-bytes-all` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
-| `counters.dbms-bytes-last-5min` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
-| `db-proc-info` | `str8` | yes | Only present when DB procedure info is reported. Missing values default to empty string. | 11.0 |
-| `counters.db-proc-took` | `u32_be` | yes | Missing values default to `0`. | 11.0 |
-| `db-proc-took-at` | `datetime` | yes | 1C timestamp, decoded to ISO string. Missing values default to empty string. | 11.0 |
-| `counters.duration-all` | `u32_be` | yes | Missing values default to `0`. | 11.0 |
-| `counters.duration-all-dbms` | `u32_be` | yes | Missing values default to `0`. | 11.0 |
-| `counters.duration-current` | `u32_be` | yes | Missing values default to `0`. | 11.0 |
-| `counters.duration-current-dbms` | `u32_be` | yes | Missing values default to `0`. | 11.0 |
-| `counters.duration-last-5min` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
-| `counters.duration-last-5min-dbms` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
-| `host` | `str8` | yes | Missing values default to empty string. | 11.0 |
-| `infobase` | `uuid16` | yes | Missing values default to zero UUID. | 11.0 |
-| `last-active-at` | `datetime` | yes | 1C timestamp, decoded to ISO string. Missing values default to empty string. | 11.0 |
-| `hibernate` | `bool` | yes | Currently treated as a boolean flag. Missing values default to `false`. | 11.0 |
-| `counters.passive-session-hibernate-time` | `u32_be` | yes | Missing values default to `0`. | 11.0 |
-| `counters.hibernate-session-terminate-time` | `u32_be` | yes | Missing values default to `0`. | 11.0 |
-| `license` | `license-block` | yes | Parsed by `parse_licenses`. Missing values default to an empty `SessionLicense`. | 11.0 |
-| `locale` | `str8` | yes | Missing values default to empty string. | 11.0 |
-| `process` | `uuid16` | yes | Missing values default to zero UUID. | 11.0 |
-| `session-id` | `u32_be` | yes | Missing values default to `0`. | 11.0 |
-| `started-at` | `datetime` | yes | 1C timestamp, decoded to ISO string. Missing values default to empty string. | 11.0 |
-| `user-name` | `str8` | yes | Missing values default to empty string. | 11.0 |
-| `counters.memory-current` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
-| `counters.memory-last-5min` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
-| `counters.memory-total` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
-| `counters.read-current` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
-| `counters.read-last-5min` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
-| `counters.read-total` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
-| `counters.write-current` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
-| `counters.write-last-5min` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
-| `counters.write-total` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
-| `counters.duration-current-service` | `u32_be` | yes | Missing values default to `0`. | 11.0 |
-| `counters.duration-last-5min-service` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
-| `counters.duration-all-service` | `u32_be` | yes | Missing values default to `0`. | 11.0 |
-| `current-service-name` | `str8` | yes | Missing values default to empty string. | 11.0 |
-| `counters.cpu-time-current` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
-| `counters.cpu-time-last-5min` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
-| `counters.cpu-time-total` | `u64_be` | yes | Missing values default to `0`. | 11.0 |
-| `data-separation` | `str8` | yes | Missing values default to empty string. | 11.0 |
-| `client-ip` | `str8` | yes | Missing values default to empty string. | 11.0 |
+| `session` | `uuid16` | no | Record start anchor. | 16.0 |
+| `app-id` | `str8` | no | Examples: `Designer`, `1CV8C`, `SystemBackgroundJob`. | 16.0 |
+| `counters.blocked-by-dbms` | `u32_be` | yes | Present in the stream, but still being interpreted. Missing values default to `0`. | 16.0 |
+| `counters.blocked-by-ls` | `u32_be` | yes | Present in the stream, but still being interpreted. Missing values default to `0`. | 16.0 |
+| `counters.bytes-all` | `u64_be` | yes | Missing values default to `0`. | 16.0 |
+| `counters.bytes-last-5min` | `u64_be` | yes | Missing values default to `0`. | 16.0 |
+| `counters.calls-all` | `u32_be` | yes | Missing values default to `0`. | 16.0 |
+| `counters.calls-last-5min` | `u64_be` | yes | Missing values default to `0`. | 16.0 |
+| `connection` | `uuid16` | yes | Missing values default to zero UUID. | 16.0 |
+| `counters.dbms-bytes-all` | `u64_be` | yes | Missing values default to `0`. | 16.0 |
+| `counters.dbms-bytes-last-5min` | `u64_be` | yes | Missing values default to `0`. | 16.0 |
+| `db-proc-info` | `str8` | yes | Only present when DB procedure info is reported. Missing values default to empty string. | 16.0 |
+| `counters.db-proc-took` | `u32_be` | yes | Missing values default to `0`. | 16.0 |
+| `db-proc-took-at` | `datetime` | yes | 1C timestamp, decoded to ISO string. Missing values default to empty string. | 16.0 |
+| `counters.duration-all` | `u32_be` | yes | Missing values default to `0`. | 16.0 |
+| `counters.duration-all-dbms` | `u32_be` | yes | Missing values default to `0`. | 16.0 |
+| `counters.duration-current` | `u32_be` | yes | Missing values default to `0`. | 16.0 |
+| `counters.duration-current-dbms` | `u32_be` | yes | Missing values default to `0`. | 16.0 |
+| `counters.duration-last-5min` | `u64_be` | yes | Missing values default to `0`. | 16.0 |
+| `counters.duration-last-5min-dbms` | `u64_be` | yes | Missing values default to `0`. | 16.0 |
+| `host` | `str8` | yes | Missing values default to empty string. | 16.0 |
+| `infobase` | `uuid16` | yes | Missing values default to zero UUID. | 16.0 |
+| `last-active-at` | `datetime` | yes | 1C timestamp, decoded to ISO string. Missing values default to empty string. | 16.0 |
+| `hibernate` | `bool` | yes | Currently treated as a boolean flag. Missing values default to `false`. | 16.0 |
+| `counters.passive-session-hibernate-time` | `u32_be` | yes | Missing values default to `0`. | 16.0 |
+| `counters.hibernate-session-terminate-time` | `u32_be` | yes | Missing values default to `0`. | 16.0 |
+| `license` | `license-block` | yes | Parsed by `parse_licenses`. Missing values default to an empty `SessionLicense`. | 16.0 |
+| `locale` | `str8` | yes | Missing values default to empty string. | 16.0 |
+| `process` | `uuid16` | yes | Missing values default to zero UUID. | 16.0 |
+| `session-id` | `u32_be` | yes | Missing values default to `0`. | 16.0 |
+| `started-at` | `datetime` | yes | 1C timestamp, decoded to ISO string. Missing values default to empty string. | 16.0 |
+| `user-name` | `str8` | yes | Missing values default to empty string. | 16.0 |
+| `counters.memory-current` | `u64_be` | yes | Missing values default to `0`. | 16.0 |
+| `counters.memory-last-5min` | `u64_be` | yes | Missing values default to `0`. | 16.0 |
+| `counters.memory-total` | `u64_be` | yes | Missing values default to `0`. | 16.0 |
+| `counters.read-current` | `u64_be` | yes | Missing values default to `0`. | 16.0 |
+| `counters.read-last-5min` | `u64_be` | yes | Missing values default to `0`. | 16.0 |
+| `counters.read-total` | `u64_be` | yes | Missing values default to `0`. | 16.0 |
+| `counters.write-current` | `u64_be` | yes | Missing values default to `0`. | 16.0 |
+| `counters.write-last-5min` | `u64_be` | yes | Missing values default to `0`. | 16.0 |
+| `counters.write-total` | `u64_be` | yes | Missing values default to `0`. | 16.0 |
+| `counters.duration-current-service` | `u32_be` | yes | Missing values default to `0`. | 16.0 |
+| `counters.duration-last-5min-service` | `u64_be` | yes | Missing values default to `0`. | 16.0 |
+| `counters.duration-all-service` | `u32_be` | yes | Missing values default to `0`. | 16.0 |
+| `current-service-name` | `str8` | yes | Missing values default to empty string. | 16.0 |
+| `counters.cpu-time-current` | `u64_be` | yes | Missing values default to `0`. | 16.0 |
+| `counters.cpu-time-last-5min` | `u64_be` | yes | Missing values default to `0`. | 16.0 |
+| `counters.cpu-time-total` | `u64_be` | yes | Missing values default to `0`. | 16.0 |
+| `data-separation` | `str8` | yes | Missing values default to empty string. | 16.0 |
+| `client-ip` | `str8` | yes | Missing values default to empty string. | 16.0 |
 
 ### License Block Layout (decoded order)
 
@@ -237,19 +237,19 @@ The decoder reads the license block immediately after the hibernate timers.
 
 | Field | Type | Optional | Notes | Version |
 | --- | --- | --- | --- | --- |
-| `licenses-count` | `u8` | no | Number of license entries in the payload. | 11.0 |
-| `file-name` | `str8` | yes | Only the first entry is decoded. Missing values default to empty string. | 11.0 |
-| `full-presentation` | `str8` | yes | Only the first entry is decoded. Missing values default to empty string. | 11.0 |
-| `issued-by-server` | `bool` | yes | Only the first entry is decoded. Missing values default to `false`. | 11.0 |
-| `license-type` | `u32_be` | yes | Only the first entry is decoded. Missing values default to `0`. | 11.0 |
-| `max-users-all` | `u32_be` | yes | Only the first entry is decoded. Missing values default to `0`. | 11.0 |
-| `max-users-current` | `u32_be` | yes | Only the first entry is decoded. Missing values default to `0`. | 11.0 |
-| `network-key` | `bool` | yes | Only the first entry is decoded. Missing values default to `false`. | 11.0 |
-| `server-address` | `str8` | yes | Only the first entry is decoded. Missing values default to empty string. | 11.0 |
-| `process-id` | `str8` | yes | Only the first entry is decoded. Missing values default to empty string. | 11.0 |
-| `server-port` | `u32_be` | yes | Only the first entry is decoded. Missing values default to `0`. | 11.0 |
-| `key-series` | `str8` | yes | Only the first entry is decoded. Missing values default to empty string. | 11.0 |
-| `brief-presentation` | `str8` | yes | Only the first entry is decoded. Missing values default to empty string. | 11.0 |
+| `licenses-count` | `u8` | no | Number of license entries in the payload. | 16.0 |
+| `file-name` | `str8` | yes | Only the first entry is decoded. Missing values default to empty string. | 16.0 |
+| `full-presentation` | `str8` | yes | Only the first entry is decoded. Missing values default to empty string. | 16.0 |
+| `issued-by-server` | `bool` | yes | Only the first entry is decoded. Missing values default to `false`. | 16.0 |
+| `license-type` | `u32_be` | yes | Only the first entry is decoded. Missing values default to `0`. | 16.0 |
+| `max-users-all` | `u32_be` | yes | Only the first entry is decoded. Missing values default to `0`. | 16.0 |
+| `max-users-current` | `u32_be` | yes | Only the first entry is decoded. Missing values default to `0`. | 16.0 |
+| `network-key` | `bool` | yes | Only the first entry is decoded. Missing values default to `false`. | 16.0 |
+| `server-address` | `str8` | yes | Only the first entry is decoded. Missing values default to empty string. | 16.0 |
+| `process-id` | `str8` | yes | Only the first entry is decoded. Missing values default to empty string. | 16.0 |
+| `server-port` | `u32_be` | yes | Only the first entry is decoded. Missing values default to `0`. | 16.0 |
+| `key-series` | `str8` | yes | Only the first entry is decoded. Missing values default to empty string. | 16.0 |
+| `brief-presentation` | `str8` | yes | Only the first entry is decoded. Missing values default to empty string. | 16.0 |
 
 Notes:
 

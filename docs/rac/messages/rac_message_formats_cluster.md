@@ -2,10 +2,10 @@
 
 Protocol version (service negotiation): `v8.service.Admin.Cluster` `16.0` (observed in captures).
 
-Sources (v11):
-- `artifacts/rac/v11/help/cluster_help.txt`
-- `artifacts/rac/v11/help/cluster_list.out`
-- `artifacts/rac/v11/help/cluster_info.out`
+Sources (v16):
+- `artifacts/rac/v16/help/cluster_help.txt`
+- `artifacts/rac/v16/help/cluster_list.out`
+- `artifacts/rac/v16/help/cluster_info.out`
 - `docs/rac/documentation/rac_cli_method_map.generated.md` (method IDs)
 
 ## Cluster List
@@ -19,7 +19,7 @@ Payload example:
 
 RAC output reference:
 - `artifacts/rac/v11/v11_cluster_list_ro_rac.out`
-- `artifacts/rac/v11/help/cluster_list.out`
+- `artifacts/rac/v16/help/cluster_list.out`
 
 ## Fields From `rac` Output
 
@@ -27,24 +27,24 @@ Observed field names in `rac cluster list` output, with capture mapping status.
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 |---|---|---|---|---|
-| `cluster` | UUID | yes | 1 | 11.0 |
-| `host` | string | yes | 3 | 11.0 |
-| `port` | u16 | yes | 5 | 11.0 |
-| `name` | string | yes | 8 | 11.0 |
-| `expiration-timeout` | u32 | yes | 2 | 11.0 |
-| `lifetime-limit` | u32 | yes | 4 | 11.0 |
-| `max-memory-size` | u32 | hypothesis | 6 | 11.0 |
-| `max-memory-time-limit` | u32 | hypothesis | 7 | 11.0 |
-| `security-level` | u32 | yes | 9 | 11.0 |
-| `session-fault-tolerance-level` | u32 | yes | 10 | 11.0 |
-| `load-balancing-mode` | u32 | yes | 11 | 11.0 |
-| `errors-count-threshold` | u32 | hypothesis | 12 | 11.0 |
-| `kill-problem-processes` | u8 | yes | 13 | 11.0 |
-| `kill-by-memory-with-dump` | u8 | yes | 14 | 11.0 |
-| `allow-access-right-audit-events-recording` | unknown | no | - | 11.0 |
+| `cluster` | UUID | yes | 1 | 16.0 |
+| `host` | string | yes | 3 | 16.0 |
+| `port` | u16 | yes | 5 | 16.0 |
+| `name` | string | yes | 8 | 16.0 |
+| `expiration-timeout` | u32 | yes | 2 | 16.0 |
+| `lifetime-limit` | u32 | yes | 4 | 16.0 |
+| `max-memory-size` | u32 | hypothesis | 6 | 16.0 |
+| `max-memory-time-limit` | u32 | hypothesis | 7 | 16.0 |
+| `security-level` | u32 | yes | 9 | 16.0 |
+| `session-fault-tolerance-level` | u32 | yes | 10 | 16.0 |
+| `load-balancing-mode` | u32 | yes | 11 | 16.0 |
+| `errors-count-threshold` | u32 | hypothesis | 12 | 16.0 |
+| `kill-problem-processes` | u8 | yes | 13 | 16.0 |
+| `kill-by-memory-with-dump` | u8 | yes | 14 | 16.0 |
+| `allow-access-right-audit-events-recording` | unknown | no | - | 16.0 |
 | `ping-period` | unknown | no | - | 16.0 |
 | `ping-timeout` | unknown | no | - | 16.0 |
-| `restart-schedule` | unknown | no | - | 11.0 |
+| `restart-schedule` | unknown | no | - | 16.0 |
 
 ## RPC Envelope
 
@@ -57,7 +57,7 @@ Observed request parameters for `rac cluster list`.
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 |---|---|---|---|---|
-| *(none)* | - | n/a | - | 11.0 |
+| *(none)* | - | n/a | - | 16.0 |
 
 Payload structure (method body):
 - offset `0x00`: `count:u8` (observed `0x01`)
@@ -141,7 +141,7 @@ Source capture:
 RAC output reference:
 - `rac cluster info --cluster <id>`
 - `artifacts/rac/v11/v11_cluster_info_ro_rac.out`
-- `artifacts/rac/v11/help/cluster_info.out`
+- `artifacts/rac/v16/help/cluster_info.out`
 
 ## Fields From `rac` Output
 
@@ -158,7 +158,7 @@ Observed request parameters for `rac cluster info`.
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 |---|---|---|---|---|
-| `cluster` | UUID | yes | 1 | 11.0 |
+| `cluster` | UUID | yes | 1 | 16.0 |
 
 Payload structure (method body):
 - single record in the same layout as `cluster list` (no leading count byte)
@@ -179,7 +179,7 @@ Payload example:
 
 RAC output reference:
 - `rac cluster admin list --cluster <id> --cluster-user <user> --cluster-pwd <pwd>`
-- `artifacts/rac/v11/help/cluster_help.txt`
+- `artifacts/rac/v16/help/cluster_help.txt`
 
 ## Fields From `rac` Output
 
@@ -187,7 +187,7 @@ Observed field names in `rac cluster admin list` output, with capture mapping st
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 |---|---|---|---|---|
-| `name` | string | yes | 1 | 11.0 |
+| `name` | string | yes | 1 | 16.0 |
 | `auth` | unknown | no | - | 16.0 |
 | `os-user` | unknown | no | - | 16.0 |
 | `descr` | unknown | no | - | 16.0 |
@@ -203,9 +203,9 @@ Observed request parameters for `rac cluster admin list`.
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 |---|---|---|---|---|
-| `cluster` | UUID | yes | 1 | 11.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
+| `cluster` | UUID | yes | 1 | 16.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 16.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 16.0 |
 
 Payload structure (method body):
 - offset `0x00`: `count:u8` (observed `0x01`)
@@ -245,13 +245,13 @@ Observed request parameters for `rac cluster admin register`.
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 |---|---|---|---|---|
-| `cluster` | UUID | yes | 1 | 11.0 |
-| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 11.0 |
-| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 11.0 |
-| `name` | string | yes | 4 | 11.0 |
-| `descr` | string | yes | 5 | 11.0 |
-| `pwd` | string | yes | 6 | 11.0 |
-| `auth` | enum | yes (as `auth_flags`) | 7 | 11.0 |
+| `cluster` | UUID | yes | 1 | 16.0 |
+| `cluster-user` | string | yes (in auth/context `0x09`) | 2 | 16.0 |
+| `cluster-pwd` | string | yes (in auth/context `0x09`) | 3 | 16.0 |
+| `name` | string | yes | 4 | 16.0 |
+| `descr` | string | yes | 5 | 16.0 |
+| `pwd` | string | yes | 6 | 16.0 |
+| `auth` | enum | yes (as `auth_flags`) | 7 | 16.0 |
 
 ## Request Layout (Observed)
 
@@ -275,7 +275,7 @@ Offsets are relative to the start of the method body.
 ## Cluster Admin Remove
 
 Sources:
-- `artifacts/rac/v11/help/cluster_help.txt`
+- `artifacts/rac/v16/help/cluster_help.txt`
 
 ### RPC Envelope
 
@@ -283,14 +283,14 @@ Request/response method IDs: not captured yet (v11 help only).
 
 ### Поля запроса (из `rac`)
 
-Observed request parameters for `rac cluster admin remove` (v11).
+Observed request parameters for `rac cluster admin remove` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 |---|---|---|---|---|
-| `cluster` | UUID | no | - | 11.0 |
-| `cluster-user` | string | no | - | 11.0 |
-| `cluster-pwd` | string | no | - | 11.0 |
-| `name` | string | no | - | 11.0 |
+| `cluster` | UUID | no | - | 16.0 |
+| `cluster-user` | string | no | - | 16.0 |
+| `cluster-pwd` | string | no | - | 16.0 |
+| `name` | string | no | - | 16.0 |
 
 ### Поля ответа
 
@@ -299,7 +299,7 @@ Not captured yet (likely ACK-only).
 ## Cluster Insert
 
 Sources:
-- `artifacts/rac/v11/help/cluster_help.txt`
+- `artifacts/rac/v16/help/cluster_help.txt`
 
 ### RPC Envelope
 
@@ -307,25 +307,25 @@ Request/response method IDs: not captured yet (v11 help only).
 
 ### Поля запроса (из `rac`)
 
-Observed request parameters for `rac cluster insert` (v11).
+Observed request parameters for `rac cluster insert` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 |---|---|---|---|---|
-| `host` | string | no | - | 11.0 |
-| `port` | u16 | no | - | 11.0 |
-| `name` | string | no | - | 11.0 |
-| `expiration-timeout` | u32 | no | - | 11.0 |
-| `lifetime-limit` | u32 | no | - | 11.0 |
-| `max-memory-size` | u32 | no | - | 11.0 |
-| `max-memory-time-limit` | u32 | no | - | 11.0 |
-| `security-level` | u32 | no | - | 11.0 |
-| `session-fault-tolerance-level` | u32 | no | - | 11.0 |
-| `load-balancing-mode` | enum (`performance`, `memory`) | no | - | 11.0 |
-| `errors-count-threshold` | u32 | no | - | 11.0 |
-| `kill-problem-processes` | bool (`yes/no`) | no | - | 11.0 |
-| `kill-by-memory-with-dump` | bool (`yes/no`) | no | - | 11.0 |
-| `agent-user` | string | no | - | 11.0 |
-| `agent-pwd` | string | no | - | 11.0 |
+| `host` | string | no | - | 16.0 |
+| `port` | u16 | no | - | 16.0 |
+| `name` | string | no | - | 16.0 |
+| `expiration-timeout` | u32 | no | - | 16.0 |
+| `lifetime-limit` | u32 | no | - | 16.0 |
+| `max-memory-size` | u32 | no | - | 16.0 |
+| `max-memory-time-limit` | u32 | no | - | 16.0 |
+| `security-level` | u32 | no | - | 16.0 |
+| `session-fault-tolerance-level` | u32 | no | - | 16.0 |
+| `load-balancing-mode` | enum (`performance`, `memory`) | no | - | 16.0 |
+| `errors-count-threshold` | u32 | no | - | 16.0 |
+| `kill-problem-processes` | bool (`yes/no`) | no | - | 16.0 |
+| `kill-by-memory-with-dump` | bool (`yes/no`) | no | - | 16.0 |
+| `agent-user` | string | no | - | 16.0 |
+| `agent-pwd` | string | no | - | 16.0 |
 
 ### Поля ответа
 
@@ -334,7 +334,7 @@ Not captured yet (likely created `cluster` UUID or ACK-only).
 ## Cluster Update
 
 Sources:
-- `artifacts/rac/v11/help/cluster_help.txt`
+- `artifacts/rac/v16/help/cluster_help.txt`
 
 ### RPC Envelope
 
@@ -342,24 +342,24 @@ Request/response method IDs: not captured yet (v11 help only).
 
 ### Поля запроса (из `rac`)
 
-Observed request parameters for `rac cluster update` (v11).
+Observed request parameters for `rac cluster update` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 |---|---|---|---|---|
-| `cluster` | UUID | no | - | 11.0 |
-| `name` | string | no | - | 11.0 |
-| `expiration-timeout` | u32 | no | - | 11.0 |
-| `lifetime-limit` | u32 | no | - | 11.0 |
-| `max-memory-size` | u32 | no | - | 11.0 |
-| `max-memory-time-limit` | u32 | no | - | 11.0 |
-| `security-level` | u32 | no | - | 11.0 |
-| `session-fault-tolerance-level` | u32 | no | - | 11.0 |
-| `load-balancing-mode` | enum (`performance`, `memory`) | no | - | 11.0 |
-| `errors-count-threshold` | u32 | no | - | 11.0 |
-| `kill-problem-processes` | bool (`yes/no`) | no | - | 11.0 |
-| `kill-by-memory-with-dump` | bool (`yes/no`) | no | - | 11.0 |
-| `agent-user` | string | no | - | 11.0 |
-| `agent-pwd` | string | no | - | 11.0 |
+| `cluster` | UUID | no | - | 16.0 |
+| `name` | string | no | - | 16.0 |
+| `expiration-timeout` | u32 | no | - | 16.0 |
+| `lifetime-limit` | u32 | no | - | 16.0 |
+| `max-memory-size` | u32 | no | - | 16.0 |
+| `max-memory-time-limit` | u32 | no | - | 16.0 |
+| `security-level` | u32 | no | - | 16.0 |
+| `session-fault-tolerance-level` | u32 | no | - | 16.0 |
+| `load-balancing-mode` | enum (`performance`, `memory`) | no | - | 16.0 |
+| `errors-count-threshold` | u32 | no | - | 16.0 |
+| `kill-problem-processes` | bool (`yes/no`) | no | - | 16.0 |
+| `kill-by-memory-with-dump` | bool (`yes/no`) | no | - | 16.0 |
+| `agent-user` | string | no | - | 16.0 |
+| `agent-pwd` | string | no | - | 16.0 |
 
 ### Поля ответа
 
@@ -368,7 +368,7 @@ Not captured yet (likely ACK-only).
 ## Cluster Remove
 
 Sources:
-- `artifacts/rac/v11/help/cluster_help.txt`
+- `artifacts/rac/v16/help/cluster_help.txt`
 
 ### RPC Envelope
 
@@ -376,13 +376,13 @@ Request/response method IDs: not captured yet (v11 help only).
 
 ### Поля запроса (из `rac`)
 
-Observed request parameters for `rac cluster remove` (v11).
+Observed request parameters for `rac cluster remove` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 |---|---|---|---|---|
-| `cluster` | UUID | no | - | 11.0 |
-| `cluster-user` | string | no | - | 11.0 |
-| `cluster-pwd` | string | no | - | 11.0 |
+| `cluster` | UUID | no | - | 16.0 |
+| `cluster-user` | string | no | - | 16.0 |
+| `cluster-pwd` | string | no | - | 16.0 |
 
 ### Поля ответа
 

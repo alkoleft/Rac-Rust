@@ -2,10 +2,10 @@
 
 Protocol version (service negotiation): `v8.service.Admin.Cluster` `16.0` (observed in captures).
 
-Sources (v11):
-- `artifacts/rac/v11/help/agent_help.txt`
-- `artifacts/rac/v11/help/agent_admin_list.out`
-- `artifacts/rac/v11/help/agent_version.out`
+Sources (v16):
+- `artifacts/rac/v16/help/agent_help.txt`
+- `artifacts/rac/v16/help/agent_admin_list.out`
+- `artifacts/rac/v16/help/agent_version.out`
 - `docs/rac/documentation/rac_cli_method_map.generated.md` (method IDs)
 
 Aligned with current decoder implementation in `apps/rac_protocol/src/commands/agent_generated.rs`.
@@ -21,7 +21,7 @@ Payload example:
 
 RAC output reference:
 - `artifacts/rac/v11/v11_agent_admin_list_ro_rac.out`
-- `artifacts/rac/v11/help/agent_admin_list.out`
+- `artifacts/rac/v16/help/agent_admin_list.out`
 
 ### Поля ответа (из `rac`)
 
@@ -29,10 +29,10 @@ Observed field names in `rac agent admin list` output, with capture mapping stat
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `name` | string | yes | 1 | 11.0 |
-| `auth` | enum/string | no | 2 | 11.0 |
-| `os-user` | string | no | 3 | 11.0 |
-| `descr` | string | no | 4 | 11.0 |
+| `name` | string | yes | 1 | 16.0 |
+| `auth` | enum/string | no | 2 | 16.0 |
+| `os-user` | string | no | 3 | 16.0 |
+| `descr` | string | no | 4 | 16.0 |
 
 ### RPC
 
@@ -45,8 +45,8 @@ Observed request parameters for `rac agent admin list`.
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `agent-user` | string | yes (auth call `0x08`) | 1 | 11.0 |
-| `agent-pwd` | string | yes (auth call `0x08`) | 2 | 11.0 |
+| `agent-user` | string | yes (auth call `0x08`) | 1 | 16.0 |
+| `agent-pwd` | string | yes (auth call `0x08`) | 2 | 16.0 |
 
 Payload structure (method body):
 - empty body (observed only RPC header)
@@ -76,7 +76,7 @@ Payload structure (response body):
 
 Sources:
 - `docs/rac/documentation/rac_cli_method_map.generated.md` (method IDs)
-- `artifacts/rac/v11/help/agent_version.out` (v11 output)
+- `artifacts/rac/v16/help/agent_version.out` (v11 output)
 
 Notes:
 - No capture for this command yet; layout is aligned with decoder behavior.
@@ -93,7 +93,7 @@ Payload structure (method body):
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `version` | string | no | 1 | 11.0 |
+| `version` | string | no | 1 | 16.0 |
 
 ### Record Layout (Decoder-Based)
 
@@ -121,7 +121,7 @@ Offsets are relative to the start of the response body.
 ## Agent Admin Register
 
 Sources:
-- `artifacts/rac/v11/help/agent_help.txt`
+- `artifacts/rac/v16/help/agent_help.txt`
 
 ### RPC
 
@@ -129,17 +129,17 @@ Request/response method IDs: not captured yet (v11 help only).
 
 ### Поля запроса (из `rac`)
 
-Observed request parameters for `rac agent admin register` (v11).
+Observed request parameters for `rac agent admin register` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `agent-user` | string | no | - | 11.0 |
-| `agent-pwd` | string | no | - | 11.0 |
-| `name` | string | no | - | 11.0 |
-| `pwd` | string | no | - | 11.0 |
-| `descr` | string | no | - | 11.0 |
-| `auth` | enum (`pwd`, `os`) | no | - | 11.0 |
-| `os-user` | string | no | - | 11.0 |
+| `agent-user` | string | no | - | 16.0 |
+| `agent-pwd` | string | no | - | 16.0 |
+| `name` | string | no | - | 16.0 |
+| `pwd` | string | no | - | 16.0 |
+| `descr` | string | no | - | 16.0 |
+| `auth` | enum (`pwd`, `os`) | no | - | 16.0 |
+| `os-user` | string | no | - | 16.0 |
 
 ### Поля ответа
 
@@ -148,7 +148,7 @@ Not captured yet (likely ACK-only).
 ## Agent Admin Remove
 
 Sources:
-- `artifacts/rac/v11/help/agent_help.txt`
+- `artifacts/rac/v16/help/agent_help.txt`
 
 ### RPC
 
@@ -156,13 +156,13 @@ Request/response method IDs: not captured yet (v11 help only).
 
 ### Поля запроса (из `rac`)
 
-Observed request parameters for `rac agent admin remove` (v11).
+Observed request parameters for `rac agent admin remove` (v16).
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `agent-user` | string | no | - | 11.0 |
-| `agent-pwd` | string | no | - | 11.0 |
-| `name` | string | no | - | 11.0 |
+| `agent-user` | string | no | - | 16.0 |
+| `agent-pwd` | string | no | - | 16.0 |
+| `name` | string | no | - | 16.0 |
 
 ### Поля ответа
 

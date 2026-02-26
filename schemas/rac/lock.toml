@@ -9,6 +9,7 @@ fields = [
 ]
 
 [rpc.LockList]
+response = "LockListResp"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid", version = "11.0" },
@@ -20,4 +21,4 @@ requires_cluster_context = true
 requires_infobase_context = false
 
 [response.LockList]
-body = { type = "list_u8", item = "LockRecordRaw" }
+body = { type = "list_u8", item = "LockRecordRaw", field = "records", struct = true }

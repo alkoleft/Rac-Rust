@@ -5,6 +5,9 @@ use crate::codec::RecordCursor;
 use crate::error::Result;
 use serde::Serialize;
 
+pub const METHOD_LOCK_LIST_REQ: u8 = 0x48;
+pub const METHOD_LOCK_LIST_RESP: u8 = 0x49;
+
 #[derive(Debug, Serialize, Clone)]
 pub struct LockRecordRaw {
     pub connection: Uuid16,
@@ -71,12 +74,48 @@ impl LockRecordRaw {
     }
 }
 
+pub struct LockListRpc {
+    pub cluster: Uuid16,
+}
+
+impl crate::rpc::Request for LockListRpc {
+    type Response = LockListResp;
+
+    fn meta(&self) -> crate::rpc::Meta {
+        RPC_LOCK_LIST_META
+    }
+
+    fn cluster(&self) -> Option<crate::Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
+        let mut out = Vec::with_capacity(16);
+        out.extend_from_slice(&self.cluster);
+        Ok(out)
+    }
+}
+
+
+#[derive(Debug, Serialize)]
+pub struct LockListResp {
+    pub records: Vec<LockRecordRaw>,
+}
+
+impl crate::rpc::Response for LockListResp {
+    fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
+        let body = crate::rpc::decode_utils::rpc_body(payload)?;
+        Ok(Self {
+            records: crate::commands::parse_list_u8(body, LockRecordRaw::decode)?,
+        })
+    }
+}
 
 
 
 pub const RPC_LOCK_LIST_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: 0x48,
-    method_resp: Some(0x49),
+    method_req: METHOD_LOCK_LIST_REQ,
+    method_resp: Some(METHOD_LOCK_LIST_RESP),
     requires_cluster_context: true,
     requires_infobase_context: false,
 };

@@ -42,7 +42,7 @@ pub use self::infobase::{
     infobase_info, infobase_summary_info, infobase_summary_list, InfobaseInfoResp,
     InfobaseSummary, InfobaseSummaryInfoResp, InfobaseSummaryListResp,
 };
-pub use self::lock::{lock_list, LockListResp, LockRecord};
+pub use self::lock::{lock_list, LockListResp, LockListRpc, LockRecordRaw};
 pub use self::limit::{
     limit_info, limit_list, limit_remove, limit_update, LimitInfoResp, LimitInfoRpc, LimitListResp,
     LimitListRpc, LimitRecord, LimitRemoveRpc, LimitUpdateRpc,

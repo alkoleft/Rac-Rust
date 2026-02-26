@@ -4,7 +4,7 @@ use serde::Serialize;
 
 use rac_protocol::commands::{
     AgentAdminRecord, ClusterAdminRecord, ClusterRecord, ConnectionRecord, CounterRecord,
-    CounterValuesRecord, InfobaseSummary, LimitRecord, LockRecord, ManagerRecord, ProcessLicense,
+    CounterValuesRecord, InfobaseSummary, LimitRecord, LockRecordRaw, ManagerRecord, ProcessLicense,
     ProcessRecord, RuleApplyResp, RuleInsertResp, RuleRecord, RuleRemoveResp, RuleUpdateResp,
     ServerRecord, ServiceSettingApplyResp, ServiceSettingInsertResp, ServiceSettingRecord,
     ServiceSettingRemoveResp, ServiceSettingTransferDataDirRecord, ServiceSettingUpdateResp,
@@ -211,10 +211,10 @@ pub fn process_list(items: &[ProcessRecord]) -> ProcessListDisplay<'_> {
 }
 
 pub struct LockListDisplay<'a> {
-    items: &'a [LockRecord],
+    items: &'a [LockRecordRaw],
 }
 
-pub fn lock_list(items: &[LockRecord]) -> LockListDisplay<'_> {
+pub fn lock_list(items: &[LockRecordRaw]) -> LockListDisplay<'_> {
     LockListDisplay { items }
 }
 
@@ -1062,8 +1062,8 @@ impl Display for LockListDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let out = list_to_string("locks", self.items, 5, MoreLabel::Default, |out, idx, item| {
             outln!(out, "connection[{idx}]: {}", format_uuid(&item.connection));
-            outln!(out, "descr[{idx}]: {}", display_str(&item.descr));
-            if let Some(flag) = item.descr_flag {
+            outln!(out, "descr[{idx}]: {}", display_str(&item.descr.descr));
+            if let Some(flag) = item.descr.descr_flag {
                 outln!(out, "descr-flag[{idx}]: {flag}");
             }
             outln!(out, "locked-at[{idx}]: {}", display_str(&item.locked_at));

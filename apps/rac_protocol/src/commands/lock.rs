@@ -1,9 +1,6 @@
 use crate::client::RacClient;
-use crate::protocol::ProtocolCodec;
-use crate::rpc::{Meta, Request, Response};
-use crate::rpc::decode_utils::rpc_body;
-use crate::rac_wire::{METHOD_LOCK_LIST_REQ, METHOD_LOCK_LIST_RESP};
-
+use crate::error::Result;
+use crate::Uuid16;
 
 #[derive(Debug, serde::Serialize, Clone)]
 pub struct LockDescr {
@@ -11,95 +8,21 @@ pub struct LockDescr {
     pub descr_flag: Option<u8>,
 }
 
-include!("lock_generated.rs");
-
-#[derive(Debug, Serialize, Clone)]
-pub struct LockRecord {
-    pub connection: Uuid16,
-    pub descr: String,
-    pub descr_flag: Option<u8>,
-    pub locked_at: String,
-    pub session: Uuid16,
-    pub object: Uuid16,
+mod generated {
+    use super::LockDescr;
+    include!("lock_generated.rs");
 }
 
-#[derive(Debug, Serialize)]
-pub struct LockListResp {
-    pub locks: Vec<Uuid16>,
-    pub records: Vec<LockRecord>,
-}
-
-struct LockListRpc {
-    cluster: Uuid16,
-}
-
-impl Request for LockListRpc {
-    type Response = LockListResp;
-
-    fn meta(&self) -> Meta {
-        Meta {
-            method_req: METHOD_LOCK_LIST_REQ,
-            method_resp: Some(METHOD_LOCK_LIST_RESP),
-            requires_cluster_context: true,
-            requires_infobase_context: false,
-        }
-    }
-
-    fn cluster(&self) -> Option<Uuid16> {
-        Some(self.cluster)
-    }
-
-    fn encode_body(&self, _codec: &dyn ProtocolCodec) -> Result<Vec<u8>> {
-        Ok(self.cluster.to_vec())
-    }
-}
-
-impl Response for LockListResp {
-    fn decode(payload: &[u8], _codec: &dyn ProtocolCodec) -> Result<Self> {
-        let body = rpc_body(payload)?;
-        let records = parse_lock_list_records(body)?;
-        Ok(Self {
-            locks: records.iter().map(|record| record.object).collect(),
-            records,
-        })
-    }
-}
+pub use generated::{LockListResp, LockListRpc, LockRecordRaw};
 
 pub fn lock_list(client: &mut RacClient, cluster: Uuid16) -> Result<LockListResp> {
     client.call_typed(LockListRpc { cluster })
 }
 
-fn parse_lock_list_records(body: &[u8]) -> Result<Vec<LockRecord>> {
-    if body.is_empty() {
-        return Ok(Vec::new());
-    }
-    let mut cursor = RecordCursor::new(body);
-    let count = cursor.take_u8()? as usize;
-    let mut records = Vec::with_capacity(count);
-    for _ in 0..count {
-        records.push(parse_lock_record(&mut cursor)?);
-    }
-    Ok(records)
-}
-
-fn parse_lock_record(cursor: &mut RecordCursor<'_>) -> Result<LockRecord> {
-    if cursor.remaining_len() < 16 {
-        return Err(RacError::Decode("lock record truncated"));
-    }
-    let record = LockRecordRaw::decode(cursor)?;
-    Ok(LockRecord {
-        connection: record.connection,
-        descr: record.descr.descr,
-        descr_flag: record.descr.descr_flag,
-        locked_at: record.locked_at,
-        session: record.session,
-        object: record.object,
-    })
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::commands::parse_list_u8;
 
     fn push_uuid(out: &mut Vec<u8>, value: Uuid16) {
         out.extend_from_slice(&value);
@@ -181,17 +104,17 @@ mod tests {
             object_b,
         );
 
-        let records = parse_lock_list_records(&body).unwrap();
+        let records = parse_list_u8(&body, LockRecordRaw::decode).unwrap();
         assert_eq!(records.len(), 2);
         assert_eq!(records[0].connection, connection_a);
-        assert_eq!(records[0].descr, "Lock-A");
-        assert_eq!(records[0].descr_flag, None);
+        assert_eq!(records[0].descr.descr, "Lock-A");
+        assert_eq!(records[0].descr.descr_flag, None);
         assert_eq!(records[0].locked_at, "1970-01-01T00:00:01");
         assert_eq!(records[0].session, session_a);
         assert_eq!(records[0].object, object_a);
         assert_eq!(records[1].connection, connection_b);
-        assert_eq!(records[1].descr, "B");
-        assert_eq!(records[1].descr_flag, Some(0x01));
+        assert_eq!(records[1].descr.descr, "B");
+        assert_eq!(records[1].descr.descr_flag, Some(0x01));
         assert_eq!(records[1].locked_at, "1970-01-01T00:00:02");
         assert_eq!(records[1].session, session_b);
         assert_eq!(records[1].object, object_b);

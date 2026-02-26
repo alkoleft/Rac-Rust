@@ -213,10 +213,10 @@ Source capture:
 - `logs/session_1771357031_3632890_127_0_0_1_54092/server_to_client.stream.bin`
 
 Payload example:
-- `artifacts/rac/limit_update_response.hex`
+- `artifacts/rac/v16/limit_update_response.hex`
 
 RAC output reference:
-- `artifacts/rac/limit_update_rac.out`
+- `artifacts/rac/v16/limit_update_rac.out`
 
 ### Поля ответа (из `rac`)
 
@@ -309,10 +309,10 @@ Source capture:
 - `logs/session_1771357081_3633977_127_0_0_1_49364/server_to_client.stream.bin`
 
 Payload example:
-- `artifacts/rac/limit_remove_response.hex`
+- `artifacts/rac/v16/limit_remove_response.hex`
 
 RAC output reference:
-- `artifacts/rac/limit_remove_rac.out`
+- `artifacts/rac/v16/limit_remove_rac.out`
 
 ### Поля ответа (из `rac`)
 

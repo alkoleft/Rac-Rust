@@ -174,8 +174,8 @@ Source capture:
 - `logs/session_1771286338_2771856_127_0_0_1_59686`
 
 Payload example:
-- `artifacts/rac/cluster_admin_list_request.hex`
-- `artifacts/rac/cluster_admin_list_response.hex`
+- `artifacts/rac/v16/cluster_admin_list_request.hex`
+- `artifacts/rac/v16/cluster_admin_list_response.hex`
 
 RAC output reference:
 - `rac cluster admin list --cluster <id> --cluster-user <user> --cluster-pwd <pwd>`
@@ -232,7 +232,7 @@ Source capture:
 - `logs/session_1771286512_2774186_127_0_0_1_37332`
 
 Payload example:
-- `artifacts/rac/cluster_admin_register_request.hex`
+- `artifacts/rac/v16/cluster_admin_register_request.hex`
 
 ## RPC Envelope
 

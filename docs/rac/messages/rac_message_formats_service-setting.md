@@ -11,10 +11,10 @@ Source capture:
 - `logs/session_1771358420_3653062_127_0_0_1_55942/server_to_client.stream.bin`
 
 Payload example:
-- `artifacts/rac/service_setting_list_nonempty_response.hex`
+- `artifacts/rac/v16/service_setting_list_nonempty_response.hex`
 
 RAC output reference:
-- `artifacts/rac/service_setting_list_nonempty_rac.out`
+- `artifacts/rac/v16/service_setting_list_nonempty_rac.out`
 
 ### Поля ответа (из `rac`)
 
@@ -70,10 +70,10 @@ Source capture:
 - `logs/session_1771358415_3652970_127_0_0_1_41106/server_to_client.stream.bin`
 
 Payload example:
-- `artifacts/rac/service_setting_info_response.hex`
+- `artifacts/rac/v16/service_setting_info_response.hex`
 
 RAC output reference:
-- `artifacts/rac/service_setting_info_rac.out`
+- `artifacts/rac/v16/service_setting_info_rac.out`
 
 ### Поля ответа (из `rac`)
 
@@ -128,10 +128,10 @@ Source capture:
 - `logs/session_1771358318_3651273_127_0_0_1_50978/server_to_client.stream.bin`
 
 Payload example:
-- `artifacts/rac/service_setting_insert_response.hex`
+- `artifacts/rac/v16/service_setting_insert_response.hex`
 
 RAC output reference:
-- `artifacts/rac/service_setting_insert_rac.out`
+- `artifacts/rac/v16/service_setting_insert_rac.out`
 
 ### Поля ответа (из `rac`)
 
@@ -189,10 +189,10 @@ Source capture:
 - `logs/session_1771358432_3653295_127_0_0_1_58326/server_to_client.stream.bin`
 
 Payload example:
-- `artifacts/rac/service_setting_update_response.hex`
+- `artifacts/rac/v16/service_setting_update_response.hex`
 
 RAC output reference:
-- `artifacts/rac/service_setting_update_rac.out`
+- `artifacts/rac/v16/service_setting_update_rac.out`
 
 ### Поля ответа (из `rac`)
 
@@ -253,10 +253,10 @@ Source capture:
 - `logs/session_1771358425_3653158_127_0_0_1_55954/server_to_client.stream.bin`
 
 Payload example:
-- `artifacts/rac/service_setting_get_data_dirs_response.hex`
+- `artifacts/rac/v16/service_setting_get_data_dirs_response.hex`
 
 RAC output reference:
-- `artifacts/rac/service_setting_get_data_dirs_rac.out`
+- `artifacts/rac/v16/service_setting_get_data_dirs_rac.out`
 
 ### Поля ответа (из `rac`)
 
@@ -315,10 +315,10 @@ Source capture:
 - `logs/session_1771358460_3653727_127_0_0_1_49386/server_to_client.stream.bin`
 
 Payload example:
-- `artifacts/rac/service_setting_remove_response.hex`
+- `artifacts/rac/v16/service_setting_remove_response.hex`
 
 RAC output reference:
-- `artifacts/rac/service_setting_remove_rac.out`
+- `artifacts/rac/v16/service_setting_remove_rac.out`
 
 ### Поля ответа (из `rac`)
 
@@ -366,10 +366,10 @@ Source capture:
 - `logs/session_1771358454_3653578_127_0_0_1_58378/server_to_client.stream.bin`
 
 Payload example:
-- `artifacts/rac/service_setting_apply_response.hex`
+- `artifacts/rac/v16/service_setting_apply_response.hex`
 
 RAC output reference:
-- `artifacts/rac/service_setting_apply_rac.out`
+- `artifacts/rac/v16/service_setting_apply_rac.out`
 
 ### Поля ответа (из `rac`)
 

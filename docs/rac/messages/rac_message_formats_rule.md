@@ -13,10 +13,10 @@ Source capture:
 - `logs/session_1771359945_3673197_127_0_0_1_36476/server_to_client.stream.bin`
 
 Payload example:
-- `artifacts/rac/rule_apply_response.hex`
+- `artifacts/rac/v16/rule_apply_response.hex`
 
 RAC output reference:
-- `artifacts/rac/rule_apply_rac.out`
+- `artifacts/rac/v16/rule_apply_rac.out`
 
 ### Поля ответа (из `rac`)
 
@@ -146,10 +146,10 @@ Source capture:
 - `logs/session_1771359933_3672979_127_0_0_1_35118/server_to_client.stream.bin`
 
 Payload example:
-- `artifacts/rac/rule_info_response.hex`
+- `artifacts/rac/v16/rule_info_response.hex`
 
 RAC output reference:
-- `artifacts/rac/rule_info_rac.out`
+- `artifacts/rac/v16/rule_info_rac.out`
 
 ### Поля ответа (из `rac`)
 
@@ -219,10 +219,10 @@ Source capture:
 - `logs/session_1771359718_3669811_127_0_0_1_50010/server_to_client.stream.bin`
 
 Payload example:
-- `artifacts/rac/rule_insert_response.hex`
+- `artifacts/rac/v16/rule_insert_response.hex`
 
 RAC output reference:
-- `artifacts/rac/rule_insert_rac.out`
+- `artifacts/rac/v16/rule_insert_rac.out`
 
 ### Поля ответа (из `rac`)
 
@@ -292,10 +292,10 @@ Source capture:
 - `logs/session_1771359941_3673129_127_0_0_1_36460/server_to_client.stream.bin`
 
 Payload example:
-- `artifacts/rac/rule_update_response.hex`
+- `artifacts/rac/v16/rule_update_response.hex`
 
 RAC output reference:
-- `artifacts/rac/rule_update_rac.out`
+- `artifacts/rac/v16/rule_update_rac.out`
 
 ### Поля ответа (из `rac`)
 
@@ -366,10 +366,10 @@ Source capture:
 - `logs/session_1771359950_3673267_127_0_0_1_56154/server_to_client.stream.bin`
 
 Payload example:
-- `artifacts/rac/rule_remove_response.hex`
+- `artifacts/rac/v16/rule_remove_response.hex`
 
 RAC output reference:
-- `artifacts/rac/rule_remove_rac.out`
+- `artifacts/rac/v16/rule_remove_rac.out`
 
 ### Поля ответа (из `rac`)
 

@@ -211,10 +211,10 @@ Source capture:
 - `logs/session_1771346554_3508050_127_0_0_1_60770/server_to_client.stream.bin`
 
 Payload example:
-- `artifacts/rac/counter_update_codex_tmp_response.hex`
+- `artifacts/rac/v16/counter_update_codex_tmp_response.hex`
 
 RAC output reference:
-- `artifacts/rac/counter_update_codex_tmp_rac.out`
+- `artifacts/rac/v16/counter_update_codex_tmp_rac.out`
 
 ### Поля ответа (из `rac`)
 
@@ -490,10 +490,10 @@ Source capture:
 - `logs/session_1771346568_3508493_127_0_0_1_33842/server_to_client.stream.bin`
 
 Payload example:
-- `artifacts/rac/counter_clear_codex_tmp_response.hex`
+- `artifacts/rac/v16/counter_clear_codex_tmp_response.hex`
 
 RAC output reference:
-- `artifacts/rac/counter_clear_codex_tmp_rac.out`
+- `artifacts/rac/v16/counter_clear_codex_tmp_rac.out`
 
 ### Поля ответа (из `rac`)
 
@@ -543,10 +543,10 @@ Source capture:
 - `logs/session_1771346572_3508551_127_0_0_1_33850/server_to_client.stream.bin`
 
 Payload example:
-- `artifacts/rac/counter_remove_codex_tmp_response.hex`
+- `artifacts/rac/v16/counter_remove_codex_tmp_response.hex`
 
 RAC output reference:
-- `artifacts/rac/counter_remove_codex_tmp_rac.out`
+- `artifacts/rac/v16/counter_remove_codex_tmp_rac.out`
 
 ### Поля ответа (из `rac`)
 

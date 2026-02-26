@@ -14,10 +14,10 @@ Source capture:
 - `logs/session_1771287345_2785336_127_0_0_1_47884/server_to_client.stream.bin`
 
 Payload example:
-- `artifacts/rac/manager_list_response.hex`
+- `artifacts/rac/v16/manager_list_response.hex`
 
 RAC output reference:
-- `artifacts/rac/manager_list_rac.out`
+- `artifacts/rac/v16/manager_list_rac.out`
 - `artifacts/rac/v11/help/manager_list.out`
 
 ### Поля ответа (из `rac`)
@@ -77,10 +77,10 @@ Source capture:
 - `logs/session_1771287351_2785436_127_0_0_1_40168/server_to_client.stream.bin`
 
 Payload example:
-- `artifacts/rac/manager_info_response.hex`
+- `artifacts/rac/v16/manager_info_response.hex`
 
 RAC output reference:
-- `artifacts/rac/manager_info_rac.out`
+- `artifacts/rac/v16/manager_info_rac.out`
 - `artifacts/rac/v11/help/manager_info.out`
 
 ### Поля ответа (из `rac`)

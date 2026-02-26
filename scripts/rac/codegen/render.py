@@ -48,6 +48,9 @@ def generate(
     lines.extend(uses)
     lines.append("")
 
+    if rpcs:
+        lines.extend(generate_rpc_method_consts(rpcs))
+
     for record in records:
         derive = ", ".join(record.derives)
         lines.append(f"#[derive({derive})]")
@@ -150,7 +153,7 @@ def generate_response_parsers(responses: List[ResponseSpec]) -> List[str]:
             lines.append("    if body.is_empty() {")
             lines.append(f"        return Err(RacError::Decode(\"{error_ctx} empty body\"));")
             lines.append("    }")
-            lines.append("    let mut cursor = RecordCursor::new(body, 0);")
+            lines.append("    let mut cursor = RecordCursor::new(body);")
             lines.append(f"    {item}::decode(&mut cursor)")
             lines.append("}")
             lines.append("")
@@ -168,7 +171,7 @@ def generate_response_parsers(responses: List[ResponseSpec]) -> List[str]:
             lines.append("    if body.is_empty() {")
             lines.append(f"        return Err(RacError::Decode(\"{error_ctx} empty body\"));")
             lines.append("    }")
-            lines.append("    let mut cursor = RecordCursor::new(body, 0);")
+            lines.append("    let mut cursor = RecordCursor::new(body);")
             lines.append(f"    let record = {item}::decode(&mut cursor)?;")
             lines.append("    if " + param + " != 0 {")
             lines.append("        let _tail = cursor.take_bytes(" + param + ")?;")
@@ -384,11 +387,27 @@ def rpc_method_const_base(rpc_name: str) -> str:
 
 
 def rpc_method_req_const(rpc_name: str) -> str:
-    return f"crate::rac_wire::{rpc_method_const_base(rpc_name)}_REQ"
+    return f"{rpc_method_const_base(rpc_name)}_REQ"
 
 
 def rpc_method_resp_const(rpc_name: str) -> str:
-    return f"crate::rac_wire::{rpc_method_const_base(rpc_name)}_RESP"
+    return f"{rpc_method_const_base(rpc_name)}_RESP"
+
+
+def render_method_code(value: int) -> str:
+    return f"0x{value:02x}"
+
+
+def generate_rpc_method_consts(rpcs: List[RpcSpec]) -> List[str]:
+    lines: List[str] = []
+    for rpc in rpcs:
+        base = rpc_method_const_base(rpc.name)
+        lines.append(f"pub const {base}_REQ: u8 = {render_method_code(rpc.method_req)};")
+        if rpc.method_resp is not None:
+            lines.append(f"pub const {base}_RESP: u8 = {render_method_code(rpc.method_resp)};")
+    if lines:
+        lines.append("")
+    return lines
 
 
 def generate_requests(requests: List[RequestSpec], include_uses: bool = True) -> str:

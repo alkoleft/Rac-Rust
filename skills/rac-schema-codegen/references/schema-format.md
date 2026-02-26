@@ -5,12 +5,11 @@ Use this format when editing `schemas/rac/*.toml`. The canonical example is
 
 ## Core Sections
 - `[record.*]`: sequential field layouts for response records.
-- `[rpc.*]`: RPC definitions. Prefer inline request fields here.
+- `[rpc.*]`: RPC definitions. Always inline request fields here.
 - `[response.*]`: response body definitions.
-- `[request.*]`: only when multiple RPCs reuse the same request layout.
 
-## Inline RPC/Request (Preferred)
-Define request fields directly in the RPC block using `fields = [...]`:
+## Inline RPC/Request (Required)
+Define request fields directly in the RPC block using `fields = [...]`. Never use `[request.*]` blocks.
 
 ```toml
 [rpc.ClusterAdminRemove]
@@ -20,12 +19,11 @@ fields = [
   { name = "cluster", type = "uuid" },
   { name = "name", type = "str8" },
 ]
+version = "11.0"
 method_req = 0x07
 requires_cluster_context = false
 requires_infobase_context = false
 ```
-
-Only split into `[request.*]` when the same layout is reused by multiple RPCs.
 
 ## Response Definitions
 Responses are declared under `[response.*]` and refer to a record layout:
@@ -44,13 +42,14 @@ Records must be sequential and decoded via `RecordCursor`:
 [record.ClusterAdminRecord]
 derive = ["Debug", "Serialize", "Clone"]
 fields = [
-  { name = "name", type = "str8" },
-  { name = "unknown_tag", type = "u8" },
-  { name = "unknown_flags", type = "u32_be" },
-  { name = "unknown_tail", type = "bytes_fixed", len = 3 },
+  { name = "name", type = "str8", version = "11.0" },
+  { name = "unknown_tag", type = "u8", version = "11.0" },
+  { name = "unknown_flags", type = "u32_be", version = "11.0" },
+  { name = "unknown_tail", type = "bytes_fixed", len = 3, version = "11.0" },
 ]
 ```
 
 ## Notes
 - Keep schemas codegen-friendly: avoid `super::` references and minimize manual types.
 - Response bodies may set `field = "<name>"` to control the generated field name.
+- Always set minimal `version` on RPCs and fields.

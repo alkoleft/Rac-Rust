@@ -42,8 +42,8 @@ Observed field names in `rac cluster list` output, with capture mapping status.
 | `kill-problem-processes` | u8 | yes | 13 | 11.0 |
 | `kill-by-memory-with-dump` | u8 | yes | 14 | 11.0 |
 | `allow-access-right-audit-events-recording` | unknown | no | 15 | 11.0 |
-| `ping-period` | unknown | no | 16 | 11.0 |
-| `ping-timeout` | unknown | no | 17 | 11.0 |
+| `ping-period` | unknown | no | 16 | 16.0 |
+| `ping-timeout` | unknown | no | 17 | 16.0 |
 | `restart-schedule` | unknown | no | 18 | 11.0 |
 
 ## RPC Envelope

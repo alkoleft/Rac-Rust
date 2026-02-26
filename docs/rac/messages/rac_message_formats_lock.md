@@ -6,36 +6,43 @@ Sources (v16):
 - `artifacts/rac/v16/help/lock_help.txt`
 - `artifacts/rac/v16/help/lock_list.out`
 - `docs/rac/documentation/rac_cli_method_map.generated.md` (method IDs)
-- `artifacts/rac/v11/v11_lock_list_connection_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11/v11_lock_list_connection_ro_server_to_client.decode.txt`
-- `artifacts/rac/v11/v11_lock_list_connection_ro_response.hex`
-- `artifacts/rac/v11/v11_lock_list_connection_ro_rac.out`
-- `artifacts/rac/v11/v11_lock_list_infobase_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11/v11_lock_list_infobase_ro_server_to_client.decode.txt`
-- `artifacts/rac/v11/v11_lock_list_infobase_ro_response.hex`
-- `artifacts/rac/v11/v11_lock_list_infobase_ro_rac.out`
-- `artifacts/rac/v11/v11_lock_list_session_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11/v11_lock_list_session_ro_server_to_client.decode.txt`
-- `artifacts/rac/v11/v11_lock_list_session_ro_response.hex`
-- `artifacts/rac/v11/v11_lock_list_session_ro_rac.out`
+- `artifacts/rac/v16/v16_20260226_053425_lock_list_cluster_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_lock_list_cluster_server_to_client.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_lock_list_cluster_response.hex`
+- `artifacts/rac/v16/v16_20260226_053425_lock_list_cluster_rac.out`
+- `artifacts/rac/v16/v16_20260226_053425_lock_list_connection_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_lock_list_connection_server_to_client.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_lock_list_connection_response.hex`
+- `artifacts/rac/v16/v16_20260226_053425_lock_list_connection_rac.out`
+- `artifacts/rac/v16/v16_20260226_053425_lock_list_infobase_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_lock_list_infobase_server_to_client.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_lock_list_infobase_response.hex`
+- `artifacts/rac/v16/v16_20260226_053425_lock_list_infobase_rac.out`
+- `artifacts/rac/v16/v16_20260226_053425_lock_list_session_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_lock_list_session_server_to_client.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_lock_list_session_response.hex`
+- `artifacts/rac/v16/v16_20260226_053425_lock_list_session_rac.out`
 
 ## Lock List
 
 Source capture:
-- `artifacts/rac/v11/v11_lock_list_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11/v11_lock_list_ro_server_to_client.decode.txt`
-- `artifacts/rac/v11/v11_lock_list_connection_ro_server_to_client.decode.txt`
-- `artifacts/rac/v11/v11_lock_list_infobase_ro_server_to_client.decode.txt`
-- `artifacts/rac/v11/v11_lock_list_session_ro_server_to_client.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_lock_list_cluster_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_lock_list_cluster_server_to_client.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_lock_list_connection_server_to_client.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_lock_list_infobase_server_to_client.decode.txt`
+- `artifacts/rac/v16/v16_20260226_053425_lock_list_session_server_to_client.decode.txt`
 
 Payload example:
-- `artifacts/rac/v11/v11_lock_list_ro_response.hex`
-- `artifacts/rac/v11/v11_lock_list_connection_ro_response.hex`
-- `artifacts/rac/v11/v11_lock_list_infobase_ro_response.hex`
-- `artifacts/rac/v11/v11_lock_list_session_ro_response.hex`
+- `artifacts/rac/v16/v16_20260226_053425_lock_list_cluster_response.hex`
+- `artifacts/rac/v16/v16_20260226_053425_lock_list_connection_response.hex`
+- `artifacts/rac/v16/v16_20260226_053425_lock_list_infobase_response.hex`
+- `artifacts/rac/v16/v16_20260226_053425_lock_list_session_response.hex`
 
 RAC output reference:
-- `artifacts/rac/v11/v11_lock_list_ro_rac.out`
+- `artifacts/rac/v16/v16_20260226_053425_lock_list_cluster_rac.out`
+- `artifacts/rac/v16/v16_20260226_053425_lock_list_connection_rac.out`
+- `artifacts/rac/v16/v16_20260226_053425_lock_list_infobase_rac.out`
+- `artifacts/rac/v16/v16_20260226_053425_lock_list_session_rac.out`
 - `artifacts/rac/v16/help/lock_list.out`
 
 ### Поля ответа (из `rac`)
@@ -77,9 +84,9 @@ Observed request parameters for `rac lock list`.
 | `cluster` | UUID | yes | 1 | 11.0 |
 | `cluster-user` | string | yes | 2 | 11.0 |
 | `cluster-pwd` | string | yes | 3 | 11.0 |
-| `infobase` | UUID | yes | 4 | 11.0 |
-| `connection` | UUID | yes | 5 | 11.0 |
-| `session` | UUID | no (payload matches `--cluster` only) | 6 | 11.0 |
+| `infobase` | UUID | yes | 2 | 11.0 |
+| `connection` | UUID | yes | 2 | 11.0 |
+| `session` | UUID | no (payload matches `--cluster` only) | unknown | 11.0 |
 
 Notes:
 - `cluster-user`/`cluster-pwd` are sent via the context setter (`rpc_method_id=0x09`) before the `lock list` request. Order in that context payload: `cluster`, `cluster-user`, `cluster-pwd`.

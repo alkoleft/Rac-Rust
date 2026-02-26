@@ -23,8 +23,9 @@ fn resolve_auth_pair<'a>(
 ) -> Result<AuthPair<'a>> {
     match (user, pwd) {
         (Some(user), Some(pwd)) => Ok(AuthPair { user, pwd }),
+        (Some(user), None) => Ok(AuthPair { user, pwd: "" }),
         (None, None) => Ok(AuthPair { user: "", pwd: "" }),
-        _ => Err(RacError::Unsupported(missing_msg)),
+        (None, Some(_)) => Err(RacError::Unsupported(missing_msg)),
     }
 }
 

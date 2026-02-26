@@ -2,11 +2,13 @@
 
 Protocol version (service negotiation): `v8.service.Admin.Cluster` `16.0` (observed in captures).
 
-Sources (v11):
+Sources (v11/v16):
 - `artifacts/rac/v11/help/session_help.txt`
 - `artifacts/rac/v11/help/session_list.out`
 - `artifacts/rac/v11/help/session_info.out`
 - `artifacts/rac/v11/help/session_info_licenses.out`
+- `artifacts/rac/v16/help/session_help.txt`
+- `artifacts/rac/v16/help/session_list.out`
 - `docs/rac/documentation/rac_cli_method_map.generated.md` (method IDs)
 
 Aligned with current decoder implementation in `apps/rac_protocol/src/commands/session.rs`.
@@ -117,60 +119,60 @@ Not captured yet (likely ACK-only).
 
 ### Поля ответа (из `rac`)
 
-Observed field names in `rac session list/info` output (v11), with capture mapping status.
+Observed field names in `rac session list/info` output (v16), with capture mapping status from v11 payloads.
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
-| `session` | `uuid16` | yes | 1 | 11.0 |
-| `app-id` | `str8` | yes | 2 | 11.0 |
-| `counters.blocked-by-dbms` | `u32_be` | yes | 3 | 11.0 |
-| `counters.blocked-by-ls` | `u32_be` | yes | 4 | 11.0 |
-| `counters.bytes-all` | `u64_be` | yes | 5 | 11.0 |
-| `counters.bytes-last-5min` | `u64_be` | yes | 6 | 11.0 |
-| `counters.calls-all` | `u32_be` | yes | 7 | 11.0 |
-| `counters.calls-last-5min` | `u64_be` | yes | 8 | 11.0 |
-| `connection` | `uuid16` | yes | 9 | 11.0 |
-| `counters.dbms-bytes-all` | `u64_be` | yes | 10 | 11.0 |
-| `counters.dbms-bytes-last-5min` | `u64_be` | yes | 11 | 11.0 |
-| `db-proc-info` | `str8` | yes | 12 | 11.0 |
-| `counters.db-proc-took` | `u32_be` | yes | 13 | 11.0 |
-| `db-proc-took-at` | `datetime` | yes | 14 | 11.0 |
-| `counters.duration-all` | `u32_be` | yes | 15 | 11.0 |
-| `counters.duration-all-dbms` | `u32_be` | yes | 16 | 11.0 |
-| `counters.duration-current` | `u32_be` | yes | 17 | 11.0 |
-| `counters.duration-current-dbms` | `u32_be` | yes | 18 | 11.0 |
-| `counters.duration-last-5min` | `u64_be` | yes | 19 | 11.0 |
-| `counters.duration-last-5min-dbms` | `u64_be` | yes | 20 | 11.0 |
-| `host` | `str8` | yes | 21 | 11.0 |
-| `infobase` | `uuid16` | yes | 22 | 11.0 |
-| `last-active-at` | `datetime` | yes | 23 | 11.0 |
-| `hibernate` | `bool` | yes | 24 | 11.0 |
-| `counters.passive-session-hibernate-time` | `u32_be` | yes | 25 | 11.0 |
-| `counters.hibernate-session-terminate-time` | `u32_be` | yes | 26 | 11.0 |
-| `license` | `license-block` | yes | 27 | 11.0 |
-| `locale` | `str8` | yes | 28 | 11.0 |
-| `process` | `uuid16` | yes | 29 | 11.0 |
-| `session-id` | `u32_be` | yes | 30 | 11.0 |
-| `started-at` | `datetime` | yes | 31 | 11.0 |
-| `user-name` | `str8` | yes | 32 | 11.0 |
-| `counters.memory-current` | `u64_be` | yes | 33 | 11.0 |
-| `counters.memory-last-5min` | `u64_be` | yes | 34 | 11.0 |
-| `counters.memory-total` | `u64_be` | yes | 35 | 11.0 |
-| `counters.read-current` | `u64_be` | yes | 36 | 11.0 |
-| `counters.read-last-5min` | `u64_be` | yes | 37 | 11.0 |
-| `counters.read-total` | `u64_be` | yes | 38 | 11.0 |
-| `counters.write-current` | `u64_be` | yes | 39 | 11.0 |
-| `counters.write-last-5min` | `u64_be` | yes | 40 | 11.0 |
-| `counters.write-total` | `u64_be` | yes | 41 | 11.0 |
-| `counters.duration-current-service` | `u32_be` | yes | 42 | 11.0 |
-| `counters.duration-last-5min-service` | `u64_be` | yes | 43 | 11.0 |
-| `counters.duration-all-service` | `u32_be` | yes | 44 | 11.0 |
-| `current-service-name` | `str8` | yes | 45 | 11.0 |
-| `counters.cpu-time-current` | `u64_be` | yes | 46 | 11.0 |
-| `counters.cpu-time-last-5min` | `u64_be` | yes | 47 | 11.0 |
-| `counters.cpu-time-total` | `u64_be` | yes | 48 | 11.0 |
-| `data-separation` | `str8` | yes | 49 | 11.0 |
-| `client-ip` | `str8` | yes | 50 | 11.0 |
+| `session` | `uuid16` | yes | 1 | 16.0 |
+| `app-id` | `str8` | yes | 2 | 16.0 |
+| `blocked-by-dbms` | `u32_be` | yes | 3 | 16.0 |
+| `blocked-by-ls` | `u32_be` | yes | 4 | 16.0 |
+| `bytes-all` | `u64_be` | yes | 5 | 16.0 |
+| `bytes-last-5min` | `u64_be` | yes | 6 | 16.0 |
+| `calls-all` | `u32_be` | yes | 7 | 16.0 |
+| `calls-last-5min` | `u64_be` | yes | 8 | 16.0 |
+| `connection` | `uuid16` | yes | 9 | 16.0 |
+| `dbms-bytes-all` | `u64_be` | yes | 10 | 16.0 |
+| `dbms-bytes-last-5min` | `u64_be` | yes | 11 | 16.0 |
+| `db-proc-info` | `str8` | yes | 12 | 16.0 |
+| `db-proc-took` | `u32_be` | yes | 13 | 16.0 |
+| `db-proc-took-at` | `datetime` | yes | 14 | 16.0 |
+| `duration-all` | `u32_be` | yes | 15 | 16.0 |
+| `duration-all-dbms` | `u32_be` | yes | 16 | 16.0 |
+| `duration-current` | `u32_be` | yes | 17 | 16.0 |
+| `duration-current-dbms` | `u32_be` | yes | 18 | 16.0 |
+| `duration-last-5min` | `u64_be` | yes | 19 | 16.0 |
+| `duration-last-5min-dbms` | `u64_be` | yes | 20 | 16.0 |
+| `host` | `str8` | yes | 21 | 16.0 |
+| `infobase` | `uuid16` | yes | 22 | 16.0 |
+| `last-active-at` | `datetime` | yes | 23 | 16.0 |
+| `hibernate` | `bool` | yes | 24 | 16.0 |
+| `passive-session-hibernate-time` | `u32_be` | yes | 25 | 16.0 |
+| `hibernate-session-terminate-time` | `u32_be` | yes | 26 | 16.0 |
+| `license` | `license-block` | yes | 27 | 16.0 |
+| `locale` | `str8` | yes | 28 | 16.0 |
+| `process` | `uuid16` | yes | 29 | 16.0 |
+| `session-id` | `u32_be` | yes | 30 | 16.0 |
+| `started-at` | `datetime` | yes | 31 | 16.0 |
+| `user-name` | `str8` | yes | 32 | 16.0 |
+| `memory-current` | `u64_be` | yes | 33 | 16.0 |
+| `memory-last-5min` | `u64_be` | yes | 34 | 16.0 |
+| `memory-total` | `u64_be` | yes | 35 | 16.0 |
+| `read-current` | `u64_be` | yes | 36 | 16.0 |
+| `read-last-5min` | `u64_be` | yes | 37 | 16.0 |
+| `read-total` | `u64_be` | yes | 38 | 16.0 |
+| `write-current` | `u64_be` | yes | 39 | 16.0 |
+| `write-last-5min` | `u64_be` | yes | 40 | 16.0 |
+| `write-total` | `u64_be` | yes | 41 | 16.0 |
+| `duration-current-service` | `u32_be` | yes | 42 | 16.0 |
+| `duration-last-5min-service` | `u64_be` | yes | 43 | 16.0 |
+| `duration-all-service` | `u32_be` | yes | 44 | 16.0 |
+| `current-service-name` | `str8` | yes | 45 | 16.0 |
+| `cpu-time-current` | `u64_be` | yes | 46 | 16.0 |
+| `cpu-time-last-5min` | `u64_be` | yes | 47 | 16.0 |
+| `cpu-time-total` | `u64_be` | yes | 48 | 16.0 |
+| `data-separation` | `str8` | yes | 49 | 16.0 |
+| `client-ip` | `str8` | yes | 50 | 16.0 |
 
 ## Session Record Layout (decoded order)
 

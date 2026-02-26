@@ -28,6 +28,7 @@ fields = [
 ]
 
 [rpc.ServiceSettingInfo]
+response = "ServiceSettingInfoResp"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid", version = "11.0" },
@@ -41,6 +42,7 @@ requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.ServiceSettingList]
+response = "ServiceSettingListResp"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid", version = "11.0" },
@@ -53,6 +55,7 @@ requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.ServiceSettingInsert]
+response = "ServiceSettingInsertResp"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid", version = "11.0" },
@@ -70,6 +73,7 @@ requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.ServiceSettingUpdate]
+response = "ServiceSettingUpdateResp"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid", version = "11.0" },
@@ -87,6 +91,7 @@ requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.ServiceSettingRemove]
+response = "AckResponse"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid", version = "11.0" },
@@ -99,6 +104,7 @@ requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.ServiceSettingApply]
+response = "AckResponse"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid", version = "11.0" },
@@ -110,6 +116,7 @@ requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.ServiceSettingGetDataDirs]
+response = "ServiceSettingGetDataDirsResp"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid", version = "11.0" },
@@ -123,16 +130,16 @@ requires_cluster_context = true
 requires_infobase_context = false
 
 [response.ServiceSettingList]
-body = { type = "list_u8", item = "ServiceSettingRecord" }
+body = { type = "list_u8", item = "ServiceSettingRecord", field = "records", struct = true }
 
 [response.ServiceSettingInfo]
-body = { type = "record", item = "ServiceSettingRecord" }
+body = { type = "record", item = "ServiceSettingRecord", field = "record", struct = true }
 
 [response.ServiceSettingInsert]
-body = { type = "record", item = "ServiceSettingIdRecord" }
+body = { type = "record", item = "ServiceSettingIdRecord", field = "setting", struct = true }
 
 [response.ServiceSettingUpdate]
-body = { type = "record", item = "ServiceSettingIdRecord" }
+body = { type = "record", item = "ServiceSettingIdRecord", field = "setting", struct = true }
 
 [response.ServiceSettingGetDataDirs]
-body = { type = "list_u8", item = "ServiceSettingTransferDataDirRecord" }
+body = { type = "list_u8", item = "ServiceSettingTransferDataDirRecord", field = "records", struct = true }

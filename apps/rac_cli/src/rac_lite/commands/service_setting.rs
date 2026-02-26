@@ -1,9 +1,20 @@
 use rac_protocol::client::{ClientConfig, RacClient};
 use rac_protocol::commands::{
-    service_setting_apply, service_setting_get_service_data_dirs_for_transfer, service_setting_info,
-    service_setting_info_no_auth, service_setting_insert, service_setting_list,
-    service_setting_remove, service_setting_update_no_auth, ServiceSettingInsertReq,
-    ServiceSettingUpdateReq,
+    service_setting_apply,
+    service_setting_get_service_data_dirs_for_transfer,
+    service_setting_info,
+    service_setting_info_no_auth,
+    service_setting_insert,
+    service_setting_list,
+    service_setting_remove,
+    service_setting_update_no_auth,
+    ServiceSettingApplyRpc,
+    ServiceSettingGetDataDirsRpc,
+    ServiceSettingInfoRpc,
+    ServiceSettingInsertRpc,
+    ServiceSettingListRpc,
+    ServiceSettingRemoveRpc,
+    ServiceSettingUpdateRpc,
 };
 use rac_protocol::error::Result;
 
@@ -30,13 +41,8 @@ pub fn run(json: bool, cfg: &ClientConfig, command: ServiceSettingCmd) -> Result
                 cluster_user.as_deref(),
                 cluster_pwd.as_deref(),
             )?;
-            let resp = service_setting_list(
-                &mut client,
-                cluster,
-                creds.user,
-                creds.pwd,
-                server,
-            )?;
+            let req = ServiceSettingListRpc { cluster, server };
+            let resp = service_setting_list(&mut client, creds.user, creds.pwd, req)?;
             console::output(json, &resp, console::service_setting_list(&resp.records));
             client.close()?;
         }
@@ -58,14 +64,12 @@ pub fn run(json: bool, cfg: &ClientConfig, command: ServiceSettingCmd) -> Result
                 cluster_user.as_deref(),
                 cluster_pwd.as_deref(),
             )?;
-            let resp = service_setting_info(
-                &mut client,
+            let req = ServiceSettingInfoRpc {
                 cluster,
-                creds.user,
-                creds.pwd,
                 server,
                 setting,
-            )?;
+            };
+            let resp = service_setting_info(&mut client, creds.user, creds.pwd, req)?;
             console::output(json, &resp, console::service_setting_info(&resp.record));
             client.close()?;
         }
@@ -84,8 +88,10 @@ pub fn run(json: bool, cfg: &ClientConfig, command: ServiceSettingCmd) -> Result
             let cluster = parse_uuid_arg(&cluster)?;
             let server = parse_uuid_arg(&server)?;
             let active = if no_active { false } else { active };
+            let active = if active { 1u16 } else { 0u16 };
             let mut client = RacClient::connect(&addr, cfg.clone())?;
-            let req = ServiceSettingInsertReq {
+            let req = ServiceSettingInsertRpc {
+                cluster,
                 server,
                 service_name,
                 infobase_name,
@@ -98,13 +104,7 @@ pub fn run(json: bool, cfg: &ClientConfig, command: ServiceSettingCmd) -> Result
                 cluster_user.as_deref(),
                 cluster_pwd.as_deref(),
             )?;
-            let resp = service_setting_insert(
-                &mut client,
-                cluster,
-                creds.user,
-                creds.pwd,
-                req,
-            )?;
+            let resp = service_setting_insert(&mut client, creds.user, creds.pwd, req)?;
             console::output(json, &resp, console::service_setting_insert(&resp));
             client.close()?;
         }
@@ -127,16 +127,23 @@ pub fn run(json: bool, cfg: &ClientConfig, command: ServiceSettingCmd) -> Result
                 cluster_user.as_deref(),
                 cluster_pwd.as_deref(),
             )?;
-            let info = service_setting_info_no_auth(&mut client, cluster, server, setting)?;
-            let req = ServiceSettingUpdateReq {
+            let info_req = ServiceSettingInfoRpc {
+                cluster,
+                server,
+                setting,
+            };
+            let info = service_setting_info_no_auth(&mut client, info_req)?;
+            let active = if info.record.active { 1u16 } else { 0u16 };
+            let req = ServiceSettingUpdateRpc {
+                cluster,
                 server,
                 setting,
                 service_name: info.record.service_name,
                 infobase_name: info.record.infobase_name,
                 service_data_dir,
-                active: info.record.active,
+                active,
             };
-            let resp = service_setting_update_no_auth(&mut client, cluster, req)?;
+            let resp = service_setting_update_no_auth(&mut client, req)?;
             console::output(json, &resp, console::service_setting_update(&resp));
             client.close()?;
         }
@@ -158,14 +165,12 @@ pub fn run(json: bool, cfg: &ClientConfig, command: ServiceSettingCmd) -> Result
                 cluster_user.as_deref(),
                 cluster_pwd.as_deref(),
             )?;
-            let resp = service_setting_remove(
-                &mut client,
+            let req = ServiceSettingRemoveRpc {
                 cluster,
-                creds.user,
-                creds.pwd,
                 server,
                 setting,
-            )?;
+            };
+            let resp = service_setting_remove(&mut client, creds.user, creds.pwd, req)?;
             console::output(json, &resp, console::service_setting_remove(&resp));
             client.close()?;
         }
@@ -185,13 +190,8 @@ pub fn run(json: bool, cfg: &ClientConfig, command: ServiceSettingCmd) -> Result
                 cluster_user.as_deref(),
                 cluster_pwd.as_deref(),
             )?;
-            let resp = service_setting_apply(
-                &mut client,
-                cluster,
-                creds.user,
-                creds.pwd,
-                server,
-            )?;
+            let req = ServiceSettingApplyRpc { cluster, server };
+            let resp = service_setting_apply(&mut client, creds.user, creds.pwd, req)?;
             console::output(json, &resp, console::service_setting_apply(&resp));
             client.close()?;
         }
@@ -212,13 +212,16 @@ pub fn run(json: bool, cfg: &ClientConfig, command: ServiceSettingCmd) -> Result
                 cluster_user.as_deref(),
                 cluster_pwd.as_deref(),
             )?;
+            let req = ServiceSettingGetDataDirsRpc {
+                cluster,
+                server,
+                service_name,
+            };
             let resp = service_setting_get_service_data_dirs_for_transfer(
                 &mut client,
-                cluster,
                 creds.user,
                 creds.pwd,
-                server,
-                &service_name,
+                req,
             )?;
             console::output(
                 json,

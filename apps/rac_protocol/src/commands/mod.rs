@@ -91,10 +91,12 @@ pub use self::service_setting::{
     service_setting_apply, service_setting_get_service_data_dirs_for_transfer,
     service_setting_info, service_setting_info_no_auth, service_setting_insert,
     service_setting_list, service_setting_remove, service_setting_update,
-    service_setting_update_no_auth, ServiceSettingApplyResp, ServiceSettingInfoResp,
-    ServiceSettingInsertReq, ServiceSettingInsertResp, ServiceSettingListResp, ServiceSettingRecord,
-    ServiceSettingTransferDataDirRecord, ServiceSettingTransferDataDirsResp,
-    ServiceSettingRemoveResp, ServiceSettingUpdateReq, ServiceSettingUpdateResp,
+    service_setting_update_no_auth, ServiceSettingApplyRpc, ServiceSettingGetDataDirsResp,
+    ServiceSettingGetDataDirsRpc, ServiceSettingIdRecord, ServiceSettingInfoResp,
+    ServiceSettingInfoRpc, ServiceSettingInsertResp, ServiceSettingInsertRpc,
+    ServiceSettingListResp, ServiceSettingListRpc, ServiceSettingRecord,
+    ServiceSettingRemoveRpc, ServiceSettingTransferDataDirRecord, ServiceSettingUpdateResp,
+    ServiceSettingUpdateRpc,
 };
 
 pub(crate) fn call_body<R: Request>(client: &mut RacClient, request: R) -> Result<Vec<u8>> {

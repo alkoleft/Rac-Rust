@@ -6,8 +6,8 @@ use rac_protocol::commands::{
     AgentAdminRecord, ClusterAdminRecord, ClusterRecord, ConnectionRecord, CounterRecord,
     CounterValuesRecord, InfobaseSummary, LimitRecord, LockRecordRaw, ManagerRecord, ProcessLicense,
     ProcessRecord, RuleInsertResp, RuleRecord, RuleUpdateResp,
-    ServerRecord, ServiceSettingApplyResp, ServiceSettingInsertResp, ServiceSettingRecord,
-    ServiceSettingRemoveResp, ServiceSettingTransferDataDirRecord, ServiceSettingUpdateResp,
+    ServerRecord, ServiceSettingInsertResp, ServiceSettingRecord,
+    ServiceSettingTransferDataDirRecord, ServiceSettingUpdateResp,
     SessionLicense, SessionRecord,
 };
 use rac_protocol::rpc::AckResponse;
@@ -309,18 +309,18 @@ pub fn service_setting_update(resp: &ServiceSettingUpdateResp) -> ServiceSetting
 }
 
 pub struct ServiceSettingRemoveDisplay<'a> {
-    resp: &'a ServiceSettingRemoveResp,
+    resp: &'a AckResponse,
 }
 
-pub fn service_setting_remove(resp: &ServiceSettingRemoveResp) -> ServiceSettingRemoveDisplay<'_> {
+pub fn service_setting_remove(resp: &AckResponse) -> ServiceSettingRemoveDisplay<'_> {
     ServiceSettingRemoveDisplay { resp }
 }
 
 pub struct ServiceSettingApplyDisplay<'a> {
-    resp: &'a ServiceSettingApplyResp,
+    resp: &'a AckResponse,
 }
 
-pub fn service_setting_apply(resp: &ServiceSettingApplyResp) -> ServiceSettingApplyDisplay<'_> {
+pub fn service_setting_apply(resp: &AckResponse) -> ServiceSettingApplyDisplay<'_> {
     ServiceSettingApplyDisplay { resp }
 }
 

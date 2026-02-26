@@ -70,24 +70,6 @@ impl Display for UuidListDisplay<'_> {
     }
 }
 
-pub struct StringListDisplay<'a> {
-    label: &'a str,
-    items: &'a [String],
-}
-
-pub fn string_list<'a>(label: &'a str, items: &'a [String]) -> StringListDisplay<'a> {
-    StringListDisplay { label, items }
-}
-
-impl Display for StringListDisplay<'_> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let out = list_to_string(self.label, self.items, 5, MoreLabel::Default, |out, _idx, value| {
-            let _ = writeln!(out, "- {value}");
-        });
-        write_trimmed(f, &out)
-    }
-}
-
 pub struct InfoDisplay<'a> {
     label: &'a str,
     uuid: &'a Uuid16,
@@ -430,6 +412,40 @@ pub fn cluster_admin_register(acknowledged: bool) -> ClusterAdminRegisterDisplay
     ClusterAdminRegisterDisplay { acknowledged }
 }
 
+pub struct AgentAdminRegisterDisplay<'a> {
+    resp: &'a AckResponse,
+}
+
+pub fn agent_admin_register(resp: &AckResponse) -> AgentAdminRegisterDisplay<'_> {
+    AgentAdminRegisterDisplay { resp }
+}
+
+pub struct AgentAdminRemoveDisplay<'a> {
+    resp: &'a AckResponse,
+}
+
+pub fn agent_admin_remove(resp: &AckResponse) -> AgentAdminRemoveDisplay<'_> {
+    AgentAdminRemoveDisplay { resp }
+}
+
+pub struct SessionTerminateDisplay<'a> {
+    resp: &'a AckResponse,
+}
+
+pub fn session_terminate(resp: &AckResponse) -> SessionTerminateDisplay<'_> {
+    SessionTerminateDisplay { resp }
+}
+
+pub struct SessionInterruptCurrentServerCallDisplay<'a> {
+    resp: &'a AckResponse,
+}
+
+pub fn session_interrupt_current_server_call(
+    resp: &AckResponse,
+) -> SessionInterruptCurrentServerCallDisplay<'_> {
+    SessionInterruptCurrentServerCallDisplay { resp }
+}
+
 pub struct RuleApplyDisplay<'a> {
     resp: &'a AckResponse,
 }
@@ -504,6 +520,50 @@ impl Display for ClusterAdminRegisterDisplay {
             "cluster-admin-register: ok"
         } else {
             "cluster-admin-register: failed"
+        };
+        write!(f, "{rendered}")
+    }
+}
+
+impl Display for AgentAdminRegisterDisplay<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let rendered = if self.resp.acknowledged {
+            "agent-admin-register: ok"
+        } else {
+            "agent-admin-register: failed"
+        };
+        write!(f, "{rendered}")
+    }
+}
+
+impl Display for AgentAdminRemoveDisplay<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let rendered = if self.resp.acknowledged {
+            "agent-admin-remove: ok"
+        } else {
+            "agent-admin-remove: failed"
+        };
+        write!(f, "{rendered}")
+    }
+}
+
+impl Display for SessionTerminateDisplay<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let rendered = if self.resp.acknowledged {
+            "session-terminate: ok"
+        } else {
+            "session-terminate: failed"
+        };
+        write!(f, "{rendered}")
+    }
+}
+
+impl Display for SessionInterruptCurrentServerCallDisplay<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let rendered = if self.resp.acknowledged {
+            "session-interrupt-current-server-call: ok"
+        } else {
+            "session-interrupt-current-server-call: failed"
         };
         write!(f, "{rendered}")
     }

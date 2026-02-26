@@ -89,6 +89,32 @@ pub enum AgentAdminCmd {
         #[arg(long)]
         agent_pwd: Option<String>,
     },
+    Register {
+        addr: String,
+        #[arg(long)]
+        agent_user: Option<String>,
+        #[arg(long)]
+        agent_pwd: Option<String>,
+        #[arg(long)]
+        name: String,
+        #[arg(long)]
+        pwd: String,
+        #[arg(long, default_value = "")]
+        descr: String,
+        #[arg(long, default_value = "pwd")]
+        auth: String,
+        #[arg(long, default_value = "")]
+        os_user: String,
+    },
+    Remove {
+        addr: String,
+        #[arg(long)]
+        agent_user: Option<String>,
+        #[arg(long)]
+        agent_pwd: Option<String>,
+        #[arg(long)]
+        name: String,
+    },
 }
 
 #[derive(Subcommand, Debug)]
@@ -241,6 +267,32 @@ pub enum SessionCmd {
         cluster: String,
         #[arg(long)]
         session: String,
+    },
+    Terminate {
+        addr: String,
+        #[arg(long)]
+        cluster: String,
+        #[arg(long)]
+        cluster_user: Option<String>,
+        #[arg(long)]
+        cluster_pwd: Option<String>,
+        #[arg(long)]
+        session: String,
+        #[arg(long, default_value = "")]
+        error_message: String,
+    },
+    InterruptCurrentServerCall {
+        addr: String,
+        #[arg(long)]
+        cluster: String,
+        #[arg(long)]
+        cluster_user: Option<String>,
+        #[arg(long)]
+        cluster_pwd: Option<String>,
+        #[arg(long)]
+        session: String,
+        #[arg(long, default_value = "")]
+        error_message: String,
     },
 }
 

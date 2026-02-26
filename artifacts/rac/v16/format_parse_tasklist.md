@@ -1,6 +1,10 @@
 # RAC v16 Format Parse Tasklist (gaps/tails/no capture)
 
-Источник: `docs/rac/messages/rac_message_formats_*.md`.
+Источник: `docs/rac/messages/rac_message_formats_*.md` и `docs/rac/messages/rac_v11_capture_plan_prompt.md`.
+
+**Capture Requirements (v11)**
+- [ ] Использовать `scripts/rac/capture_rac_command.sh` и сохранять: `logs/session_*/client_to_server.stream.bin`, `logs/session_*/server_to_client.stream.bin`, payload в `artifacts/rac/<label>.hex`, вывод `rac` в `artifacts/rac/<label>_rac.out`.
+- [ ] Для подтверждения полей/смещений делать минимум 2 контрастных варианта значений (ноль/неноль, пусто/непусто, разные enum).
 
 **Agent**
 - [ ] `rac agent admin list`: захват с `auth=pwd,os`, `os-user` и `descr` непустыми; сопоставить `unknown_tag/unknown_flags/unknown_tail` с полями `auth/os-user/descr` и проверить несколько записей.
@@ -76,6 +80,17 @@
 - [ ] `rac profile acl inet list`: получить захват запроса/ответа, восстановить порядок полей.
 - [ ] `rac profile acl inet update`: получить захват запроса/ответа, восстановить порядок полей.
 - [ ] `rac profile acl inet remove`: получить захват запроса/ответа, восстановить порядок полей.
+
+**Counter**
+- [ ] `rac counter list/info/values/accumulated-values`: захваты с разными enum (`group`, `filter-type`, `duration`, и др.), подтвердить кодировки.
+- [ ] `rac counter update`: получить захват запроса/ответа, восстановить порядок полей.
+- [ ] `rac counter clear`: получить захват запроса/ответа, восстановить порядок полей.
+- [ ] `rac counter remove`: получить захват запроса/ответа, восстановить порядок полей.
+
+**Limit**
+- [ ] `rac limit list/info`: захваты с разными `action` и ненулевыми лимитами, подтвердить enum и поля.
+- [ ] `rac limit update`: получить захват запроса/ответа, восстановить порядок полей.
+- [ ] `rac limit remove`: получить захват запроса/ответа, восстановить порядок полей.
 
 **Rule**
 - [ ] `rac rule apply --partial`: захват для подтверждения enum `apply_mode`.

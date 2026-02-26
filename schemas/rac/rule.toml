@@ -50,7 +50,7 @@ derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid" },
   { name = "server", type = "uuid" },
-  { name = "padding", type = "bytes_fixed", literal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], len = 16 },
+  { name = "rule", type = "uuid" },
   { name = "position", type = "u32_be" },
   { name = "object_type", type = "u32_be" },
   { name = "infobase_name", type = "str8" },
@@ -89,12 +89,14 @@ requires_infobase_context = false
 
 [rpc.RuleApply]
 request = "RuleApplyRequest"
+response = "AckResponse"
 method_req = 0x51
 requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.RuleRemove]
 request = "RuleRemoveRequest"
+response = "AckResponse"
 method_req = 0x54
 requires_cluster_context = true
 requires_infobase_context = false

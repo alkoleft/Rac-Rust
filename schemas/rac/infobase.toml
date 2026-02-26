@@ -6,11 +6,30 @@ fields = [
   { name = "name", type = "str_len_u8" },
 ]
 
-[record.InfobaseFieldsRecord]
+[record.InfobaseInfoRecord]
 derive = ["Debug", "Serialize", "Clone"]
 fields = [
   { name = "infobase", type = "uuid" },
-  { name = "fields", type = "list_str8_rest" },
+  { name = "tag", type = "u8" },
+  { name = "unknown_u32_0", type = "u32_be" },
+  { name = "dbms", type = "str8" },
+  { name = "name", type = "str8" },
+  { name = "unknown_str_0", type = "str8" },
+  { name = "db_server", type = "str8" },
+  { name = "db_user", type = "str8" },
+  { name = "unknown_str_1", type = "str8" },
+  { name = "unknown_str_2", type = "str8" },
+  { name = "unknown_bytes_0", type = "bytes_fixed", len = 4 },
+  { name = "denied_message", type = "str8" },
+  { name = "denied_parameter", type = "str8" },
+  { name = "unknown_str_3", type = "str8" },
+  { name = "unknown_str_4", type = "str8" },
+  { name = "unknown_u32_1", type = "u32_be" },
+  { name = "descr", type = "str8" },
+  { name = "locale", type = "str8" },
+  { name = "db_name", type = "str8" },
+  { name = "permission_code", type = "str8" },
+  { name = "tail", type = "bytes_fixed", len = 28 },
 ]
 
 [request.InfobaseSummaryListRequest]
@@ -31,6 +50,14 @@ derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid" },
   { name = "infobase", type = "uuid" },
+]
+
+[request.InfobaseSummaryUpdateRequest]
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid" },
+  { name = "infobase", type = "uuid" },
+  { name = "descr", type = "str8" },
 ]
 
 [rpc.InfobaseSummaryList]
@@ -54,11 +81,18 @@ method_resp = 0x31
 requires_cluster_context = true
 requires_infobase_context = true
 
+[rpc.InfobaseSummaryUpdate]
+request = "InfobaseSummaryUpdateRequest"
+response = "AckResponse"
+method_req = 0x27
+requires_cluster_context = true
+requires_infobase_context = false
+
 [response.InfobaseSummaryList]
 body = { type = "list_u8", item = "InfobaseSummary" }
 
 [response.InfobaseSummaryInfo]
-body = { type = "record", item = "InfobaseFieldsRecord" }
+body = { type = "record", item = "InfobaseSummary" }
 
 [response.InfobaseInfo]
-body = { type = "record", item = "InfobaseFieldsRecord" }
+body = { type = "record", item = "InfobaseInfoRecord" }

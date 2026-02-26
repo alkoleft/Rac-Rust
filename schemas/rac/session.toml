@@ -83,6 +83,22 @@ fields = [
   { name = "session", type = "uuid" },
 ]
 
+[request.SessionTerminateRequest]
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid" },
+  { name = "session", type = "uuid" },
+  { name = "error_message", type = "str8" },
+]
+
+[request.SessionInterruptCurrentServerCallRequest]
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid" },
+  { name = "session", type = "uuid" },
+  { name = "error_message", type = "str8" },
+]
+
 [rpc.SessionList]
 request = "SessionListRequest"
 method_req = 0x41
@@ -94,6 +110,20 @@ requires_infobase_context = false
 request = "SessionInfoRequest"
 method_req = 0x45
 method_resp = 0x46
+requires_cluster_context = true
+requires_infobase_context = false
+
+[rpc.SessionTerminate]
+request = "SessionTerminateRequest"
+response = "AckResponse"
+method_req = 0x47
+requires_cluster_context = true
+requires_infobase_context = false
+
+[rpc.SessionInterruptCurrentServerCall]
+request = "SessionInterruptCurrentServerCallRequest"
+response = "AckResponse"
+method_req = 0x75
 requires_cluster_context = true
 requires_infobase_context = false
 

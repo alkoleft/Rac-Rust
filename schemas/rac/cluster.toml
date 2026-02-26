@@ -57,10 +57,22 @@ fields = [
   { name = "name", type = "str8" },
   { name = "descr", type = "str8" },
   { name = "pwd", type = "str8" },
+  { name = "auth_tag", type = "u8" },
   { name = "auth_flags", type = "u8" },
-  { name = "padding", type = "bytes_fixed", literal = [0, 0] },
+  { name = "os_user", type = "str8" },
 ]
 method_req = 0x05
+requires_cluster_context = false
+requires_infobase_context = false
+
+[rpc.ClusterAdminRemove]
+response = "AckResponse"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid" },
+  { name = "name", type = "str8" },
+]
+method_req = 0x07
 requires_cluster_context = false
 requires_infobase_context = false
 

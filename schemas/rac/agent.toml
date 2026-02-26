@@ -31,6 +31,31 @@ method_resp = 0x01
 requires_cluster_context = false
 requires_infobase_context = false
 
+[rpc.AgentAdminRegister]
+response = "AckResponse"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "name", type = "str8" },
+  { name = "descr", type = "str8" },
+  { name = "pwd", type = "str8" },
+  { name = "auth_tag", type = "u8" },
+  { name = "auth_flags", type = "u8" },
+  { name = "os_user", type = "str8" },
+]
+method_req = 0x04
+requires_cluster_context = false
+requires_infobase_context = false
+
+[rpc.AgentAdminRemove]
+response = "AckResponse"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "name", type = "str8" },
+]
+method_req = 0x06
+requires_cluster_context = false
+requires_infobase_context = false
+
 [rpc.AgentVersion]
 response = "AgentVersionResp"
 derive = ["Debug", "Clone"]

@@ -1,8 +1,5 @@
-use crate::client::RacClient;
 use crate::codec::RecordCursor;
 use crate::error::Result;
-use crate::rpc::Request;
-pub(crate) use crate::rpc::decode_utils::{parse_uuid_body, rpc_body};
 
 mod auth;
 pub mod agent;
@@ -21,7 +18,8 @@ pub mod session;
 pub mod service_setting;
 
 pub use self::agent::{
-    agent_admin_list, agent_version, AgentAdminListResp, AgentAdminRecord,
+    agent_admin_list, agent_admin_register, agent_admin_remove, agent_version,
+    AgentAdminListResp, AgentAdminRecord,
 };
 pub use self::auth::{agent_auth_optional, cluster_auth_optional, AuthPair};
 pub use self::cluster::{
@@ -86,7 +84,9 @@ pub use self::server::{
 };
 pub use self::session::{
     session_info,
+    session_interrupt_current_server_call,
     session_list,
+    session_terminate,
     SessionInfoResp,
     SessionInfoRpc,
     SessionLicense,
@@ -106,12 +106,6 @@ pub use self::service_setting::{
     ServiceSettingUpdateRpc,
 };
 
-pub(crate) fn call_body<R: Request>(client: &mut RacClient, request: R) -> Result<Vec<u8>> {
-    let reply = client.call(request)?;
-    let body = rpc_body(&reply)?;
-    Ok(body.to_vec())
-}
-
 pub(crate) fn parse_list_u8<T, F>(body: &[u8], mut decode: F) -> Result<Vec<T>>
 where
     F: FnMut(&mut RecordCursor<'_>) -> Result<T>,
@@ -124,30 +118,6 @@ where
     let mut out = Vec::with_capacity(count);
     for _ in 0..count {
         out.push(decode(&mut cursor)?);
-    }
-    Ok(out)
-}
-
-pub(crate) fn parse_list_u8_tail<T, F>(
-    body: &[u8],
-    tail_len: usize,
-    mut decode: F,
-) -> Result<Vec<T>>
-where
-    F: FnMut(&mut RecordCursor<'_>) -> Result<T>,
-{
-    if body.is_empty() {
-        return Ok(Vec::new());
-    }
-    let mut cursor = RecordCursor::new(body);
-    let count = cursor.take_u8()? as usize;
-    let mut out = Vec::with_capacity(count);
-    for _ in 0..count {
-        let record = decode(&mut cursor)?;
-        if tail_len != 0 {
-            let _tail = cursor.take_bytes(tail_len)?;
-        }
-        out.push(record);
     }
     Ok(out)
 }

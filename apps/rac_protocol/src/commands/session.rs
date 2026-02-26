@@ -1,5 +1,7 @@
 use crate::client::RacClient;
+use crate::commands::cluster_auth;
 use crate::error::Result;
+use crate::rpc::AckResponse;
 use crate::Uuid16;
 
 mod generated {
@@ -9,10 +11,12 @@ mod generated {
 pub use generated::{
     SessionInfoResp,
     SessionInfoRpc,
+    SessionInterruptCurrentServerCallRpc,
     SessionLicense,
     SessionListResp,
     SessionListRpc,
     SessionRecord,
+    SessionTerminateRpc,
 };
 
 pub fn session_list(client: &mut RacClient, cluster: Uuid16) -> Result<SessionListResp> {
@@ -27,12 +31,46 @@ pub fn session_info(
     client.call_typed(SessionInfoRpc { cluster, session })
 }
 
+pub fn session_terminate(
+    client: &mut RacClient,
+    cluster_user: &str,
+    cluster_pwd: &str,
+    cluster: Uuid16,
+    session: Uuid16,
+    error_message: String,
+) -> Result<AckResponse> {
+    let _ = cluster_auth(client, cluster, cluster_user, cluster_pwd)?;
+    client.call_typed(SessionTerminateRpc {
+        cluster,
+        session,
+        error_message,
+    })
+}
+
+pub fn session_interrupt_current_server_call(
+    client: &mut RacClient,
+    cluster_user: &str,
+    cluster_pwd: &str,
+    cluster: Uuid16,
+    session: Uuid16,
+    error_message: String,
+) -> Result<AckResponse> {
+    let _ = cluster_auth(client, cluster, cluster_user, cluster_pwd)?;
+    client.call_typed(SessionInterruptCurrentServerCallRpc {
+        cluster,
+        session,
+        error_message,
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::commands::rpc_body;
     use crate::protocol::ProtocolVersion;
     use crate::rpc::Response;
+    use crate::rpc::Request;
+    use crate::rac_wire::parse_uuid;
 
     fn decode_hex_str(input: &str) -> Vec<u8> {
         hex::decode(input.trim()).expect("hex decode")
@@ -152,5 +190,41 @@ mod tests {
         let lic = &record.license;
         assert_eq!(lic.process_id, "381094");
         assert_eq!(lic.brief_presentation, "Клиент, 500000025347 4 4");
+    }
+
+    #[test]
+    fn encode_session_terminate_request() {
+        let expected = decode_hex_str(
+            "01000001471619820ad36f4d8aa7161516b1dea0770000000000000000000000000000000014636f646578207465726d696e6174652074657374",
+        );
+        let cluster = parse_uuid("1619820a-d36f-4d8a-a716-1516b1dea077").unwrap();
+        let session = parse_uuid("00000000-0000-0000-0000-000000000000").unwrap();
+        let req = SessionTerminateRpc {
+            cluster,
+            session,
+            error_message: "codex terminate test".to_string(),
+        };
+        let protocol = ProtocolVersion::V16_0.boxed();
+        let serialized = req.encode(protocol.as_ref()).expect("serialize");
+        assert_eq!(serialized.payload, expected);
+        assert_eq!(serialized.expect_method, None);
+    }
+
+    #[test]
+    fn encode_session_interrupt_current_server_call_request() {
+        let expected = decode_hex_str(
+            "01000001751619820ad36f4d8aa7161516b1dea0770000000000000000000000000000000014636f64657820696e746572727570742074657374",
+        );
+        let cluster = parse_uuid("1619820a-d36f-4d8a-a716-1516b1dea077").unwrap();
+        let session = parse_uuid("00000000-0000-0000-0000-000000000000").unwrap();
+        let req = SessionInterruptCurrentServerCallRpc {
+            cluster,
+            session,
+            error_message: "codex interrupt test".to_string(),
+        };
+        let protocol = ProtocolVersion::V16_0.boxed();
+        let serialized = req.encode(protocol.as_ref()).expect("serialize");
+        assert_eq!(serialized.payload, expected);
+        assert_eq!(serialized.expect_method, None);
     }
 }

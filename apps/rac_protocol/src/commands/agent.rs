@@ -1,5 +1,6 @@
 use crate::client::RacClient;
 use crate::error::Result;
+use crate::rpc::AckResponse;
 
 mod generated {
     include!("agent_generated.rs");
@@ -8,6 +9,8 @@ mod generated {
 pub use generated::{
     AgentAdminListRpc,
     AgentAdminListResp,
+    AgentAdminRegisterRpc,
+    AgentAdminRemoveRpc,
     AgentAdminRecord,
     AgentAuthRpc,
     AgentVersionResp,
@@ -24,6 +27,45 @@ pub fn agent_admin_list(
         pwd: agent_pwd.to_string(),
     })?;
     client.call_typed(AgentAdminListRpc)
+}
+
+pub fn agent_admin_register(
+    client: &mut RacClient,
+    agent_user: &str,
+    agent_pwd: &str,
+    name: String,
+    descr: String,
+    pwd: String,
+    auth_flags: u8,
+    os_user: String,
+) -> Result<AckResponse> {
+    let _ = client.call_typed(AgentAuthRpc {
+        user: agent_user.to_string(),
+        pwd: agent_pwd.to_string(),
+    })?;
+    client.call_typed(AgentAdminRegisterRpc {
+        name,
+        descr,
+        pwd,
+        auth_tag: 0x01,
+        auth_flags,
+        os_user,
+    })
+}
+
+pub fn agent_admin_remove(
+    client: &mut RacClient,
+    agent_user: &str,
+    agent_pwd: &str,
+    name: &str,
+) -> Result<AckResponse> {
+    let _ = client.call_typed(AgentAuthRpc {
+        user: agent_user.to_string(),
+        pwd: agent_pwd.to_string(),
+    })?;
+    client.call_typed(AgentAdminRemoveRpc {
+        name: name.to_string(),
+    })
 }
 
 pub fn agent_version(client: &mut RacClient) -> Result<AgentVersionResp> {
@@ -94,5 +136,38 @@ mod tests {
         let resp = AgentVersionResp::decode(&payload, ProtocolVersion::V16_0.boxed().as_ref())
             .expect("parse response");
         assert_eq!(resp.version, "1.2.3");
+    }
+
+    #[test]
+    fn encode_agent_admin_register_pwd_request() {
+        let expected = decode_hex_str(
+            "01000001041f636f6465785f6167656e745f7077645f32303236303232365f3035333432350f436f646578206167656e74207077640770617373313233010000",
+        );
+        let req = AgentAdminRegisterRpc {
+            name: "codex_agent_pwd_20260226_053425".to_string(),
+            descr: "Codex agent pwd".to_string(),
+            pwd: "pass123".to_string(),
+            auth_tag: 0x01,
+            auth_flags: 0x00,
+            os_user: String::new(),
+        };
+        let protocol = ProtocolVersion::V16_0.boxed();
+        let serialized = req.encode(protocol.as_ref()).expect("serialize");
+        assert_eq!(serialized.payload, expected);
+        assert_eq!(serialized.expect_method, None);
+    }
+
+    #[test]
+    fn encode_agent_admin_remove_request() {
+        let expected = decode_hex_str(
+            "01000001061e636f6465785f6167656e745f6f735f32303236303232365f303533343235",
+        );
+        let req = AgentAdminRemoveRpc {
+            name: "codex_agent_os_20260226_053425".to_string(),
+        };
+        let protocol = ProtocolVersion::V16_0.boxed();
+        let serialized = req.encode(protocol.as_ref()).expect("serialize");
+        assert_eq!(serialized.payload, expected);
+        assert_eq!(serialized.expect_method, None);
     }
 }

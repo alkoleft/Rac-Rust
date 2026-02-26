@@ -46,18 +46,22 @@
 - [ ] `rac lock list --session`: захват, чтобы проверить наличие дополнительных полей в запросе.
 
 **Process**
-- [ ] `rac process list/info`: определить `gap_0` (8 байт) и неизвестный хвост после license block; нужен захват с вариативными значениями (разные серверы/нагрузка).
-- [ ] `rac process list/info --licenses`: определить `gap_license_0` и подтвердить хвостовые поля `use`/`reserve`/`memory-excess-time`.
+- [ ] `rac process list`: определить `gap_0` (8 байт) и неизвестный хвост после license block; нужен захват с вариативными значениями (разные серверы/нагрузка).
+- [ ] `rac process info`: определить `gap_0` (8 байт) и неизвестный хвост после license block; нужен захват с вариативными значениями (разные серверы/нагрузка).
+- [ ] `rac process list --licenses`: определить `gap_license_0` и подтвердить хвостовые поля `use`/`reserve`/`memory-excess-time`.
+- [ ] `rac process info --licenses`: определить `gap_license_0` и подтвердить хвостовые поля `use`/`reserve`/`memory-excess-time`.
 
 **Server**
-- [ ] `rac server list/info`: определить назначения `gap_1..gap_6` (ожидаемые `memory-limit`, `connections-limit`, `safe-working-processes-memory-limit`), подтвердить порядок `port-range` и поведение `gap_7` с непустым `restart-schedule`.
+- [ ] `rac server list`: определить назначения `gap_1..gap_6` (ожидаемые `memory-limit`, `connections-limit`, `safe-working-processes-memory-limit`), подтвердить порядок `port-range` и поведение `gap_7` с непустым `restart-schedule`.
+- [ ] `rac server info`: определить назначения `gap_1..gap_6` (ожидаемые `memory-limit`, `connections-limit`, `safe-working-processes-memory-limit`), подтвердить порядок `port-range` и поведение `gap_7` с непустым `restart-schedule`.
 - [ ] `rac server insert`: получить захват запроса/ответа, восстановить порядок полей.
 - [ ] `rac server update`: получить захват запроса/ответа, восстановить порядок полей.
 - [ ] `rac server remove`: получить захват запроса/ответа, восстановить порядок полей.
 
 **Session**
 - [ ] `rac session info`: получить v11-захват payload для подтверждения порядка/наличия полей.
-- [ ] `rac session list/info --licenses`: захват запроса, чтобы зафиксировать наличие и порядок `licenses` флага.
+- [ ] `rac session list --licenses`: захват запроса, чтобы зафиксировать наличие и порядок `licenses` флага.
+- [ ] `rac session info --licenses`: захват запроса, чтобы зафиксировать наличие и порядок `licenses` флага.
 - [ ] `rac session terminate`: получить захват запроса/ответа, восстановить порядок полей.
 - [ ] `rac session interrupt-current-server-call`: получить захват запроса/ответа, восстановить порядок полей.
 
@@ -85,13 +89,17 @@
 - [ ] `rac profile acl inet remove`: получить захват запроса/ответа, восстановить порядок полей.
 
 **Counter**
-- [ ] `rac counter list/info/values/accumulated-values`: захваты с разными enum (`group`, `filter-type`, `duration`, и др.), подтвердить кодировки.
+- [ ] `rac counter list`: захваты с разными enum (`group`, `filter-type`, `duration`, и др.), подтвердить кодировки.
+- [ ] `rac counter info`: захваты с разными enum (`group`, `filter-type`, `duration`, и др.), подтвердить кодировки.
+- [ ] `rac counter values`: захваты с разными enum (`group`, `filter-type`, `duration`, и др.), подтвердить кодировки.
+- [ ] `rac counter accumulated-values`: захваты с разными enum (`group`, `filter-type`, `duration`, и др.), подтвердить кодировки.
 - [ ] `rac counter update`: получить захват запроса/ответа, восстановить порядок полей.
 - [ ] `rac counter clear`: получить захват запроса/ответа, восстановить порядок полей.
 - [ ] `rac counter remove`: получить захват запроса/ответа, восстановить порядок полей.
 
 **Limit**
-- [ ] `rac limit list/info`: захваты с разными `action` и ненулевыми лимитами, подтвердить enum и поля.
+- [ ] `rac limit list`: захваты с разными `action` и ненулевыми лимитами, подтвердить enum и поля.
+- [ ] `rac limit info`: захваты с разными `action` и ненулевыми лимитами, подтвердить enum и поля.
 - [ ] `rac limit update`: получить захват запроса/ответа, восстановить порядок полей.
 - [ ] `rac limit remove`: получить захват запроса/ответа, восстановить порядок полей.
 

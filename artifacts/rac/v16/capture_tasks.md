@@ -24,7 +24,7 @@
 | `infobase info` | [x] `artifacts/rac/v16/help/infobase_info.out` | нет | нет |
 | `connection list` | [x] `artifacts/rac/v16/help/connection_list.out` | нет | нет |
 | `connection info` | [x] `artifacts/rac/v16/help/connection_info.out` | нет | нет |
-| `session list` | [x] пустой: `artifacts/rac/v16/help/session_list.out` | нет | нет |
+| `session list` | [x] `artifacts/rac/v16/help/session_list.out` | нет | нет |
 | `lock list` | [x] `artifacts/rac/v16/help/lock_list.out` | нет | нет |
 | `rule list` | [x] пустой: `artifacts/rac/v16/help/rule_list.out` | gap | частично |
 | `profile list` | [x] пустой: `artifacts/rac/v16/help/profile_list.out` | нет | нет |

@@ -1,4 +1,3 @@
-use rac_protocol::commands::RuleApplyMode;
 use rac_protocol::error::{RacError, Result};
 use rac_protocol::rac_wire::parse_uuid;
 use rac_protocol::Uuid16;
@@ -27,10 +26,10 @@ pub fn parse_auth_flags(input: &str) -> Result<u8> {
     Ok(flags)
 }
 
-pub fn parse_rule_apply_mode(input: &str) -> Result<RuleApplyMode> {
+pub fn parse_rule_apply_mode(input: &str) -> Result<u32> {
     match input.trim() {
-        "full" => Ok(RuleApplyMode::Full),
-        "partial" => Ok(RuleApplyMode::Partial),
+        "full" => Ok(1),
+        "partial" => Ok(0),
         _ => Err(RacError::Unsupported("unknown rule apply mode")),
     }
 }

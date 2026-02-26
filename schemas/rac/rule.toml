@@ -16,6 +16,7 @@ fields = [
 ]
 
 [rpc.RuleList]
+response = "RuleListResp"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid", version = "11.0" },
@@ -28,6 +29,7 @@ requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.RuleInfo]
+response = "RuleInfoResp"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid", version = "11.0" },
@@ -66,6 +68,7 @@ requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.RuleInsert]
+response = "RuleInsertResp"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid", version = "11.0" },
@@ -85,6 +88,7 @@ requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.RuleUpdate]
+response = "RuleUpdateResp"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid", version = "11.0" },
@@ -104,13 +108,13 @@ requires_cluster_context = true
 requires_infobase_context = false
 
 [response.RuleList]
-body = { type = "list_u8", item = "RuleRecord" }
+body = { type = "list_u8", item = "RuleRecord", field = "records", struct = true }
 
 [response.RuleInfo]
-body = { type = "record", item = "RuleRecord" }
+body = { type = "record", item = "RuleRecord", field = "record", struct = true }
 
 [response.RuleInsert]
-body = { type = "record", item = "RuleIdRecord" }
+body = { type = "record", item = "RuleIdRecord", field = "rule", struct = true }
 
 [response.RuleUpdate]
-body = { type = "record", item = "RuleIdRecord" }
+body = { type = "record", item = "RuleIdRecord", field = "rule", struct = true }

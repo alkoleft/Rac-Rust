@@ -5,7 +5,7 @@ use serde::Serialize;
 use rac_protocol::commands::{
     AgentAdminRecord, ClusterAdminRecord, ClusterRecord, ConnectionRecord, CounterRecord,
     CounterValuesRecord, InfobaseSummary, LimitRecord, LockRecordRaw, ManagerRecord, ProcessLicense,
-    ProcessRecord, RuleApplyResp, RuleInsertResp, RuleRecord, RuleRemoveResp, RuleUpdateResp,
+    ProcessRecord, RuleInsertResp, RuleRecord, RuleUpdateResp,
     ServerRecord, ServiceSettingApplyResp, ServiceSettingInsertResp, ServiceSettingRecord,
     ServiceSettingRemoveResp, ServiceSettingTransferDataDirRecord, ServiceSettingUpdateResp,
     SessionLicense, SessionRecord,
@@ -431,10 +431,10 @@ pub fn cluster_admin_register(acknowledged: bool) -> ClusterAdminRegisterDisplay
 }
 
 pub struct RuleApplyDisplay<'a> {
-    resp: &'a RuleApplyResp,
+    resp: &'a AckResponse,
 }
 
-pub fn rule_apply(resp: &RuleApplyResp) -> RuleApplyDisplay<'_> {
+pub fn rule_apply(resp: &AckResponse) -> RuleApplyDisplay<'_> {
     RuleApplyDisplay { resp }
 }
 
@@ -455,10 +455,10 @@ pub fn rule_update(resp: &RuleUpdateResp) -> RuleUpdateDisplay<'_> {
 }
 
 pub struct RuleRemoveDisplay<'a> {
-    resp: &'a RuleRemoveResp,
+    resp: &'a AckResponse,
 }
 
-pub fn rule_remove(resp: &RuleRemoveResp) -> RuleRemoveDisplay<'_> {
+pub fn rule_remove(resp: &AckResponse) -> RuleRemoveDisplay<'_> {
     RuleRemoveDisplay { resp }
 }
 

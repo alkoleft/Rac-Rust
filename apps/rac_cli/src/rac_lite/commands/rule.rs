@@ -1,7 +1,17 @@
 use rac_protocol::client::{ClientConfig, RacClient};
 use rac_protocol::commands::{
-    rule_apply, rule_info, rule_insert, rule_list, rule_remove, rule_update, RuleInsertReq,
-    RuleUpdateReq,
+    rule_apply,
+    rule_info,
+    rule_insert,
+    rule_list,
+    rule_remove,
+    rule_update,
+    RuleApplyRpc,
+    RuleInfoRpc,
+    RuleInsertRpc,
+    RuleListRpc,
+    RuleRemoveRpc,
+    RuleUpdateRpc,
 };
 use rac_protocol::error::Result;
 
@@ -28,7 +38,8 @@ pub fn run(json: bool, cfg: &ClientConfig, command: RuleCmd) -> Result<()> {
                 cluster_user.as_deref(),
                 cluster_pwd.as_deref(),
             )?;
-            let resp = rule_apply(&mut client, cluster, creds.user, creds.pwd, mode)?;
+            let req = RuleApplyRpc { cluster, mode };
+            let resp = rule_apply(&mut client, creds.user, creds.pwd, req)?;
             console::output(json, &resp, console::rule_apply(&resp));
             client.close()?;
         }
@@ -48,7 +59,8 @@ pub fn run(json: bool, cfg: &ClientConfig, command: RuleCmd) -> Result<()> {
                 cluster_user.as_deref(),
                 cluster_pwd.as_deref(),
             )?;
-            let resp = rule_list(&mut client, cluster, creds.user, creds.pwd, server)?;
+            let req = RuleListRpc { cluster, server };
+            let resp = rule_list(&mut client, creds.user, creds.pwd, req)?;
             console::output(json, &resp, console::rule_list(&resp.records));
             client.close()?;
         }
@@ -70,7 +82,12 @@ pub fn run(json: bool, cfg: &ClientConfig, command: RuleCmd) -> Result<()> {
                 cluster_user.as_deref(),
                 cluster_pwd.as_deref(),
             )?;
-            let resp = rule_info(&mut client, cluster, creds.user, creds.pwd, server, rule)?;
+            let req = RuleInfoRpc {
+                cluster,
+                server,
+                rule,
+            };
+            let resp = rule_info(&mut client, creds.user, creds.pwd, req)?;
             console::output(json, &resp, console::rule_info(&resp.record));
             client.close()?;
         }
@@ -90,8 +107,10 @@ pub fn run(json: bool, cfg: &ClientConfig, command: RuleCmd) -> Result<()> {
             let cluster = parse_uuid_arg(&cluster)?;
             let server = parse_uuid_arg(&server)?;
             let mut client = RacClient::connect(&addr, cfg.clone())?;
-            let req = RuleInsertReq {
+            let req = RuleInsertRpc {
+                cluster,
                 server,
+                rule: [0u8; 16],
                 position,
                 object_type,
                 infobase_name,
@@ -105,7 +124,7 @@ pub fn run(json: bool, cfg: &ClientConfig, command: RuleCmd) -> Result<()> {
                 cluster_user.as_deref(),
                 cluster_pwd.as_deref(),
             )?;
-            let resp = rule_insert(&mut client, cluster, creds.user, creds.pwd, req)?;
+            let resp = rule_insert(&mut client, creds.user, creds.pwd, req)?;
             console::output(json, &resp, console::rule_insert(&resp));
             client.close()?;
         }
@@ -127,7 +146,8 @@ pub fn run(json: bool, cfg: &ClientConfig, command: RuleCmd) -> Result<()> {
             let server = parse_uuid_arg(&server)?;
             let rule = parse_uuid_arg(&rule)?;
             let mut client = RacClient::connect(&addr, cfg.clone())?;
-            let req = RuleUpdateReq {
+            let req = RuleUpdateRpc {
+                cluster,
                 server,
                 rule,
                 position,
@@ -143,7 +163,7 @@ pub fn run(json: bool, cfg: &ClientConfig, command: RuleCmd) -> Result<()> {
                 cluster_user.as_deref(),
                 cluster_pwd.as_deref(),
             )?;
-            let resp = rule_update(&mut client, cluster, creds.user, creds.pwd, req)?;
+            let resp = rule_update(&mut client, creds.user, creds.pwd, req)?;
             console::output(json, &resp, console::rule_update(&resp));
             client.close()?;
         }
@@ -165,7 +185,12 @@ pub fn run(json: bool, cfg: &ClientConfig, command: RuleCmd) -> Result<()> {
                 cluster_user.as_deref(),
                 cluster_pwd.as_deref(),
             )?;
-            let resp = rule_remove(&mut client, cluster, creds.user, creds.pwd, server, rule)?;
+            let req = RuleRemoveRpc {
+                cluster,
+                server,
+                rule,
+            };
+            let resp = rule_remove(&mut client, creds.user, creds.pwd, req)?;
             console::output(json, &resp, console::rule_remove(&resp));
             client.close()?;
         }

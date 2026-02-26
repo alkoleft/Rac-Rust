@@ -40,6 +40,7 @@ fields = [
 ]
 
 [rpc.CounterList]
+response = "CounterListResp"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid", version = "11.0" },
@@ -51,6 +52,7 @@ requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.CounterInfo]
+response = "CounterInfoResp"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid", version = "11.0" },
@@ -63,6 +65,7 @@ requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.CounterUpdate]
+response = "AckResponse"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid", version = "11.0" },
@@ -90,6 +93,7 @@ requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.CounterRemove]
+response = "AckResponse"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid", version = "11.0" },
@@ -101,6 +105,7 @@ requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.CounterClear]
+response = "AckResponse"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid", version = "11.0" },
@@ -113,6 +118,7 @@ requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.CounterValues]
+response = "CounterValuesResp"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid", version = "11.0" },
@@ -126,6 +132,7 @@ requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.CounterAccumulatedValues]
+response = "CounterAccumulatedValuesResp"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid", version = "11.0" },
@@ -139,13 +146,13 @@ requires_cluster_context = true
 requires_infobase_context = false
 
 [response.CounterList]
-body = { type = "list_u8", item = "CounterRecord" }
+body = { type = "list_u8", item = "CounterRecord", field = "records", struct = true }
 
 [response.CounterInfo]
-body = { type = "record", item = "CounterRecord" }
+body = { type = "record", item = "CounterRecord", field = "record", struct = true }
 
 [response.CounterValues]
-body = { type = "list_u8", item = "CounterValuesRecord" }
+body = { type = "list_u8", item = "CounterValuesRecord", field = "records", struct = true }
 
 [response.CounterAccumulatedValues]
-body = { type = "list_u8", item = "CounterValuesRecord" }
+body = { type = "list_u8", item = "CounterValuesRecord", field = "records", struct = true }

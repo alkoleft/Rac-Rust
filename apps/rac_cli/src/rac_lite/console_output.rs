@@ -3,14 +3,14 @@ use std::fmt::{self, Display, Write as _};
 use serde::Serialize;
 
 use rac_protocol::commands::{
-    AgentAdminRecord, ClusterAdminRecord, ClusterRecord, ConnectionRecord, CounterClearResp,
-    CounterRecord, CounterRemoveResp, CounterUpdateResp, CounterValuesRecord, InfobaseSummary,
-    LimitRecord, LimitRemoveResp, LimitUpdateResp, LockRecord, ManagerRecord, ProcessLicense,
-    ProcessRecord, RuleApplyResp, RuleInsertResp, RuleRecord, RuleRemoveResp, RuleUpdateResp,
-    ServerRecord, ServiceSettingApplyResp, ServiceSettingInsertResp, ServiceSettingRecord,
-    ServiceSettingRemoveResp, ServiceSettingTransferDataDirRecord, ServiceSettingUpdateResp,
-    SessionLicense, SessionRecord,
+    AgentAdminRecord, ClusterAdminRecord, ClusterRecord, ConnectionRecord, CounterRecord,
+    CounterValuesRecord, InfobaseSummary, LimitRecord, LimitRemoveResp, LimitUpdateResp, LockRecord,
+    ManagerRecord, ProcessLicense, ProcessRecord, RuleApplyResp, RuleInsertResp, RuleRecord,
+    RuleRemoveResp, RuleUpdateResp, ServerRecord, ServiceSettingApplyResp,
+    ServiceSettingInsertResp, ServiceSettingRecord, ServiceSettingRemoveResp,
+    ServiceSettingTransferDataDirRecord, ServiceSettingUpdateResp, SessionLicense, SessionRecord,
 };
+use rac_protocol::rpc::AckResponse;
 use rac_protocol::rac_wire::format_uuid;
 use rac_protocol::Uuid16;
 
@@ -365,26 +365,26 @@ pub fn counter_info(item: &CounterRecord) -> CounterInfoDisplay<'_> {
 }
 
 pub struct CounterUpdateDisplay<'a> {
-    resp: &'a CounterUpdateResp,
+    resp: &'a AckResponse,
 }
 
-pub fn counter_update(resp: &CounterUpdateResp) -> CounterUpdateDisplay<'_> {
+pub fn counter_update(resp: &AckResponse) -> CounterUpdateDisplay<'_> {
     CounterUpdateDisplay { resp }
 }
 
 pub struct CounterClearDisplay<'a> {
-    resp: &'a CounterClearResp,
+    resp: &'a AckResponse,
 }
 
-pub fn counter_clear(resp: &CounterClearResp) -> CounterClearDisplay<'_> {
+pub fn counter_clear(resp: &AckResponse) -> CounterClearDisplay<'_> {
     CounterClearDisplay { resp }
 }
 
 pub struct CounterRemoveDisplay<'a> {
-    resp: &'a CounterRemoveResp,
+    resp: &'a AckResponse,
 }
 
-pub fn counter_remove(resp: &CounterRemoveResp) -> CounterRemoveDisplay<'_> {
+pub fn counter_remove(resp: &AckResponse) -> CounterRemoveDisplay<'_> {
     CounterRemoveDisplay { resp }
 }
 

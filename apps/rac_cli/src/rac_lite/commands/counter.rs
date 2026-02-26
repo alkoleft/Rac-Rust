@@ -1,7 +1,8 @@
 use rac_protocol::client::{ClientConfig, RacClient};
 use rac_protocol::commands::{
     counter_accumulated_values, counter_clear, counter_info, counter_list, counter_remove,
-    counter_update, counter_values, CounterUpdateReq,
+    counter_update, counter_values, CounterAccumulatedValuesRpc, CounterClearRpc,
+    CounterRemoveRpc, CounterUpdateRpc, CounterValuesRpc,
 };
 use rac_protocol::error::Result;
 
@@ -50,11 +51,13 @@ pub fn run(json: bool, cfg: &ClientConfig, command: CounterCmd) -> Result<()> {
             )?;
             let resp = counter_clear(
                 &mut client,
-                cluster,
                 creds.user,
                 creds.pwd,
-                &counter,
-                &object,
+                CounterClearRpc {
+                    cluster,
+                    counter,
+                    object,
+                },
             )?;
             console::output(json, &resp, console::counter_clear(&resp));
             client.close()?;
@@ -74,7 +77,12 @@ pub fn run(json: bool, cfg: &ClientConfig, command: CounterCmd) -> Result<()> {
                 cluster_user.as_deref(),
                 cluster_pwd.as_deref(),
             )?;
-            let resp = counter_remove(&mut client, cluster, creds.user, creds.pwd, &name)?;
+            let resp = counter_remove(
+                &mut client,
+                creds.user,
+                creds.pwd,
+                CounterRemoveRpc { cluster, name },
+            )?;
             console::output(json, &resp, console::counter_remove(&resp));
             client.close()?;
         }
@@ -96,11 +104,13 @@ pub fn run(json: bool, cfg: &ClientConfig, command: CounterCmd) -> Result<()> {
             )?;
             let resp = counter_values(
                 &mut client,
-                cluster,
                 creds.user,
                 creds.pwd,
-                &counter,
-                &object,
+                CounterValuesRpc {
+                    cluster,
+                    counter,
+                    object,
+                },
             )?;
             console::output(json, &resp, console::counter_values(&resp.records));
             client.close()?;
@@ -129,7 +139,8 @@ pub fn run(json: bool, cfg: &ClientConfig, command: CounterCmd) -> Result<()> {
             descr,
         } => {
             let cluster = parse_uuid_arg(&cluster)?;
-            let req = CounterUpdateReq {
+            let req = CounterUpdateRpc {
+                cluster,
                 name,
                 collection_time,
                 group: parse_counter_group(&group)?,
@@ -161,7 +172,7 @@ pub fn run(json: bool, cfg: &ClientConfig, command: CounterCmd) -> Result<()> {
                 cluster_user.as_deref(),
                 cluster_pwd.as_deref(),
             )?;
-            let resp = counter_update(&mut client, cluster, creds.user, creds.pwd, req)?;
+            let resp = counter_update(&mut client, creds.user, creds.pwd, req)?;
             console::output(json, &resp, console::counter_update(&resp));
             client.close()?;
         }
@@ -183,11 +194,13 @@ pub fn run(json: bool, cfg: &ClientConfig, command: CounterCmd) -> Result<()> {
             )?;
             let resp = counter_accumulated_values(
                 &mut client,
-                cluster,
                 creds.user,
                 creds.pwd,
-                &counter,
-                &object,
+                CounterAccumulatedValuesRpc {
+                    cluster,
+                    counter,
+                    object,
+                },
             )?;
             console::output(
                 json,

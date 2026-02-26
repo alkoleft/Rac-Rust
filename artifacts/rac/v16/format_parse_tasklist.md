@@ -13,13 +13,13 @@
 - [ ] `rac agent admin remove`: получить захват запроса/ответа, восстановить порядок полей. — Статус: захват [x], анализ [x], описание [x]
 
 **Cluster**
-- [ ] `rac cluster list`: захват с ненулевыми `max-memory-size`, `max-memory-time-limit`, `errors-count-threshold`, с `allow-access-right-audit-events-recording` и непустым `restart-schedule`; подтвердить смещения и расшифровать `tail[32]` (v16). — Статус: захват [~], анализ [ ], описание [ ]
-- [ ] `rac cluster info`: подтвердить те же неизвестные поля/хвост, что и в `cluster list`. — Статус: захват [x], анализ [ ], описание [ ]
-- [ ] `rac cluster admin list`: захват с `auth=pwd,os`, `os-user`, `descr`; идентифицировать `unknown_1/unknown_2` и порядок строк. — Статус: захват [x], анализ [ ], описание [ ]
-- [ ] `rac cluster admin register`: захват с `--auth=pwd,os` и `--auth=os`; подтвердить `auth_flags` и смысл `unknown_0` в хвосте запроса. — Статус: захват [x], анализ [ ], описание [ ]
-- [ ] `rac cluster admin remove`: получить захват запроса/ответа, восстановить порядок полей. — Статус: захват [x], анализ [ ], описание [ ]
+- [ ] `rac cluster list`: захват с ненулевыми `max-memory-size`, `max-memory-time-limit`, `errors-count-threshold`, с `allow-access-right-audit-events-recording` и непустым `restart-schedule`; подтвердить смещения и расшифровать `tail[32]` (v16). — Статус: захват [~], анализ [x], описание [x]
+- [ ] `rac cluster info`: подтвердить те же неизвестные поля/хвост, что и в `cluster list`. — Статус: захват [x], анализ [x], описание [x]
+- [ ] `rac cluster admin list`: захват с `auth=pwd,os`, `os-user`, `descr`; идентифицировать `unknown_1/unknown_2` и порядок строк. — Статус: захват [x], анализ [x], описание [x]
+- [ ] `rac cluster admin register`: захват с `--auth=pwd,os` и `--auth=os`; подтвердить `auth_flags` и смысл `unknown_0` в хвосте запроса. — Статус: захват [x], анализ [x], описание [x]
+- [ ] `rac cluster admin remove`: получить захват запроса/ответа, восстановить порядок полей. — Статус: захват [x], анализ [x], описание [x]
 - [ ] `rac cluster insert`: получить захват запроса/ответа, восстановить порядок полей. — Статус: захват [ ], анализ [ ], описание [ ]
-- [ ] `rac cluster update`: получить захват запроса/ответа, восстановить порядок полей. — Статус: захват [x], анализ [ ], описание [ ]
+- [ ] `rac cluster update`: получить захват запроса/ответа, восстановить порядок полей. — Статус: захват [x], анализ [x], описание [x]
 - [ ] `rac cluster remove`: получить захват запроса/ответа, восстановить порядок полей. — Статус: захват [ ], анализ [ ], описание [ ]
 
 **Connection**

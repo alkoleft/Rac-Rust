@@ -52,14 +52,19 @@ fn live_infobase_info() {
 
     let list = infobase_summary_list(&mut client, cluster_uuid)
         .expect("infobase summary list")
-        .infobases;
-    let infobase = *list.first().expect("infobase summary list empty");
+        .summaries;
+    let infobase = list
+        .first()
+        .expect("infobase summary list empty")
+        .infobase;
 
     let info = infobase_info(&mut client, cluster_uuid, infobase).expect("infobase info");
+    let info_record = &info.info;
     println!(
-        "infobase_info: uuid={}, fields={}",
-        format_uuid(&info.infobase),
-        info.fields.len()
+        "infobase_info: uuid={}, name={}, dbms={}",
+        format_uuid(&info_record.infobase),
+        info_record.name,
+        info_record.dbms
     );
 
     client.close().expect("close");

@@ -33,6 +33,7 @@ fields = [
 ]
 
 [rpc.InfobaseSummaryList]
+response = "InfobaseSummaryListResp"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid", version = "11.0" },
@@ -44,6 +45,7 @@ requires_cluster_context = true
 requires_infobase_context = false
 
 [rpc.InfobaseSummaryInfo]
+response = "InfobaseSummaryInfoResp"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid", version = "11.0" },
@@ -56,6 +58,7 @@ requires_cluster_context = true
 requires_infobase_context = true
 
 [rpc.InfobaseInfo]
+response = "InfobaseInfoResp"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid", version = "11.0" },
@@ -81,10 +84,10 @@ requires_cluster_context = true
 requires_infobase_context = false
 
 [response.InfobaseSummaryList]
-body = { type = "list_u8", item = "InfobaseSummary" }
+body = { type = "list_u8", item = "InfobaseSummary", field = "summaries", struct = true }
 
 [response.InfobaseSummaryInfo]
-body = { type = "record", item = "InfobaseSummary" }
+body = { type = "record", item = "InfobaseSummary", field = "summary", struct = true }
 
 [response.InfobaseInfo]
-body = { type = "record", item = "InfobaseInfoRecord" }
+body = { type = "record", item = "InfobaseInfoRecord", field = "info", struct = true }

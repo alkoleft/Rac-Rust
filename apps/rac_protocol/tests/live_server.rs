@@ -76,7 +76,7 @@ fn live_infobase_summary_list() {
     assert_eq!(resp.version, params.expected_agent_version);
     let reply = infobase_summary_list(&mut client, cluster_uuid).expect("infobase summary list");
 
-    assert_eq!(reply.summaries.len(), reply.infobases.len());
+    assert!(!reply.summaries.is_empty(), "infobase summary list empty");
 
     client.close().expect("close");
 }

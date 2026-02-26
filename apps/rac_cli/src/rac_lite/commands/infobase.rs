@@ -24,7 +24,9 @@ pub fn run(json: bool, cfg: &ClientConfig, command: InfobaseCmd) -> Result<()> {
             let infobase = parse_uuid_arg(&infobase)?;
             let mut client = RacClient::connect(&addr, cfg.clone())?;
             let resp = infobase_summary_info(&mut client, cluster, infobase)?;
-            console::output(json, &resp, console::info("infobase", &resp.infobase, &resp.fields));
+            let summary = &resp.summary;
+            let fields = vec![summary.name.clone(), summary.descr.clone()];
+            console::output(json, &resp, console::info("infobase", &summary.infobase, &fields));
             client.close()?;
         }
         InfobaseCmd::Info {
@@ -36,7 +38,9 @@ pub fn run(json: bool, cfg: &ClientConfig, command: InfobaseCmd) -> Result<()> {
             let infobase = parse_uuid_arg(&infobase)?;
             let mut client = RacClient::connect(&addr, cfg.clone())?;
             let resp = infobase_info(&mut client, cluster, infobase)?;
-            console::output(json, &resp, console::info("infobase", &resp.infobase, &resp.fields));
+            let info = &resp.info;
+            let fields = vec![info.name.clone(), info.descr.clone()];
+            console::output(json, &resp, console::info("infobase", &info.infobase, &fields));
             client.close()?;
         }
     }

@@ -5,6 +5,14 @@ use crate::error::Result;
 use serde::Serialize;
 use crate::rac_wire::encode_with_len_u8;
 
+pub const METHOD_INFOBASE_SUMMARY_LIST_REQ: u8 = 0x2a;
+pub const METHOD_INFOBASE_SUMMARY_LIST_RESP: u8 = 0x2b;
+pub const METHOD_INFOBASE_SUMMARY_INFO_REQ: u8 = 0x2e;
+pub const METHOD_INFOBASE_SUMMARY_INFO_RESP: u8 = 0x2f;
+pub const METHOD_INFOBASE_INFO_REQ: u8 = 0x30;
+pub const METHOD_INFOBASE_INFO_RESP: u8 = 0x31;
+pub const METHOD_INFOBASE_SUMMARY_UPDATE_REQ: u8 = 0x27;
+
 #[derive(Debug, Serialize, Clone)]
 pub struct InfobaseSummary {
     pub infobase: Uuid16,
@@ -116,6 +124,76 @@ impl InfobaseInfoRecord {
     }
 }
 
+pub struct InfobaseSummaryListRpc {
+    pub cluster: Uuid16,
+}
+
+impl crate::rpc::Request for InfobaseSummaryListRpc {
+    type Response = InfobaseSummaryListResp;
+
+    fn meta(&self) -> crate::rpc::Meta {
+        RPC_INFOBASE_SUMMARY_LIST_META
+    }
+
+    fn cluster(&self) -> Option<crate::Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
+        let mut out = Vec::with_capacity(16);
+        out.extend_from_slice(&self.cluster);
+        Ok(out)
+    }
+}
+
+pub struct InfobaseSummaryInfoRpc {
+    pub cluster: Uuid16,
+    pub infobase: Uuid16,
+}
+
+impl crate::rpc::Request for InfobaseSummaryInfoRpc {
+    type Response = InfobaseSummaryInfoResp;
+
+    fn meta(&self) -> crate::rpc::Meta {
+        RPC_INFOBASE_SUMMARY_INFO_META
+    }
+
+    fn cluster(&self) -> Option<crate::Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
+        let mut out = Vec::with_capacity(16 + 16);
+        out.extend_from_slice(&self.cluster);
+        out.extend_from_slice(&self.infobase);
+        Ok(out)
+    }
+}
+
+pub struct InfobaseInfoRpc {
+    pub cluster: Uuid16,
+    pub infobase: Uuid16,
+}
+
+impl crate::rpc::Request for InfobaseInfoRpc {
+    type Response = InfobaseInfoResp;
+
+    fn meta(&self) -> crate::rpc::Meta {
+        RPC_INFOBASE_INFO_META
+    }
+
+    fn cluster(&self) -> Option<crate::Uuid16> {
+        Some(self.cluster)
+    }
+
+    fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
+        let mut out = Vec::with_capacity(16 + 16);
+        out.extend_from_slice(&self.cluster);
+        out.extend_from_slice(&self.infobase);
+        Ok(out)
+    }
+}
+
 pub struct InfobaseSummaryUpdateRpc {
     pub cluster: Uuid16,
     pub infobase: Uuid16,
@@ -143,6 +221,50 @@ impl crate::rpc::Request for InfobaseSummaryUpdateRpc {
 }
 
 
+#[derive(Debug, Serialize)]
+pub struct InfobaseSummaryListResp {
+    pub summaries: Vec<InfobaseSummary>,
+}
+
+impl crate::rpc::Response for InfobaseSummaryListResp {
+    fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
+        let body = crate::rpc::decode_utils::rpc_body(payload)?;
+        Ok(Self {
+            summaries: crate::commands::parse_list_u8(body, InfobaseSummary::decode)?,
+        })
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct InfobaseSummaryInfoResp {
+    pub summary: InfobaseSummary,
+}
+
+impl crate::rpc::Response for InfobaseSummaryInfoResp {
+    fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
+        let body = crate::rpc::decode_utils::rpc_body(payload)?;
+        let record = parse_infobase_summary_info_body(body)?;
+        Ok(Self {
+            summary: record,
+        })
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct InfobaseInfoResp {
+    pub info: InfobaseInfoRecord,
+}
+
+impl crate::rpc::Response for InfobaseInfoResp {
+    fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
+        let body = crate::rpc::decode_utils::rpc_body(payload)?;
+        let record = parse_infobase_info_body(body)?;
+        Ok(Self {
+            info: record,
+        })
+    }
+}
+
 
 pub fn parse_infobase_summary_info_body(body: &[u8]) -> Result<InfobaseSummary> {
     if body.is_empty() {
@@ -162,28 +284,28 @@ pub fn parse_infobase_info_body(body: &[u8]) -> Result<InfobaseInfoRecord> {
 
 
 pub const RPC_INFOBASE_SUMMARY_LIST_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: 0x2a,
-    method_resp: Some(0x2b),
+    method_req: METHOD_INFOBASE_SUMMARY_LIST_REQ,
+    method_resp: Some(METHOD_INFOBASE_SUMMARY_LIST_RESP),
     requires_cluster_context: true,
     requires_infobase_context: false,
 };
 
 pub const RPC_INFOBASE_SUMMARY_INFO_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: 0x2e,
-    method_resp: Some(0x2f),
+    method_req: METHOD_INFOBASE_SUMMARY_INFO_REQ,
+    method_resp: Some(METHOD_INFOBASE_SUMMARY_INFO_RESP),
     requires_cluster_context: true,
     requires_infobase_context: true,
 };
 
 pub const RPC_INFOBASE_INFO_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: 0x30,
-    method_resp: Some(0x31),
+    method_req: METHOD_INFOBASE_INFO_REQ,
+    method_resp: Some(METHOD_INFOBASE_INFO_RESP),
     requires_cluster_context: true,
     requires_infobase_context: true,
 };
 
 pub const RPC_INFOBASE_SUMMARY_UPDATE_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: 0x27,
+    method_req: METHOD_INFOBASE_SUMMARY_UPDATE_REQ,
     method_resp: None,
     requires_cluster_context: true,
     requires_infobase_context: false,

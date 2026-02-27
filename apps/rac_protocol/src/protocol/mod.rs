@@ -36,9 +36,9 @@ pub trait ProtocolCodec: Send + Sync {
 #[derive(Debug, Serialize, Clone, Copy, PartialEq, Eq)]
 pub enum ProtocolVersion {
     #[serde(rename = "v11.0")]
-    V11_0,
+    V11_0 = 11,
     #[serde(rename = "v16.0")]
-    V16_0,
+    V16_0 = 16,
 }
 
 impl ProtocolVersion {

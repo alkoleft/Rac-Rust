@@ -47,13 +47,6 @@ where
     out
 }
 
-pub fn append_opt_yes_no(out: &mut String, label: &str, value: Option<bool>) {
-    if let Some(value) = value {
-        let rendered = if value { "yes" } else { "no" };
-        let _ = writeln!(out, "{label}: {rendered}");
-    }
-}
-
 pub fn write_trimmed(f: &mut fmt::Formatter<'_>, out: &str) -> fmt::Result {
     write!(f, "{}", out.trim_end())
 }

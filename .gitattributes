@@ -1,2 +1,5 @@
+# Keep attributes file itself in LF to avoid churn
+.gitattributes text eol=lf
+
 # Enforce LF endings for shell scripts
 *.sh text eol=lf

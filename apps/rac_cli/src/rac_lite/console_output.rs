@@ -14,8 +14,7 @@ use rac_protocol::rpc::AckResponse;
 use rac_protocol::rac_wire::format_uuid;
 use rac_protocol::Uuid16;
 
-use super::format::{info_display_to_string, list_to_string, write_trimmed};
-use super::format::MoreLabel;
+use super::format::{info_display_to_string, list_to_string, write_trimmed, MoreLabel};
 
 macro_rules! outln {
     ($out:expr, $($arg:tt)*) => {
@@ -267,13 +266,11 @@ impl Display for ClusterAdminRegisterDisplay {
     }
 }
 
-
 impl Display for AgentAdminRegisterDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         render_ack(f, "agent-admin-register", self.resp.acknowledged)
     }
 }
-
 
 impl Display for AgentAdminRemoveDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -281,13 +278,11 @@ impl Display for AgentAdminRemoveDisplay<'_> {
     }
 }
 
-
 impl Display for SessionTerminateDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         render_ack(f, "session-terminate", self.resp.acknowledged)
     }
 }
-
 
 impl Display for SessionInterruptCurrentServerCallDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -295,13 +290,11 @@ impl Display for SessionInterruptCurrentServerCallDisplay<'_> {
     }
 }
 
-
 impl Display for RuleApplyDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         render_ack(f, "rule-apply", self.resp.acknowledged)
     }
 }
-
 
 impl Display for RuleInsertDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -325,13 +318,11 @@ impl Display for RuleRemoveDisplay<'_> {
     }
 }
 
-
 impl Display for CounterUpdateDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         render_ack(f, "counter-update", self.resp.acknowledged)
     }
 }
-
 
 impl Display for CounterClearDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -339,13 +330,11 @@ impl Display for CounterClearDisplay<'_> {
     }
 }
 
-
 impl Display for CounterRemoveDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         render_ack(f, "counter-remove", self.resp.acknowledged)
     }
 }
-
 
 impl Display for LimitUpdateDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -353,13 +342,11 @@ impl Display for LimitUpdateDisplay<'_> {
     }
 }
 
-
 impl Display for LimitRemoveDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         render_ack(f, "limit-remove", self.resp.acknowledged)
     }
 }
-
 
 impl Display for ServiceSettingInsertDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -383,18 +370,15 @@ impl Display for ServiceSettingRemoveDisplay<'_> {
     }
 }
 
-
 impl Display for ServiceSettingApplyDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         render_ack(f, "service-setting-apply", self.resp.acknowledged)
     }
 }
 
-
 impl Display for ProcessListLicensesDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let out =
-            list_to_string("processes", self.items, 5, MoreLabel::Default, |out, _idx, item| {
+        let out = list_to_string("processes", self.items, 5, MoreLabel::Default, |out, _idx, item| {
             outln!(out, "{}", process_info_licenses(item));
         });
         write_trimmed(f, &out)

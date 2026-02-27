@@ -1,44 +1,83 @@
-# RAC Profile Message Formats (v11)
+# RAC Profile Message Formats (Observed)
 
 Protocol version (service negotiation): `v8.service.Admin.Cluster` `11.0` (per v11 help).
+
+Sources (v11):
+- `artifacts/rac/v11/help/profile_help.txt`
+- `artifacts/rac/v11/v11_profile_list_ro_client_to_server.decode.txt`
+- `artifacts/rac/v11/v11_profile_list_ro_server_to_client.decode.txt`
+- `artifacts/rac/v11/v11_profile_list_ro_response.hex`
+- `artifacts/rac/v11/v11_profile_list_ro_rac.out`
 
 Sources (v16):
 - `artifacts/rac/v16/help/profile_help.txt`
 - `artifacts/rac/v16/help/profile_list.out`
-- `artifacts/rac/v11/v11_profile_list_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11/v11_profile_list_ro_server_to_client.decode.txt`
-- `artifacts/rac/v11/v11_profile_list_ro_response.hex`
-- `artifacts/rac/v11/v11_profile_list_ro_rac.out`
+- `docs/rac/documentation/rac_cli_method_map.generated.md` (method IDs)
 
 ## Profile List
 
-Sources:
-- `artifacts/rac/v16/help/profile_help.txt`
-- `artifacts/rac/v16/help/profile_list.out`
-- `artifacts/rac/v11/v11_profile_list_ro_client_to_server.decode.txt`
-- `artifacts/rac/v11/v11_profile_list_ro_server_to_client.decode.txt`
-- `artifacts/rac/v11/v11_profile_list_ro_response.hex`
+Source capture:
+- `logs/session_1772063106_1251253_127_0_0_1_57350/server_to_client.stream.bin`
+
+Payload example:
+- `artifacts/rac/profile_list_response.hex`
+
+RAC output reference:
 - `artifacts/rac/v11/v11_profile_list_ro_rac.out`
+- `artifacts/rac/v16/help/profile_list.out`
+
+### Поля ответа (из `rac`)
+
+Observed field names in `rac profile list` output, with capture mapping status.
+
+| Field | Type | Found In Capture | Order In Capture | Version |
+| --- | --- | --- | --- | --- |
+| `profile` | UUID (hypothesis) | no (empty list) | 1 | 11.0 |
 
 ### RPC
 
-- **Request**: `0x09` (context), then method `0x59`.
-- **Response**: method `0x5a`.
-- **Parameters**: `16 <cluster_uuid>`.
+Request method: `0x59` (`profile list --cluster <id>`)
+Response method: `0x5a`
+
+Notes:
+- Preceded by `ClusterAuth` request `0x09` with `cluster`, `cluster-user`, `cluster-pwd` (observed in capture).
+
+Payload structure (method body):
+- offset `0x00`: `count:u8` (observed `0x00`)
+- offset `0x01`: first record starts here (if any)
 
 ### Поля запроса (из `rac`)
 
-Observed request parameters for `rac profile list` (v16).
+Observed request parameters for `rac profile list`.
 
 | Field | Type | Found In Capture | Order In Capture | Version |
 | --- | --- | --- | --- | --- |
 | `cluster` | UUID | yes | 1 | 11.0 |
 
-### Поля ответа
+### Record Layout (Observed)
 
-Capture returned an empty list (`items_count=0`), so record layout is not confirmed.
+Offsets are relative to the start of a record.
 
-Observed response prefix (payload hex): `01 00 00 01 5a 00`.
+| Offset | Size | Field | Type | Notes |
+|---|---|---|---|---|
+| `0x00` | `16` | `profile` | UUID | hypothesis; no records observed |
+
+Notes:
+- No profile records present in the capture (empty list), so the record layout is unconfirmed.
+
+## Hypotheses
+
+- Each profile record is a single UUID; update if non-empty list capture shows name/flags fields.
+
+## Open Questions
+
+- What fields are returned in `rac profile list` (name, description, flags)?
+- Does the list record include booleans or ACL-related counts beyond the identifier?
+
+## Gap Analysis (Required)
+
+- Unknown record payload (expected after `count:u8`). Candidate layouts: UUID-only (16 bytes), or `name:str8` followed by flags/booleans.
+- Required capture to confirm: create at least one profile, re-run `rac profile list` with non-empty output, and extract `artifacts/rac/profile_list_response_nonempty.hex`.
 
 ## Profile Update
 

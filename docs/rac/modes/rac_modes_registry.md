@@ -36,7 +36,7 @@ Tracks per-mode documentation coverage. "Processed" means a mode has a dedicated
 |  |  |  | `insert` | yes | yes | - |
 |  |  |  | `update` | yes | yes | - |
 |  |  |  | `remove` | yes | yes | - |
-| `profile` | `docs/rac/modes/rac_mode_profile.md` | `docs/rac/messages/rac_message_formats_profile.md` | `list` | yes | - | - |
+| `profile` | `docs/rac/modes/rac_mode_profile.md` | `docs/rac/messages/rac_message_formats_profile.md` | `list` | yes | - | req `0x59`, resp `0x5a` (auth `0x09`) |
 |  |  |  | `update` | - | - | - |
 |  |  |  | `remove` | - | - | - |
 |  |  |  | `acl directory` | - | - | - |

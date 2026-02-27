@@ -1,0 +1,23 @@
+[record.ProfileRecord]
+derive = ["Debug", "Serialize", "Clone"]
+fields = [
+  { name = "profile", type = "uuid", version = "11.0" },
+]
+
+[rpc.ProfileList]
+response = "ProfileListResp"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+]
+version = "11.0"
+method_req = 0x59
+method_resp = 0x5a
+requires_cluster_context = true
+requires_infobase_context = false
+
+[response.ProfileList]
+body = { type = "list_u8", item = "ProfileRecord", field = "profiles" }
+tests = [
+  { name = "profile_list_response_empty_hex", hex_path = "../../../../artifacts/rac/profile_list_response.hex", expect_len = 0 },
+]

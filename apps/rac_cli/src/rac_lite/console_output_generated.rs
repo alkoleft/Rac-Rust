@@ -663,24 +663,24 @@ pub fn cluster_info(item: &ClusterRecord) -> ClusterInfoDisplay<'_> {
 }
 
 fn render_cluster_info(out: &mut String, item: &ClusterRecord) {
-    outln!(out, "cluster                                   : {}", format_uuid(&item.uuid));
-    outln!(out, "host                                      : {}", display_str(&item.host));
-    outln!(out, "port                                      : {}", item.port);
-    outln!(out, "name                                      : \"{}\"", display_str(&item.display_name));
-    outln!(out, "expiration-timeout                        : {}", item.expiration_timeout);
-    outln!(out, "lifetime-limit                            : {}", item.lifetime_limit);
-    outln!(out, "max-memory-size                           : {}", item.max_memory_size);
-    outln!(out, "max-memory-time-limit                     : {}", item.max_memory_time_limit);
-    outln!(out, "security-level                            : {}", item.security_level);
-    outln!(out, "session-fault-tolerance-level             : {}", item.session_fault_tolerance_level);
-    outln!(out, "load-balancing-mode                       : {}", load_balancing_mode_name(item.load_balancing_mode));
-    outln!(out, "errors-count-threshold                    : {}", item.errors_count_threshold);
-    outln!(out, "kill-problem-processes                    : {}", item.kill_problem_processes);
-    outln!(out, "kill-by-memory-with-dump                  : {}", item.kill_by_memory_with_dump);
-    outln!(out, "allow-access-right-audit-events-recording : {}", item.allow_access_right_audit_events_recording);
-    outln!(out, "ping-period                               : {}", item.ping_period);
-    outln!(out, "ping-timeout                              : {}", item.ping_timeout);
-    outln!(out, "restart-schedule                          : \"{}\"", display_str(&item.restart_schedule_cron));
+    outln!(out, "cluster                                  : {}", format_uuid(&item.uuid));
+    outln!(out, "host                                     : {}", display_str(&item.host));
+    outln!(out, "port                                     : {}", item.port);
+    outln!(out, "name                                     : \"{}\"", display_str(&item.display_name));
+    outln!(out, "expiration-timeout                       : {}", item.expiration_timeout);
+    outln!(out, "lifetime-limit                           : {}", item.lifetime_limit);
+    outln!(out, "max-memory-size                          : {}", item.max_memory_size);
+    outln!(out, "max-memory-time-limit                    : {}", item.max_memory_time_limit);
+    outln!(out, "security-level                           : {}", item.security_level);
+    outln!(out, "session-fault-tolerance-level            : {}", item.session_fault_tolerance_level);
+    outln!(out, "load-balancing-mode                      : {}", load_balancing_mode_name(item.load_balancing_mode));
+    outln!(out, "errors-count-threshold                   : {}", item.errors_count_threshold);
+    outln!(out, "kill-problem-processes                   : {}", item.kill_problem_processes);
+    outln!(out, "kill-by-memory-with-dump                 : {}", item.kill_by_memory_with_dump);
+    outln!(out, "allow-access-right-audit-events-recording: {}", item.allow_access_right_audit_events_recording);
+    outln!(out, "ping-period                              : {}", item.ping_period);
+    outln!(out, "ping-timeout                             : {}", item.ping_timeout);
+    outln!(out, "restart-schedule                         : \"{}\"", display_str(&item.restart_schedule_cron));
 }
 
 impl Display for ClusterInfoDisplay<'_> {

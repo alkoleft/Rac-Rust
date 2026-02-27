@@ -74,6 +74,7 @@ class RecordSpec:
     info_struct: str
     list_specs: List[ListSpec]
     lines: List[LineSpec]
+    label_align: Optional[int]
 
 
 def snake_to_pascal(value: str) -> str:
@@ -183,6 +184,17 @@ def parse_records(
         pascal = snake_to_pascal(base)
         info_fn = str(raw.get("info_fn") or f"{base}_info")
         info_struct = str(raw.get("info_struct") or f"{pascal}InfoDisplay")
+        label_align = raw.get("label_align")
+        if label_align == "auto":
+            label_align = -1
+        elif isinstance(label_align, str):
+            label_align = int(label_align)
+        elif isinstance(label_align, int):
+            label_align = label_align
+        elif label_align is None:
+            label_align = None
+        else:
+            raise ValueError(f"invalid label_align for {base}")
         lines = parse_lines(raw.get("lines", []) or [])
 
         list_specs: List[ListSpec] = []
@@ -209,7 +221,9 @@ def parse_records(
             info_struct=info_struct,
             list_specs=list_specs,
             lines=lines,
+            label_align=label_align,
         )
+        apply_label_align(record)
         apply_default_formats(record, record_field_types)
         records.append(record)
     return records
@@ -425,7 +439,17 @@ def apply_default_formats(record: RecordSpec, record_field_types: Dict[str, Dict
         line.format_name = infer_format_name(record.type_name, field_name, record_field_types)
 
 
-def build_fmt_and_args(line: LineSpec) -> tuple[str, List[str]]:
+def apply_label_align(record: RecordSpec) -> None:
+    if record.label_align != -1:
+        return
+    max_len = 0
+    for line in record.lines:
+        if line.label:
+            max_len = max(max_len, len(line.label))
+    record.label_align = max_len if max_len > 0 else None
+
+
+def build_fmt_and_args(line: LineSpec, label_align: Optional[int]) -> tuple[str, List[str]]:
     if line.fmt:
         return line.fmt, line.args
     label = line.label or ""
@@ -463,16 +487,20 @@ def build_fmt_and_args(line: LineSpec) -> tuple[str, List[str]]:
         raise ValueError(f"unknown format: {format_name}")
 
     if label:
-        fmt = f"{label}: {fmt}"
+        if label_align:
+            padding = " " * max(label_align - len(label), 0)
+            fmt = f"{label}{padding}: {fmt}"
+        else:
+            fmt = f"{label}: {fmt}"
     return fmt, args
 
 
-def emit_line(buf: List[str], line: LineSpec, indent: str) -> None:
+def emit_line(buf: List[str], line: LineSpec, indent: str, label_align: Optional[int]) -> None:
     if line.call:
         call = line.call.rstrip(";")
         buf.append(f"{indent}{call};")
         return
-    fmt, args_list = build_fmt_and_args(line)
+    fmt, args_list = build_fmt_and_args(line, label_align)
     fmt_literal = rust_string_literal(fmt)
     args = ", " + ", ".join(args_list) if args_list else ""
     if line.optional:
@@ -506,7 +534,7 @@ def generate(records: List[RecordSpec], schema_path: Path) -> str:
         out.append("")
         out.append(f"fn {render_fn}(out: &mut String, item: &{type_name}) {{")
         for line in record.lines:
-            emit_line(out, line, "    ")
+            emit_line(out, line, "    ", record.label_align)
         out.append("}")
         out.append("")
         out.append(f"impl Display for {info_struct}<'_> {{")

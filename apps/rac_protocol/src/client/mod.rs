@@ -194,12 +194,25 @@ impl RacClient {
     }
 
     fn send_rpc_raw(&mut self, payload: &[u8], expect_method: Option<u8>) -> Result<Vec<u8>> {
+        if self.debug_raw {
+            log_frame(
+                "rpc-send",
+                &crate::rac_wire::Frame {
+                    opcode: self.protocol.opcode_rpc(),
+                    len_field_size: 0,
+                    payload: payload.to_vec(),
+                },
+            );
+        }
         self.transport
             .write_frame(self.protocol.opcode_rpc(), payload)?;
         self.transport.flush()?;
 
         for _ in 0..3 {
             let reply = self.transport.read_frame()?;
+            if self.debug_raw {
+                log_frame("rpc-recv", &reply);
+            }
             if reply.opcode == 0x0f {
                 continue;
             }

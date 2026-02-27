@@ -242,10 +242,10 @@ lines = [
   { label = "errors-count-threshold", value = "errors_count_threshold" },
   { label = "kill-problem-processes", value = "kill_problem_processes" },
   { label = "kill-by-memory-with-dump", value = "kill_by_memory_with_dump" },
-  { label = "allow-access-right-audit-events-recording", value = "allow_access_right_audit_events_recording" },
-  { label = "ping-period", value = "ping_period" },
-  { label = "ping-timeout", value = "ping_timeout" },
-  { label = "restart-schedule", value = "restart_schedule_cron", format = "quoted_display" },
+  { label = "allow-access-right-audit-events-recording", value = "value", optional = "item.allow_access_right_audit_events_recording" },
+  { label = "ping-period", value = "value", optional = "item.ping_period" },
+  { label = "ping-timeout", value = "value", optional = "item.ping_timeout" },
+  { label = "restart-schedule", value = "value", format = "quoted_display", optional = "item.restart_schedule_cron" },
 ]
 
 [record.agent_version]

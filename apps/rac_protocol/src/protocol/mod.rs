@@ -33,7 +33,7 @@ pub trait ProtocolCodec: Send + Sync {
     fn serialize_set_infobase_context(&self, cluster: Uuid16) -> Result<SerializedRpc>;
 }
 
-#[derive(Debug, Serialize, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Serialize, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum ProtocolVersion {
     #[serde(rename = "v11.0")]
     V11_0 = 11,

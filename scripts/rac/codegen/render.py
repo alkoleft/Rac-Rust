@@ -1,10 +1,9 @@
 from typing import Any, Dict, List, Optional
 
-from .schema import RecordSpec, RequestSpec, ResponseSpec, RpcSpec
+from .schema import RecordSpec, RequestSpec, ResponseSpec, RpcSpec, Version
 from .rust_types import (
     decode_expr,
     needs_datetime,
-    needs_protocol_version,
     needs_rac_error,
     needs_rac_error_responses,
     needs_uuid,
@@ -12,6 +11,7 @@ from .rust_types import (
     request_encode_expr,
     request_rust_type,
     request_uses,
+    rust_type,
 )
 
 
@@ -24,14 +24,13 @@ def generate(
 ) -> str:
     lines: List[str] = []
     uses = ["use crate::codec::RecordCursor;", "use crate::error::Result;"]
+    uses.insert(0, "use crate::protocol::ProtocolVersion;")
     if needs_datetime(records):
         uses.insert(0, "use crate::codec::v8_datetime_to_iso;")
     if needs_rac_error(records) or needs_rac_error_responses(responses):
         uses.insert(0, "use crate::error::RacError;")
     if needs_uuid(records):
         uses.insert(0, "use crate::Uuid16;")
-    if needs_protocol_version(records):
-        uses.insert(0, "use crate::client::RacProtocolVersion;")
     uses.append("use serde::Serialize;")
     if rpcs:
         req_specs = collect_request_specs(rpcs, requests)
@@ -52,6 +51,7 @@ def generate(
         lines.extend(generate_rpc_method_consts(rpcs))
 
     for record in records:
+        min_version = min(field.version.start for field in record.fields) if record.fields else None
         derive = ", ".join(record.derives)
         lines.append(f"#[derive({derive})]")
         lines.append(f"pub struct {record.name} {{")
@@ -59,15 +59,17 @@ def generate(
             if field.skip:
                 continue
             if field.computed:
-                rust_ty = request_rust_type(field)
+                rust_ty = rust_type(field)
                 lines.append(f"    pub {field.name}: {rust_ty},")
                 continue
-            rust_ty = request_rust_type(field)
+            rust_ty = rust_type(field)
             lines.append(f"    pub {field.name}: {rust_ty},")
         lines.append("}")
         lines.append("")
         lines.append(f"impl {record.name} {{")
-        lines.append("    pub fn decode(cursor: &mut RecordCursor<'_>) -> Result<Self> {")
+        lines.append(
+            "    pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {"
+        )
 
         computed_lines: List[str] = []
         var_map: Dict[str, str] = {}
@@ -75,28 +77,57 @@ def generate(
             if field.computed:
                 if not field.source:
                     raise ValueError("computed fields require source")
-                if field.computed == "ne_zero":
-                    computed_lines.append(f"        let {field.name} = {field.source} != 0;")
-                elif field.computed == "literal":
-                    computed_lines.append(f"        let {field.name} = {field.source};")
+                guard = render_version_guard(field.version, min_version, "protocol_version")
+                if field.optional:
+                    computed_lines.append(f"        let {field.name} = if {guard} {{")
+                    if field.computed == "ne_zero":
+                        computed_lines.append(f"            Some({field.source} != 0)")
+                    elif field.computed == "literal":
+                        computed_lines.append(f"            Some({field.source})")
+                    else:
+                        raise ValueError(
+                            "computed fields must use computed='ne_zero' or computed='literal'"
+                        )
+                    computed_lines.append("        } else {")
+                    computed_lines.append("            None")
+                    computed_lines.append("        };")
                 else:
-                    raise ValueError(
-                        "computed fields must use computed='ne_zero' or computed='literal'"
-                    )
+                    if field.computed == "ne_zero":
+                        computed_lines.append(f"        let {field.name} = {field.source} != 0;")
+                    elif field.computed == "literal":
+                        computed_lines.append(f"        let {field.name} = {field.source};")
+                    else:
+                        raise ValueError(
+                            "computed fields must use computed='ne_zero' or computed='literal'"
+                        )
                 continue
             var_name = field.name
             if field.skip:
                 var_name = f"_{field.name}"
             var_map[field.name] = var_name
-            expr = decode_expr(field, var_map)
-            if len(expr) == 1:
-                lines.append(f"        let {var_name} = {expr[0]}")
-            else:
-                lines.append(f"        let {var_name} = {{")
-                for step in expr[:-1]:
-                    lines.append(f"            {step}")
-                lines.append(f"            {expr[-1]}")
+            expr = decode_expr(field, var_map, "protocol_version")
+            guard = render_version_guard(field.version, min_version, "protocol_version")
+            if field.skip:
+                if guard:
+                    lines.append(f"        if {guard} {{")
+                    emit_decode_statement(lines, var_name, expr, "            ")
+                    lines.append("        }")
+                else:
+                    emit_decode_statement(lines, var_name, expr, "        ")
+            elif field.optional:
+                lines.append(f"        let {var_name} = if {guard} {{")
+                emit_decode_option(lines, expr, "            ")
+                lines.append("        } else {")
+                lines.append("            None")
                 lines.append("        };")
+            else:
+                if guard:
+                    lines.append(f"        if !{guard} {{")
+                    lines.append(
+                        f"            return Err(RacError::Unsupported(\"field {field.name} unsupported for protocol\"));"
+                    )
+                    lines.append("        }")
+                emit_decode_statement(lines, var_name, expr, "        ")
 
         if computed_lines:
             lines.append("")
@@ -140,6 +171,53 @@ def snake_case(name: str) -> str:
     return "".join(out)
 
 
+def protocol_version_const(version: Version) -> str:
+    if version.minor != 0:
+        raise ValueError(f"unsupported protocol minor version: {version}")
+    return f"ProtocolVersion::V{version.major}_{version.minor}"
+
+
+def render_version_guard(
+    version_range: "VersionRange",
+    min_version: Optional[Version],
+    protocol_var: str,
+) -> str:
+    if min_version is not None:
+        if version_range.start == min_version and version_range.end is None:
+            return ""
+    start = protocol_version_const(version_range.start)
+    if version_range.end is None:
+        return f"{protocol_var} >= {start}"
+    end = protocol_version_const(version_range.end)
+    return f"{protocol_var} >= {start} && {protocol_var} < {end}"
+
+
+def emit_decode_statement(
+    lines: List[str], var_name: str, expr: List[str], indent: str
+) -> None:
+    if len(expr) == 1:
+        lines.append(f"{indent}let {var_name} = {expr[0]}")
+        return
+    lines.append(f"{indent}let {var_name} = {{")
+    for step in expr[:-1]:
+        lines.append(f"{indent}    {step}")
+    last = expr[-1].rstrip(";")
+    lines.append(f"{indent}    {last}")
+    lines.append(f"{indent}}};")
+
+
+def emit_decode_option(lines: List[str], expr: List[str], indent: str) -> None:
+    if len(expr) == 1:
+        lines.append(f"{indent}Some({expr[0].rstrip(';')})")
+        return
+    lines.append(f"{indent}Some({{")
+    for step in expr[:-1]:
+        lines.append(f"{indent}    {step}")
+    last = expr[-1].rstrip(";")
+    lines.append(f"{indent}    {last}")
+    lines.append(f"{indent}}})")
+
+
 def generate_response_parsers(responses: List[ResponseSpec]) -> List[str]:
     lines: List[str] = []
     for resp in responses:
@@ -149,12 +227,14 @@ def generate_response_parsers(responses: List[ResponseSpec]) -> List[str]:
                 raise ValueError("record response requires item")
             item = resp.body.item
             error_ctx = snake_case(resp.name).replace("_", " ")
-            lines.append(f"pub fn {func_name}(body: &[u8]) -> Result<{item}> {{")
+            lines.append(
+                f"pub fn {func_name}(body: &[u8], protocol_version: ProtocolVersion) -> Result<{item}> {{"
+            )
             lines.append("    if body.is_empty() {")
             lines.append(f"        return Err(RacError::Decode(\"{error_ctx} empty body\"));")
             lines.append("    }")
             lines.append("    let mut cursor = RecordCursor::new(body);")
-            lines.append(f"    {item}::decode(&mut cursor)")
+            lines.append(f"    {item}::decode(&mut cursor, protocol_version)")
             lines.append("}")
             lines.append("")
         elif resp.body.type_name == "record_tail":
@@ -166,13 +246,13 @@ def generate_response_parsers(responses: List[ResponseSpec]) -> List[str]:
             param = resp.body.tail_len_param
             error_ctx = snake_case(resp.name).replace("_", " ")
             lines.append(
-                f"pub fn {func_name}(body: &[u8], {param}: usize) -> Result<{item}> {{"
+                f"pub fn {func_name}(body: &[u8], {param}: usize, protocol_version: ProtocolVersion) -> Result<{item}> {{"
             )
             lines.append("    if body.is_empty() {")
             lines.append(f"        return Err(RacError::Decode(\"{error_ctx} empty body\"));")
             lines.append("    }")
             lines.append("    let mut cursor = RecordCursor::new(body);")
-            lines.append(f"    let record = {item}::decode(&mut cursor)?;")
+            lines.append(f"    let record = {item}::decode(&mut cursor, protocol_version)?;")
             lines.append("    if " + param + " != 0 {")
             lines.append("        let _tail = cursor.take_bytes(" + param + ")?;")
             lines.append("    }")
@@ -212,9 +292,10 @@ def generate_response_structs(
                 "    fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {"
             )
             lines.append("        let body = crate::rpc::decode_utils::rpc_body(payload)?;")
+            lines.append("        let protocol_version = _codec.protocol_version();")
             lines.append("        Ok(Self {")
             lines.append(
-                f"            {field_name}: crate::commands::parse_list_u8(body, {item}::decode)?,"
+                f"            {field_name}: crate::commands::parse_list_u8(body, |cursor| {item}::decode(cursor, protocol_version))?,"
             )
             lines.append("        })")
             lines.append("    }")
@@ -236,7 +317,7 @@ def generate_response_structs(
                     if field.name == field_name:
                         field_spec = field
                         break
-            field_type = item if field_spec is None else request_rust_type(field_spec)
+            field_type = item if field_spec is None else rust_type(field_spec)
             lines.append("#[derive(Debug, Serialize)]")
             lines.append(f"pub struct {resp_name} {{")
             lines.append(f"    pub {field_name}: {field_type},")
@@ -247,7 +328,10 @@ def generate_response_structs(
                 "    fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {"
             )
             lines.append("        let body = crate::rpc::decode_utils::rpc_body(payload)?;")
-            lines.append(f"        let record = parse_{snake_case(resp.name)}_body(body)?;")
+            lines.append("        let protocol_version = _codec.protocol_version();")
+            lines.append(
+                f"        let record = parse_{snake_case(resp.name)}_body(body, protocol_version)?;"
+            )
             lines.append("        Ok(Self {")
             if field_spec is None:
                 lines.append(f"            {field_name}: record,")
@@ -287,6 +371,7 @@ def generate_response_tests(responses: List[ResponseSpec]) -> List[str]:
     lines.append("mod tests {")
     lines.append("    use super::*;")
     lines.append("    use crate::commands::rpc_body;")
+    lines.append("    use crate::protocol::ProtocolVersion;")
     lines.append("")
     lines.append("    fn decode_hex_str(input: &str) -> Vec<u8> {")
     lines.append("        hex::decode(input.trim()).expect(\"hex decode\")")
@@ -302,12 +387,13 @@ def generate_response_tests(responses: List[ResponseSpec]) -> List[str]:
             lines.append(f"        let hex = include_str!(\"{test.hex_path}\");")
             lines.append("        let payload = decode_hex_str(hex);")
             lines.append("        let body = rpc_body(&payload).expect(\"rpc body\");")
+            lines.append("        let protocol_version = ProtocolVersion::V16_0;")
             if resp.body.type_name == "list_u8":
                 if not resp.body.item:
                     raise ValueError("list_u8 response requires item")
                 item = resp.body.item
                 lines.append(
-                    f"        let items = crate::commands::parse_list_u8(body, {item}::decode)"
+                    f"        let items = crate::commands::parse_list_u8(body, |cursor| {item}::decode(cursor, protocol_version))"
                     ".expect(\"parse body\");"
                 )
                 if test.expect_len is not None:
@@ -327,7 +413,7 @@ def generate_response_tests(responses: List[ResponseSpec]) -> List[str]:
                 item = resp.body.item
                 tail_len = 0 if test.tail_len is None else test.tail_len
                 lines.append(
-                    f"        let items = crate::commands::parse_list_u8_tail(body, {tail_len}, {item}::decode)"
+                    f"        let items = crate::commands::parse_list_u8_tail(body, {tail_len}, |cursor| {item}::decode(cursor, protocol_version))"
                     ".expect(\"parse body\");"
                 )
                 if test.expect_len is not None:
@@ -342,7 +428,7 @@ def generate_response_tests(responses: List[ResponseSpec]) -> List[str]:
             elif resp.body.type_name == "record_tail":
                 tail_len = 0 if test.tail_len is None else test.tail_len
                 lines.append(
-                    f"        let record = {func_name}(body, {tail_len}).expect(\"parse body\");"
+                    f"        let record = {func_name}(body, {tail_len}, protocol_version).expect(\"parse body\");"
                 )
                 for assertion in test.asserts:
                     if assertion.index is not None:
@@ -350,7 +436,9 @@ def generate_response_tests(responses: List[ResponseSpec]) -> List[str]:
                     rendered = render_value(assertion.value)
                     lines.append(f"        assert_eq!(record.{assertion.field}, {rendered});")
             else:
-                lines.append(f"        let record = {func_name}(body).expect(\"parse body\");")
+                lines.append(
+                    f"        let record = {func_name}(body, protocol_version).expect(\"parse body\");"
+                )
                 for assertion in test.asserts:
                     if assertion.index is not None:
                         raise ValueError("record response asserts must not use index")
@@ -414,6 +502,8 @@ def generate_requests(requests: List[RequestSpec], include_uses: bool = True) ->
     lines: List[str] = []
     if include_uses:
         lines.extend(request_uses(requests))
+        if "use crate::protocol::ProtocolVersion;" not in lines:
+            lines.insert(0, "use crate::protocol::ProtocolVersion;")
         lines.append("")
 
     for req in requests:
@@ -428,13 +518,19 @@ def generate_requests(requests: List[RequestSpec], include_uses: bool = True) ->
         lines.append("}")
         lines.append("")
         lines.append(f"impl {req.name} {{")
-        lines.append("    pub fn encoded_len(&self) -> usize {")
+        lines.append("    pub fn encoded_len(&self, protocol_version: ProtocolVersion) -> usize {")
         len_parts: List[str] = []
         for field in req.fields:
-            if field.type_name == "str8":
-                len_parts.append(f"1 + self.{field.name}.len()")
+            guard = render_version_guard(field.version, None, "protocol_version")
+            len_expr = (
+                f"1 + self.{field.name}.len()"
+                if field.type_name == "str8"
+                else str(request_encoded_len(field))
+            )
+            if guard:
+                len_parts.append(f"if {guard} {{ {len_expr} }} else {{ 0 }}")
             else:
-                len_parts.append(str(request_encoded_len(field)))
+                len_parts.append(len_expr)
         if len_parts:
             lines.append(f"        { ' + '.join(len_parts) }")
         else:
@@ -445,11 +541,20 @@ def generate_requests(requests: List[RequestSpec], include_uses: bool = True) ->
         for field in req.fields:
             if field.skip:
                 continue
+            guard = render_version_guard(field.version, None, "protocol_version")
             exprs = request_encode_expr(field)
-            for expr in exprs:
-                expr_lines.append(f"        {expr}")
+            if guard:
+                expr_lines.append(f"        if {guard} {{")
+                for expr in exprs:
+                    expr_lines.append(f"            {expr}")
+                expr_lines.append("        }")
+            else:
+                for expr in exprs:
+                    expr_lines.append(f"        {expr}")
         out_name = "out" if expr_lines else "_out"
-        lines.append(f"    pub fn encode_body(&self, {out_name}: &mut Vec<u8>) -> Result<()> {{")
+        lines.append(
+            f"    pub fn encode_body(&self, {out_name}: &mut Vec<u8>, protocol_version: ProtocolVersion) -> Result<()> {{"
+        )
         lines.extend(expr_lines)
         lines.append("        Ok(())")
         lines.append("    }")
@@ -515,16 +620,31 @@ def generate_rpc_section(rpcs: List[RpcSpec], requests: List[RequestSpec]) -> Li
         lines.append(
             "    fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {"
         )
+        lines.append("        let protocol_version = _codec.protocol_version();")
+        lines.append(
+            f"        if !{render_version_guard(rpc.version, None, 'protocol_version')} {{"
+        )
+        lines.append(
+            f"            return Err(RacError::Unsupported(\"rpc {rpc.name} unsupported for protocol\"));"
+        )
+        lines.append("        }")
         if req_spec:
             if rpc.request_inline is not None:
-                len_expr = request_len_expr(req_spec)
+                len_expr = request_len_expr(req_spec, "protocol_version")
                 lines.append(f"        let mut out = Vec::with_capacity({len_expr});")
                 for field in req_spec.fields:
                     if field.skip:
                         continue
+                    guard = render_version_guard(field.version, None, "protocol_version")
                     exprs = request_encode_expr(field)
-                    for expr in exprs:
-                        lines.append(f"        {expr}")
+                    if guard:
+                        lines.append(f"        if {guard} {{")
+                        for expr in exprs:
+                            lines.append(f"            {expr}")
+                        lines.append("        }")
+                    else:
+                        for expr in exprs:
+                            lines.append(f"        {expr}")
                 if not req_spec.fields:
                     lines.append("        let _ = &mut out;")
                 lines.append("        Ok(out)")
@@ -533,8 +653,10 @@ def generate_rpc_section(rpcs: List[RpcSpec], requests: List[RequestSpec]) -> Li
                 for name, _ in fields:
                     lines.append(f"            {name}: self.{name}.clone(),")
                 lines.append("        };")
-                lines.append("        let mut out = Vec::with_capacity(req.encoded_len());")
-                lines.append("        req.encode_body(&mut out)?;")
+                lines.append(
+                    "        let mut out = Vec::with_capacity(req.encoded_len(protocol_version));"
+                )
+                lines.append("        req.encode_body(&mut out, protocol_version)?;")
                 lines.append("        Ok(out)")
         else:
             lines.append("        Ok(Vec::new())")
@@ -558,13 +680,19 @@ def render_request(req: RequestSpec) -> List[str]:
     lines.append("}")
     lines.append("")
     lines.append(f"impl {req.name} {{")
-    lines.append("    pub fn encoded_len(&self) -> usize {")
+    lines.append("    pub fn encoded_len(&self, protocol_version: ProtocolVersion) -> usize {")
     len_parts: List[str] = []
     for field in req.fields:
-        if field.type_name == "str8":
-            len_parts.append(f"1 + self.{field.name}.len()")
+        guard = render_version_guard(field.version, None, "protocol_version")
+        len_expr = (
+            f"1 + self.{field.name}.len()"
+            if field.type_name == "str8"
+            else str(request_encoded_len(field))
+        )
+        if guard:
+            len_parts.append(f"if {guard} {{ {len_expr} }} else {{ 0 }}")
         else:
-            len_parts.append(str(request_encoded_len(field)))
+            len_parts.append(len_expr)
     if len_parts:
         lines.append(f"        { ' + '.join(len_parts) }")
     else:
@@ -575,11 +703,20 @@ def render_request(req: RequestSpec) -> List[str]:
     for field in req.fields:
         if field.skip:
             continue
+        guard = render_version_guard(field.version, None, "protocol_version")
         exprs = request_encode_expr(field)
-        for expr in exprs:
-            expr_lines.append(f"        {expr}")
+        if guard:
+            expr_lines.append(f"        if {guard} {{")
+            for expr in exprs:
+                expr_lines.append(f"            {expr}")
+            expr_lines.append("        }")
+        else:
+            for expr in exprs:
+                expr_lines.append(f"        {expr}")
     out_name = "out" if expr_lines else "_out"
-    lines.append(f"    pub fn encode_body(&self, {out_name}: &mut Vec<u8>) -> Result<()> {{")
+    lines.append(
+        f"    pub fn encode_body(&self, {out_name}: &mut Vec<u8>, protocol_version: ProtocolVersion) -> Result<()> {{"
+    )
     lines.extend(expr_lines)
     lines.append("        Ok(())")
     lines.append("    }")
@@ -587,13 +724,19 @@ def render_request(req: RequestSpec) -> List[str]:
     return lines
 
 
-def request_len_expr(req: RequestSpec) -> str:
+def request_len_expr(req: RequestSpec, protocol_var: str) -> str:
     len_parts: List[str] = []
     for field in req.fields:
-        if field.type_name == "str8":
-            len_parts.append(f"1 + self.{field.name}.len()")
+        guard = render_version_guard(field.version, None, protocol_var)
+        len_expr = (
+            f"1 + self.{field.name}.len()"
+            if field.type_name == "str8"
+            else str(request_encoded_len(field))
+        )
+        if guard:
+            len_parts.append(f"if {guard} {{ {len_expr} }} else {{ 0 }}")
         else:
-            len_parts.append(str(request_encoded_len(field)))
+            len_parts.append(len_expr)
     if len_parts:
         return " + ".join(len_parts)
     return "0"

@@ -3,7 +3,7 @@ from typing import Dict, List
 from .schema import FieldSpec, RecordSpec, RequestSpec, ResponseSpec
 
 
-def rust_type(field: FieldSpec) -> str:
+def rust_type_inner(field: FieldSpec) -> str:
     if field.rust_type:
         return field.rust_type
     if field.type_name == "uuid":
@@ -83,7 +83,16 @@ def rust_type(field: FieldSpec) -> str:
     raise ValueError(f"unknown type: {field.type_name}")
 
 
-def decode_expr(field: FieldSpec, var_map: Dict[str, str]) -> List[str]:
+def rust_type(field: FieldSpec) -> str:
+    base = rust_type_inner(field)
+    if field.optional:
+        return f"Option<{base}>"
+    return base
+
+
+def decode_expr(
+    field: FieldSpec, var_map: Dict[str, str], protocol_var: str = "protocol_version"
+) -> List[str]:
     t = field.type_name
     if t == "uuid":
         return ["cursor.take_uuid()?;"]
@@ -229,7 +238,7 @@ def decode_expr(field: FieldSpec, var_map: Dict[str, str]) -> List[str]:
             "let count = cursor.take_u8()? as usize;",
             "let mut out = Vec::with_capacity(count);",
             "for _ in 0..count {",
-            f"    out.push({item}::decode(cursor)?);",
+            f"    out.push({item}::decode(cursor, {protocol_var})?);",
             "}",
             "out",
         ]
@@ -245,14 +254,14 @@ def decode_expr(field: FieldSpec, var_map: Dict[str, str]) -> List[str]:
         item = field.item
         if not item:
             raise ValueError("record requires item")
-        return [f"{item}::decode(cursor)?;"]
+        return [f"{item}::decode(cursor, {protocol_var})?;"]
     if t == "record_u8_first":
         item = field.item
         if not item:
             raise ValueError("record_u8_first requires item")
         return [
             "let count = cursor.take_u8()? as usize;",
-            f"if count == 0 {{ {item}::default() }} else {{ {item}::decode(cursor)? }}",
+            f"if count == 0 {{ {item}::default() }} else {{ {item}::decode(cursor, {protocol_var})? }}",
         ]
     raise ValueError(f"unknown type for decode: {t}")
 
@@ -292,7 +301,7 @@ def needs_protocol_version(records: List[RecordSpec]) -> bool:
 
 
 def request_rust_type(field: FieldSpec) -> str:
-    return rust_type(field)
+    return rust_type_inner(field)
 
 
 def request_literal_bytes(field: FieldSpec) -> List[int]:

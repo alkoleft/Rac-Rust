@@ -17,7 +17,38 @@ from .schema import (
     ResponseBodySpec,
     ResponseSpec,
     ResponseTestSpec,
+    Version,
+    VersionRange,
 )
+
+
+def parse_version(raw: str) -> Version:
+    parts = raw.split(".")
+    if len(parts) != 2:
+        raise ValueError(f"invalid version: {raw}")
+    if not parts[0].isdigit() or not parts[1].isdigit():
+        raise ValueError(f"invalid version: {raw}")
+    major = int(parts[0])
+    minor = int(parts[1])
+    return Version(major=major, minor=minor)
+
+
+def parse_version_range(raw: str) -> VersionRange:
+    raw = raw.strip()
+    if not raw:
+        raise ValueError("version is empty")
+    if "-" not in raw:
+        return VersionRange(start=parse_version(raw))
+    parts = raw.split("-")
+    if len(parts) != 2:
+        raise ValueError(f"invalid version range: {raw}")
+    if not parts[0] or not parts[1]:
+        raise ValueError(f"invalid version range: {raw}")
+    start = parse_version(parts[0])
+    end = parse_version(parts[1])
+    if end <= start:
+        raise ValueError(f"invalid version range: {raw}")
+    return VersionRange(start=start, end=end)
 
 
 def parse_schema(
@@ -41,6 +72,10 @@ def parse_schema_payload(
         derives = [str(v) for v in spec.get("derive", ["Debug", "Serialize", "Clone"])]
         fields = []
         for raw in spec.get("fields", []):
+            raw_version = raw.get("version")
+            if raw_version is None:
+                raise ValueError(f"record {name} field {raw.get('name')} missing version")
+            version = parse_version_range(str(raw_version))
             fields.append(
                 FieldSpec(
                     name=str(raw.get("name", "")),
@@ -53,14 +88,28 @@ def parse_schema_payload(
                     source=raw.get("source"),
                     rust_type=raw.get("rust_type"),
                     literal=raw.get("literal"),
+                    version=version,
+                    optional=False,
                 )
             )
         records.append(RecordSpec(name=name, derives=derives, fields=fields))
+    for record in records:
+        if not record.fields:
+            continue
+        min_version = min(field.version.start for field in record.fields)
+        for field in record.fields:
+            if field.skip:
+                continue
+            field.optional = field.version.start > min_version or field.version.end is not None
     request_table: Dict[str, Any] = payload.get("request", {})
     for name, spec in request_table.items():
         derives = [str(v) for v in spec.get("derive", ["Debug", "Clone"])]
         fields = []
         for raw in spec.get("fields", []):
+            raw_version = raw.get("version")
+            if raw_version is None:
+                raise ValueError(f"request {name} field {raw.get('name')} missing version")
+            version = parse_version_range(str(raw_version))
             fields.append(
                 FieldSpec(
                     name=str(raw.get("name", "")),
@@ -73,11 +122,17 @@ def parse_schema_payload(
                     source=raw.get("source"),
                     rust_type=raw.get("rust_type"),
                     literal=raw.get("literal"),
+                    version=version,
+                    optional=False,
                 )
             )
         requests.append(RequestSpec(name=name, derives=derives, fields=fields))
     rpc_table: Dict[str, Any] = payload.get("rpc", {})
     for name, spec in rpc_table.items():
+        raw_version = spec.get("version")
+        if raw_version is None:
+            raise ValueError(f"rpc {name} missing version")
+        rpc_version = parse_version_range(str(raw_version))
         tests = []
         for raw in spec.get("tests", []):
             tests.append(
@@ -94,6 +149,10 @@ def parse_schema_payload(
             derives = [str(v) for v in spec.get("derive", ["Debug", "Clone"])]
             fields = []
             for raw in spec.get("fields", []):
+                raw_version = raw.get("version")
+                if raw_version is None:
+                    raise ValueError(f"rpc {name} field {raw.get('name')} missing version")
+                version = parse_version_range(str(raw_version))
                 fields.append(
                     FieldSpec(
                         name=str(raw.get("name", "")),
@@ -106,6 +165,8 @@ def parse_schema_payload(
                         source=raw.get("source"),
                         rust_type=raw.get("rust_type"),
                         literal=raw.get("literal"),
+                        version=version,
+                        optional=False,
                     )
                 )
             req_name = spec.get("request") or f"{name}Request"
@@ -121,6 +182,7 @@ def parse_schema_payload(
                 requires_cluster_context=bool(spec.get("requires_cluster_context", False)),
                 requires_infobase_context=bool(spec.get("requires_infobase_context", False)),
                 tests=tests,
+                version=rpc_version,
             )
         )
     response_table: Dict[str, Any] = payload.get("response", {})

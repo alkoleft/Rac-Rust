@@ -28,7 +28,7 @@ fields = [
   { name = "ping_period", type = "u32_be", source = "0", version = "16.0" },
   { name = "ping_timeout", type = "u32_be", source = "0", version = "16.0" },
   { name = "restart_schedule_cron", type = "str8", source = "String::new()", version = "16.0" },
-  { name = "restart_interval", type = "u32_be", source = "0", version = "11.0" },
+  { name = "restart_interval", type = "u32_be", source = "0", version = "11.0-16.0" },
 ]
 
 [rpc.ClusterAuth]

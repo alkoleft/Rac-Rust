@@ -7,141 +7,141 @@ list_label = "infobases"
 list_fn = "infobase_summary_list"
 list_struct = "InfobaseSummaryListDisplay"
 lines = [
-  { label = "infobase", value = "item.infobase", format = "uuid" },
-  { label = "name", value = "item.name" },
-  { label = "descr", value = "item.descr", format = "quoted" },
+  { label = "infobase", value = "infobase", format = "uuid" },
+  { label = "name", value = "name" },
+  { label = "descr", value = "descr", format = "quoted" },
 ]
 
 [record.connection]
 type = "ConnectionRecord"
 list_label = "connections"
 lines = [
-  { label = "connection", value = "item.connection", format = "uuid" },
-  { label = "application", value = "item.application", format = "display_str" },
-  { label = "connected-at", value = "item.connected_at", format = "display_str" },
-  { label = "conn-id", value = "item.conn_id" },
-  { label = "host", value = "item.host", format = "display_str" },
-  { label = "infobase", value = "item.infobase", format = "uuid" },
-  { label = "process", value = "item.process", format = "uuid" },
-  { label = "session-number", value = "item.session_number" },
-  { label = "blocked-by-ls", value = "item.blocked_by_ls" },
+  { label = "connection", value = "connection", format = "uuid" },
+  { label = "application", value = "application" },
+  { label = "connected-at", value = "connected_at" },
+  { label = "conn-id", value = "conn_id" },
+  { label = "host", value = "host" },
+  { label = "infobase", value = "infobase", format = "uuid" },
+  { label = "process", value = "process", format = "uuid" },
+  { label = "session-number", value = "session_number" },
+  { label = "blocked-by-ls", value = "blocked_by_ls" },
 ]
 
 [record.manager]
 type = "ManagerRecord"
 list_label = "managers"
 lines = [
-  { label = "manager", value = "item.manager", format = "uuid" },
-  { label = "pid", value = "item.pid", format = "display_str" },
+  { label = "manager", value = "manager", format = "uuid" },
+  { label = "pid", value = "pid" },
   { label = "using", value = "manager_using_label(item.using)" },
-  { label = "host", value = "item.host", format = "display_str" },
-  { label = "port", value = "item.port" },
-  { label = "descr", value = "item.descr", format = "quoted_display" },
+  { label = "host", value = "host" },
+  { label = "port", value = "port" },
+  { label = "descr", value = "descr", format = "quoted_display" },
 ]
 
 [record.server]
 type = "ServerRecord"
 list_label = "servers"
 lines = [
-  { label = "server", value = "item.server", format = "uuid" },
-  { label = "agent-host", value = "item.agent_host", format = "display_str" },
-  { label = "agent-port", value = "item.agent_port" },
-  { label = "name", value = "item.name", format = "quoted_display" },
+  { label = "server", value = "server", format = "uuid" },
+  { label = "agent-host", value = "agent_host" },
+  { label = "agent-port", value = "agent_port" },
+  { label = "name", value = "name", format = "quoted_display" },
   { label = "using", value = "server_using_label(item.using)" },
   { label = "dedicate-managers", value = "dedicate_managers_label(item.dedicate_managers)" },
-  { label = "infobases-limit", value = "item.infobases_limit" },
-  { label = "safe-call-memory-limit", value = "item.safe_call_memory_limit" },
-  { label = "connections-limit", value = "item.connections_limit" },
-  { label = "cluster-port", value = "item.cluster_port" },
+  { label = "infobases-limit", value = "infobases_limit" },
+  { label = "safe-call-memory-limit", value = "safe_call_memory_limit" },
+  { label = "connections-limit", value = "connections_limit" },
+  { label = "cluster-port", value = "cluster_port" },
   { fmt = "port-range: {}:{}", args = ["item.port_range_start", "item.port_range_end"] },
-  { label = "critical-total-memory", value = "item.critical_total_memory" },
-  { label = "temporary-allowed-total-memory", value = "item.temporary_allowed_total_memory" },
-  { label = "temporary-allowed-total-memory-time-limit", value = "item.temporary_allowed_total_memory_time_limit" },
-  { label = "service-principal-name", value = "item.service_principal_name", format = "quoted_display" },
-  { label = "restart-schedule", value = "item.restart_schedule", format = "quoted_display" },
+  { label = "critical-total-memory", value = "critical_total_memory" },
+  { label = "temporary-allowed-total-memory", value = "temporary_allowed_total_memory" },
+  { label = "temporary-allowed-total-memory-time-limit", value = "temporary_allowed_total_memory_time_limit" },
+  { label = "service-principal-name", value = "service_principal_name", format = "quoted_display" },
+  { label = "restart-schedule", value = "restart_schedule", format = "quoted_display" },
 ]
 
 [record.process]
 type = "ProcessRecord"
 list_label = "processes"
 lines = [
-  { label = "process", value = "item.process", format = "uuid" },
-  { label = "host", value = "item.host", format = "display_str" },
-  { label = "port", value = "item.port" },
-  { label = "pid", value = "item.pid", format = "display_str" },
-  { label = "turned-on", value = "item.turned_on", format = "yes_no" },
-  { label = "running", value = "item.running", format = "yes_no" },
-  { label = "started-at", value = "item.started_at", format = "display_str" },
+  { label = "process", value = "process", format = "uuid" },
+  { label = "host", value = "host" },
+  { label = "port", value = "port" },
+  { label = "pid", value = "pid" },
+  { label = "turned-on", value = "turned_on", format = "yes_no" },
+  { label = "running", value = "running", format = "yes_no" },
+  { label = "started-at", value = "started_at" },
   { label = "use", value = "process_use_label(item.use_status)" },
-  { label = "available-performance", value = "item.available_performance" },
-  { label = "capacity", value = "item.capacity" },
-  { label = "connections", value = "item.connections" },
-  { label = "memory-size", value = "item.memory_size" },
-  { label = "memory-excess-time", value = "item.memory_excess_time" },
-  { label = "selection-size", value = "item.selection_size" },
-  { label = "avg-call-time", value = "item.avg_call_time", format = "float3" },
-  { label = "avg-db-call-time", value = "item.avg_db_call_time", format = "float3" },
-  { label = "avg-lock-call-time", value = "item.avg_lock_call_time", format = "float3" },
-  { label = "avg-server-call-time", value = "item.avg_server_call_time", format = "float3" },
-  { label = "avg-threads", value = "item.avg_threads", format = "float3" },
-  { label = "reserve", value = "item.reserve", format = "yes_no" },
+  { label = "available-performance", value = "available_performance" },
+  { label = "capacity", value = "capacity" },
+  { label = "connections", value = "connections" },
+  { label = "memory-size", value = "memory_size" },
+  { label = "memory-excess-time", value = "memory_excess_time" },
+  { label = "selection-size", value = "selection_size" },
+  { label = "avg-call-time", value = "avg_call_time", format = "float3" },
+  { label = "avg-db-call-time", value = "avg_db_call_time", format = "float3" },
+  { label = "avg-lock-call-time", value = "avg_lock_call_time", format = "float3" },
+  { label = "avg-server-call-time", value = "avg_server_call_time", format = "float3" },
+  { label = "avg-threads", value = "avg_threads", format = "float3" },
+  { label = "reserve", value = "reserve", format = "yes_no" },
 ]
 
 [record.lock]
 type = "LockRecordRaw"
 list_label = "locks"
 lines = [
-  { label = "connection", value = "item.connection", format = "uuid" },
+  { label = "connection", value = "connection", format = "uuid" },
   { label = "descr", value = "item.descr.descr", format = "display_str" },
   { label = "descr-flag", value = "flag", optional = { var = "flag", expr = "item.descr.descr_flag" } },
-  { label = "locked-at", value = "item.locked_at", format = "display_str" },
-  { label = "session", value = "item.session", format = "uuid" },
-  { label = "object", value = "item.object", format = "uuid" },
+  { label = "locked-at", value = "locked_at" },
+  { label = "session", value = "session", format = "uuid" },
+  { label = "object", value = "object", format = "uuid" },
 ]
 
 [record.rule]
 type = "RuleRecord"
 list_label = "rules"
 lines = [
-  { label = "rule", value = "item.rule", format = "uuid" },
-  { label = "object-type", value = "item.object_type" },
-  { label = "infobase-name", value = "item.infobase_name", format = "display_str" },
+  { label = "rule", value = "rule", format = "uuid" },
+  { label = "object-type", value = "object_type" },
+  { label = "infobase-name", value = "infobase_name" },
   { label = "rule-type", value = "rule_type_label(item.rule_type)" },
-  { label = "application-ext", value = "item.application_ext", format = "display_str" },
-  { label = "priority", value = "item.priority" },
+  { label = "application-ext", value = "application_ext" },
+  { label = "priority", value = "priority" },
 ]
 
 [record.limit]
 type = "LimitRecord"
 list_label = "limits"
 lines = [
-  { label = "limit", value = "item.name", format = "display_str" },
-  { label = "counter", value = "item.counter", format = "display_str" },
-  { label = "action", value = "item.action" },
-  { label = "duration", value = "item.duration" },
-  { label = "cpu-time", value = "item.cpu_time" },
-  { label = "memory", value = "item.memory" },
-  { label = "read", value = "item.read" },
-  { label = "write", value = "item.write" },
-  { label = "duration-dbms", value = "item.duration_dbms" },
-  { label = "dbms-bytes", value = "item.dbms_bytes" },
-  { label = "service", value = "item.service" },
-  { label = "call", value = "item.call" },
-  { label = "number-of-active-sessions", value = "item.number_of_active_sessions" },
-  { label = "number-of-sessions", value = "item.number_of_sessions" },
-  { label = "error-message", value = "item.error_message", format = "display_str" },
-  { label = "descr", value = "item.descr", format = "display_str" },
+  { label = "limit", value = "name" },
+  { label = "counter", value = "counter" },
+  { label = "action", value = "action" },
+  { label = "duration", value = "duration" },
+  { label = "cpu-time", value = "cpu_time" },
+  { label = "memory", value = "memory" },
+  { label = "read", value = "read" },
+  { label = "write", value = "write" },
+  { label = "duration-dbms", value = "duration_dbms" },
+  { label = "dbms-bytes", value = "dbms_bytes" },
+  { label = "service", value = "service" },
+  { label = "call", value = "call" },
+  { label = "number-of-active-sessions", value = "number_of_active_sessions" },
+  { label = "number-of-sessions", value = "number_of_sessions" },
+  { label = "error-message", value = "error_message" },
+  { label = "descr", value = "descr" },
 ]
 
 [record.service_setting]
 type = "ServiceSettingRecord"
 list_label = "service-settings"
 lines = [
-  { label = "setting", value = "item.setting", format = "uuid" },
-  { label = "service-name", value = "item.service_name", format = "display_str" },
-  { label = "infobase-name", value = "item.infobase_name", format = "display_str" },
-  { label = "service-data-dir", value = "item.service_data_dir", format = "display_str" },
-  { label = "active", value = "item.active", format = "yes_no" },
+  { label = "setting", value = "setting", format = "uuid" },
+  { label = "service-name", value = "service_name" },
+  { label = "infobase-name", value = "infobase_name" },
+  { label = "service-data-dir", value = "service_data_dir" },
+  { label = "active", value = "active", format = "yes_no" },
 ]
 
 [record.service_setting_transfer_data_dir]
@@ -150,33 +150,33 @@ list_label = "service-data-dirs"
 list_fn = "service_setting_get_data_dirs_for_transfer"
 list_struct = "ServiceSettingTransferDataDirsDisplay"
 lines = [
-  { label = "service-name", value = "item.service_name", format = "display_str" },
-  { label = "user", value = "item.user", format = "display_str" },
-  { label = "source-dir", value = "item.source_dir", format = "display_str" },
-  { label = "target-dir", value = "item.target_dir", format = "display_str" },
+  { label = "service-name", value = "service_name" },
+  { label = "user", value = "user" },
+  { label = "source-dir", value = "source_dir" },
+  { label = "target-dir", value = "target_dir" },
 ]
 
 [record.counter]
 type = "CounterRecord"
 list_label = "counters"
 lines = [
-  { label = "name", value = "item.name", format = "display_str" },
-  { label = "collection-time", value = "item.collection_time" },
-  { label = "group", value = "item.group" },
-  { label = "filter-type", value = "item.filter_type" },
-  { label = "filter", value = "item.filter", format = "display_str" },
-  { label = "duration", value = "item.duration" },
-  { label = "cpu-time", value = "item.cpu_time" },
-  { label = "duration-dbms", value = "item.duration_dbms" },
-  { label = "service", value = "item.service" },
-  { label = "memory", value = "item.memory" },
-  { label = "read", value = "item.read" },
-  { label = "write", value = "item.write" },
-  { label = "dbms-bytes", value = "item.dbms_bytes" },
-  { label = "call", value = "item.call" },
-  { label = "number-of-active-sessions", value = "item.number_of_active_sessions" },
-  { label = "number-of-sessions", value = "item.number_of_sessions" },
-  { label = "descr", value = "item.descr", format = "display_str" },
+  { label = "name", value = "name" },
+  { label = "collection-time", value = "collection_time" },
+  { label = "group", value = "group" },
+  { label = "filter-type", value = "filter_type" },
+  { label = "filter", value = "filter" },
+  { label = "duration", value = "duration" },
+  { label = "cpu-time", value = "cpu_time" },
+  { label = "duration-dbms", value = "duration_dbms" },
+  { label = "service", value = "service" },
+  { label = "memory", value = "memory" },
+  { label = "read", value = "read" },
+  { label = "write", value = "write" },
+  { label = "dbms-bytes", value = "dbms_bytes" },
+  { label = "call", value = "call" },
+  { label = "number-of-active-sessions", value = "number_of_active_sessions" },
+  { label = "number-of-sessions", value = "number_of_sessions" },
+  { label = "descr", value = "descr" },
 ]
 
 [record.counter_values]
@@ -186,63 +186,63 @@ lists = [
   { label = "counter-accumulated-values", fn = "counter_accumulated_values", struct = "CounterAccumulatedValuesDisplay" },
 ]
 lines = [
-  { label = "object", value = "item.object", format = "display_str" },
-  { label = "collection-time", value = "item.collection_time" },
-  { label = "duration", value = "item.duration" },
-  { label = "cpu-time", value = "item.cpu_time" },
-  { label = "memory", value = "item.memory" },
-  { label = "read", value = "item.read" },
-  { label = "write", value = "item.write" },
-  { label = "duration-dbms", value = "item.duration_dbms" },
-  { label = "dbms-bytes", value = "item.dbms_bytes" },
-  { label = "service", value = "item.service" },
-  { label = "call", value = "item.call" },
-  { label = "number-of-active-sessions", value = "item.number_of_active_sessions" },
-  { label = "number-of-sessions", value = "item.number_of_sessions" },
-  { label = "time", value = "item.time", format = "display_str" },
+  { label = "object", value = "object" },
+  { label = "collection-time", value = "collection_time" },
+  { label = "duration", value = "duration" },
+  { label = "cpu-time", value = "cpu_time" },
+  { label = "memory", value = "memory" },
+  { label = "read", value = "read" },
+  { label = "write", value = "write" },
+  { label = "duration-dbms", value = "duration_dbms" },
+  { label = "dbms-bytes", value = "dbms_bytes" },
+  { label = "service", value = "service" },
+  { label = "call", value = "call" },
+  { label = "number-of-active-sessions", value = "number_of_active_sessions" },
+  { label = "number-of-sessions", value = "number_of_sessions" },
+  { label = "time", value = "time" },
 ]
 
 [record.agent_admin]
 type = "AgentAdminRecord"
 list_label = "agent-admins"
 lines = [
-  { label = "name", value = "item.name", format = "display_str" },
-  { label = "unknown-tag", value = "item.unknown_tag" },
-  { label = "unknown-flags", value = "item.unknown_flags", format = "hex_u32" },
-  { label = "unknown-tail", value = "item.unknown_tail", format = "bytes3" },
+  { label = "name", value = "name" },
+  { label = "unknown-tag", value = "unknown_tag" },
+  { label = "unknown-flags", value = "unknown_flags", format = "hex_u32" },
+  { label = "unknown-tail", value = "unknown_tail", format = "bytes3" },
 ]
 
 [record.cluster_admin]
 type = "ClusterAdminRecord"
 list_label = "cluster-admins"
 lines = [
-  { label = "name", value = "item.name", format = "display_str" },
-  { label = "unknown-tag", value = "item.unknown_tag" },
-  { label = "unknown-flags", value = "item.unknown_flags", format = "hex_u32" },
-  { label = "unknown-tail", value = "item.unknown_tail", format = "bytes3" },
+  { label = "name", value = "name" },
+  { label = "unknown-tag", value = "unknown_tag" },
+  { label = "unknown-flags", value = "unknown_flags", format = "hex_u32" },
+  { label = "unknown-tail", value = "unknown_tail", format = "bytes3" },
 ]
 
 [record.session]
 type = "SessionRecord"
 list_label = "sessions"
 lines = [
-  { label = "session", value = "item.session", format = "uuid" },
-  { label = "app-id", value = "item.app_id", format = "display_str" },
-  { label = "connection", value = "item.connection", format = "uuid" },
-  { label = "infobase", value = "item.infobase", format = "uuid" },
-  { label = "process", value = "item.process", format = "uuid" },
-  { label = "host", value = "item.host", format = "display_str" },
-  { label = "hibernate", value = "item.hibernate", format = "yes_no" },
-  { label = "locale", value = "item.locale", format = "display_str" },
-  { label = "user-name", value = "item.user_name", format = "display_str" },
-  { label = "started-at", value = "item.started_at", format = "display_str" },
-  { label = "last-active-at", value = "item.last_active_at", format = "display_str" },
-  { label = "client-ip", value = "item.client_ip", format = "display_str" },
-  { label = "db-proc-info", value = "item.db_proc_info", format = "display_str" },
-  { label = "db-proc-took-at", value = "item.db_proc_took_at", format = "display_str" },
-  { label = "current-service-name", value = "item.current_service_name", format = "display_str" },
-  { label = "data-separation", value = "item.data_separation", format = "display_str" },
+  { label = "session", value = "session", format = "uuid" },
+  { label = "app-id", value = "app_id" },
+  { label = "connection", value = "connection", format = "uuid" },
+  { label = "infobase", value = "infobase", format = "uuid" },
+  { label = "process", value = "process", format = "uuid" },
+  { label = "host", value = "host" },
+  { label = "hibernate", value = "hibernate", format = "yes_no" },
+  { label = "locale", value = "locale" },
+  { label = "user-name", value = "user_name" },
+  { label = "started-at", value = "started_at" },
+  { label = "last-active-at", value = "last_active_at" },
+  { label = "client-ip", value = "client_ip" },
+  { label = "db-proc-info", value = "db_proc_info" },
+  { label = "db-proc-took-at", value = "db_proc_took_at" },
+  { label = "current-service-name", value = "current_service_name" },
+  { label = "data-separation", value = "data_separation" },
   { call = "append_license_prefixed(out, &item.license, \"license.\")" },
-  { label = "session-id", value = "item.session_id" },
+  { label = "session-id", value = "session_id" },
   { call = "append_counters_prefixed(out, item, \"\")" },
 ]

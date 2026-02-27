@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -14,10 +15,30 @@ except ModuleNotFoundError:  # Python < 3.11
     except ModuleNotFoundError:
         tomllib = None  # type: ignore
 
+try:
+    from codegen.parse import parse_schema
+except Exception:  # pragma: no cover - optional dependency in runtime
+    parse_schema = None
+
 
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_SCHEMA = ROOT / "schemas" / "rac" / "console_output.toml"
 DEFAULT_OUT = ROOT / "apps" / "rac_cli" / "src" / "rac_lite" / "console_output_generated.rs"
+DEFAULT_SCHEMA_DIR = ROOT / "schemas" / "rac"
+
+STRING_TYPES = {
+    "str8",
+    "str8_opt",
+    "str8_default",
+    "str_len_u8",
+    "str_len_u8_or_2c",
+    "str_u14",
+    "datetime_u64_be",
+    "datetime_u64_be_opt",
+    "datetime_u64_be_default",
+}
+UUID_TYPES = {"uuid", "uuid_opt", "uuid_default"}
+BOOL_TYPES = {"u8_bool", "u16_be_bool", "u32_be_bool", "bool_default", "bool_opt"}
 
 
 @dataclass
@@ -116,6 +137,10 @@ def parse_lines(raw_lines: List[Dict[str, Any]]) -> List[LineSpec]:
                 value = optional.var
             if not value:
                 raise ValueError("line value is required when fmt is not set")
+            if optional and value == optional.var:
+                pass
+            elif re.match(r"^[A-Za-z_][A-Za-z0-9_]*$", value or ""):
+                value = f"item.{value}"
 
         lines.append(
             LineSpec(
@@ -143,7 +168,10 @@ def parse_lists(raw_lists: List[Dict[str, Any]]) -> List[ListSpec]:
     return lists
 
 
-def parse_records(payload: Dict[str, Any]) -> List[RecordSpec]:
+def parse_records(
+    payload: Dict[str, Any],
+    record_field_types: Dict[str, Dict[str, str]],
+) -> List[RecordSpec]:
     record_table: Dict[str, Any] = payload.get("record", {})
     records: List[RecordSpec] = []
     for base, raw in record_table.items():
@@ -164,16 +192,16 @@ def parse_records(payload: Dict[str, Any]) -> List[RecordSpec]:
                 list_fn = str(raw.get("list_fn") or f"{base}_list")
                 list_struct = str(raw.get("list_struct") or f"{pascal}ListDisplay")
                 list_specs = [ListSpec(label=list_label, fn_name=list_fn, struct_name=list_struct)]
-        records.append(
-            RecordSpec(
-                base=base,
-                type_name=type_name,
-                info_fn=info_fn,
-                info_struct=info_struct,
-                list_specs=list_specs,
-                lines=lines,
-            )
+        record = RecordSpec(
+            base=base,
+            type_name=type_name,
+            info_fn=info_fn,
+            info_struct=info_struct,
+            list_specs=list_specs,
+            lines=lines,
         )
+        apply_default_formats(record, record_field_types)
+        records.append(record)
     return records
 
 
@@ -344,6 +372,49 @@ def parse_toml_minimal(path: Path) -> Dict[str, Any]:
     return {"record": records}
 
 
+def load_record_field_types(schema_dir: Path) -> Dict[str, Dict[str, str]]:
+    record_types: Dict[str, Dict[str, str]] = {}
+    if parse_schema is None:
+        return record_types
+    for path in sorted(schema_dir.glob("*.toml")):
+        if path.name == "console_output.toml":
+            continue
+        records, _, _, _ = parse_schema(path)
+        for record in records:
+            fields = {field.name: field.type_name for field in record.fields}
+            record_types[record.name] = fields
+    return record_types
+
+
+def infer_format_name(
+    record_type: str,
+    field_name: str,
+    record_field_types: Dict[str, Dict[str, str]],
+) -> str:
+    field_type = record_field_types.get(record_type, {}).get(field_name)
+    if not field_type:
+        return "raw"
+    if field_type in STRING_TYPES:
+        return "display_str"
+    if field_type in UUID_TYPES:
+        return "uuid"
+    if field_type in BOOL_TYPES:
+        return "yes_no"
+    return "raw"
+
+
+def apply_default_formats(record: RecordSpec, record_field_types: Dict[str, Dict[str, str]]) -> None:
+    for line in record.lines:
+        if line.call or line.fmt or line.format_name:
+            continue
+        value = line.value or ""
+        match = re.match(r"^item\.([A-Za-z_][A-Za-z0-9_]*)$", value)
+        if not match:
+            continue
+        field_name = match.group(1)
+        line.format_name = infer_format_name(record.type_name, field_name, record_field_types)
+
+
 def build_fmt_and_args(line: LineSpec) -> tuple[str, List[str]]:
     if line.fmt:
         return line.fmt, line.args
@@ -467,16 +538,26 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Generate rac_lite console output helpers")
     parser.add_argument("--schema", default=str(DEFAULT_SCHEMA), help="Path to console output schema TOML")
     parser.add_argument("--out", default=str(DEFAULT_OUT), help="Output .rs file path")
+    parser.add_argument(
+        "--schema-dir",
+        default=str(DEFAULT_SCHEMA_DIR),
+        help="Directory with RAC protocol schemas (for type inference)",
+    )
     args = parser.parse_args()
 
     schema_path = Path(args.schema)
     if not schema_path.is_absolute():
         schema_path = (ROOT / schema_path).resolve()
+    schema_dir = Path(args.schema_dir)
+    if not schema_dir.is_absolute():
+        schema_dir = (ROOT / schema_dir).resolve()
+    record_field_types = load_record_field_types(schema_dir)
+
     if tomllib is None:
         payload = parse_toml_minimal(schema_path)
     else:
         payload = tomllib.loads(schema_path.read_text())
-    records = parse_records(payload)
+    records = parse_records(payload, record_field_types)
 
     out_path = Path(args.out)
     if not out_path.is_absolute():

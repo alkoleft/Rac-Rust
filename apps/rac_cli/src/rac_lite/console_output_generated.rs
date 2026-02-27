@@ -11,7 +11,7 @@ pub fn infobase_summary_info(item: &InfobaseSummary) -> InfobaseSummaryInfoDispl
 
 fn render_infobase_summary_info(out: &mut String, item: &InfobaseSummary) {
     outln!(out, "infobase: {}", format_uuid(&item.infobase));
-    outln!(out, "name: {}", item.name);
+    outln!(out, "name: {}", display_str(&item.name));
     outln!(out, "descr: \"{}\"", item.descr);
 }
 

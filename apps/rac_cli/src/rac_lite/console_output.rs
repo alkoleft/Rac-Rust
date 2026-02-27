@@ -726,19 +726,6 @@ fn dedicate_managers_label(value: u32) -> String {
     }
 }
 
-fn append_process_license(
-    out: &mut String,
-    record_idx: usize,
-    license_idx: Option<usize>,
-    license: &ProcessLicense,
-) {
-    let label = |name: &str| match license_idx {
-        Some(license_idx) => format!("{name}[{record_idx}.{license_idx}]"),
-        None => format!("{name}[{record_idx}]"),
-    };
-    append_process_license_fields(out, label, license);
-}
-
 fn append_process_license_plain(out: &mut String, license: &ProcessLicense) {
     append_process_license_fields(out, |name| name.to_string(), license);
 }

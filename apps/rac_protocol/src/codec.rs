@@ -13,6 +13,14 @@ impl<'a> RecordCursor<'a> {
         Self { data, off: 0 }
     }
 
+    fn truncated(&self, what: &'static str) -> WireError {
+        WireError::TruncatedAt {
+            what,
+            off: self.off,
+            len: self.data.len(),
+        }
+    }
+
     pub fn remaining_len(&self) -> usize {
         self.data.len().saturating_sub(self.off)
     }
@@ -26,7 +34,7 @@ impl<'a> RecordCursor<'a> {
 
     pub fn take_uuid(&mut self) -> Result<Uuid16, WireError> {
         if self.off + 16 > self.data.len() {
-            return Err(WireError::Truncated("uuid"));
+            return Err(self.truncated("uuid"));
         }
         let start = self.off;
         let end = start + 16;
@@ -48,13 +56,13 @@ impl<'a> RecordCursor<'a> {
 
     pub fn take_str8(&mut self) -> Result<String, WireError> {
         if self.off >= self.data.len() {
-            return Err(WireError::Truncated("str8 len"));
+            return Err(self.truncated("str8 len"));
         }
         let len = self.data[self.off] as usize;
         let start = self.off + 1;
         let end = start + len;
         if end > self.data.len() {
-            return Err(WireError::Truncated("str8 data"));
+            return Err(self.truncated("str8 data"));
         }
         let value = std::str::from_utf8(&self.data[start..end])
             .map_err(|_| WireError::InvalidData("invalid utf-8"))?
@@ -92,7 +100,7 @@ impl<'a> RecordCursor<'a> {
 
     pub fn take_u32_be(&mut self) -> Result<u32, WireError> {
         if self.off + 4 > self.data.len() {
-            return Err(WireError::Truncated("u32"));
+            return Err(self.truncated("u32"));
         }
         let bytes = &self.data[self.off..self.off + 4];
         self.off += 4;
@@ -101,7 +109,7 @@ impl<'a> RecordCursor<'a> {
 
     pub fn take_u16_be(&mut self) -> Result<u16, WireError> {
         if self.off + 2 > self.data.len() {
-            return Err(WireError::Truncated("u16"));
+            return Err(self.truncated("u16"));
         }
         let bytes = &self.data[self.off..self.off + 2];
         self.off += 2;
@@ -110,7 +118,7 @@ impl<'a> RecordCursor<'a> {
 
     pub fn take_u16_le(&mut self) -> Result<u16, WireError> {
         if self.off + 2 > self.data.len() {
-            return Err(WireError::Truncated("u16"));
+            return Err(self.truncated("u16"));
         }
         let bytes = &self.data[self.off..self.off + 2];
         self.off += 2;
@@ -119,7 +127,7 @@ impl<'a> RecordCursor<'a> {
 
     pub fn take_u32_le(&mut self) -> Result<u32, WireError> {
         if self.off + 4 > self.data.len() {
-            return Err(WireError::Truncated("u32"));
+            return Err(self.truncated("u32"));
         }
         let bytes = &self.data[self.off..self.off + 4];
         self.off += 4;
@@ -150,7 +158,7 @@ impl<'a> RecordCursor<'a> {
 
     pub fn take_u64_be(&mut self) -> Result<u64, WireError> {
         if self.off + 8 > self.data.len() {
-            return Err(WireError::Truncated("u64"));
+            return Err(self.truncated("u64"));
         }
         let bytes = &self.data[self.off..self.off + 8];
         self.off += 8;
@@ -171,7 +179,7 @@ impl<'a> RecordCursor<'a> {
         let value = *self
             .data
             .get(self.off)
-            .ok_or(WireError::Truncated("u8"))?;
+            .ok_or_else(|| self.truncated("u8"))?;
         self.off += 1;
         Ok(value)
     }
@@ -180,9 +188,9 @@ impl<'a> RecordCursor<'a> {
         let start = self.off;
         let end = start
             .checked_add(len)
-            .ok_or(WireError::Truncated("bytes"))?;
+            .ok_or_else(|| self.truncated("bytes"))?;
         if end > self.data.len() {
-            return Err(WireError::Truncated("bytes"));
+            return Err(self.truncated("bytes"));
         }
         let out = self.data[start..end].to_vec();
         self.off = end;
@@ -209,7 +217,7 @@ impl<'a> RecordCursor<'a> {
         let value = *self
             .data
             .get(self.off)
-            .ok_or(WireError::Truncated("bool"))?
+            .ok_or_else(|| self.truncated("bool"))?
             != 0;
         self.off += 1;
         Ok(value)

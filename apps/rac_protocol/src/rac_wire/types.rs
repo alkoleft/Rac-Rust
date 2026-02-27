@@ -7,6 +7,7 @@ pub enum WireError {
     InvalidData(&'static str),
     InvalidHex(String),
     Truncated(&'static str),
+    TruncatedAt { what: &'static str, off: usize, len: usize },
 }
 
 impl fmt::Display for WireError {
@@ -15,6 +16,9 @@ impl fmt::Display for WireError {
             WireError::InvalidData(msg) => write!(f, "{msg}"),
             WireError::InvalidHex(msg) => write!(f, "{msg}"),
             WireError::Truncated(msg) => write!(f, "{msg}"),
+            WireError::TruncatedAt { what, off, len } => {
+                write!(f, "truncated {what} at off={off} len={len}")
+            }
         }
     }
 }

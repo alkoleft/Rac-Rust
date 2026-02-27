@@ -146,7 +146,18 @@ impl RacClient {
 
     pub fn call_typed<R: Request>(&mut self, request: R) -> Result<R::Response> {
         let payload = self.call(request)?;
-        R::Response::decode(&payload, self.protocol.as_ref())
+        R::Response::decode(&payload, self.protocol.as_ref()).map_err(|err| match err {
+            RacError::Wire(wire) => {
+                RacError::DecodeMessage(format!("response decode error: {wire}"))
+            }
+            RacError::Decode(msg) => {
+                RacError::DecodeMessage(format!("response decode error: {msg}"))
+            }
+            RacError::DecodeMessage(msg) => {
+                RacError::DecodeMessage(format!("response decode error: {msg}"))
+            }
+            other => other,
+        })
     }
 
     fn ensure_cluster_context(&mut self, cluster: crate::Uuid16) -> Result<()> {

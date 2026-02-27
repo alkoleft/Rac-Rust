@@ -28,6 +28,7 @@ def main() -> int:
     schema_dir = resolve_path(args.schema_dir, REPO_ROOT)
     out_dir = resolve_path(args.out_dir, REPO_ROOT)
     schemas = sorted(schema_dir.glob(args.pattern))
+    schemas = [schema for schema in schemas if schema.name != "console_output.toml"]
 
     if not schemas:
         print(f"No schemas found in {schema_dir} with pattern {args.pattern}", file=sys.stderr)

@@ -23,6 +23,7 @@ pub fn lock_list(client: &mut RacClient, cluster: Uuid16) -> Result<LockListResp
 mod tests {
     use super::*;
     use crate::commands::parse_list_u8;
+    use crate::protocol::ProtocolVersion;
 
     fn push_uuid(out: &mut Vec<u8>, value: Uuid16) {
         out.extend_from_slice(&value);
@@ -104,7 +105,10 @@ mod tests {
             object_b,
         );
 
-        let records = parse_list_u8(&body, LockRecordRaw::decode).unwrap();
+        let records = parse_list_u8(&body, |cursor| {
+            LockRecordRaw::decode(cursor, ProtocolVersion::V16_0)
+        })
+        .unwrap();
         assert_eq!(records.len(), 2);
         assert_eq!(records[0].connection, connection_a);
         assert_eq!(records[0].descr.descr, "Lock-A");

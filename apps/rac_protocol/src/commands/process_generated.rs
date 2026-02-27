@@ -1,6 +1,7 @@
 use crate::Uuid16;
 use crate::error::RacError;
 use crate::codec::v8_datetime_to_iso;
+use crate::protocol::ProtocolVersion;
 use crate::codec::RecordCursor;
 use crate::error::Result;
 use serde::Serialize;
@@ -27,7 +28,7 @@ pub struct ProcessLicense {
 }
 
 impl ProcessLicense {
-    pub fn decode(cursor: &mut RecordCursor<'_>) -> Result<Self> {
+    pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
         let __gap_license_0 = cursor.take_u8()?;
         let file_name = cursor.take_str8()?;
         let full_presentation = {
@@ -90,7 +91,7 @@ pub struct ProcessRecord {
 }
 
 impl ProcessRecord {
-    pub fn decode(cursor: &mut RecordCursor<'_>) -> Result<Self> {
+    pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
         let process = cursor.take_uuid()?;
         let __gap_0 = cursor.take_bytes(8)?;
         let avg_call_time = cursor.take_f64_be()?;
@@ -105,7 +106,7 @@ impl ProcessRecord {
             let count = cursor.take_u8()? as usize;
             let mut out = Vec::with_capacity(count);
             for _ in 0..count {
-                out.push(ProcessLicense::decode(cursor)?);
+                out.push(ProcessLicense::decode(cursor, protocol_version)?);
             }
             out
         };
@@ -163,8 +164,14 @@ impl crate::rpc::Request for ProcessListRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16);
-        out.extend_from_slice(&self.cluster);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc ProcessList unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
         Ok(out)
     }
 }
@@ -186,9 +193,17 @@ impl crate::rpc::Request for ProcessInfoRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16 + 16);
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&self.process);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc ProcessInfo unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.process);
+        }
         Ok(out)
     }
 }
@@ -202,8 +217,9 @@ pub struct ProcessListResp {
 impl crate::rpc::Response for ProcessListResp {
     fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
         let body = crate::rpc::decode_utils::rpc_body(payload)?;
+        let protocol_version = _codec.protocol_version();
         Ok(Self {
-            records: crate::commands::parse_list_u8(body, ProcessRecord::decode)?,
+            records: crate::commands::parse_list_u8(body, |cursor| ProcessRecord::decode(cursor, protocol_version))?,
         })
     }
 }
@@ -216,7 +232,8 @@ pub struct ProcessInfoResp {
 impl crate::rpc::Response for ProcessInfoResp {
     fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
         let body = crate::rpc::decode_utils::rpc_body(payload)?;
-        let record = parse_process_info_body(body)?;
+        let protocol_version = _codec.protocol_version();
+        let record = parse_process_info_body(body, protocol_version)?;
         Ok(Self {
             record: record,
         })
@@ -224,12 +241,12 @@ impl crate::rpc::Response for ProcessInfoResp {
 }
 
 
-pub fn parse_process_info_body(body: &[u8]) -> Result<ProcessRecord> {
+pub fn parse_process_info_body(body: &[u8], protocol_version: ProtocolVersion) -> Result<ProcessRecord> {
     if body.is_empty() {
         return Err(RacError::Decode("process info empty body"));
     }
     let mut cursor = RecordCursor::new(body);
-    ProcessRecord::decode(&mut cursor)
+    ProcessRecord::decode(&mut cursor, protocol_version)
 }
 
 

@@ -1,3 +1,4 @@
+use crate::protocol::ProtocolVersion;
 use crate::codec::RecordCursor;
 use crate::error::Result;
 use serde::Serialize;
@@ -30,7 +31,7 @@ pub struct ProfileRecord {
 }
 
 impl ProfileRecord {
-    pub fn decode(cursor: &mut RecordCursor<'_>) -> Result<Self> {
+    pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
         let name = cursor.take_str8()?;
         let descr = cursor.take_str8()?;
         let directory_access = cursor.take_u8()?;
@@ -86,8 +87,14 @@ impl crate::rpc::Request for ProfileListRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16);
-        out.extend_from_slice(&self.cluster);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc ProfileList unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
         Ok(out)
     }
 }
@@ -125,25 +132,65 @@ impl crate::rpc::Request for ProfileUpdateRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16 + 1 + self.name.len() + 1 + self.descr.len() + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + self.right_extension_definition_roles.len() + 1 + 1 + self.modules_available_for_extension.len() + 1 + self.modules_not_available_for_extension.len() + 1 + self.privileged_mode_roles.len());
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&encode_with_len_u8(self.name.as_bytes())?);
-        out.extend_from_slice(&encode_with_len_u8(self.descr.as_bytes())?);
-        out.push(self.directory_access);
-        out.push(self.com_access);
-        out.push(self.addin_access);
-        out.push(self.module_access);
-        out.push(self.app_access);
-        out.push(self.config);
-        out.push(self.privileged_mode);
-        out.push(self.inet_access);
-        out.push(self.crypto);
-        out.push(self.right_extension);
-        out.extend_from_slice(&encode_with_len_u8(self.right_extension_definition_roles.as_bytes())?);
-        out.push(self.all_modules_extension);
-        out.extend_from_slice(&encode_with_len_u8(self.modules_available_for_extension.as_bytes())?);
-        out.extend_from_slice(&encode_with_len_u8(self.modules_not_available_for_extension.as_bytes())?);
-        out.extend_from_slice(&encode_with_len_u8(self.privileged_mode_roles.as_bytes())?);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc ProfileUpdate unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.name.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.descr.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.right_extension_definition_roles.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.modules_available_for_extension.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.modules_not_available_for_extension.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.privileged_mode_roles.len() } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.name.as_bytes())?);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.descr.as_bytes())?);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.push(self.directory_access);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.push(self.com_access);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.push(self.addin_access);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.push(self.module_access);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.push(self.app_access);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.push(self.config);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.push(self.privileged_mode);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.push(self.inet_access);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.push(self.crypto);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.push(self.right_extension);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.right_extension_definition_roles.as_bytes())?);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.push(self.all_modules_extension);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.modules_available_for_extension.as_bytes())?);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.modules_not_available_for_extension.as_bytes())?);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.privileged_mode_roles.as_bytes())?);
+        }
         Ok(out)
     }
 }
@@ -157,8 +204,9 @@ pub struct ProfileListResp {
 impl crate::rpc::Response for ProfileListResp {
     fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
         let body = crate::rpc::decode_utils::rpc_body(payload)?;
+        let protocol_version = _codec.protocol_version();
         Ok(Self {
-            profiles: crate::commands::parse_list_u8(body, ProfileRecord::decode)?,
+            profiles: crate::commands::parse_list_u8(body, |cursor| ProfileRecord::decode(cursor, protocol_version))?,
         })
     }
 }
@@ -183,6 +231,7 @@ pub const RPC_PROFILE_UPDATE_META: crate::rpc::Meta = crate::rpc::Meta {
 mod tests {
     use super::*;
     use crate::commands::rpc_body;
+    use crate::protocol::ProtocolVersion;
 
     fn decode_hex_str(input: &str) -> Vec<u8> {
         hex::decode(input.trim()).expect("hex decode")
@@ -193,7 +242,8 @@ mod tests {
         let hex = include_str!("../../../../artifacts/rac/profile_list_response.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
-        let items = crate::commands::parse_list_u8(body, ProfileRecord::decode).expect("parse body");
+        let protocol_version = ProtocolVersion::V16_0;
+        let items = crate::commands::parse_list_u8(body, |cursor| ProfileRecord::decode(cursor, protocol_version)).expect("parse body");
         assert_eq!(items.len(), 0);
     }
 
@@ -202,7 +252,8 @@ mod tests {
         let hex = include_str!("../../../../artifacts/rac/v11/v11_profile_list_nonempty2_response.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
-        let items = crate::commands::parse_list_u8(body, ProfileRecord::decode).expect("parse body");
+        let protocol_version = ProtocolVersion::V16_0;
+        let items = crate::commands::parse_list_u8(body, |cursor| ProfileRecord::decode(cursor, protocol_version)).expect("parse body");
         assert_eq!(items.len(), 4);
         assert_eq!(items[0].name, "codex_prof_all_yes");
         assert_eq!(items[0].config, 1);

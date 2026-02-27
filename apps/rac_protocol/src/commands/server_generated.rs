@@ -1,5 +1,6 @@
 use crate::Uuid16;
 use crate::error::RacError;
+use crate::protocol::ProtocolVersion;
 use crate::codec::RecordCursor;
 use crate::error::Result;
 use serde::Serialize;
@@ -39,7 +40,7 @@ pub struct ServerRecord {
 }
 
 impl ServerRecord {
-    pub fn decode(cursor: &mut RecordCursor<'_>) -> Result<Self> {
+    pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
         let server = cursor.take_uuid()?;
         let agent_host = cursor.take_str8()?;
         let agent_port = cursor.take_u16_be()?;
@@ -111,8 +112,14 @@ impl crate::rpc::Request for ServerListRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16);
-        out.extend_from_slice(&self.cluster);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc ServerList unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
         Ok(out)
     }
 }
@@ -134,9 +141,17 @@ impl crate::rpc::Request for ServerInfoRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16 + 16);
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&self.server);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc ServerInfo unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.server);
+        }
         Ok(out)
     }
 }
@@ -150,8 +165,9 @@ pub struct ServerListResp {
 impl crate::rpc::Response for ServerListResp {
     fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
         let body = crate::rpc::decode_utils::rpc_body(payload)?;
+        let protocol_version = _codec.protocol_version();
         Ok(Self {
-            servers: crate::commands::parse_list_u8(body, ServerRecord::decode)?,
+            servers: crate::commands::parse_list_u8(body, |cursor| ServerRecord::decode(cursor, protocol_version))?,
         })
     }
 }
@@ -164,7 +180,8 @@ pub struct ServerInfoResp {
 impl crate::rpc::Response for ServerInfoResp {
     fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
         let body = crate::rpc::decode_utils::rpc_body(payload)?;
-        let record = parse_server_info_body(body)?;
+        let protocol_version = _codec.protocol_version();
+        let record = parse_server_info_body(body, protocol_version)?;
         Ok(Self {
             record: record,
         })
@@ -172,12 +189,12 @@ impl crate::rpc::Response for ServerInfoResp {
 }
 
 
-pub fn parse_server_info_body(body: &[u8]) -> Result<ServerRecord> {
+pub fn parse_server_info_body(body: &[u8], protocol_version: ProtocolVersion) -> Result<ServerRecord> {
     if body.is_empty() {
         return Err(RacError::Decode("server info empty body"));
     }
     let mut cursor = RecordCursor::new(body);
-    ServerRecord::decode(&mut cursor)
+    ServerRecord::decode(&mut cursor, protocol_version)
 }
 
 

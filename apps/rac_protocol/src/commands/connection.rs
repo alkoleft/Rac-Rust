@@ -40,6 +40,7 @@ pub fn connection_info(
 mod tests {
     use super::*;
     use crate::commands::parse_list_u8;
+    use crate::protocol::ProtocolVersion;
 
     fn push_uuid(out: &mut Vec<u8>, value: Uuid16) {
         out.extend_from_slice(&value);
@@ -110,7 +111,10 @@ mod tests {
         append_record(&mut body, &record_a, raw_a);
         append_record(&mut body, &record_b, raw_b);
 
-        let records = parse_list_u8(&body, ConnectionRecord::decode).expect("connection list parse");
+        let records = parse_list_u8(&body, |cursor| {
+            ConnectionRecord::decode(cursor, ProtocolVersion::V16_0)
+        })
+        .expect("connection list parse");
         assert_eq!(records.len(), 2);
         assert_eq!(records[0].connection, conn_a);
         assert_eq!(records[0].application, "RAS");
@@ -154,7 +158,9 @@ mod tests {
         let mut body = Vec::new();
         append_record(&mut body, &record, raw_time);
 
-        let parsed = generated::parse_connection_info_body(&body).expect("connection info parse");
+        let parsed =
+            generated::parse_connection_info_body(&body, ProtocolVersion::V16_0)
+                .expect("connection info parse");
         assert_eq!(parsed.connection, conn);
         assert_eq!(parsed.application, "AgentStandardCall");
         assert_eq!(parsed.blocked_by_ls, 12);
@@ -205,7 +211,10 @@ mod tests {
         append_record(&mut body, &record_a, raw_a);
         append_record(&mut body, &record_b, raw_b);
 
-        let parsed = parse_list_u8(&body, ConnectionRecord::decode).expect("connection list parse");
+        let parsed = parse_list_u8(&body, |cursor| {
+            ConnectionRecord::decode(cursor, ProtocolVersion::V16_0)
+        })
+        .expect("connection list parse");
         assert_eq!(parsed[1].connection, conn_b);
         assert_eq!(parsed[1].application, "1CV8C");
         assert_eq!(parsed[1].blocked_by_ls, 3);

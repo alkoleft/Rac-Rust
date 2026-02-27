@@ -1,6 +1,7 @@
 use crate::Uuid16;
 use crate::error::RacError;
 use crate::codec::v8_datetime_to_iso;
+use crate::protocol::ProtocolVersion;
 use crate::codec::RecordCursor;
 use crate::error::Result;
 use serde::Serialize;
@@ -18,7 +19,7 @@ pub struct LockRecordRaw {
 }
 
 impl LockRecordRaw {
-    pub fn decode(cursor: &mut RecordCursor<'_>) -> Result<Self> {
+    pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
         let connection = cursor.take_uuid()?;
         let descr = {
             let descr_len = cursor.take_u8()? as usize;
@@ -90,8 +91,14 @@ impl crate::rpc::Request for LockListRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16);
-        out.extend_from_slice(&self.cluster);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc LockList unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
         Ok(out)
     }
 }
@@ -105,8 +112,9 @@ pub struct LockListResp {
 impl crate::rpc::Response for LockListResp {
     fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
         let body = crate::rpc::decode_utils::rpc_body(payload)?;
+        let protocol_version = _codec.protocol_version();
         Ok(Self {
-            records: crate::commands::parse_list_u8(body, LockRecordRaw::decode)?,
+            records: crate::commands::parse_list_u8(body, |cursor| LockRecordRaw::decode(cursor, protocol_version))?,
         })
     }
 }

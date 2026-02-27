@@ -1,4 +1,5 @@
 use crate::error::RacError;
+use crate::protocol::ProtocolVersion;
 use crate::codec::RecordCursor;
 use crate::error::Result;
 use serde::Serialize;
@@ -33,7 +34,7 @@ pub struct LimitRecord {
 }
 
 impl LimitRecord {
-    pub fn decode(cursor: &mut RecordCursor<'_>) -> Result<Self> {
+    pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
         let name = cursor.take_str8()?;
         let counter = cursor.take_str8()?;
         let action = cursor.take_u8()?;
@@ -87,8 +88,14 @@ impl crate::rpc::Request for LimitListRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16);
-        out.extend_from_slice(&self.cluster);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc LimitList unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
         Ok(out)
     }
 }
@@ -110,9 +117,17 @@ impl crate::rpc::Request for LimitInfoRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16 + 1 + self.name.len());
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&encode_with_len_u8(self.name.as_bytes())?);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc LimitInfo unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.name.len() } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.name.as_bytes())?);
+        }
         Ok(out)
     }
 }
@@ -149,24 +164,62 @@ impl crate::rpc::Request for LimitUpdateRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16 + 1 + self.name.len() + 1 + self.counter.len() + 1 + 8 + 8 + 8 + 8 + 8 + 8 + 8 + 8 + 8 + 8 + 8 + 1 + self.error_message.len() + 1 + self.descr.len());
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&encode_with_len_u8(self.name.as_bytes())?);
-        out.extend_from_slice(&encode_with_len_u8(self.counter.as_bytes())?);
-        out.push(self.action);
-        out.extend_from_slice(&self.duration.to_be_bytes());
-        out.extend_from_slice(&self.cpu_time.to_be_bytes());
-        out.extend_from_slice(&self.memory.to_be_bytes());
-        out.extend_from_slice(&self.read.to_be_bytes());
-        out.extend_from_slice(&self.write.to_be_bytes());
-        out.extend_from_slice(&self.duration_dbms.to_be_bytes());
-        out.extend_from_slice(&self.dbms_bytes.to_be_bytes());
-        out.extend_from_slice(&self.service.to_be_bytes());
-        out.extend_from_slice(&self.call.to_be_bytes());
-        out.extend_from_slice(&self.number_of_active_sessions.to_be_bytes());
-        out.extend_from_slice(&self.number_of_sessions.to_be_bytes());
-        out.extend_from_slice(&encode_with_len_u8(self.error_message.as_bytes())?);
-        out.extend_from_slice(&encode_with_len_u8(self.descr.as_bytes())?);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc LimitUpdate unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.name.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.counter.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 8 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 8 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 8 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 8 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 8 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 8 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 8 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 8 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 8 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 8 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 8 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.error_message.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.descr.len() } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.name.as_bytes())?);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.counter.as_bytes())?);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.push(self.action);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.duration.to_be_bytes());
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cpu_time.to_be_bytes());
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.memory.to_be_bytes());
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.read.to_be_bytes());
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.write.to_be_bytes());
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.duration_dbms.to_be_bytes());
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.dbms_bytes.to_be_bytes());
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.service.to_be_bytes());
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.call.to_be_bytes());
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.number_of_active_sessions.to_be_bytes());
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.number_of_sessions.to_be_bytes());
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.error_message.as_bytes())?);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.descr.as_bytes())?);
+        }
         Ok(out)
     }
 }
@@ -188,9 +241,17 @@ impl crate::rpc::Request for LimitRemoveRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16 + 1 + self.name.len());
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&encode_with_len_u8(self.name.as_bytes())?);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc LimitRemove unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.name.len() } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.name.as_bytes())?);
+        }
         Ok(out)
     }
 }
@@ -204,8 +265,9 @@ pub struct LimitListResp {
 impl crate::rpc::Response for LimitListResp {
     fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
         let body = crate::rpc::decode_utils::rpc_body(payload)?;
+        let protocol_version = _codec.protocol_version();
         Ok(Self {
-            limits: crate::commands::parse_list_u8(body, LimitRecord::decode)?,
+            limits: crate::commands::parse_list_u8(body, |cursor| LimitRecord::decode(cursor, protocol_version))?,
         })
     }
 }
@@ -218,7 +280,8 @@ pub struct LimitInfoResp {
 impl crate::rpc::Response for LimitInfoResp {
     fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
         let body = crate::rpc::decode_utils::rpc_body(payload)?;
-        let record = parse_limit_info_body(body)?;
+        let protocol_version = _codec.protocol_version();
+        let record = parse_limit_info_body(body, protocol_version)?;
         Ok(Self {
             record: record,
         })
@@ -226,12 +289,12 @@ impl crate::rpc::Response for LimitInfoResp {
 }
 
 
-pub fn parse_limit_info_body(body: &[u8]) -> Result<LimitRecord> {
+pub fn parse_limit_info_body(body: &[u8], protocol_version: ProtocolVersion) -> Result<LimitRecord> {
     if body.is_empty() {
         return Err(RacError::Decode("limit info empty body"));
     }
     let mut cursor = RecordCursor::new(body);
-    LimitRecord::decode(&mut cursor)
+    LimitRecord::decode(&mut cursor, protocol_version)
 }
 
 

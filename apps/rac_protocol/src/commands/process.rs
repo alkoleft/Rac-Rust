@@ -32,6 +32,7 @@ mod tests {
     use super::*;
     use crate::commands::parse_list_u8;
     use crate::commands::rpc_body;
+    use crate::protocol::ProtocolVersion;
 
     fn decode_hex_str(input: &str) -> Vec<u8> {
         let s = input.trim();
@@ -51,7 +52,10 @@ mod tests {
         let hex = include_str!("../../../../artifacts/rac/process_list_response.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
-        let records = parse_list_u8(body, ProcessRecord::decode).expect("process list");
+        let records = parse_list_u8(body, |cursor| {
+            ProcessRecord::decode(cursor, ProtocolVersion::V16_0)
+        })
+        .expect("process list");
         assert_eq!(records.len(), 1);
         let record = &records[0];
         assert_eq!(
@@ -102,7 +106,8 @@ mod tests {
         let hex = include_str!("../../../../artifacts/rac/process_info_response.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
-        let record = generated::parse_process_info_body(body).expect("process info");
+        let record = generated::parse_process_info_body(body, ProtocolVersion::V16_0)
+            .expect("process info");
         assert_eq!(
             record.process,
             *b"\xf7\x7f,\x1d\x1e[HU\xa0\xb9\x949\x0c\xcdL\xe5"
@@ -119,7 +124,10 @@ mod tests {
         let hex = include_str!("../../../../artifacts/rac/process_list_licenses_response.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
-        let records = parse_list_u8(body, ProcessRecord::decode).expect("process list");
+        let records = parse_list_u8(body, |cursor| {
+            ProcessRecord::decode(cursor, ProtocolVersion::V16_0)
+        })
+        .expect("process list");
         assert_eq!(records.len(), 1);
         let record = &records[0];
         assert_eq!(
@@ -157,7 +165,8 @@ mod tests {
         let hex = include_str!("../../../../artifacts/rac/process_info_licenses_response.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
-        let record = generated::parse_process_info_body(body).expect("process info licenses");
+        let record = generated::parse_process_info_body(body, ProtocolVersion::V16_0)
+            .expect("process info licenses");
         assert_eq!(
             record.process,
             *b"\xf7\x7f,\x1d\x1e[HU\xa0\xb9\x949\x0c\xcdL\xe5"

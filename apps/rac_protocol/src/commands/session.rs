@@ -114,7 +114,9 @@ mod tests {
         let hex = include_str!("../../../../artifacts/rac/session_info_response.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
-        let record = generated::parse_session_info_body(body).expect("session info parse");
+        let record =
+            generated::parse_session_info_body(body, ProtocolVersion::V16_0)
+                .expect("session info parse");
 
         assert_eq!(
             record.session,
@@ -135,7 +137,9 @@ mod tests {
         let hex = include_str!("../../../../artifacts/rac/session_info_response_1cv8c.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
-        let record = generated::parse_session_info_body(body).expect("session info 1cv8c parse");
+        let record =
+            generated::parse_session_info_body(body, ProtocolVersion::V16_0)
+                .expect("session info 1cv8c parse");
 
         assert_eq!(
             record.session,
@@ -165,8 +169,8 @@ mod tests {
         let hex = include_str!("../../../../artifacts/rac/session_info_response_1cv8c_dbproc.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
-        let record =
-            generated::parse_session_info_body(body).expect("session info 1cv8c dbproc parse");
+        let record = generated::parse_session_info_body(body, ProtocolVersion::V16_0)
+            .expect("session info 1cv8c dbproc parse");
 
         assert_eq!(
             record.connection,

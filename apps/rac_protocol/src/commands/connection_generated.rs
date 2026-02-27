@@ -1,6 +1,7 @@
 use crate::Uuid16;
 use crate::error::RacError;
 use crate::codec::v8_datetime_to_iso;
+use crate::protocol::ProtocolVersion;
 use crate::codec::RecordCursor;
 use crate::error::Result;
 use serde::Serialize;
@@ -27,7 +28,7 @@ pub struct ConnectionRecord {
 }
 
 impl ConnectionRecord {
-    pub fn decode(cursor: &mut RecordCursor<'_>) -> Result<Self> {
+    pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
         let connection = cursor.take_uuid()?;
         let application = cursor.take_str8()?;
         let blocked_by_ls = cursor.take_u32_be()?;
@@ -67,8 +68,14 @@ impl crate::rpc::Request for ConnectionListRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16);
-        out.extend_from_slice(&self.cluster);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc ConnectionList unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
         Ok(out)
     }
 }
@@ -90,9 +97,17 @@ impl crate::rpc::Request for ConnectionListByInfobaseRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16 + 16);
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&self.infobase);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc ConnectionListByInfobase unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.infobase);
+        }
         Ok(out)
     }
 }
@@ -114,9 +129,17 @@ impl crate::rpc::Request for ConnectionInfoRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16 + 16);
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&self.connection);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc ConnectionInfo unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.connection);
+        }
         Ok(out)
     }
 }
@@ -139,10 +162,20 @@ impl crate::rpc::Request for ConnectionDisconnectRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16 + 16 + 16);
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&self.connection);
-        out.extend_from_slice(&self.process);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc ConnectionDisconnect unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.connection);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.process);
+        }
         Ok(out)
     }
 }
@@ -156,8 +189,9 @@ pub struct ConnectionListResp {
 impl crate::rpc::Response for ConnectionListResp {
     fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
         let body = crate::rpc::decode_utils::rpc_body(payload)?;
+        let protocol_version = _codec.protocol_version();
         Ok(Self {
-            records: crate::commands::parse_list_u8(body, ConnectionRecord::decode)?,
+            records: crate::commands::parse_list_u8(body, |cursor| ConnectionRecord::decode(cursor, protocol_version))?,
         })
     }
 }
@@ -170,7 +204,8 @@ pub struct ConnectionInfoResp {
 impl crate::rpc::Response for ConnectionInfoResp {
     fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
         let body = crate::rpc::decode_utils::rpc_body(payload)?;
-        let record = parse_connection_info_body(body)?;
+        let protocol_version = _codec.protocol_version();
+        let record = parse_connection_info_body(body, protocol_version)?;
         Ok(Self {
             record: record,
         })
@@ -178,12 +213,12 @@ impl crate::rpc::Response for ConnectionInfoResp {
 }
 
 
-pub fn parse_connection_info_body(body: &[u8]) -> Result<ConnectionRecord> {
+pub fn parse_connection_info_body(body: &[u8], protocol_version: ProtocolVersion) -> Result<ConnectionRecord> {
     if body.is_empty() {
         return Err(RacError::Decode("connection info empty body"));
     }
     let mut cursor = RecordCursor::new(body);
-    ConnectionRecord::decode(&mut cursor)
+    ConnectionRecord::decode(&mut cursor, protocol_version)
 }
 
 

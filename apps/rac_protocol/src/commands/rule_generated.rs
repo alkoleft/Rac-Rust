@@ -1,5 +1,6 @@
 use crate::Uuid16;
 use crate::error::RacError;
+use crate::protocol::ProtocolVersion;
 use crate::codec::RecordCursor;
 use crate::error::Result;
 use serde::Serialize;
@@ -27,7 +28,7 @@ pub struct RuleRecord {
 }
 
 impl RuleRecord {
-    pub fn decode(cursor: &mut RecordCursor<'_>) -> Result<Self> {
+    pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
         let rule = cursor.take_uuid()?;
         let object_type = cursor.take_u32_be()?;
         let infobase_name = cursor.take_str8()?;
@@ -51,7 +52,7 @@ pub struct RuleIdRecord {
 }
 
 impl RuleIdRecord {
-    pub fn decode(cursor: &mut RecordCursor<'_>) -> Result<Self> {
+    pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
         let rule = cursor.take_uuid()?;
         Ok(Self {
             rule,
@@ -76,9 +77,17 @@ impl crate::rpc::Request for RuleListRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16 + 16);
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&self.server);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc RuleList unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.server);
+        }
         Ok(out)
     }
 }
@@ -101,10 +110,20 @@ impl crate::rpc::Request for RuleInfoRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16 + 16 + 16);
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&self.server);
-        out.extend_from_slice(&self.rule);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc RuleInfo unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.server);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.rule);
+        }
         Ok(out)
     }
 }
@@ -126,9 +145,17 @@ impl crate::rpc::Request for RuleApplyRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16 + 4);
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&self.mode.to_be_bytes());
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc RuleApply unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 4 } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.mode.to_be_bytes());
+        }
         Ok(out)
     }
 }
@@ -151,10 +178,20 @@ impl crate::rpc::Request for RuleRemoveRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16 + 16 + 16);
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&self.server);
-        out.extend_from_slice(&self.rule);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc RuleRemove unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.server);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.rule);
+        }
         Ok(out)
     }
 }
@@ -183,16 +220,38 @@ impl crate::rpc::Request for RuleInsertRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16 + 16 + 16 + 4 + 4 + 1 + self.infobase_name.len() + 1 + 1 + self.application_ext.len() + 4);
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&self.server);
-        out.extend_from_slice(&self.rule);
-        out.extend_from_slice(&self.position.to_be_bytes());
-        out.extend_from_slice(&self.object_type.to_be_bytes());
-        out.extend_from_slice(&encode_with_len_u8(self.infobase_name.as_bytes())?);
-        out.push(self.rule_type);
-        out.extend_from_slice(&encode_with_len_u8(self.application_ext.as_bytes())?);
-        out.extend_from_slice(&self.priority.to_be_bytes());
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc RuleInsert unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 4 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 4 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.infobase_name.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.application_ext.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 4 } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.server);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.rule);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.position.to_be_bytes());
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.object_type.to_be_bytes());
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.infobase_name.as_bytes())?);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.push(self.rule_type);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.application_ext.as_bytes())?);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.priority.to_be_bytes());
+        }
         Ok(out)
     }
 }
@@ -221,16 +280,38 @@ impl crate::rpc::Request for RuleUpdateRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16 + 16 + 16 + 4 + 4 + 1 + self.infobase_name.len() + 1 + 1 + self.application_ext.len() + 4);
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&self.server);
-        out.extend_from_slice(&self.rule);
-        out.extend_from_slice(&self.position.to_be_bytes());
-        out.extend_from_slice(&self.object_type.to_be_bytes());
-        out.extend_from_slice(&encode_with_len_u8(self.infobase_name.as_bytes())?);
-        out.push(self.rule_type);
-        out.extend_from_slice(&encode_with_len_u8(self.application_ext.as_bytes())?);
-        out.extend_from_slice(&self.priority.to_be_bytes());
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc RuleUpdate unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 4 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 4 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.infobase_name.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.application_ext.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 4 } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.server);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.rule);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.position.to_be_bytes());
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.object_type.to_be_bytes());
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.infobase_name.as_bytes())?);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.push(self.rule_type);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.application_ext.as_bytes())?);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.priority.to_be_bytes());
+        }
         Ok(out)
     }
 }
@@ -244,8 +325,9 @@ pub struct RuleListResp {
 impl crate::rpc::Response for RuleListResp {
     fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
         let body = crate::rpc::decode_utils::rpc_body(payload)?;
+        let protocol_version = _codec.protocol_version();
         Ok(Self {
-            records: crate::commands::parse_list_u8(body, RuleRecord::decode)?,
+            records: crate::commands::parse_list_u8(body, |cursor| RuleRecord::decode(cursor, protocol_version))?,
         })
     }
 }
@@ -258,7 +340,8 @@ pub struct RuleInfoResp {
 impl crate::rpc::Response for RuleInfoResp {
     fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
         let body = crate::rpc::decode_utils::rpc_body(payload)?;
-        let record = parse_rule_info_body(body)?;
+        let protocol_version = _codec.protocol_version();
+        let record = parse_rule_info_body(body, protocol_version)?;
         Ok(Self {
             record: record,
         })
@@ -273,7 +356,8 @@ pub struct RuleInsertResp {
 impl crate::rpc::Response for RuleInsertResp {
     fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
         let body = crate::rpc::decode_utils::rpc_body(payload)?;
-        let record = parse_rule_insert_body(body)?;
+        let protocol_version = _codec.protocol_version();
+        let record = parse_rule_insert_body(body, protocol_version)?;
         Ok(Self {
             rule: record.rule,
         })
@@ -288,7 +372,8 @@ pub struct RuleUpdateResp {
 impl crate::rpc::Response for RuleUpdateResp {
     fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
         let body = crate::rpc::decode_utils::rpc_body(payload)?;
-        let record = parse_rule_update_body(body)?;
+        let protocol_version = _codec.protocol_version();
+        let record = parse_rule_update_body(body, protocol_version)?;
         Ok(Self {
             rule: record.rule,
         })
@@ -296,28 +381,28 @@ impl crate::rpc::Response for RuleUpdateResp {
 }
 
 
-pub fn parse_rule_info_body(body: &[u8]) -> Result<RuleRecord> {
+pub fn parse_rule_info_body(body: &[u8], protocol_version: ProtocolVersion) -> Result<RuleRecord> {
     if body.is_empty() {
         return Err(RacError::Decode("rule info empty body"));
     }
     let mut cursor = RecordCursor::new(body);
-    RuleRecord::decode(&mut cursor)
+    RuleRecord::decode(&mut cursor, protocol_version)
 }
 
-pub fn parse_rule_insert_body(body: &[u8]) -> Result<RuleIdRecord> {
+pub fn parse_rule_insert_body(body: &[u8], protocol_version: ProtocolVersion) -> Result<RuleIdRecord> {
     if body.is_empty() {
         return Err(RacError::Decode("rule insert empty body"));
     }
     let mut cursor = RecordCursor::new(body);
-    RuleIdRecord::decode(&mut cursor)
+    RuleIdRecord::decode(&mut cursor, protocol_version)
 }
 
-pub fn parse_rule_update_body(body: &[u8]) -> Result<RuleIdRecord> {
+pub fn parse_rule_update_body(body: &[u8], protocol_version: ProtocolVersion) -> Result<RuleIdRecord> {
     if body.is_empty() {
         return Err(RacError::Decode("rule update empty body"));
     }
     let mut cursor = RecordCursor::new(body);
-    RuleIdRecord::decode(&mut cursor)
+    RuleIdRecord::decode(&mut cursor, protocol_version)
 }
 
 

@@ -1,5 +1,6 @@
 use crate::error::RacError;
 use crate::codec::v8_datetime_to_iso;
+use crate::protocol::ProtocolVersion;
 use crate::codec::RecordCursor;
 use crate::error::Result;
 use serde::Serialize;
@@ -40,7 +41,7 @@ pub struct CounterRecord {
 }
 
 impl CounterRecord {
-    pub fn decode(cursor: &mut RecordCursor<'_>) -> Result<Self> {
+    pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
         let name = cursor.take_str8()?;
         let collection_time = cursor.take_u64_be()?;
         let group = cursor.take_u8()?;
@@ -99,7 +100,7 @@ pub struct CounterValuesRecord {
 }
 
 impl CounterValuesRecord {
-    pub fn decode(cursor: &mut RecordCursor<'_>) -> Result<Self> {
+    pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
         let object = cursor.take_str8()?;
         let collection_time = cursor.take_u64_be()?;
         let duration = cursor.take_u64_be()?;
@@ -149,8 +150,14 @@ impl crate::rpc::Request for CounterListRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16);
-        out.extend_from_slice(&self.cluster);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc CounterList unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
         Ok(out)
     }
 }
@@ -172,9 +179,17 @@ impl crate::rpc::Request for CounterInfoRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16 + 1 + self.counter.len());
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&encode_with_len_u8(self.counter.as_bytes())?);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc CounterInfo unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.counter.len() } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.counter.as_bytes())?);
+        }
         Ok(out)
     }
 }
@@ -212,25 +227,65 @@ impl crate::rpc::Request for CounterUpdateRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16 + 1 + self.name.len() + 8 + 1 + 1 + 1 + self.filter.len() + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + self.descr.len());
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&encode_with_len_u8(self.name.as_bytes())?);
-        out.extend_from_slice(&self.collection_time.to_be_bytes());
-        out.push(self.group);
-        out.push(self.filter_type);
-        out.extend_from_slice(&encode_with_len_u8(self.filter.as_bytes())?);
-        out.push(self.duration);
-        out.push(self.cpu_time);
-        out.push(self.duration_dbms);
-        out.push(self.service);
-        out.push(self.memory);
-        out.push(self.read);
-        out.push(self.write);
-        out.push(self.dbms_bytes);
-        out.push(self.call);
-        out.push(self.number_of_active_sessions);
-        out.push(self.number_of_sessions);
-        out.extend_from_slice(&encode_with_len_u8(self.descr.as_bytes())?);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc CounterUpdate unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.name.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 8 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.filter.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.descr.len() } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.name.as_bytes())?);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.collection_time.to_be_bytes());
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.push(self.group);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.push(self.filter_type);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.filter.as_bytes())?);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.push(self.duration);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.push(self.cpu_time);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.push(self.duration_dbms);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.push(self.service);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.push(self.memory);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.push(self.read);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.push(self.write);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.push(self.dbms_bytes);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.push(self.call);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.push(self.number_of_active_sessions);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.push(self.number_of_sessions);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.descr.as_bytes())?);
+        }
         Ok(out)
     }
 }
@@ -252,9 +307,17 @@ impl crate::rpc::Request for CounterRemoveRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16 + 1 + self.name.len());
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&encode_with_len_u8(self.name.as_bytes())?);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc CounterRemove unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.name.len() } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.name.as_bytes())?);
+        }
         Ok(out)
     }
 }
@@ -277,10 +340,20 @@ impl crate::rpc::Request for CounterClearRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16 + 1 + self.counter.len() + 1 + self.object.len());
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&encode_with_len_u8(self.counter.as_bytes())?);
-        out.extend_from_slice(&encode_with_len_u8(self.object.as_bytes())?);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc CounterClear unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.counter.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.object.len() } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.counter.as_bytes())?);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.object.as_bytes())?);
+        }
         Ok(out)
     }
 }
@@ -303,10 +376,20 @@ impl crate::rpc::Request for CounterValuesRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16 + 1 + self.counter.len() + 1 + self.object.len());
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&encode_with_len_u8(self.counter.as_bytes())?);
-        out.extend_from_slice(&encode_with_len_u8(self.object.as_bytes())?);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc CounterValues unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.counter.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.object.len() } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.counter.as_bytes())?);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.object.as_bytes())?);
+        }
         Ok(out)
     }
 }
@@ -329,10 +412,20 @@ impl crate::rpc::Request for CounterAccumulatedValuesRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16 + 1 + self.counter.len() + 1 + self.object.len());
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&encode_with_len_u8(self.counter.as_bytes())?);
-        out.extend_from_slice(&encode_with_len_u8(self.object.as_bytes())?);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc CounterAccumulatedValues unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.counter.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.object.len() } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.counter.as_bytes())?);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.object.as_bytes())?);
+        }
         Ok(out)
     }
 }
@@ -346,8 +439,9 @@ pub struct CounterListResp {
 impl crate::rpc::Response for CounterListResp {
     fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
         let body = crate::rpc::decode_utils::rpc_body(payload)?;
+        let protocol_version = _codec.protocol_version();
         Ok(Self {
-            records: crate::commands::parse_list_u8(body, CounterRecord::decode)?,
+            records: crate::commands::parse_list_u8(body, |cursor| CounterRecord::decode(cursor, protocol_version))?,
         })
     }
 }
@@ -360,7 +454,8 @@ pub struct CounterInfoResp {
 impl crate::rpc::Response for CounterInfoResp {
     fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
         let body = crate::rpc::decode_utils::rpc_body(payload)?;
-        let record = parse_counter_info_body(body)?;
+        let protocol_version = _codec.protocol_version();
+        let record = parse_counter_info_body(body, protocol_version)?;
         Ok(Self {
             record: record,
         })
@@ -375,8 +470,9 @@ pub struct CounterValuesResp {
 impl crate::rpc::Response for CounterValuesResp {
     fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
         let body = crate::rpc::decode_utils::rpc_body(payload)?;
+        let protocol_version = _codec.protocol_version();
         Ok(Self {
-            records: crate::commands::parse_list_u8(body, CounterValuesRecord::decode)?,
+            records: crate::commands::parse_list_u8(body, |cursor| CounterValuesRecord::decode(cursor, protocol_version))?,
         })
     }
 }
@@ -389,19 +485,20 @@ pub struct CounterAccumulatedValuesResp {
 impl crate::rpc::Response for CounterAccumulatedValuesResp {
     fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
         let body = crate::rpc::decode_utils::rpc_body(payload)?;
+        let protocol_version = _codec.protocol_version();
         Ok(Self {
-            records: crate::commands::parse_list_u8(body, CounterValuesRecord::decode)?,
+            records: crate::commands::parse_list_u8(body, |cursor| CounterValuesRecord::decode(cursor, protocol_version))?,
         })
     }
 }
 
 
-pub fn parse_counter_info_body(body: &[u8]) -> Result<CounterRecord> {
+pub fn parse_counter_info_body(body: &[u8], protocol_version: ProtocolVersion) -> Result<CounterRecord> {
     if body.is_empty() {
         return Err(RacError::Decode("counter info empty body"));
     }
     let mut cursor = RecordCursor::new(body);
-    CounterRecord::decode(&mut cursor)
+    CounterRecord::decode(&mut cursor, protocol_version)
 }
 
 

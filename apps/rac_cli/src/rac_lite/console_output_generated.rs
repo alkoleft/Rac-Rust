@@ -677,10 +677,18 @@ fn render_cluster_info(out: &mut String, item: &ClusterRecord) {
     outln!(out, "errors-count-threshold                   : {}", item.errors_count_threshold);
     outln!(out, "kill-problem-processes                   : {}", item.kill_problem_processes);
     outln!(out, "kill-by-memory-with-dump                 : {}", item.kill_by_memory_with_dump);
-    outln!(out, "allow-access-right-audit-events-recording: {}", item.allow_access_right_audit_events_recording);
-    outln!(out, "ping-period                              : {}", item.ping_period);
-    outln!(out, "ping-timeout                             : {}", item.ping_timeout);
-    outln!(out, "restart-schedule                         : \"{}\"", display_str(&item.restart_schedule_cron));
+    if let Some(value) = item.allow_access_right_audit_events_recording {
+        outln!(out, "allow-access-right-audit-events-recording: {}", value);
+    }
+    if let Some(value) = item.ping_period {
+        outln!(out, "ping-period                              : {}", value);
+    }
+    if let Some(value) = item.ping_timeout {
+        outln!(out, "ping-timeout                             : {}", value);
+    }
+    if let Some(value) = item.restart_schedule_cron {
+        outln!(out, "restart-schedule                         : \"{}\"", display_str(&value));
+    }
 }
 
 impl Display for ClusterInfoDisplay<'_> {

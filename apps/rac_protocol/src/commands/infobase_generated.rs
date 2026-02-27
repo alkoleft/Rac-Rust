@@ -1,5 +1,6 @@
 use crate::Uuid16;
 use crate::error::RacError;
+use crate::protocol::ProtocolVersion;
 use crate::codec::RecordCursor;
 use crate::error::Result;
 use serde::Serialize;
@@ -21,7 +22,7 @@ pub struct InfobaseSummary {
 }
 
 impl InfobaseSummary {
-    pub fn decode(cursor: &mut RecordCursor<'_>) -> Result<Self> {
+    pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
         let infobase = cursor.take_uuid()?;
         let descr = {
             let first = cursor.take_u8()? as usize;
@@ -68,7 +69,7 @@ pub struct InfobaseInfoRecord {
 }
 
 impl InfobaseInfoRecord {
-    pub fn decode(cursor: &mut RecordCursor<'_>) -> Result<Self> {
+    pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
         let infobase = cursor.take_uuid()?;
         let tag = cursor.take_u8()?;
         let unknown_u32_0 = cursor.take_u32_be()?;
@@ -140,8 +141,14 @@ impl crate::rpc::Request for InfobaseSummaryListRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16);
-        out.extend_from_slice(&self.cluster);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc InfobaseSummaryList unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
         Ok(out)
     }
 }
@@ -163,9 +170,17 @@ impl crate::rpc::Request for InfobaseSummaryInfoRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16 + 16);
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&self.infobase);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc InfobaseSummaryInfo unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.infobase);
+        }
         Ok(out)
     }
 }
@@ -187,9 +202,17 @@ impl crate::rpc::Request for InfobaseInfoRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16 + 16);
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&self.infobase);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc InfobaseInfo unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.infobase);
+        }
         Ok(out)
     }
 }
@@ -212,10 +235,20 @@ impl crate::rpc::Request for InfobaseSummaryUpdateRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16 + 16 + 1 + self.descr.len());
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&self.infobase);
-        out.extend_from_slice(&encode_with_len_u8(self.descr.as_bytes())?);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc InfobaseSummaryUpdate unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.descr.len() } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.infobase);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.descr.as_bytes())?);
+        }
         Ok(out)
     }
 }
@@ -229,8 +262,9 @@ pub struct InfobaseSummaryListResp {
 impl crate::rpc::Response for InfobaseSummaryListResp {
     fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
         let body = crate::rpc::decode_utils::rpc_body(payload)?;
+        let protocol_version = _codec.protocol_version();
         Ok(Self {
-            summaries: crate::commands::parse_list_u8(body, InfobaseSummary::decode)?,
+            summaries: crate::commands::parse_list_u8(body, |cursor| InfobaseSummary::decode(cursor, protocol_version))?,
         })
     }
 }
@@ -243,7 +277,8 @@ pub struct InfobaseSummaryInfoResp {
 impl crate::rpc::Response for InfobaseSummaryInfoResp {
     fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
         let body = crate::rpc::decode_utils::rpc_body(payload)?;
-        let record = parse_infobase_summary_info_body(body)?;
+        let protocol_version = _codec.protocol_version();
+        let record = parse_infobase_summary_info_body(body, protocol_version)?;
         Ok(Self {
             summary: record,
         })
@@ -258,7 +293,8 @@ pub struct InfobaseInfoResp {
 impl crate::rpc::Response for InfobaseInfoResp {
     fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
         let body = crate::rpc::decode_utils::rpc_body(payload)?;
-        let record = parse_infobase_info_body(body)?;
+        let protocol_version = _codec.protocol_version();
+        let record = parse_infobase_info_body(body, protocol_version)?;
         Ok(Self {
             info: record,
         })
@@ -266,20 +302,20 @@ impl crate::rpc::Response for InfobaseInfoResp {
 }
 
 
-pub fn parse_infobase_summary_info_body(body: &[u8]) -> Result<InfobaseSummary> {
+pub fn parse_infobase_summary_info_body(body: &[u8], protocol_version: ProtocolVersion) -> Result<InfobaseSummary> {
     if body.is_empty() {
         return Err(RacError::Decode("infobase summary info empty body"));
     }
     let mut cursor = RecordCursor::new(body);
-    InfobaseSummary::decode(&mut cursor)
+    InfobaseSummary::decode(&mut cursor, protocol_version)
 }
 
-pub fn parse_infobase_info_body(body: &[u8]) -> Result<InfobaseInfoRecord> {
+pub fn parse_infobase_info_body(body: &[u8], protocol_version: ProtocolVersion) -> Result<InfobaseInfoRecord> {
     if body.is_empty() {
         return Err(RacError::Decode("infobase info empty body"));
     }
     let mut cursor = RecordCursor::new(body);
-    InfobaseInfoRecord::decode(&mut cursor)
+    InfobaseInfoRecord::decode(&mut cursor, protocol_version)
 }
 
 

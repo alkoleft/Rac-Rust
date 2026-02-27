@@ -85,28 +85,53 @@ fn decode_cluster_record(
     cursor: &mut RecordCursor<'_>,
     protocol_version: ProtocolVersion,
 ) -> Result<ClusterRecord> {
-    let mut record = ClusterRecord::decode(cursor)?;
     match protocol_version {
-        ProtocolVersion::V11_0 => {
-            record.restart_interval = cursor.take_u32_be()?;
-        }
+        ProtocolVersion::V11_0 => ClusterRecord::decode(cursor, protocol_version),
         ProtocolVersion::V16_0 => {
-            let allow_access_right_audit_events_recording = cursor.take_u8()?;
-            let _tail_padding = cursor.take_u8()?;
+            let uuid = cursor.take_uuid()?;
+            let expiration_timeout = cursor.take_u32_be()?;
+            let host = cursor.take_str8()?;
+            let lifetime_limit = cursor.take_u32_be()?;
+            let port = cursor.take_u16_be()?;
+            let max_memory_size = cursor.take_u32_be()?;
+            let max_memory_time_limit = cursor.take_u32_be()?;
+            let display_name = cursor.take_str8()?;
+            let security_level = cursor.take_u32_be()?;
+            let session_fault_tolerance_level = cursor.take_u32_be()?;
+            let load_balancing_mode = cursor.take_u32_be()?;
+            let errors_count_threshold = cursor.take_u32_be()?;
+            let flags_raw = cursor.take_u32_be()?;
             let _tail_u32_5 = cursor.take_u32_be()?;
             let ping_period_raw = cursor.take_u32_be()?;
             let ping_timeout_raw = cursor.take_u32_be()?;
             let restart_schedule_len = (ping_timeout_raw & 0xff) as usize;
             let restart_schedule_bytes = cursor.take_bytes(restart_schedule_len)?;
-            record.allow_access_right_audit_events_recording =
-                allow_access_right_audit_events_recording;
-            record.ping_period = ping_period_raw >> 8;
-            record.ping_timeout = ping_timeout_raw >> 8;
-            record.restart_schedule_cron =
-                String::from_utf8_lossy(&restart_schedule_bytes).to_string();
+            let flags_bytes = flags_raw.to_be_bytes();
+            Ok(ClusterRecord {
+                uuid,
+                expiration_timeout,
+                host,
+                lifetime_limit,
+                port,
+                max_memory_size,
+                max_memory_time_limit,
+                display_name,
+                security_level,
+                session_fault_tolerance_level,
+                load_balancing_mode,
+                errors_count_threshold,
+                kill_problem_processes: flags_bytes[0],
+                kill_by_memory_with_dump: flags_bytes[1],
+                allow_access_right_audit_events_recording: Some(flags_bytes[2]),
+                ping_period: Some(ping_period_raw >> 8),
+                ping_timeout: Some(ping_timeout_raw >> 8),
+                restart_schedule_cron: Some(
+                    String::from_utf8_lossy(&restart_schedule_bytes).to_string(),
+                ),
+                restart_interval: None,
+            })
         }
     }
-    Ok(record)
 }
 
 fn parse_cluster_list_body(
@@ -189,7 +214,10 @@ mod tests {
         let hex = include_str!("../../../../artifacts/rac/cluster_admin_list_response.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
-        let admins = parse_list_u8(body, ClusterAdminRecord::decode).expect("parse list");
+        let admins = parse_list_u8(body, |cursor| {
+            ClusterAdminRecord::decode(cursor, ProtocolVersion::V16_0)
+        })
+        .expect("parse list");
 
         assert_eq!(admins.len(), 1);
         assert_eq!(admins[0].name, "cadmin");
@@ -263,10 +291,16 @@ mod tests {
         let body = rpc_body(&payload).expect("rpc body");
         let clusters = parse_cluster_list_body(body, ProtocolVersion::V16_0).expect("parse body");
         assert_eq!(clusters.len(), 1);
-        assert_eq!(clusters[0].allow_access_right_audit_events_recording, 0);
-        assert_eq!(clusters[0].ping_period, 59999);
-        assert_eq!(clusters[0].ping_timeout, 65366);
-        assert_eq!(clusters[0].restart_schedule_cron, "0 3 * * 6");
+        assert_eq!(
+            clusters[0].allow_access_right_audit_events_recording,
+            Some(0)
+        );
+        assert_eq!(clusters[0].ping_period, Some(59999));
+        assert_eq!(clusters[0].ping_timeout, Some(65366));
+        assert_eq!(
+            clusters[0].restart_schedule_cron,
+            Some("0 3 * * 6".to_string())
+        );
     }
 
     #[test]
@@ -277,10 +311,13 @@ mod tests {
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
         let cluster = parse_cluster_info_body(body, ProtocolVersion::V16_0).expect("parse body");
-        assert_eq!(cluster.allow_access_right_audit_events_recording, 0);
-        assert_eq!(cluster.ping_period, 59999);
-        assert_eq!(cluster.ping_timeout, 65366);
-        assert_eq!(cluster.restart_schedule_cron, "0 3 * * 6");
+        assert_eq!(cluster.allow_access_right_audit_events_recording, Some(0));
+        assert_eq!(cluster.ping_period, Some(59999));
+        assert_eq!(cluster.ping_timeout, Some(65366));
+        assert_eq!(
+            cluster.restart_schedule_cron,
+            Some("0 3 * * 6".to_string())
+        );
     }
 
     // Additional cluster list/info capture assertions should be added when artifacts are present.

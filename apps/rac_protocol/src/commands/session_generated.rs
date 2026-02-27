@@ -1,6 +1,7 @@
 use crate::Uuid16;
 use crate::error::RacError;
 use crate::codec::v8_datetime_to_iso;
+use crate::protocol::ProtocolVersion;
 use crate::codec::RecordCursor;
 use crate::error::Result;
 use serde::Serialize;
@@ -30,7 +31,7 @@ pub struct SessionLicense {
 }
 
 impl SessionLicense {
-    pub fn decode(cursor: &mut RecordCursor<'_>) -> Result<Self> {
+    pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
         let file_name = cursor.take_str8()?;
         let full_presentation = cursor.take_str8()?;
         let issued_by_server = cursor.take_u8()? != 0;
@@ -115,7 +116,7 @@ pub struct SessionRecord {
 }
 
 impl SessionRecord {
-    pub fn decode(cursor: &mut RecordCursor<'_>) -> Result<Self> {
+    pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
         let session = cursor.take_uuid()?;
         let app_id = cursor.take_str8()?;
         let blocked_by_dbms = cursor.take_u32_be()?;
@@ -144,7 +145,7 @@ impl SessionRecord {
         let hibernate_session_terminate_time = cursor.take_u32_be()?;
         let license = {
             let count = cursor.take_u8()? as usize;
-            if count == 0 { SessionLicense::default() } else { SessionLicense::decode(cursor)? }
+            if count == 0 { SessionLicense::default() } else { SessionLicense::decode(cursor, protocol_version)? }
         };
         let locale = cursor.take_str8()?;
         let process = cursor.take_uuid()?;
@@ -240,8 +241,14 @@ impl crate::rpc::Request for SessionListRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16);
-        out.extend_from_slice(&self.cluster);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc SessionList unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
         Ok(out)
     }
 }
@@ -263,9 +270,17 @@ impl crate::rpc::Request for SessionInfoRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16 + 16);
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&self.session);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc SessionInfo unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.session);
+        }
         Ok(out)
     }
 }
@@ -288,10 +303,20 @@ impl crate::rpc::Request for SessionTerminateRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16 + 16 + 1 + self.error_message.len());
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&self.session);
-        out.extend_from_slice(&encode_with_len_u8(self.error_message.as_bytes())?);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc SessionTerminate unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.error_message.len() } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.session);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.error_message.as_bytes())?);
+        }
         Ok(out)
     }
 }
@@ -314,10 +339,20 @@ impl crate::rpc::Request for SessionInterruptCurrentServerCallRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16 + 16 + 1 + self.error_message.len());
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&self.session);
-        out.extend_from_slice(&encode_with_len_u8(self.error_message.as_bytes())?);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc SessionInterruptCurrentServerCall unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.error_message.len() } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.session);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.error_message.as_bytes())?);
+        }
         Ok(out)
     }
 }
@@ -331,8 +366,9 @@ pub struct SessionListResp {
 impl crate::rpc::Response for SessionListResp {
     fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
         let body = crate::rpc::decode_utils::rpc_body(payload)?;
+        let protocol_version = _codec.protocol_version();
         Ok(Self {
-            records: crate::commands::parse_list_u8(body, SessionRecord::decode)?,
+            records: crate::commands::parse_list_u8(body, |cursor| SessionRecord::decode(cursor, protocol_version))?,
         })
     }
 }
@@ -345,7 +381,8 @@ pub struct SessionInfoResp {
 impl crate::rpc::Response for SessionInfoResp {
     fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
         let body = crate::rpc::decode_utils::rpc_body(payload)?;
-        let record = parse_session_info_body(body)?;
+        let protocol_version = _codec.protocol_version();
+        let record = parse_session_info_body(body, protocol_version)?;
         Ok(Self {
             record: record,
         })
@@ -353,12 +390,12 @@ impl crate::rpc::Response for SessionInfoResp {
 }
 
 
-pub fn parse_session_info_body(body: &[u8]) -> Result<SessionRecord> {
+pub fn parse_session_info_body(body: &[u8], protocol_version: ProtocolVersion) -> Result<SessionRecord> {
     if body.is_empty() {
         return Err(RacError::Decode("session info empty body"));
     }
     let mut cursor = RecordCursor::new(body);
-    SessionRecord::decode(&mut cursor)
+    SessionRecord::decode(&mut cursor, protocol_version)
 }
 
 

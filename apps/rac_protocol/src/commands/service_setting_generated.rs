@@ -1,5 +1,6 @@
 use crate::Uuid16;
 use crate::error::RacError;
+use crate::protocol::ProtocolVersion;
 use crate::codec::RecordCursor;
 use crate::error::Result;
 use serde::Serialize;
@@ -28,7 +29,7 @@ pub struct ServiceSettingRecord {
 }
 
 impl ServiceSettingRecord {
-    pub fn decode(cursor: &mut RecordCursor<'_>) -> Result<Self> {
+    pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
         let setting = cursor.take_uuid()?;
         let service_name = cursor.take_str8()?;
         let infobase_name = cursor.take_str8()?;
@@ -55,7 +56,7 @@ pub struct ServiceSettingTransferDataDirRecord {
 }
 
 impl ServiceSettingTransferDataDirRecord {
-    pub fn decode(cursor: &mut RecordCursor<'_>) -> Result<Self> {
+    pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
         let service_name = cursor.take_str8()?;
         let user = cursor.take_str8()?;
         let _source_dir_len = cursor.take_u8()?;
@@ -89,7 +90,7 @@ pub struct ServiceSettingIdRecord {
 }
 
 impl ServiceSettingIdRecord {
-    pub fn decode(cursor: &mut RecordCursor<'_>) -> Result<Self> {
+    pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
         let setting = cursor.take_uuid()?;
         Ok(Self {
             setting,
@@ -115,10 +116,20 @@ impl crate::rpc::Request for ServiceSettingInfoRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16 + 16 + 16);
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&self.server);
-        out.extend_from_slice(&self.setting);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc ServiceSettingInfo unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.server);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.setting);
+        }
         Ok(out)
     }
 }
@@ -140,9 +151,17 @@ impl crate::rpc::Request for ServiceSettingListRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16 + 16);
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&self.server);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc ServiceSettingList unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.server);
+        }
         Ok(out)
     }
 }
@@ -168,14 +187,32 @@ impl crate::rpc::Request for ServiceSettingInsertRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16 + 16 + 16 + 1 + self.service_name.len() + 1 + self.infobase_name.len() + 1 + self.service_data_dir.len() + 2);
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&self.server);
-        out.extend_from_slice(&[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-        out.extend_from_slice(&encode_with_len_u8(self.service_name.as_bytes())?);
-        out.extend_from_slice(&encode_with_len_u8(self.infobase_name.as_bytes())?);
-        out.extend_from_slice(&encode_with_len_u8(self.service_data_dir.as_bytes())?);
-        out.extend_from_slice(&self.active.to_be_bytes());
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc ServiceSettingInsert unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.service_name.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.infobase_name.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.service_data_dir.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 2 } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.server);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.service_name.as_bytes())?);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.infobase_name.as_bytes())?);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.service_data_dir.as_bytes())?);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.active.to_be_bytes());
+        }
         Ok(out)
     }
 }
@@ -202,14 +239,32 @@ impl crate::rpc::Request for ServiceSettingUpdateRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16 + 16 + 16 + 1 + self.service_name.len() + 1 + self.infobase_name.len() + 1 + self.service_data_dir.len() + 2);
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&self.server);
-        out.extend_from_slice(&self.setting);
-        out.extend_from_slice(&encode_with_len_u8(self.service_name.as_bytes())?);
-        out.extend_from_slice(&encode_with_len_u8(self.infobase_name.as_bytes())?);
-        out.extend_from_slice(&encode_with_len_u8(self.service_data_dir.as_bytes())?);
-        out.extend_from_slice(&self.active.to_be_bytes());
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc ServiceSettingUpdate unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.service_name.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.infobase_name.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.service_data_dir.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 2 } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.server);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.setting);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.service_name.as_bytes())?);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.infobase_name.as_bytes())?);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.service_data_dir.as_bytes())?);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.active.to_be_bytes());
+        }
         Ok(out)
     }
 }
@@ -232,10 +287,20 @@ impl crate::rpc::Request for ServiceSettingRemoveRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16 + 16 + 16);
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&self.server);
-        out.extend_from_slice(&self.setting);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc ServiceSettingRemove unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.server);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.setting);
+        }
         Ok(out)
     }
 }
@@ -257,9 +322,17 @@ impl crate::rpc::Request for ServiceSettingApplyRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16 + 16);
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&self.server);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc ServiceSettingApply unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.server);
+        }
         Ok(out)
     }
 }
@@ -282,10 +355,20 @@ impl crate::rpc::Request for ServiceSettingGetDataDirsRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(16 + 16 + 1 + self.service_name.len());
-        out.extend_from_slice(&self.cluster);
-        out.extend_from_slice(&self.server);
-        out.extend_from_slice(&encode_with_len_u8(self.service_name.as_bytes())?);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc ServiceSettingGetDataDirs unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.service_name.len() } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.cluster);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&self.server);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.service_name.as_bytes())?);
+        }
         Ok(out)
     }
 }
@@ -299,8 +382,9 @@ pub struct ServiceSettingListResp {
 impl crate::rpc::Response for ServiceSettingListResp {
     fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
         let body = crate::rpc::decode_utils::rpc_body(payload)?;
+        let protocol_version = _codec.protocol_version();
         Ok(Self {
-            records: crate::commands::parse_list_u8(body, ServiceSettingRecord::decode)?,
+            records: crate::commands::parse_list_u8(body, |cursor| ServiceSettingRecord::decode(cursor, protocol_version))?,
         })
     }
 }
@@ -313,7 +397,8 @@ pub struct ServiceSettingInfoResp {
 impl crate::rpc::Response for ServiceSettingInfoResp {
     fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
         let body = crate::rpc::decode_utils::rpc_body(payload)?;
-        let record = parse_service_setting_info_body(body)?;
+        let protocol_version = _codec.protocol_version();
+        let record = parse_service_setting_info_body(body, protocol_version)?;
         Ok(Self {
             record: record,
         })
@@ -328,7 +413,8 @@ pub struct ServiceSettingInsertResp {
 impl crate::rpc::Response for ServiceSettingInsertResp {
     fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
         let body = crate::rpc::decode_utils::rpc_body(payload)?;
-        let record = parse_service_setting_insert_body(body)?;
+        let protocol_version = _codec.protocol_version();
+        let record = parse_service_setting_insert_body(body, protocol_version)?;
         Ok(Self {
             setting: record.setting,
         })
@@ -343,7 +429,8 @@ pub struct ServiceSettingUpdateResp {
 impl crate::rpc::Response for ServiceSettingUpdateResp {
     fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
         let body = crate::rpc::decode_utils::rpc_body(payload)?;
-        let record = parse_service_setting_update_body(body)?;
+        let protocol_version = _codec.protocol_version();
+        let record = parse_service_setting_update_body(body, protocol_version)?;
         Ok(Self {
             setting: record.setting,
         })
@@ -358,35 +445,36 @@ pub struct ServiceSettingGetDataDirsResp {
 impl crate::rpc::Response for ServiceSettingGetDataDirsResp {
     fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
         let body = crate::rpc::decode_utils::rpc_body(payload)?;
+        let protocol_version = _codec.protocol_version();
         Ok(Self {
-            records: crate::commands::parse_list_u8(body, ServiceSettingTransferDataDirRecord::decode)?,
+            records: crate::commands::parse_list_u8(body, |cursor| ServiceSettingTransferDataDirRecord::decode(cursor, protocol_version))?,
         })
     }
 }
 
 
-pub fn parse_service_setting_info_body(body: &[u8]) -> Result<ServiceSettingRecord> {
+pub fn parse_service_setting_info_body(body: &[u8], protocol_version: ProtocolVersion) -> Result<ServiceSettingRecord> {
     if body.is_empty() {
         return Err(RacError::Decode("service setting info empty body"));
     }
     let mut cursor = RecordCursor::new(body);
-    ServiceSettingRecord::decode(&mut cursor)
+    ServiceSettingRecord::decode(&mut cursor, protocol_version)
 }
 
-pub fn parse_service_setting_insert_body(body: &[u8]) -> Result<ServiceSettingIdRecord> {
+pub fn parse_service_setting_insert_body(body: &[u8], protocol_version: ProtocolVersion) -> Result<ServiceSettingIdRecord> {
     if body.is_empty() {
         return Err(RacError::Decode("service setting insert empty body"));
     }
     let mut cursor = RecordCursor::new(body);
-    ServiceSettingIdRecord::decode(&mut cursor)
+    ServiceSettingIdRecord::decode(&mut cursor, protocol_version)
 }
 
-pub fn parse_service_setting_update_body(body: &[u8]) -> Result<ServiceSettingIdRecord> {
+pub fn parse_service_setting_update_body(body: &[u8], protocol_version: ProtocolVersion) -> Result<ServiceSettingIdRecord> {
     if body.is_empty() {
         return Err(RacError::Decode("service setting update empty body"));
     }
     let mut cursor = RecordCursor::new(body);
-    ServiceSettingIdRecord::decode(&mut cursor)
+    ServiceSettingIdRecord::decode(&mut cursor, protocol_version)
 }
 
 

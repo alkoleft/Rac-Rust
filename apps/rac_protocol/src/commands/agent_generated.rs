@@ -1,8 +1,17 @@
 use crate::error::RacError;
+use crate::protocol::ProtocolVersion;
 use crate::codec::RecordCursor;
 use crate::error::Result;
 use serde::Serialize;
 use crate::rac_wire::encode_with_len_u8;
+
+pub const METHOD_AGENT_AUTH_REQ: u8 = 0x08;
+pub const METHOD_AGENT_ADMIN_LIST_REQ: u8 = 0x00;
+pub const METHOD_AGENT_ADMIN_LIST_RESP: u8 = 0x01;
+pub const METHOD_AGENT_ADMIN_REGISTER_REQ: u8 = 0x04;
+pub const METHOD_AGENT_ADMIN_REMOVE_REQ: u8 = 0x06;
+pub const METHOD_AGENT_VERSION_REQ: u8 = 0x87;
+pub const METHOD_AGENT_VERSION_RESP: u8 = 0x88;
 
 #[derive(Debug, Serialize, Clone)]
 pub struct AgentAdminRecord {
@@ -13,7 +22,7 @@ pub struct AgentAdminRecord {
 }
 
 impl AgentAdminRecord {
-    pub fn decode(cursor: &mut RecordCursor<'_>) -> Result<Self> {
+    pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
         let name = cursor.take_str8()?;
         let unknown_tag = cursor.take_u8()?;
         let unknown_flags = cursor.take_u32_be()?;
@@ -37,7 +46,7 @@ pub struct AgentVersionRecord {
 }
 
 impl AgentVersionRecord {
-    pub fn decode(cursor: &mut RecordCursor<'_>) -> Result<Self> {
+    pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
         let version = cursor.take_str8()?;
         Ok(Self {
             version,
@@ -62,9 +71,17 @@ impl crate::rpc::Request for AgentAuthRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(1 + self.user.len() + 1 + self.pwd.len());
-        out.extend_from_slice(&encode_with_len_u8(self.user.as_bytes())?);
-        out.extend_from_slice(&encode_with_len_u8(self.pwd.as_bytes())?);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc AgentAuth unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 1 + self.user.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.pwd.len() } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.user.as_bytes())?);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.pwd.as_bytes())?);
+        }
         Ok(out)
     }
 }
@@ -83,6 +100,10 @@ impl crate::rpc::Request for AgentAdminListRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc AgentAdminList unsupported for protocol"));
+        }
         Ok(Vec::new())
     }
 }
@@ -108,13 +129,29 @@ impl crate::rpc::Request for AgentAdminRegisterRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(1 + self.name.len() + 1 + self.descr.len() + 1 + self.pwd.len() + 1 + 1 + 1 + self.os_user.len());
-        out.extend_from_slice(&encode_with_len_u8(self.name.as_bytes())?);
-        out.extend_from_slice(&encode_with_len_u8(self.descr.as_bytes())?);
-        out.extend_from_slice(&encode_with_len_u8(self.pwd.as_bytes())?);
-        out.push(self.auth_tag);
-        out.push(self.auth_flags);
-        out.extend_from_slice(&encode_with_len_u8(self.os_user.as_bytes())?);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc AgentAdminRegister unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 1 + self.name.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.descr.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.pwd.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.os_user.len() } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.name.as_bytes())?);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.descr.as_bytes())?);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.pwd.as_bytes())?);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.push(self.auth_tag);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.push(self.auth_flags);
+        }
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.os_user.as_bytes())?);
+        }
         Ok(out)
     }
 }
@@ -135,8 +172,14 @@ impl crate::rpc::Request for AgentAdminRemoveRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
-        let mut out = Vec::with_capacity(1 + self.name.len());
-        out.extend_from_slice(&encode_with_len_u8(self.name.as_bytes())?);
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc AgentAdminRemove unsupported for protocol"));
+        }
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 1 + self.name.len() } else { 0 });
+        if protocol_version >= ProtocolVersion::V11_0 {
+            out.extend_from_slice(&encode_with_len_u8(self.name.as_bytes())?);
+        }
         Ok(out)
     }
 }
@@ -155,6 +198,10 @@ impl crate::rpc::Request for AgentVersionRpc {
     }
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
+        let protocol_version = _codec.protocol_version();
+        if !protocol_version >= ProtocolVersion::V11_0 {
+            return Err(RacError::Unsupported("rpc AgentVersion unsupported for protocol"));
+        }
         let mut out = Vec::with_capacity(0);
         let _ = &mut out;
         Ok(out)
@@ -170,8 +217,9 @@ pub struct AgentAdminListResp {
 impl crate::rpc::Response for AgentAdminListResp {
     fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
         let body = crate::rpc::decode_utils::rpc_body(payload)?;
+        let protocol_version = _codec.protocol_version();
         Ok(Self {
-            admins: crate::commands::parse_list_u8(body, AgentAdminRecord::decode)?,
+            admins: crate::commands::parse_list_u8(body, |cursor| AgentAdminRecord::decode(cursor, protocol_version))?,
         })
     }
 }
@@ -184,7 +232,8 @@ pub struct AgentVersionResp {
 impl crate::rpc::Response for AgentVersionResp {
     fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
         let body = crate::rpc::decode_utils::rpc_body(payload)?;
-        let record = parse_agent_version_body(body)?;
+        let protocol_version = _codec.protocol_version();
+        let record = parse_agent_version_body(body, protocol_version)?;
         Ok(Self {
             version: record.version,
         })
@@ -192,46 +241,46 @@ impl crate::rpc::Response for AgentVersionResp {
 }
 
 
-pub fn parse_agent_version_body(body: &[u8]) -> Result<AgentVersionRecord> {
+pub fn parse_agent_version_body(body: &[u8], protocol_version: ProtocolVersion) -> Result<AgentVersionRecord> {
     if body.is_empty() {
         return Err(RacError::Decode("agent version empty body"));
     }
     let mut cursor = RecordCursor::new(body);
-    AgentVersionRecord::decode(&mut cursor)
+    AgentVersionRecord::decode(&mut cursor, protocol_version)
 }
 
 
 pub const RPC_AGENT_AUTH_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: 0x08,
+    method_req: METHOD_AGENT_AUTH_REQ,
     method_resp: None,
     requires_cluster_context: false,
     requires_infobase_context: false,
 };
 
 pub const RPC_AGENT_ADMIN_LIST_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: 0x00,
-    method_resp: Some(0x01),
+    method_req: METHOD_AGENT_ADMIN_LIST_REQ,
+    method_resp: Some(METHOD_AGENT_ADMIN_LIST_RESP),
     requires_cluster_context: false,
     requires_infobase_context: false,
 };
 
 pub const RPC_AGENT_ADMIN_REGISTER_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: 0x04,
+    method_req: METHOD_AGENT_ADMIN_REGISTER_REQ,
     method_resp: None,
     requires_cluster_context: false,
     requires_infobase_context: false,
 };
 
 pub const RPC_AGENT_ADMIN_REMOVE_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: 0x06,
+    method_req: METHOD_AGENT_ADMIN_REMOVE_REQ,
     method_resp: None,
     requires_cluster_context: false,
     requires_infobase_context: false,
 };
 
 pub const RPC_AGENT_VERSION_META: crate::rpc::Meta = crate::rpc::Meta {
-    method_req: 0x87,
-    method_resp: Some(0x88),
+    method_req: METHOD_AGENT_VERSION_REQ,
+    method_resp: Some(METHOD_AGENT_VERSION_RESP),
     requires_cluster_context: false,
     requires_infobase_context: false,
 };
@@ -240,6 +289,7 @@ pub const RPC_AGENT_VERSION_META: crate::rpc::Meta = crate::rpc::Meta {
 mod tests {
     use super::*;
     use crate::commands::rpc_body;
+    use crate::protocol::ProtocolVersion;
 
     fn decode_hex_str(input: &str) -> Vec<u8> {
         hex::decode(input.trim()).expect("hex decode")
@@ -250,7 +300,8 @@ mod tests {
         let hex = include_str!("../../../../artifacts/rac/agent_admin_list_response_rpc.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
-        let items = crate::commands::parse_list_u8(body, AgentAdminRecord::decode).expect("parse body");
+        let protocol_version = ProtocolVersion::V16_0;
+        let items = crate::commands::parse_list_u8(body, |cursor| AgentAdminRecord::decode(cursor, protocol_version)).expect("parse body");
         assert_eq!(items.len(), 1);
         assert_eq!(items[0].name, "admin");
         assert_eq!(items[0].unknown_tag, 0);

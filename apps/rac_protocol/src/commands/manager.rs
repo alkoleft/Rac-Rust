@@ -26,7 +26,7 @@ pub fn manager_info(
     client.call_typed(ManagerInfoRpc { cluster, manager })
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "artifacts"))]
 mod tests {
     use super::*;
     use crate::protocol::ProtocolVersion;

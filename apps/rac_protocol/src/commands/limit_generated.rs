@@ -35,6 +35,7 @@ pub struct LimitRecord {
 
 impl LimitRecord {
     pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
+        let _ = protocol_version;
         let name = cursor.take_str8()?;
         let counter = cursor.take_str8()?;
         let action = cursor.take_u8()?;
@@ -89,7 +90,7 @@ impl crate::rpc::Request for LimitListRpc {
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
         let protocol_version = _codec.protocol_version();
-        if !protocol_version >= ProtocolVersion::V11_0 {
+        if !(protocol_version >= ProtocolVersion::V11_0) {
             return Err(RacError::Unsupported("rpc LimitList unsupported for protocol"));
         }
         let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 });
@@ -118,7 +119,7 @@ impl crate::rpc::Request for LimitInfoRpc {
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
         let protocol_version = _codec.protocol_version();
-        if !protocol_version >= ProtocolVersion::V11_0 {
+        if !(protocol_version >= ProtocolVersion::V11_0) {
             return Err(RacError::Unsupported("rpc LimitInfo unsupported for protocol"));
         }
         let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.name.len() } else { 0 });
@@ -165,7 +166,7 @@ impl crate::rpc::Request for LimitUpdateRpc {
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
         let protocol_version = _codec.protocol_version();
-        if !protocol_version >= ProtocolVersion::V11_0 {
+        if !(protocol_version >= ProtocolVersion::V11_0) {
             return Err(RacError::Unsupported("rpc LimitUpdate unsupported for protocol"));
         }
         let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.name.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.counter.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 8 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 8 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 8 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 8 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 8 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 8 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 8 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 8 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 8 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 8 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 8 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.error_message.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.descr.len() } else { 0 });
@@ -242,7 +243,7 @@ impl crate::rpc::Request for LimitRemoveRpc {
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
         let protocol_version = _codec.protocol_version();
-        if !protocol_version >= ProtocolVersion::V11_0 {
+        if !(protocol_version >= ProtocolVersion::V11_0) {
             return Err(RacError::Unsupported("rpc LimitRemove unsupported for protocol"));
         }
         let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.name.len() } else { 0 });

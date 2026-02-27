@@ -29,6 +29,7 @@ pub struct RuleRecord {
 
 impl RuleRecord {
     pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
+        let _ = protocol_version;
         let rule = cursor.take_uuid()?;
         let object_type = cursor.take_u32_be()?;
         let infobase_name = cursor.take_str8()?;
@@ -53,6 +54,7 @@ pub struct RuleIdRecord {
 
 impl RuleIdRecord {
     pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
+        let _ = protocol_version;
         let rule = cursor.take_uuid()?;
         Ok(Self {
             rule,
@@ -78,7 +80,7 @@ impl crate::rpc::Request for RuleListRpc {
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
         let protocol_version = _codec.protocol_version();
-        if !protocol_version >= ProtocolVersion::V11_0 {
+        if !(protocol_version >= ProtocolVersion::V11_0) {
             return Err(RacError::Unsupported("rpc RuleList unsupported for protocol"));
         }
         let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 });
@@ -111,7 +113,7 @@ impl crate::rpc::Request for RuleInfoRpc {
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
         let protocol_version = _codec.protocol_version();
-        if !protocol_version >= ProtocolVersion::V11_0 {
+        if !(protocol_version >= ProtocolVersion::V11_0) {
             return Err(RacError::Unsupported("rpc RuleInfo unsupported for protocol"));
         }
         let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 });
@@ -146,7 +148,7 @@ impl crate::rpc::Request for RuleApplyRpc {
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
         let protocol_version = _codec.protocol_version();
-        if !protocol_version >= ProtocolVersion::V11_0 {
+        if !(protocol_version >= ProtocolVersion::V11_0) {
             return Err(RacError::Unsupported("rpc RuleApply unsupported for protocol"));
         }
         let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 4 } else { 0 });
@@ -179,7 +181,7 @@ impl crate::rpc::Request for RuleRemoveRpc {
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
         let protocol_version = _codec.protocol_version();
-        if !protocol_version >= ProtocolVersion::V11_0 {
+        if !(protocol_version >= ProtocolVersion::V11_0) {
             return Err(RacError::Unsupported("rpc RuleRemove unsupported for protocol"));
         }
         let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 });
@@ -221,7 +223,7 @@ impl crate::rpc::Request for RuleInsertRpc {
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
         let protocol_version = _codec.protocol_version();
-        if !protocol_version >= ProtocolVersion::V11_0 {
+        if !(protocol_version >= ProtocolVersion::V11_0) {
             return Err(RacError::Unsupported("rpc RuleInsert unsupported for protocol"));
         }
         let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 4 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 4 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.infobase_name.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.application_ext.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 4 } else { 0 });
@@ -281,7 +283,7 @@ impl crate::rpc::Request for RuleUpdateRpc {
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
         let protocol_version = _codec.protocol_version();
-        if !protocol_version >= ProtocolVersion::V11_0 {
+        if !(protocol_version >= ProtocolVersion::V11_0) {
             return Err(RacError::Unsupported("rpc RuleUpdate unsupported for protocol"));
         }
         let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 4 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 4 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.infobase_name.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.application_ext.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 4 } else { 0 });

@@ -109,7 +109,7 @@ pub fn service_setting_get_service_data_dirs_for_transfer(
     client.call_typed(req)
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "artifacts"))]
 mod tests {
     use super::*;
     use crate::protocol::ProtocolVersion;

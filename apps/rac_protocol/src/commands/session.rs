@@ -63,7 +63,7 @@ pub fn session_interrupt_current_server_call(
     })
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "artifacts"))]
 mod tests {
     use super::*;
     use crate::commands::rpc_body;

@@ -18,7 +18,7 @@ pub fn profile_update(client: &mut RacClient, req: ProfileUpdateRpc) -> Result<A
     client.call_typed(req)
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "artifacts"))]
 mod tests {
     use super::*;
     use crate::protocol::ProtocolVersion;

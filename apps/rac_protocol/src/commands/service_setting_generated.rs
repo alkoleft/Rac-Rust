@@ -30,6 +30,7 @@ pub struct ServiceSettingRecord {
 
 impl ServiceSettingRecord {
     pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
+        let _ = protocol_version;
         let setting = cursor.take_uuid()?;
         let service_name = cursor.take_str8()?;
         let infobase_name = cursor.take_str8()?;
@@ -57,6 +58,7 @@ pub struct ServiceSettingTransferDataDirRecord {
 
 impl ServiceSettingTransferDataDirRecord {
     pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
+        let _ = protocol_version;
         let service_name = cursor.take_str8()?;
         let user = cursor.take_str8()?;
         let _source_dir_len = cursor.take_u8()?;
@@ -91,6 +93,7 @@ pub struct ServiceSettingIdRecord {
 
 impl ServiceSettingIdRecord {
     pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
+        let _ = protocol_version;
         let setting = cursor.take_uuid()?;
         Ok(Self {
             setting,
@@ -117,7 +120,7 @@ impl crate::rpc::Request for ServiceSettingInfoRpc {
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
         let protocol_version = _codec.protocol_version();
-        if !protocol_version >= ProtocolVersion::V11_0 {
+        if !(protocol_version >= ProtocolVersion::V11_0) {
             return Err(RacError::Unsupported("rpc ServiceSettingInfo unsupported for protocol"));
         }
         let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 });
@@ -152,7 +155,7 @@ impl crate::rpc::Request for ServiceSettingListRpc {
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
         let protocol_version = _codec.protocol_version();
-        if !protocol_version >= ProtocolVersion::V11_0 {
+        if !(protocol_version >= ProtocolVersion::V11_0) {
             return Err(RacError::Unsupported("rpc ServiceSettingList unsupported for protocol"));
         }
         let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 });
@@ -188,7 +191,7 @@ impl crate::rpc::Request for ServiceSettingInsertRpc {
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
         let protocol_version = _codec.protocol_version();
-        if !protocol_version >= ProtocolVersion::V11_0 {
+        if !(protocol_version >= ProtocolVersion::V11_0) {
             return Err(RacError::Unsupported("rpc ServiceSettingInsert unsupported for protocol"));
         }
         let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.service_name.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.infobase_name.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.service_data_dir.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 2 } else { 0 });
@@ -240,7 +243,7 @@ impl crate::rpc::Request for ServiceSettingUpdateRpc {
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
         let protocol_version = _codec.protocol_version();
-        if !protocol_version >= ProtocolVersion::V11_0 {
+        if !(protocol_version >= ProtocolVersion::V11_0) {
             return Err(RacError::Unsupported("rpc ServiceSettingUpdate unsupported for protocol"));
         }
         let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.service_name.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.infobase_name.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.service_data_dir.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 2 } else { 0 });
@@ -288,7 +291,7 @@ impl crate::rpc::Request for ServiceSettingRemoveRpc {
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
         let protocol_version = _codec.protocol_version();
-        if !protocol_version >= ProtocolVersion::V11_0 {
+        if !(protocol_version >= ProtocolVersion::V11_0) {
             return Err(RacError::Unsupported("rpc ServiceSettingRemove unsupported for protocol"));
         }
         let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 });
@@ -323,7 +326,7 @@ impl crate::rpc::Request for ServiceSettingApplyRpc {
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
         let protocol_version = _codec.protocol_version();
-        if !protocol_version >= ProtocolVersion::V11_0 {
+        if !(protocol_version >= ProtocolVersion::V11_0) {
             return Err(RacError::Unsupported("rpc ServiceSettingApply unsupported for protocol"));
         }
         let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 });
@@ -356,7 +359,7 @@ impl crate::rpc::Request for ServiceSettingGetDataDirsRpc {
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
         let protocol_version = _codec.protocol_version();
-        if !protocol_version >= ProtocolVersion::V11_0 {
+        if !(protocol_version >= ProtocolVersion::V11_0) {
             return Err(RacError::Unsupported("rpc ServiceSettingGetDataDirs unsupported for protocol"));
         }
         let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.service_name.len() } else { 0 });

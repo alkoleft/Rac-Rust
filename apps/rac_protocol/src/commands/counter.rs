@@ -89,7 +89,7 @@ pub fn counter_accumulated_values(
     client.call_typed(req)
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "artifacts"))]
 mod tests {
     use super::*;
     use crate::protocol::ProtocolVersion;

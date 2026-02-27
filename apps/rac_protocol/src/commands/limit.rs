@@ -49,7 +49,7 @@ pub fn limit_remove(
     client.call_typed(req)
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "artifacts"))]
 mod tests {
     use super::*;
     use crate::protocol::ProtocolVersion;

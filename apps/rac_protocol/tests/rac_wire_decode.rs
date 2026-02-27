@@ -1,3 +1,5 @@
+#![cfg(feature = "artifacts")]
+
 use rac_protocol::rac_wire::{decode_rpc_method, encode_varuint, parse_frames};
 
 fn decode_hex_str(input: &str) -> Vec<u8> {

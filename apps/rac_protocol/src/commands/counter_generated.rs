@@ -42,6 +42,7 @@ pub struct CounterRecord {
 
 impl CounterRecord {
     pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
+        let _ = protocol_version;
         let name = cursor.take_str8()?;
         let collection_time = cursor.take_u64_be()?;
         let group = cursor.take_u8()?;
@@ -101,6 +102,7 @@ pub struct CounterValuesRecord {
 
 impl CounterValuesRecord {
     pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
+        let _ = protocol_version;
         let object = cursor.take_str8()?;
         let collection_time = cursor.take_u64_be()?;
         let duration = cursor.take_u64_be()?;
@@ -151,7 +153,7 @@ impl crate::rpc::Request for CounterListRpc {
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
         let protocol_version = _codec.protocol_version();
-        if !protocol_version >= ProtocolVersion::V11_0 {
+        if !(protocol_version >= ProtocolVersion::V11_0) {
             return Err(RacError::Unsupported("rpc CounterList unsupported for protocol"));
         }
         let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 });
@@ -180,7 +182,7 @@ impl crate::rpc::Request for CounterInfoRpc {
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
         let protocol_version = _codec.protocol_version();
-        if !protocol_version >= ProtocolVersion::V11_0 {
+        if !(protocol_version >= ProtocolVersion::V11_0) {
             return Err(RacError::Unsupported("rpc CounterInfo unsupported for protocol"));
         }
         let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.counter.len() } else { 0 });
@@ -228,7 +230,7 @@ impl crate::rpc::Request for CounterUpdateRpc {
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
         let protocol_version = _codec.protocol_version();
-        if !protocol_version >= ProtocolVersion::V11_0 {
+        if !(protocol_version >= ProtocolVersion::V11_0) {
             return Err(RacError::Unsupported("rpc CounterUpdate unsupported for protocol"));
         }
         let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.name.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 8 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.filter.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.descr.len() } else { 0 });
@@ -308,7 +310,7 @@ impl crate::rpc::Request for CounterRemoveRpc {
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
         let protocol_version = _codec.protocol_version();
-        if !protocol_version >= ProtocolVersion::V11_0 {
+        if !(protocol_version >= ProtocolVersion::V11_0) {
             return Err(RacError::Unsupported("rpc CounterRemove unsupported for protocol"));
         }
         let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.name.len() } else { 0 });
@@ -341,7 +343,7 @@ impl crate::rpc::Request for CounterClearRpc {
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
         let protocol_version = _codec.protocol_version();
-        if !protocol_version >= ProtocolVersion::V11_0 {
+        if !(protocol_version >= ProtocolVersion::V11_0) {
             return Err(RacError::Unsupported("rpc CounterClear unsupported for protocol"));
         }
         let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.counter.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.object.len() } else { 0 });
@@ -377,7 +379,7 @@ impl crate::rpc::Request for CounterValuesRpc {
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
         let protocol_version = _codec.protocol_version();
-        if !protocol_version >= ProtocolVersion::V11_0 {
+        if !(protocol_version >= ProtocolVersion::V11_0) {
             return Err(RacError::Unsupported("rpc CounterValues unsupported for protocol"));
         }
         let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.counter.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.object.len() } else { 0 });
@@ -413,7 +415,7 @@ impl crate::rpc::Request for CounterAccumulatedValuesRpc {
 
     fn encode_body(&self, _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Vec<u8>> {
         let protocol_version = _codec.protocol_version();
-        if !protocol_version >= ProtocolVersion::V11_0 {
+        if !(protocol_version >= ProtocolVersion::V11_0) {
             return Err(RacError::Unsupported("rpc CounterAccumulatedValues unsupported for protocol"));
         }
         let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.counter.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.object.len() } else { 0 });

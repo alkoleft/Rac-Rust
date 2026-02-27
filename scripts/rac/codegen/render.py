@@ -27,7 +27,7 @@ def generate(
     uses.insert(0, "use crate::protocol::ProtocolVersion;")
     if needs_datetime(records):
         uses.insert(0, "use crate::codec::v8_datetime_to_iso;")
-    if needs_rac_error(records) or needs_rac_error_responses(responses):
+    if needs_rac_error(records) or needs_rac_error_responses(responses) or rpcs:
         uses.insert(0, "use crate::error::RacError;")
     if needs_uuid(records):
         uses.insert(0, "use crate::Uuid16;")
@@ -70,6 +70,7 @@ def generate(
         lines.append(
             "    pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {"
         )
+        lines.append("        let _ = protocol_version;")
 
         computed_lines: List[str] = []
         var_map: Dict[str, str] = {}
@@ -367,7 +368,7 @@ def generate_response_tests(responses: List[ResponseSpec]) -> List[str]:
     tests = [t for r in responses for t in r.tests]
     if not tests:
         return lines
-    lines.append("#[cfg(test)]")
+    lines.append("#[cfg(all(test, feature = \"artifacts\"))]")
     lines.append("mod tests {")
     lines.append("    use super::*;")
     lines.append("    use crate::commands::rpc_body;")
@@ -622,7 +623,7 @@ def generate_rpc_section(rpcs: List[RpcSpec], requests: List[RequestSpec]) -> Li
         )
         lines.append("        let protocol_version = _codec.protocol_version();")
         lines.append(
-            f"        if !{render_version_guard(rpc.version, None, 'protocol_version')} {{"
+            f"        if !({render_version_guard(rpc.version, None, 'protocol_version')}) {{"
         )
         lines.append(
             f"            return Err(RacError::Unsupported(\"rpc {rpc.name} unsupported for protocol\"));"

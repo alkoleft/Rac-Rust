@@ -26,7 +26,7 @@ pub fn server_info(
     client.call_typed(ServerInfoRpc { cluster, server })
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "artifacts"))]
 mod tests {
     use super::*;
     use crate::protocol::ProtocolVersion;

@@ -27,7 +27,7 @@ pub fn process_info(
     client.call_typed(ProcessInfoRpc { cluster, process })
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "artifacts"))]
 mod tests {
     use super::*;
     use crate::commands::parse_list_u8;

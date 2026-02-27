@@ -1,3 +1,5 @@
+#![cfg(feature = "live-tests")]
+
 use std::fs;
 use std::time::Duration;
 

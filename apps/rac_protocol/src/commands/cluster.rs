@@ -197,7 +197,7 @@ pub fn cluster_info(client: &mut RacClient, cluster: Uuid16) -> Result<ClusterRe
     Ok(resp.cluster)
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "artifacts"))]
 mod tests {
     use super::*;
     use crate::protocol::ProtocolVersion;

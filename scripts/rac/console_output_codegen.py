@@ -63,6 +63,7 @@ class ListSpec:
     label: str
     fn_name: str
     struct_name: str
+    style: str
 
 
 @dataclass
@@ -162,9 +163,10 @@ def parse_lists(raw_lists: List[Dict[str, Any]]) -> List[ListSpec]:
         label = str(raw.get("label", "")).strip()
         fn_name = str(raw.get("fn", "")).strip()
         struct_name = str(raw.get("struct", "")).strip()
+        style = str(raw.get("style", "counted")).strip()
         if not label or not fn_name or not struct_name:
             raise ValueError("list requires label, fn, struct")
-        lists.append(ListSpec(label=label, fn_name=fn_name, struct_name=struct_name))
+        lists.append(ListSpec(label=label, fn_name=fn_name, struct_name=struct_name, style=style))
     return lists
 
 
@@ -191,7 +193,15 @@ def parse_records(
             if list_label:
                 list_fn = str(raw.get("list_fn") or f"{base}_list")
                 list_struct = str(raw.get("list_struct") or f"{pascal}ListDisplay")
-                list_specs = [ListSpec(label=list_label, fn_name=list_fn, struct_name=list_struct)]
+                list_style = str(raw.get("list_style", "counted")).strip()
+                list_specs = [
+                    ListSpec(
+                        label=list_label,
+                        fn_name=list_fn,
+                        struct_name=list_struct,
+                        style=list_style,
+                    )
+                ]
         record = RecordSpec(
             base=base,
             type_name=type_name,
@@ -521,12 +531,22 @@ def generate(records: List[RecordSpec], schema_path: Path) -> str:
             out.append("")
             out.append(f"impl Display for {list_spec.struct_name}<'_> {{")
             out.append("    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {")
-            out.append(
-                f"        let out = list_to_string({rust_string_literal(list_spec.label)}, self.items, 5, MoreLabel::Default, |out, _idx, item| {{"
-            )
-            out.append(f"            {render_fn}(out, item);")
-            out.append("        });")
-            out.append("        write_trimmed(f, &out)")
+            if list_spec.style == "blocks":
+                out.append("        let mut out = String::new();")
+                out.append("        for (idx, item) in self.items.iter().enumerate() {")
+                out.append("            if idx > 0 {")
+                out.append("                out.push('\\n');")
+                out.append("            }")
+                out.append(f"            {render_fn}(&mut out, item);")
+                out.append("        }")
+                out.append("        write_trimmed(f, &out)")
+            else:
+                out.append(
+                    f"        let out = list_to_string({rust_string_literal(list_spec.label)}, self.items, 5, MoreLabel::Default, |out, _idx, item| {{"
+                )
+                out.append(f"            {render_fn}(out, item);")
+                out.append("        });")
+                out.append("        write_trimmed(f, &out)")
             out.append("    }")
             out.append("}")
             out.append("")

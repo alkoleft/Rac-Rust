@@ -222,6 +222,39 @@ lines = [
   { label = "unknown-tail", value = "unknown_tail", format = "bytes3" },
 ]
 
+[record.cluster]
+type = "ClusterRecord"
+list_label = "clusters"
+list_style = "blocks"
+lines = [
+  { fmt = "cluster                                   : {}", args = ["format_uuid(&item.uuid)"] },
+  { fmt = "host                                      : {}", args = ["display_str(&item.host)"] },
+  { fmt = "port                                      : {}", args = ["item.port"] },
+  { fmt = "name                                      : \"{}\"", args = ["display_str(&item.display_name)"] },
+  { fmt = "expiration-timeout                        : {}", args = ["item.expiration_timeout"] },
+  { fmt = "lifetime-limit                            : {}", args = ["item.lifetime_limit"] },
+  { fmt = "max-memory-size                           : {}", args = ["item.max_memory_size"] },
+  { fmt = "max-memory-time-limit                     : {}", args = ["item.max_memory_time_limit"] },
+  { fmt = "security-level                            : {}", args = ["item.security_level"] },
+  { fmt = "session-fault-tolerance-level             : {}", args = ["item.session_fault_tolerance_level"] },
+  { fmt = "load-balancing-mode                       : {}", args = ["load_balancing_mode_name(item.load_balancing_mode)"] },
+  { fmt = "errors-count-threshold                    : {}", args = ["item.errors_count_threshold"] },
+  { fmt = "kill-problem-processes                    : {}", args = ["item.kill_problem_processes"] },
+  { fmt = "kill-by-memory-with-dump                  : {}", args = ["item.kill_by_memory_with_dump"] },
+  { fmt = "allow-access-right-audit-events-recording : {}", args = ["item.allow_access_right_audit_events_recording"] },
+  { fmt = "ping-period                               : {}", args = ["item.ping_period"] },
+  { fmt = "ping-timeout                              : {}", args = ["item.ping_timeout"] },
+  { fmt = "restart-schedule                          : \"{}\"", args = ["display_str(&item.restart_schedule_cron)"] },
+]
+
+[record.agent_version]
+type = "str"
+info_fn = "agent_version"
+info_struct = "AgentVersionDisplay"
+lines = [
+  { fmt = "version: {}", args = ["item"] },
+]
+
 [record.session]
 type = "SessionRecord"
 list_label = "sessions"

@@ -654,6 +654,84 @@ impl Display for ClusterAdminListDisplay<'_> {
     }
 }
 
+pub struct ClusterInfoDisplay<'a> {
+    item: &'a ClusterRecord,
+}
+
+pub fn cluster_info(item: &ClusterRecord) -> ClusterInfoDisplay<'_> {
+    ClusterInfoDisplay { item }
+}
+
+fn render_cluster_info(out: &mut String, item: &ClusterRecord) {
+    outln!(out, "cluster                                   : {}", format_uuid(&item.uuid));
+    outln!(out, "host                                      : {}", display_str(&item.host));
+    outln!(out, "port                                      : {}", item.port);
+    outln!(out, "name                                      : \"{}\"", display_str(&item.display_name));
+    outln!(out, "expiration-timeout                        : {}", item.expiration_timeout);
+    outln!(out, "lifetime-limit                            : {}", item.lifetime_limit);
+    outln!(out, "max-memory-size                           : {}", item.max_memory_size);
+    outln!(out, "max-memory-time-limit                     : {}", item.max_memory_time_limit);
+    outln!(out, "security-level                            : {}", item.security_level);
+    outln!(out, "session-fault-tolerance-level             : {}", item.session_fault_tolerance_level);
+    outln!(out, "load-balancing-mode                       : {}", load_balancing_mode_name(item.load_balancing_mode));
+    outln!(out, "errors-count-threshold                    : {}", item.errors_count_threshold);
+    outln!(out, "kill-problem-processes                    : {}", item.kill_problem_processes);
+    outln!(out, "kill-by-memory-with-dump                  : {}", item.kill_by_memory_with_dump);
+    outln!(out, "allow-access-right-audit-events-recording : {}", item.allow_access_right_audit_events_recording);
+    outln!(out, "ping-period                               : {}", item.ping_period);
+    outln!(out, "ping-timeout                              : {}", item.ping_timeout);
+    outln!(out, "restart-schedule                          : \"{}\"", display_str(&item.restart_schedule_cron));
+}
+
+impl Display for ClusterInfoDisplay<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut out = String::new();
+        render_cluster_info(&mut out, self.item);
+        write_trimmed(f, &out)
+    }
+}
+
+pub struct ClusterListDisplay<'a> {
+    items: &'a [ClusterRecord],
+}
+
+pub fn cluster_list(items: &[ClusterRecord]) -> ClusterListDisplay<'_> {
+    ClusterListDisplay { items }
+}
+
+impl Display for ClusterListDisplay<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut out = String::new();
+        for (idx, item) in self.items.iter().enumerate() {
+            if idx > 0 {
+                out.push('\n');
+            }
+            render_cluster_info(&mut out, item);
+        }
+        write_trimmed(f, &out)
+    }
+}
+
+pub struct AgentVersionDisplay<'a> {
+    item: &'a str,
+}
+
+pub fn agent_version(item: &str) -> AgentVersionDisplay<'_> {
+    AgentVersionDisplay { item }
+}
+
+fn render_agent_version_info(out: &mut String, item: &str) {
+    outln!(out, "version: {}", item);
+}
+
+impl Display for AgentVersionDisplay<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut out = String::new();
+        render_agent_version_info(&mut out, self.item);
+        write_trimmed(f, &out)
+    }
+}
+
 pub struct SessionInfoDisplay<'a> {
     item: &'a SessionRecord,
 }

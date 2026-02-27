@@ -686,8 +686,8 @@ fn render_cluster_info(out: &mut String, item: &ClusterRecord) {
     if let Some(value) = item.ping_timeout {
         outln!(out, "ping-timeout                             : {}", value);
     }
-    if let Some(value) = item.restart_schedule_cron {
-        outln!(out, "restart-schedule                         : \"{}\"", display_str(&value));
+    if let Some(value) = item.restart_schedule_cron.as_ref() {
+        outln!(out, "restart-schedule                         : \"{}\"", display_str(value));
     }
 }
 

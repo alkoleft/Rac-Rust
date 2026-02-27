@@ -29,7 +29,6 @@ pub struct ConnectionRecord {
 
 impl ConnectionRecord {
     pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
-        let _ = protocol_version;
         let connection = cursor.take_uuid()?;
         let application = cursor.take_str8()?;
         let blocked_by_ls = cursor.take_u32_be()?;

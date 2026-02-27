@@ -456,15 +456,23 @@ def build_fmt_and_args(line: LineSpec, label_align: Optional[int]) -> tuple[str,
     value = line.value or ""
     format_name = (line.format_name or "raw").strip()
 
+    use_direct = bool(line.optional and value == (line.optional.var if line.optional else ""))
+
     if format_name == "raw":
         fmt = "{}"
         args = [value]
     elif format_name == "display_str":
         fmt = "{}"
-        args = [f"display_str(&{value})"]
+        if use_direct:
+            args = [f"display_str({value})"]
+        else:
+            args = [f"display_str(&{value})"]
     elif format_name == "uuid":
         fmt = "{}"
-        args = [f"format_uuid(&{value})"]
+        if use_direct:
+            args = [f"format_uuid({value})"]
+        else:
+            args = [f"format_uuid(&{value})"]
     elif format_name == "yes_no":
         fmt = "{}"
         args = [f"yes_no({value})"]
@@ -473,7 +481,10 @@ def build_fmt_and_args(line: LineSpec, label_align: Optional[int]) -> tuple[str,
         args = [value]
     elif format_name == "quoted_display":
         fmt = "\"{}\""
-        args = [f"display_str(&{value})"]
+        if use_direct:
+            args = [f"display_str({value})"]
+        else:
+            args = [f"display_str(&{value})"]
     elif format_name == "float3":
         fmt = "{:.3}"
         args = [value]

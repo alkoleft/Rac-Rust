@@ -245,7 +245,7 @@ lines = [
   { label = "allow-access-right-audit-events-recording", value = "value", optional = "item.allow_access_right_audit_events_recording" },
   { label = "ping-period", value = "value", optional = "item.ping_period" },
   { label = "ping-timeout", value = "value", optional = "item.ping_timeout" },
-  { label = "restart-schedule", value = "value", format = "quoted_display", optional = "item.restart_schedule_cron" },
+  { label = "restart-schedule", value = "value", format = "quoted_display", optional = "item.restart_schedule_cron.as_ref()" },
 ]
 
 [record.agent_version]

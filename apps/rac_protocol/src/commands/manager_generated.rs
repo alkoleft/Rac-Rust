@@ -22,7 +22,6 @@ pub struct ManagerRecord {
 
 impl ManagerRecord {
     pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
-        let _ = protocol_version;
         let manager = cursor.take_uuid()?;
         let descr = cursor.take_str8()?;
         let host = cursor.take_str8()?;

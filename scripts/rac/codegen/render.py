@@ -70,7 +70,6 @@ def generate(
         lines.append(
             "    pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {"
         )
-        lines.append("        let _ = protocol_version;")
 
         computed_lines: List[str] = []
         var_map: Dict[str, str] = {}

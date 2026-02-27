@@ -32,7 +32,6 @@ pub struct SessionLicense {
 
 impl SessionLicense {
     pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
-        let _ = protocol_version;
         let file_name = cursor.take_str8()?;
         let full_presentation = cursor.take_str8()?;
         let issued_by_server = cursor.take_u8()? != 0;
@@ -118,7 +117,6 @@ pub struct SessionRecord {
 
 impl SessionRecord {
     pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
-        let _ = protocol_version;
         let session = cursor.take_uuid()?;
         let app_id = cursor.take_str8()?;
         let blocked_by_dbms = cursor.take_u32_be()?;

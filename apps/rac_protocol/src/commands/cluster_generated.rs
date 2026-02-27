@@ -26,7 +26,6 @@ pub struct ClusterAdminRecord {
 
 impl ClusterAdminRecord {
     pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
-        let _ = protocol_version;
         let name = cursor.take_str8()?;
         let unknown_tag = cursor.take_u8()?;
         let unknown_flags = cursor.take_u32_be()?;
@@ -69,7 +68,6 @@ pub struct ClusterRecord {
 
 impl ClusterRecord {
     pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
-        let _ = protocol_version;
         let uuid = cursor.take_uuid()?;
         let expiration_timeout = cursor.take_u32_be()?;
         let host = cursor.take_str8()?;

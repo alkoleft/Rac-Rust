@@ -41,7 +41,6 @@ pub struct ServerRecord {
 
 impl ServerRecord {
     pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
-        let _ = protocol_version;
         let server = cursor.take_uuid()?;
         let agent_host = cursor.take_str8()?;
         let agent_port = cursor.take_u16_be()?;

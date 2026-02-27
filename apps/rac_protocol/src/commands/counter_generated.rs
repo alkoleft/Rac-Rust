@@ -42,7 +42,6 @@ pub struct CounterRecord {
 
 impl CounterRecord {
     pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
-        let _ = protocol_version;
         let name = cursor.take_str8()?;
         let collection_time = cursor.take_u64_be()?;
         let group = cursor.take_u8()?;
@@ -102,7 +101,6 @@ pub struct CounterValuesRecord {
 
 impl CounterValuesRecord {
     pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
-        let _ = protocol_version;
         let object = cursor.take_str8()?;
         let collection_time = cursor.take_u64_be()?;
         let duration = cursor.take_u64_be()?;

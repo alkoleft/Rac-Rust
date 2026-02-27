@@ -29,7 +29,6 @@ pub struct ProcessLicense {
 
 impl ProcessLicense {
     pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
-        let _ = protocol_version;
         let __gap_license_0 = cursor.take_u8()?;
         let file_name = cursor.take_str8()?;
         let full_presentation = {
@@ -93,7 +92,6 @@ pub struct ProcessRecord {
 
 impl ProcessRecord {
     pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
-        let _ = protocol_version;
         let process = cursor.take_uuid()?;
         let __gap_0 = cursor.take_bytes(8)?;
         let avg_call_time = cursor.take_f64_be()?;

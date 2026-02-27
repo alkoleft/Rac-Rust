@@ -30,7 +30,6 @@ pub struct ServiceSettingRecord {
 
 impl ServiceSettingRecord {
     pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
-        let _ = protocol_version;
         let setting = cursor.take_uuid()?;
         let service_name = cursor.take_str8()?;
         let infobase_name = cursor.take_str8()?;
@@ -58,7 +57,6 @@ pub struct ServiceSettingTransferDataDirRecord {
 
 impl ServiceSettingTransferDataDirRecord {
     pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
-        let _ = protocol_version;
         let service_name = cursor.take_str8()?;
         let user = cursor.take_str8()?;
         let _source_dir_len = cursor.take_u8()?;
@@ -93,7 +91,6 @@ pub struct ServiceSettingIdRecord {
 
 impl ServiceSettingIdRecord {
     pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
-        let _ = protocol_version;
         let setting = cursor.take_uuid()?;
         Ok(Self {
             setting,

@@ -29,7 +29,6 @@ pub struct RuleRecord {
 
 impl RuleRecord {
     pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
-        let _ = protocol_version;
         let rule = cursor.take_uuid()?;
         let object_type = cursor.take_u32_be()?;
         let infobase_name = cursor.take_str8()?;
@@ -54,7 +53,6 @@ pub struct RuleIdRecord {
 
 impl RuleIdRecord {
     pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
-        let _ = protocol_version;
         let rule = cursor.take_uuid()?;
         Ok(Self {
             rule,

@@ -5,9 +5,10 @@ use serde::Serialize;
 use rac_protocol::commands::{
     AgentAdminRecord, ClusterAdminRecord, ClusterRecord, ConnectionRecord, CounterRecord,
     CounterValuesRecord, InfobaseSummary, LimitRecord, LockRecordRaw, ManagerRecord,
-    ProcessLicense, ProcessRecord, RuleInsertResp, RuleRecord, RuleUpdateResp, ServerRecord,
-    ServiceSettingInsertResp, ServiceSettingRecord, ServiceSettingTransferDataDirRecord,
-    ServiceSettingUpdateResp, SessionLicense, SessionRecord,
+    ProcessLicense, ProcessRecord, ProfileRecord, RuleInsertResp, RuleRecord, RuleUpdateResp,
+    ServerRecord, ServiceSettingInsertResp, ServiceSettingRecord,
+    ServiceSettingTransferDataDirRecord, ServiceSettingUpdateResp, SessionLicense,
+    SessionRecord,
 };
 use rac_protocol::rpc::AckResponse;
 use rac_protocol::rac_wire::format_uuid;
@@ -111,6 +112,14 @@ pub struct ProcessInfoLicensesDisplay<'a> {
 
 pub fn process_info_licenses(item: &ProcessRecord) -> ProcessInfoLicensesDisplay<'_> {
     ProcessInfoLicensesDisplay { item }
+}
+
+pub struct ProfileListDisplay<'a> {
+    items: &'a [ProfileRecord],
+}
+
+pub fn profile_list(items: &[ProfileRecord]) -> ProfileListDisplay<'_> {
+    ProfileListDisplay { items }
 }
 
 pub struct ServiceSettingInsertDisplay<'a> {
@@ -399,6 +408,24 @@ impl Display for ProcessInfoLicensesDisplay<'_> {
     }
 }
 
+impl Display for ProfileListDisplay<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let out = list_to_string("profiles", self.items, 5, MoreLabel::Default, |out, _idx, item| {
+            outln!(
+                out,
+                "- {} ({}), config: {}, priv: {}, crypto: {}, right-extension: {}",
+                display_str(&item.name),
+                display_str(&item.descr),
+                yes_no_u8(item.config),
+                yes_no_u8(item.privileged_mode),
+                yes_no_u8(item.crypto),
+                yes_no_u8(item.right_extension),
+            );
+        });
+        write_trimmed(f, &out)
+    }
+}
+
 fn load_balancing_mode_name(value: u32) -> &'static str {
     match value {
         1 => "memory",
@@ -469,6 +496,10 @@ fn append_license_prefixed(out: &mut String, license: &SessionLicense, prefix: &
 
 fn yes_no(value: bool) -> &'static str {
     if value { "yes" } else { "no" }
+}
+
+fn yes_no_u8(value: u8) -> &'static str {
+    if value == 0 { "no" } else { "yes" }
 }
 
 fn using_label(value: u32) -> String {

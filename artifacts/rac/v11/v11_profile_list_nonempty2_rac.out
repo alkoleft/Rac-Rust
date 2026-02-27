@@ -1,0 +1,72 @@
+name                                : codex_prof_all_yes
+descr                               : codex_all_yes
+config                              : yes
+priv                                : yes
+directory                           : list
+com                                 : list
+addin                               : list
+module                              : list
+app                                 : list
+inet                                : list
+crypto                              : yes
+right-extension                     : yes
+right-extension-definition-roles    : role3;role4
+all-modules-extension               : yes
+modules-available-for-extension     : mod1;mod2
+modules-not-available-for-extension : mod3;mod4
+privileged-mode-roles               : role1;role2
+
+name                                : codex_prof_all_no
+descr                               : codex_all_no
+config                              : no
+priv                                : no
+directory                           : list
+com                                 : list
+addin                               : list
+module                              : list
+app                                 : list
+inet                                : list
+crypto                              : no
+right-extension                     : no
+right-extension-definition-roles    : 
+all-modules-extension               : no
+modules-available-for-extension     : 
+modules-not-available-for-extension : 
+privileged-mode-roles               : 
+
+name                                : codex_prof_mixed
+descr                               : codex_mixed
+config                              : yes
+priv                                : yes
+directory                           : list
+com                                 : list
+addin                               : list
+module                              : list
+app                                 : list
+inet                                : list
+crypto                              : no
+right-extension                     : yes
+right-extension-definition-roles    : role5
+all-modules-extension               : no
+modules-available-for-extension     : modX
+modules-not-available-for-extension : modY;modZ
+privileged-mode-roles               : role1
+
+name                                : codex_prof_cfg_no
+descr                               : codex_cfg_no
+config                              : no
+priv                                : yes
+directory                           : list
+com                                 : list
+addin                               : list
+module                              : list
+app                                 : list
+inet                                : list
+crypto                              : yes
+right-extension                     : no
+right-extension-definition-roles    : 
+all-modules-extension               : no
+modules-available-for-extension     : 
+modules-not-available-for-extension : 
+privileged-mode-roles               : 
+

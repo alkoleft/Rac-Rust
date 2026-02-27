@@ -52,7 +52,9 @@ pub use self::manager::{
 pub use self::process::{
     process_info, process_list, ProcessInfoResp, ProcessLicense, ProcessListResp, ProcessRecord,
 };
-pub use self::profile::{profile_list, ProfileListResp};
+pub use self::profile::{
+    profile_list, profile_update, ProfileListResp, ProfileRecord, ProfileUpdateRpc,
+};
 pub use self::rule::{
     rule_apply,
     rule_info,

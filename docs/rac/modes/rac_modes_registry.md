@@ -10,7 +10,7 @@ Tracks per-mode documentation coverage. "Processed" means a mode has a dedicated
 |  |  |  | `list` | yes | yes | - |
 |  |  |  | `info` | yes | yes | - |
 |  |  |  | `insert` | - | - | - |
-|  |  |  | `update` | - | - | - |
+|  |  |  | `update` | yes | - | req `0x5b`, resp ack |
 |  |  |  | `remove` | - | - | - |
 | `manager` | `docs/rac/modes/rac_mode_manager.md` | - | `list` | yes | yes | - |
 |  |  |  | `info` | yes | yes | - |

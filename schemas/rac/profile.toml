@@ -1,7 +1,23 @@
 [record.ProfileRecord]
 derive = ["Debug", "Serialize", "Clone"]
 fields = [
-  { name = "profile", type = "uuid", version = "11.0" },
+  { name = "name", type = "str8", version = "11.0" },
+  { name = "descr", type = "str8", version = "11.0" },
+  { name = "directory_access", type = "u8", version = "11.0" },
+  { name = "com_access", type = "u8", version = "11.0" },
+  { name = "addin_access", type = "u8", version = "11.0" },
+  { name = "module_access", type = "u8", version = "11.0" },
+  { name = "app_access", type = "u8", version = "11.0" },
+  { name = "config", type = "u8", version = "11.0" },
+  { name = "privileged_mode", type = "u8", version = "11.0" },
+  { name = "inet_access", type = "u8", version = "11.0" },
+  { name = "crypto", type = "u8", version = "11.0" },
+  { name = "right_extension", type = "u8", version = "11.0" },
+  { name = "right_extension_definition_roles", type = "str8", version = "11.0" },
+  { name = "all_modules_extension", type = "u8", version = "11.0" },
+  { name = "modules_available_for_extension", type = "str8", version = "11.0" },
+  { name = "modules_not_available_for_extension", type = "str8", version = "11.0" },
+  { name = "privileged_mode_roles", type = "str8", version = "11.0" },
 ]
 
 [rpc.ProfileList]
@@ -16,8 +32,53 @@ method_resp = 0x5a
 requires_cluster_context = true
 requires_infobase_context = false
 
+[rpc.ProfileUpdate]
+response = "AckResponse"
+derive = ["Debug", "Clone"]
+fields = [
+  { name = "cluster", type = "uuid", version = "11.0" },
+  { name = "name", type = "str8", version = "11.0" },
+  { name = "descr", type = "str8", version = "11.0" },
+  { name = "directory_access", type = "u8", version = "11.0" },
+  { name = "com_access", type = "u8", version = "11.0" },
+  { name = "addin_access", type = "u8", version = "11.0" },
+  { name = "module_access", type = "u8", version = "11.0" },
+  { name = "app_access", type = "u8", version = "11.0" },
+  { name = "config", type = "u8", version = "11.0" },
+  { name = "privileged_mode", type = "u8", version = "11.0" },
+  { name = "inet_access", type = "u8", version = "11.0" },
+  { name = "crypto", type = "u8", version = "11.0" },
+  { name = "right_extension", type = "u8", version = "11.0" },
+  { name = "right_extension_definition_roles", type = "str8", version = "11.0" },
+  { name = "all_modules_extension", type = "u8", version = "11.0" },
+  { name = "modules_available_for_extension", type = "str8", version = "11.0" },
+  { name = "modules_not_available_for_extension", type = "str8", version = "11.0" },
+  { name = "privileged_mode_roles", type = "str8", version = "11.0" },
+]
+version = "11.0"
+method_req = 0x5b
+requires_cluster_context = true
+requires_infobase_context = false
+
 [response.ProfileList]
-body = { type = "list_u8", item = "ProfileRecord", field = "profiles" }
+body = { type = "list_u8", item = "ProfileRecord", field = "profiles", struct = true }
 tests = [
   { name = "profile_list_response_empty_hex", hex_path = "../../../../artifacts/rac/profile_list_response.hex", expect_len = 0 },
+  { name = "profile_list_response_nonempty_hex", hex_path = "../../../../artifacts/rac/v11/v11_profile_list_nonempty2_response.hex", expect_len = 4, asserts = [
+    { index = 0, field = "name", value = "codex_prof_all_yes" },
+    { index = 0, field = "config", value = 1 },
+    { index = 0, field = "privileged_mode", value = 1 },
+    { index = 0, field = "crypto", value = 1 },
+    { index = 0, field = "right_extension", value = 1 },
+    { index = 0, field = "right_extension_definition_roles", value = "role3;role4" },
+    { index = 0, field = "all_modules_extension", value = 1 },
+    { index = 0, field = "modules_available_for_extension", value = "mod1;mod2" },
+    { index = 0, field = "modules_not_available_for_extension", value = "mod3;mod4" },
+    { index = 0, field = "privileged_mode_roles", value = "role1;role2" },
+    { index = 3, field = "name", value = "codex_prof_cfg_no" },
+    { index = 3, field = "config", value = 0 },
+    { index = 3, field = "privileged_mode", value = 1 },
+    { index = 3, field = "crypto", value = 1 },
+    { index = 3, field = "right_extension", value = 0 },
+  ] },
 ]

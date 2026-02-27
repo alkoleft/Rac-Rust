@@ -12,7 +12,7 @@ pub fn run(json: bool, cfg: &ClientConfig, command: ProfileCmd) -> Result<()> {
             let cluster = parse_uuid_arg(&cluster)?;
             let mut client = RacClient::connect(&addr, cfg.clone())?;
             let resp = profile_list(&mut client, cluster)?;
-            console::output(json, &resp, console::uuid_list("profiles", &resp.profiles));
+            console::output(json, &resp, console::profile_list(&resp.profiles));
             client.close()?;
         }
     }

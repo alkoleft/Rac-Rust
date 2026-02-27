@@ -29,11 +29,7 @@ macro_rules! opt_field {
 }
 
 fn display_str(value: &str) -> &str {
-    if value.is_empty() {
-        "---"
-    } else {
-        value
-    }
+    value
 }
 
 fn render_ack(f: &mut fmt::Formatter<'_>, label: &str, acknowledged: bool) -> fmt::Result {

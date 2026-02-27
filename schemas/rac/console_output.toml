@@ -92,7 +92,7 @@ type = "LockRecordRaw"
 list_label = "locks"
 lines = [
   { label = "connection", value = "connection", format = "uuid" },
-  { label = "descr", value = "item.descr.descr", format = "display_str" },
+  { label = "descr", value = "item.descr.descr" },
   { label = "descr-flag", value = "flag", optional = { var = "flag", expr = "item.descr.descr_flag" } },
   { label = "locked-at", value = "locked_at" },
   { label = "session", value = "session", format = "uuid" },

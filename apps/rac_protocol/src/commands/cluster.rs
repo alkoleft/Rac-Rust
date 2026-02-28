@@ -158,7 +158,7 @@ fn parse_cluster_info_body(
         return Err(RacError::Decode("cluster info empty body"));
     }
     match protocol_version {
-        ProtocolVersion::V11_0 => generated::parse_cluster_info_body(body, 0),
+        ProtocolVersion::V11_0 => generated::parse_cluster_info_body(body, 0, protocol_version),
         ProtocolVersion::V16_0 => {
             let mut cursor = RecordCursor::new(body);
             decode_cluster_record(&mut cursor, protocol_version)

@@ -22,7 +22,7 @@ pub struct InfobaseSummary {
 }
 
 impl InfobaseSummary {
-    pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
+    pub fn decode(cursor: &mut RecordCursor<'_>, _: ProtocolVersion) -> Result<Self> {
         let infobase = cursor.take_uuid()?;
         let descr = {
             let first = cursor.take_u8()? as usize;
@@ -69,7 +69,7 @@ pub struct InfobaseInfoRecord {
 }
 
 impl InfobaseInfoRecord {
-    pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
+    pub fn decode(cursor: &mut RecordCursor<'_>, _: ProtocolVersion) -> Result<Self> {
         let infobase = cursor.take_uuid()?;
         let tag = cursor.take_u8()?;
         let unknown_u32_0 = cursor.take_u32_be()?;

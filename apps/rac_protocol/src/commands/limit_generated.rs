@@ -34,7 +34,7 @@ pub struct LimitRecord {
 }
 
 impl LimitRecord {
-    pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
+    pub fn decode(cursor: &mut RecordCursor<'_>, _: ProtocolVersion) -> Result<Self> {
         let name = cursor.take_str8()?;
         let counter = cursor.take_str8()?;
         let action = cursor.take_u8()?;

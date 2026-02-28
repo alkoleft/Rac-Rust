@@ -55,24 +55,6 @@ where
     }
 }
 
-pub struct UuidListDisplay<'a> {
-    label: &'a str,
-    items: &'a [Uuid16],
-}
-
-pub fn uuid_list<'a>(label: &'a str, items: &'a [Uuid16]) -> UuidListDisplay<'a> {
-    UuidListDisplay { label, items }
-}
-
-impl Display for UuidListDisplay<'_> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let out = list_to_string(self.label, self.items, 5, MoreLabel::Default, |out, _idx, uuid| {
-            let _ = writeln!(out, "- {}", format_uuid(uuid));
-        });
-        write_trimmed(f, &out)
-    }
-}
-
 pub struct InfoDisplay<'a> {
     label: &'a str,
     uuid: &'a Uuid16,

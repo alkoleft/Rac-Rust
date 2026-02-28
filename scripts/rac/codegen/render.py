@@ -52,6 +52,11 @@ def generate(
 
     for record in records:
         min_version = min(field.version.start for field in record.fields) if record.fields else None
+        protocol_param = (
+            "protocol_version"
+            if record_uses_protocol_version(record, min_version)
+            else "_"
+        )
         derive = ", ".join(record.derives)
         lines.append(f"#[derive({derive})]")
         lines.append(f"pub struct {record.name} {{")
@@ -68,7 +73,7 @@ def generate(
         lines.append("")
         lines.append(f"impl {record.name} {{")
         lines.append(
-            "    pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {"
+            f"    pub fn decode(cursor: &mut RecordCursor<'_>, {protocol_param}: ProtocolVersion) -> Result<Self> {{"
         )
 
         computed_lines: List[str] = []
@@ -216,6 +221,26 @@ def emit_decode_option(lines: List[str], expr: List[str], indent: str) -> None:
     last = expr[-1].rstrip(";")
     lines.append(f"{indent}    {last}")
     lines.append(f"{indent}}})")
+
+
+def record_uses_protocol_version(record: RecordSpec, min_version: Optional[Version]) -> bool:
+    var_map: Dict[str, str] = {}
+    for field in record.fields:
+        guard = render_version_guard(field.version, min_version, "protocol_version")
+        if guard:
+            return True
+        if field.computed:
+            if field.source and "protocol_version" in field.source:
+                return True
+            continue
+        var_name = field.name
+        if field.skip:
+            var_name = f"_{field.name}"
+        var_map[field.name] = var_name
+        expr = decode_expr(field, var_map, "protocol_version")
+        if any("protocol_version" in step for step in expr):
+            return True
+    return False
 
 
 def generate_response_parsers(responses: List[ResponseSpec]) -> List[str]:

@@ -19,7 +19,7 @@ pub struct LockRecordRaw {
 }
 
 impl LockRecordRaw {
-    pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
+    pub fn decode(cursor: &mut RecordCursor<'_>, _: ProtocolVersion) -> Result<Self> {
         let connection = cursor.take_uuid()?;
         let descr = {
             let descr_len = cursor.take_u8()? as usize;

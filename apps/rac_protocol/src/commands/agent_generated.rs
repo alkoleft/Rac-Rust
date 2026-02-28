@@ -22,7 +22,7 @@ pub struct AgentAdminRecord {
 }
 
 impl AgentAdminRecord {
-    pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
+    pub fn decode(cursor: &mut RecordCursor<'_>, _: ProtocolVersion) -> Result<Self> {
         let name = cursor.take_str8()?;
         let unknown_tag = cursor.take_u8()?;
         let unknown_flags = cursor.take_u32_be()?;
@@ -46,7 +46,7 @@ pub struct AgentVersionRecord {
 }
 
 impl AgentVersionRecord {
-    pub fn decode(cursor: &mut RecordCursor<'_>, protocol_version: ProtocolVersion) -> Result<Self> {
+    pub fn decode(cursor: &mut RecordCursor<'_>, _: ProtocolVersion) -> Result<Self> {
         let version = cursor.take_str8()?;
         Ok(Self {
             version,

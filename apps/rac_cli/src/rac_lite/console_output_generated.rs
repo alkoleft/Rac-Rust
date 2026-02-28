@@ -34,7 +34,7 @@ pub fn infobase_summary_list(items: &[InfobaseSummary]) -> InfobaseSummaryListDi
 impl Display for InfobaseSummaryListDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let out = list_to_string("infobases", self.items, 5, MoreLabel::Default, |out, _idx, item| {
-            render_infobase_summary_info(out, item);
+            outln!(out, "{}", infobase_summary_info(item));
         });
         write_trimmed(f, &out)
     }
@@ -79,7 +79,7 @@ pub fn connection_list(items: &[ConnectionRecord]) -> ConnectionListDisplay<'_> 
 impl Display for ConnectionListDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let out = list_to_string("connections", self.items, 5, MoreLabel::Default, |out, _idx, item| {
-            render_connection_info(out, item);
+            outln!(out, "{}", connection_info(item));
         });
         write_trimmed(f, &out)
     }
@@ -121,7 +121,7 @@ pub fn manager_list(items: &[ManagerRecord]) -> ManagerListDisplay<'_> {
 impl Display for ManagerListDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let out = list_to_string("managers", self.items, 5, MoreLabel::Default, |out, _idx, item| {
-            render_manager_info(out, item);
+            outln!(out, "{}", manager_info(item));
         });
         write_trimmed(f, &out)
     }
@@ -173,7 +173,7 @@ pub fn server_list(items: &[ServerRecord]) -> ServerListDisplay<'_> {
 impl Display for ServerListDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let out = list_to_string("servers", self.items, 5, MoreLabel::Default, |out, _idx, item| {
-            render_server_info(out, item);
+            outln!(out, "{}", server_info(item));
         });
         write_trimmed(f, &out)
     }
@@ -229,7 +229,7 @@ pub fn process_list(items: &[ProcessRecord]) -> ProcessListDisplay<'_> {
 impl Display for ProcessListDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let out = list_to_string("processes", self.items, 5, MoreLabel::Default, |out, _idx, item| {
-            render_process_info(out, item);
+            outln!(out, "{}", process_info(item));
         });
         write_trimmed(f, &out)
     }
@@ -245,7 +245,7 @@ pub fn lock_info(item: &LockRecordRaw) -> LockInfoDisplay<'_> {
 
 fn render_lock_info(out: &mut String, item: &LockRecordRaw) {
     outln!(out, "connection: {}", format_uuid(&item.connection));
-    outln!(out, "descr: {}", display_str(&item.descr.descr));
+    outln!(out, "descr: {}", item.descr.descr);
     if let Some(flag) = item.descr.descr_flag {
         outln!(out, "descr-flag: {}", flag);
     }
@@ -273,7 +273,7 @@ pub fn lock_list(items: &[LockRecordRaw]) -> LockListDisplay<'_> {
 impl Display for LockListDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let out = list_to_string("locks", self.items, 5, MoreLabel::Default, |out, _idx, item| {
-            render_lock_info(out, item);
+            outln!(out, "{}", lock_info(item));
         });
         write_trimmed(f, &out)
     }
@@ -315,7 +315,7 @@ pub fn rule_list(items: &[RuleRecord]) -> RuleListDisplay<'_> {
 impl Display for RuleListDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let out = list_to_string("rules", self.items, 5, MoreLabel::Default, |out, _idx, item| {
-            render_rule_info(out, item);
+            outln!(out, "{}", rule_info(item));
         });
         write_trimmed(f, &out)
     }
@@ -367,7 +367,7 @@ pub fn limit_list(items: &[LimitRecord]) -> LimitListDisplay<'_> {
 impl Display for LimitListDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let out = list_to_string("limits", self.items, 5, MoreLabel::Default, |out, _idx, item| {
-            render_limit_info(out, item);
+            outln!(out, "{}", limit_info(item));
         });
         write_trimmed(f, &out)
     }
@@ -408,7 +408,7 @@ pub fn service_setting_list(items: &[ServiceSettingRecord]) -> ServiceSettingLis
 impl Display for ServiceSettingListDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let out = list_to_string("service-settings", self.items, 5, MoreLabel::Default, |out, _idx, item| {
-            render_service_setting_info(out, item);
+            outln!(out, "{}", service_setting_info(item));
         });
         write_trimmed(f, &out)
     }
@@ -448,7 +448,7 @@ pub fn service_setting_get_data_dirs_for_transfer(items: &[ServiceSettingTransfe
 impl Display for ServiceSettingTransferDataDirsDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let out = list_to_string("service-data-dirs", self.items, 5, MoreLabel::Default, |out, _idx, item| {
-            render_service_setting_transfer_data_dir_info(out, item);
+            outln!(out, "{}", service_setting_transfer_data_dir_info(item));
         });
         write_trimmed(f, &out)
     }
@@ -501,7 +501,7 @@ pub fn counter_list(items: &[CounterRecord]) -> CounterListDisplay<'_> {
 impl Display for CounterListDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let out = list_to_string("counters", self.items, 5, MoreLabel::Default, |out, _idx, item| {
-            render_counter_info(out, item);
+            outln!(out, "{}", counter_info(item));
         });
         write_trimmed(f, &out)
     }
@@ -551,7 +551,7 @@ pub fn counter_values(items: &[CounterValuesRecord]) -> CounterValuesDisplay<'_>
 impl Display for CounterValuesDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let out = list_to_string("counter-values", self.items, 5, MoreLabel::Default, |out, _idx, item| {
-            render_counter_values_info(out, item);
+            outln!(out, "{}", counter_values_info(item));
         });
         write_trimmed(f, &out)
     }
@@ -568,7 +568,7 @@ pub fn counter_accumulated_values(items: &[CounterValuesRecord]) -> CounterAccum
 impl Display for CounterAccumulatedValuesDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let out = list_to_string("counter-accumulated-values", self.items, 5, MoreLabel::Default, |out, _idx, item| {
-            render_counter_values_info(out, item);
+            outln!(out, "{}", counter_values_info(item));
         });
         write_trimmed(f, &out)
     }
@@ -608,7 +608,7 @@ pub fn agent_admin_list(items: &[AgentAdminRecord]) -> AgentAdminListDisplay<'_>
 impl Display for AgentAdminListDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let out = list_to_string("agent-admins", self.items, 5, MoreLabel::Default, |out, _idx, item| {
-            render_agent_admin_info(out, item);
+            outln!(out, "{}", agent_admin_info(item));
         });
         write_trimmed(f, &out)
     }
@@ -648,7 +648,7 @@ pub fn cluster_admin_list(items: &[ClusterAdminRecord]) -> ClusterAdminListDispl
 impl Display for ClusterAdminListDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let out = list_to_string("cluster-admins", self.items, 5, MoreLabel::Default, |out, _idx, item| {
-            render_cluster_admin_info(out, item);
+            outln!(out, "{}", cluster_admin_info(item));
         });
         write_trimmed(f, &out)
     }
@@ -714,7 +714,7 @@ impl Display for ClusterListDisplay<'_> {
             if idx > 0 {
                 out.push('\n');
             }
-            render_cluster_info(&mut out, item);
+            outln!(&mut out, "{}", cluster_info(item));
         }
         write_trimmed(f, &out)
     }
@@ -789,7 +789,7 @@ pub fn session_list(items: &[SessionRecord]) -> SessionListDisplay<'_> {
 impl Display for SessionListDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let out = list_to_string("sessions", self.items, 5, MoreLabel::Default, |out, _idx, item| {
-            render_session_info(out, item);
+            outln!(out, "{}", session_info(item));
         });
         write_trimmed(f, &out)
     }

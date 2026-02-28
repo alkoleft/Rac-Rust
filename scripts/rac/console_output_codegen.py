@@ -576,14 +576,14 @@ def generate(records: List[RecordSpec], schema_path: Path) -> str:
                 out.append("            if idx > 0 {")
                 out.append("                out.push('\\n');")
                 out.append("            }")
-                out.append(f"            {render_fn}(&mut out, item);")
+                out.append(f"            outln!(&mut out, \"{{}}\", {info_fn}(item));")
                 out.append("        }")
                 out.append("        write_trimmed(f, &out)")
             else:
                 out.append(
                     f"        let out = list_to_string({rust_string_literal(list_spec.label)}, self.items, 5, MoreLabel::Default, |out, _idx, item| {{"
                 )
-                out.append(f"            {render_fn}(out, item);")
+                out.append(f"            outln!(out, \"{{}}\", {info_fn}(item));")
                 out.append("        });")
                 out.append("        write_trimmed(f, &out)")
             out.append("    }")

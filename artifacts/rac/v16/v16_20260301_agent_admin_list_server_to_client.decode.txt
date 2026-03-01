@@ -1,0 +1,12 @@
+file=logs/session_1772400484_3943429_127_0_0_1_42132/server_to_client.stream.bin
+size=240
+frames=4
+frame=1 opcode=0x02 len=1 len_field_size=1
+  payload_hex=80
+frame=2 opcode=0x0c len=32 len_field_size=1
+  payload_hex=1876382e736572766963652e41646d696e2e436c75737465720431362e300180
+frame=3 opcode=0x0e len=4 len_field_size=1
+  payload_hex=01000000
+frame=4 opcode=0x0e len=194 len_field_size=2
+  payload_hex=0100000101030561646d696e10d09ed0bfd0b8d181d0b0d0bdd0b8d0b503efbfbd0100000661646d696e3232d09ed0bfd0b8d181d0b0d0bdd0b8d0b520d0b0d183d182d0b5d0bdd182d0b8d184d0b8d0bad0b0d186d0b8d18f20d09ed0a103efbfbd000104616c6b6f0661646d696e334401d09ed0bfd0b8d181d0b0d0bdd0b8d0b520d0b0d183d182d0b5d0bdd182d0b8d184d0b8d0bad0b0d186d0b8d18f20d09ed0a120d0b820d0bfd0b0d180d0bed0bbd18cd18f03efbfbd010105616c6b6f32
+  rpc_method_id=0x1 (1)

@@ -11,6 +11,10 @@ Scope: RAC Agent mode using v16 captures with `--agent-user=admin --agent-pwd=pa
 - `artifacts/rac/v16/v16_20260226_053425_agent_version_client_to_server.decode.txt`
 - `artifacts/rac/v16/v16_20260226_053425_agent_version_server_to_client.decode.txt`
 - `artifacts/rac/v16/v16_20260226_053425_agent_admin_list_response.hex`
+- `artifacts/rac/v16/v16_20260301_agent_admin_list_client_to_server.decode.txt`
+- `artifacts/rac/v16/v16_20260301_agent_admin_list_server_to_client.decode.txt`
+- `artifacts/rac/v16/v16_20260301_agent_admin_list_response.hex`
+- `artifacts/rac/v16/v16_20260301_agent_admin_list_rac.out`
 
 ## Confirmed facts
 - Service negotiation opcode `0x0b` with payload `v8.service.Admin.Cluster` + version `16.0` occurs before each command.
@@ -28,8 +32,8 @@ Offsets from record start, derived from server response capture.
 | --- | --- | --- | --- | --- |
 | 0x00 | 1 | name_len | u8 | |
 | 0x01 | name_len | name | str8 | UTF-8 |
-| 0x01+name_len | 1 | descr_len | u8 | |
-| 0x02+name_len | descr_len | descr | str8 | UTF-8 |
+| 0x01+name_len | 1-2 | descr_len | u14 | length uses 1 byte for <64, 2 bytes otherwise |
+| 0x02+name_len | descr_len | descr | str_u14 | UTF-8 |
 | 0x02+name_len+descr_len | 4 | unknown_flags | u32_be | observed `03 ef bf bd` |
 | 0x06+name_len+descr_len | 1 | auth_tag | u8 | observed `0x01` |
 | 0x07+name_len+descr_len | 1 | auth_flags | u8 | `0x00` (pwd) / `0x01` (pwd|os) |
@@ -65,13 +69,12 @@ Offsets from method body start:
 
 ## Hypotheses
 - `unknown_flags` (`0x03efbfbd`) is a fixed marker for admin records in v16.0.
-- `auth_tag` is a fixed marker (`0x01`) for auth fields in v16.0.
+- `auth_tag` encodes presence of password auth: `0x01` when `pwd` is present, `0x00` for `os`-only (observed in 20260301 capture).
 
 ## Open questions
 - Does `unknown_flags` vary across versions or auth types?
-- Is `auth_tag` always `0x01` across v11/v16?
+- Is `auth_tag` always `0x01` when `pwd` is present across v11/v16?
 - Does `auth_flags` encode additional modes beyond pwd / pwd|os?
 
 ## Gap analysis (captures needed)
-- Capture `agent admin list` with `--auth=os` only and with non-empty `os-user`/`descr` to confirm `auth_flags` encoding.
 - Capture in v11 to confirm `unknown_flags` and `auth_tag` stability.

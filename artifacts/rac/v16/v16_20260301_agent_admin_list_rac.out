@@ -1,0 +1,15 @@
+name    : admin
+auth    : pwd
+os-user : 
+descr   : "Описание"
+
+name    : admin2
+auth    : os
+os-user : alko
+descr   : "Описание аутентификация ОС"
+
+name    : admin3
+auth    : pwd|os
+os-user : alko2
+descr   : "Описание аутентификация ОС и паролья"
+

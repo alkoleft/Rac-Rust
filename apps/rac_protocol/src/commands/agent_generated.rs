@@ -26,7 +26,13 @@ pub struct AgentAdminRecord {
 impl AgentAdminRecord {
     pub fn decode(cursor: &mut RecordCursor<'_>, _: ProtocolVersion) -> Result<Self> {
         let name = cursor.take_str8()?;
-        let descr = cursor.take_str8()?;
+        let descr = {
+            let b0 = cursor.take_u8()? as usize;
+            let b1 = cursor.take_u8()? as usize;
+            let len = (b0 & 0x3f) | (b1 << 6);
+            let bytes = cursor.take_bytes(len)?;
+            String::from_utf8_lossy(&bytes).to_string()
+        };
         let unknown_flags = cursor.take_u32_be()?;
         let auth_tag = cursor.take_u8()?;
         let auth_flags = cursor.take_u8()?;
@@ -319,6 +325,30 @@ mod tests {
         assert_eq!(items[2].descr, "Codex agent os");
         assert_eq!(items[2].auth_flags, 1);
         assert_eq!(items[2].os_user, "codex_os_user");
+    }
+
+    #[test]
+    fn agent_admin_list_response_20260301_hex() {
+        let hex = include_str!("../../../../artifacts/rac/v16/v16_20260301_agent_admin_list_response.hex");
+        let payload = decode_hex_str(hex);
+        let body = rpc_body(&payload).expect("rpc body");
+        let protocol_version = ProtocolVersion::V16_0;
+        let items = crate::commands::parse_list_u8(body, |cursor| AgentAdminRecord::decode(cursor, protocol_version)).expect("parse body");
+        assert_eq!(items.len(), 3);
+        assert_eq!(items[0].name, "admin");
+        assert_eq!(items[0].descr, "Описание");
+        assert_eq!(items[0].auth_tag, 1);
+        assert_eq!(items[0].auth_flags, 0);
+        assert_eq!(items[1].name, "admin2");
+        assert_eq!(items[1].descr, "Описание аутентификация ОС");
+        assert_eq!(items[1].auth_tag, 0);
+        assert_eq!(items[1].auth_flags, 1);
+        assert_eq!(items[1].os_user, "alko");
+        assert_eq!(items[2].name, "admin3");
+        assert_eq!(items[2].descr, "Описание аутентификация ОС и паролья");
+        assert_eq!(items[2].auth_tag, 1);
+        assert_eq!(items[2].auth_flags, 1);
+        assert_eq!(items[2].os_user, "alko2");
     }
 
 }

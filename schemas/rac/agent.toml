@@ -2,7 +2,7 @@
 derive = ["Debug", "Serialize", "Clone"]
 fields = [
   { name = "name", type = "str8", version = "11.0" },
-  { name = "descr", type = "str8", version = "11.0" },
+  { name = "descr", type = "str_u14", version = "11.0" },
   { name = "unknown_flags", type = "u32_be", version = "11.0" },
   { name = "auth_tag", type = "u8", version = "11.0" },
   { name = "auth_flags", type = "u8", version = "11.0" },
@@ -89,6 +89,21 @@ tests = [{ name = "agent_admin_list_response_hex", hex_path = "../../../../artif
   { index = 2, field = "descr", value = "Codex agent os" },
   { index = 2, field = "auth_flags", value = 0x01 },
   { index = 2, field = "os_user", value = "codex_os_user" },
+] }, { name = "agent_admin_list_response_20260301_hex", hex_path = "../../../../artifacts/rac/v16/v16_20260301_agent_admin_list_response.hex", expect_len = 3, asserts = [
+  { index = 0, field = "name", value = "admin" },
+  { index = 0, field = "descr", value = "Описание" },
+  { index = 0, field = "auth_tag", value = 0x01 },
+  { index = 0, field = "auth_flags", value = 0x00 },
+  { index = 1, field = "name", value = "admin2" },
+  { index = 1, field = "descr", value = "Описание аутентификация ОС" },
+  { index = 1, field = "auth_tag", value = 0x00 },
+  { index = 1, field = "auth_flags", value = 0x01 },
+  { index = 1, field = "os_user", value = "alko" },
+  { index = 2, field = "name", value = "admin3" },
+  { index = 2, field = "descr", value = "Описание аутентификация ОС и паролья" },
+  { index = 2, field = "auth_tag", value = 0x01 },
+  { index = 2, field = "auth_flags", value = 0x01 },
+  { index = 2, field = "os_user", value = "alko2" },
 ] }]
 
 [response.AgentVersion]

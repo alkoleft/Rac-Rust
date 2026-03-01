@@ -219,8 +219,16 @@ impl RacClient {
             .write_frame(self.protocol.opcode_rpc(), payload)?;
         self.transport.flush()?;
 
-        for _ in 0..3 {
-            let reply = self.transport.read_frame()?;
+        for _ in 0..6 {
+            let reply = match self.transport.read_frame() {
+                Ok(reply) => reply,
+                Err(err) => {
+                    if matches!(err.kind(), io::ErrorKind::WouldBlock | io::ErrorKind::TimedOut) {
+                        continue;
+                    }
+                    return Err(RacError::Io(err));
+                }
+            };
             if self.debug_raw {
                 log_frame("rpc-recv", &reply);
             }

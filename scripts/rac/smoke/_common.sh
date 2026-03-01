@@ -14,7 +14,7 @@ trim_val() {
 
 load_env() {
   if [[ -f "$ENV_FILE" ]]; then
-    while IFS= read -r line; do
+    while IFS= read -r line || [[ -n "$line" ]]; do
       [[ -z "$line" || "$line" == \#* ]] && continue
       key="$(trim_val "${line%%=*}")"
       val="$(trim_val "${line#*=}")"

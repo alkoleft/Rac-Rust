@@ -205,6 +205,7 @@ lines = [
 [record.agent_admin]
 type = "AgentAdminRecord"
 list_label = "agent-admins"
+list_style = "counted_all"
 lines = [
   { label = "name", value = "name" },
   { label = "auth", value = "auth_name(item.auth_pwd, item.auth_os)" },

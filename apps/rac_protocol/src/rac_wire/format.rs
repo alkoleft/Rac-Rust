@@ -33,6 +33,24 @@ pub fn encode_with_len_u8(payload: &[u8]) -> Result<Vec<u8>, WireError> {
     Ok(out)
 }
 
+pub fn encode_with_len_u14(payload: &[u8]) -> Result<Vec<u8>, WireError> {
+    if payload.len() > 0x3fff {
+        return Err(WireError::InvalidData("payload too long for u14 length"));
+    }
+    let mut out = Vec::with_capacity(2 + payload.len());
+    if payload.len() < 0x40 {
+        out.push(payload.len() as u8);
+    } else {
+        let len = payload.len();
+        let b0 = (len as u8 & 0x3f) | 0x40;
+        let b1 = (len >> 6) as u8;
+        out.push(b0);
+        out.push(b1);
+    }
+    out.extend_from_slice(payload);
+    Ok(out)
+}
+
 pub fn encode_rpc(method_id: u8, body: &[u8]) -> Vec<u8> {
     let mut out = Vec::with_capacity(5 + body.len());
     out.extend_from_slice(&[0x01, 0x00, 0x00, 0x01, method_id]);

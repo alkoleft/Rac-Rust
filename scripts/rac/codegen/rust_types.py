@@ -157,8 +157,12 @@ def decode_expr(
     if t == "str_u14":
         return [
             "let b0 = cursor.take_u8()? as usize;",
-            "let b1 = cursor.take_u8()? as usize;",
-            "let len = (b0 & 0x3f) | (b1 << 6);",
+            "let len = if (b0 & 0x40) != 0 {",
+            "    let b1 = cursor.take_u8()? as usize;",
+            "    (b0 & 0x3f) | (b1 << 6)",
+            "} else {",
+            "    b0",
+            "};",
             "let bytes = cursor.take_bytes(len)?;",
             "String::from_utf8_lossy(&bytes).to_string()",
         ]
@@ -383,6 +387,14 @@ def request_needs_encode_with_len_u8(requests: List[RequestSpec]) -> bool:
     return False
 
 
+def request_needs_encode_with_len_u14(requests: List[RequestSpec]) -> bool:
+    for req in requests:
+        for field in req.fields:
+            if field.type_name == "str_u14":
+                return True
+    return False
+
+
 def request_encode_expr(field: FieldSpec) -> List[str]:
     t = field.type_name
     if field.literal is not None:
@@ -398,6 +410,8 @@ def request_encode_expr(field: FieldSpec) -> List[str]:
         return [f"out.extend_from_slice(&self.{field.name});"]
     if t == "str8":
         return [f"out.extend_from_slice(&encode_with_len_u8(self.{field.name}.as_bytes())?);"]
+    if t == "str_u14":
+        return [f"out.extend_from_slice(&encode_with_len_u14(self.{field.name}.as_bytes())?);"]
     if t == "u8":
         return [f"out.push(self.{field.name});"]
     if t == "u16_be":
@@ -415,6 +429,8 @@ def request_uses(requests: List[RequestSpec]) -> List[str]:
     uses = ["use crate::error::Result;"]
     if request_needs_encode_with_len_u8(requests):
         uses.insert(0, "use crate::rac_wire::encode_with_len_u8;")
+    if request_needs_encode_with_len_u14(requests):
+        uses.insert(0, "use crate::rac_wire::encode_with_len_u14;")
     if request_needs_uuid(requests):
         uses.insert(0, "use crate::Uuid16;")
     if request_needs_serde(requests):

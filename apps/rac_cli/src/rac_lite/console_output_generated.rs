@@ -607,7 +607,7 @@ pub fn agent_admin_list(items: &[AgentAdminRecord]) -> AgentAdminListDisplay<'_>
 
 impl Display for AgentAdminListDisplay<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let out = list_to_string("agent-admins", self.items, 5, MoreLabel::Default, |out, _idx, item| {
+        let out = list_to_string("agent-admins", self.items, self.items.len(), MoreLabel::Default, |out, _idx, item| {
             outln!(out, "{}", agent_admin_info(item));
         });
         write_trimmed(f, &out)

@@ -709,11 +709,18 @@ def render_request(req: RequestSpec) -> List[str]:
     len_parts: List[str] = []
     for field in req.fields:
         guard = render_version_guard(field.version, None, "protocol_version")
-        len_expr = (
-            f"1 + self.{field.name}.len()"
-            if field.type_name == "str8"
-            else str(request_encoded_len(field))
-        )
+        if field.type_name == "str8":
+            len_expr = f"1 + self.{field.name}.len()"
+        elif field.type_name == "str_u14":
+            len_expr = (
+                f"if self.{field.name}.len() < 0x40 {{ "
+                f"1 + self.{field.name}.len() "
+                f"}} else {{ "
+                f"2 + self.{field.name}.len() "
+                f"}}"
+            )
+        else:
+            len_expr = str(request_encoded_len(field))
         if guard:
             len_parts.append(f"if {guard} {{ {len_expr} }} else {{ 0 }}")
         else:
@@ -753,11 +760,18 @@ def request_len_expr(req: RequestSpec, protocol_var: str) -> str:
     len_parts: List[str] = []
     for field in req.fields:
         guard = render_version_guard(field.version, None, protocol_var)
-        len_expr = (
-            f"1 + self.{field.name}.len()"
-            if field.type_name == "str8"
-            else str(request_encoded_len(field))
-        )
+        if field.type_name == "str8":
+            len_expr = f"1 + self.{field.name}.len()"
+        elif field.type_name == "str_u14":
+            len_expr = (
+                f"if self.{field.name}.len() < 0x40 {{ "
+                f"1 + self.{field.name}.len() "
+                f"}} else {{ "
+                f"2 + self.{field.name}.len() "
+                f"}}"
+            )
+        else:
+            len_expr = str(request_encoded_len(field))
         if guard:
             len_parts.append(f"if {guard} {{ {len_expr} }} else {{ 0 }}")
         else:

@@ -99,9 +99,11 @@ mod tests {
 
         assert_eq!(admins.len(), 1);
         assert_eq!(admins[0].name, "admin");
-        assert_eq!(admins[0].unknown_tag, 0);
-        assert_eq!(admins[0].unknown_flags, 0x03efbfbd);
-        assert_eq!(admins[0].unknown_tail, [0x01, 0x00, 0x00]);
+        assert_eq!(admins[0].descr, "");
+        assert_eq!(admins[0].record_marker, 0x03efbfbd);
+        assert_eq!(admins[0].auth_pwd, 1);
+        assert_eq!(admins[0].auth_os, 0);
+        assert_eq!(admins[0].os_user, "");
     }
 
     #[test]

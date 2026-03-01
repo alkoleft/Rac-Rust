@@ -3,6 +3,7 @@ use crate::protocol::ProtocolVersion;
 use crate::codec::RecordCursor;
 use crate::error::Result;
 use serde::Serialize;
+use crate::rac_wire::encode_with_len_u14;
 use crate::rac_wire::encode_with_len_u8;
 
 pub const METHOD_AGENT_AUTH_REQ: u8 = 0x08;
@@ -28,8 +29,12 @@ impl AgentAdminRecord {
         let name = cursor.take_str8()?;
         let descr = {
             let b0 = cursor.take_u8()? as usize;
-            let b1 = cursor.take_u8()? as usize;
-            let len = (b0 & 0x3f) | (b1 << 6);
+            let len = if (b0 & 0x40) != 0 {
+                let b1 = cursor.take_u8()? as usize;
+                (b0 & 0x3f) | (b1 << 6)
+            } else {
+                b0
+            };
             let bytes = cursor.take_bytes(len)?;
             String::from_utf8_lossy(&bytes).to_string()
         };
@@ -141,12 +146,12 @@ impl crate::rpc::Request for AgentAdminRegisterRpc {
         if !(protocol_version >= ProtocolVersion::V11_0) {
             return Err(RacError::Unsupported("rpc AgentAdminRegister unsupported for protocol"));
         }
-        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 1 + self.name.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.descr.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.pwd.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.os_user.len() } else { 0 });
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 1 + self.name.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { if self.descr.len() < 0x40 { 1 + self.descr.len() } else { 2 + self.descr.len() } } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.pwd.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.os_user.len() } else { 0 });
         if protocol_version >= ProtocolVersion::V11_0 {
             out.extend_from_slice(&encode_with_len_u8(self.name.as_bytes())?);
         }
         if protocol_version >= ProtocolVersion::V11_0 {
-            out.extend_from_slice(&encode_with_len_u8(self.descr.as_bytes())?);
+            out.extend_from_slice(&encode_with_len_u14(self.descr.as_bytes())?);
         }
         if protocol_version >= ProtocolVersion::V11_0 {
             out.extend_from_slice(&encode_with_len_u8(self.pwd.as_bytes())?);

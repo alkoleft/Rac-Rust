@@ -6,7 +6,7 @@ mod swp;
 mod types;
 
 pub use consts::*;
-pub use format::{encode_rpc, encode_varuint, encode_with_len, encode_with_len_u8};
+pub use format::{encode_rpc, encode_varuint, encode_with_len, encode_with_len_u14, encode_with_len_u8};
 pub use frame::{parse_frames, read_frame, write_frame, Frame};
 pub use rpc_header::decode_rpc_method;
 pub use swp::{parse_swp_init, SwpInit, SwpParam, SwpValue};

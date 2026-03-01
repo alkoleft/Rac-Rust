@@ -33,8 +33,12 @@ impl ProcessLicense {
         let file_name = cursor.take_str8()?;
         let full_presentation = {
             let b0 = cursor.take_u8()? as usize;
-            let b1 = cursor.take_u8()? as usize;
-            let len = (b0 & 0x3f) | (b1 << 6);
+            let len = if (b0 & 0x40) != 0 {
+                let b1 = cursor.take_u8()? as usize;
+                (b0 & 0x3f) | (b1 << 6)
+            } else {
+                b0
+            };
             let bytes = cursor.take_bytes(len)?;
             String::from_utf8_lossy(&bytes).to_string()
         };

@@ -580,8 +580,12 @@ def generate(records: List[RecordSpec], schema_path: Path) -> str:
                 out.append("        }")
                 out.append("        write_trimmed(f, &out)")
             else:
+                if list_spec.style == "counted_all":
+                    max_value = "self.items.len()"
+                else:
+                    max_value = "5"
                 out.append(
-                    f"        let out = list_to_string({rust_string_literal(list_spec.label)}, self.items, 5, MoreLabel::Default, |out, _idx, item| {{"
+                    f"        let out = list_to_string({rust_string_literal(list_spec.label)}, self.items, {max_value}, MoreLabel::Default, |out, _idx, item| {{"
                 )
                 out.append(f"            outln!(out, \"{{}}\", {info_fn}(item));")
                 out.append("        });")

@@ -40,7 +40,7 @@ response = "AckResponse"
 derive = ["Debug", "Clone"]
 fields = [
   { name = "name", type = "str8", version = "11.0" },
-  { name = "descr", type = "str8", version = "11.0" },
+  { name = "descr", type = "str_u14", version = "11.0" },
   { name = "pwd", type = "str8", version = "11.0" },
   { name = "auth_tag", type = "u8", version = "11.0" },
   { name = "auth_flags", type = "u8", version = "11.0" },

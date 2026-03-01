@@ -21,25 +21,35 @@ pub struct ClusterAdminRecord {
     pub name: String,
     pub descr: String,
     pub unknown_flags: u32,
-    pub auth_tag: u8,
-    pub auth_flags: u8,
+    pub auth_pwd: u8,
+    pub auth_os: u8,
     pub os_user: String,
 }
 
 impl ClusterAdminRecord {
     pub fn decode(cursor: &mut RecordCursor<'_>, _: ProtocolVersion) -> Result<Self> {
         let name = cursor.take_str8()?;
-        let descr = cursor.take_str8()?;
+        let descr = {
+            let b0 = cursor.take_u8()? as usize;
+            let len = if (b0 & 0x40) != 0 {
+                let b1 = cursor.take_u8()? as usize;
+                (b0 & 0x3f) | (b1 << 6)
+            } else {
+                b0
+            };
+            let bytes = cursor.take_bytes(len)?;
+            String::from_utf8_lossy(&bytes).to_string()
+        };
         let unknown_flags = cursor.take_u32_be()?;
-        let auth_tag = cursor.take_u8()?;
-        let auth_flags = cursor.take_u8()?;
+        let auth_pwd = cursor.take_u8()?;
+        let auth_os = cursor.take_u8()?;
         let os_user = cursor.take_str8()?;
         Ok(Self {
             name,
             descr,
             unknown_flags,
-            auth_tag,
-            auth_flags,
+            auth_pwd,
+            auth_os,
             os_user,
         })
     }
@@ -424,16 +434,18 @@ mod tests {
         assert_eq!(items[0].name, "cadmin");
         assert_eq!(items[0].descr, "");
         assert_eq!(items[0].unknown_flags, 0x3efbfbd);
-        assert_eq!(items[0].auth_tag, 1);
-        assert_eq!(items[0].auth_flags, 0);
+        assert_eq!(items[0].auth_pwd, 1);
+        assert_eq!(items[0].auth_os, 0);
         assert_eq!(items[0].os_user, "");
         assert_eq!(items[1].name, "codex_cadmin_pwd_20260226_053425");
         assert_eq!(items[1].descr, "Codex cluster admin pwd");
-        assert_eq!(items[1].auth_flags, 0);
+        assert_eq!(items[1].auth_pwd, 1);
+        assert_eq!(items[1].auth_os, 0);
         assert_eq!(items[1].os_user, "");
         assert_eq!(items[2].name, "codex_cadmin_os_20260226_053425");
         assert_eq!(items[2].descr, "Codex cluster admin os");
-        assert_eq!(items[2].auth_flags, 1);
+        assert_eq!(items[2].auth_pwd, 0);
+        assert_eq!(items[2].auth_os, 1);
         assert_eq!(items[2].os_user, "codex_os_user");
     }
 

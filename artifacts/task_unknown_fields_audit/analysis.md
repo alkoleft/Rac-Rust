@@ -10,8 +10,8 @@
 ### schemas/rac/agent.toml
 - record: `AgentAdminRecord`
   - `unknown_flags` (u32_be, v11.0)
-  - `auth_tag` (u8, v11.0)
-  - `auth_flags` (u8, v11.0)
+  - `auth_pwd` (u8, v11.0)
+  - `auth_os` (u8, v11.0)
 
 Evidence / mapping:
 - `docs/rac/messages/rac_message_formats_agent.md` shows full record layout:
@@ -20,13 +20,14 @@ Evidence / mapping:
   - `artifacts/rac/v16/v16_20260226_053425_agent_admin_list_server_to_client.decode.txt`
 
 Notes:
-- Schema updated to include `descr` and `os_user` (auth block decoded); `unknown_tag/unknown_tail` removed.
+- Schema updated to include `descr` (now `str_u14`) and `os_user` (auth block decoded); `unknown_tag/unknown_tail` removed.
+- `auth_tag/auth_flags` replaced by `auth_pwd/auth_os` to match captures.
 
 ### schemas/rac/cluster.toml
 - record: `ClusterAdminRecord`
   - `unknown_flags` (u32_be, v11.0)
-  - `auth_tag` (u8, v11.0)
-  - `auth_flags` (u8, v11.0)
+  - `auth_pwd` (u8, v11.0)
+  - `auth_os` (u8, v11.0)
 
 - response: `ClusterList` uses `list_u8_tail` (`tail_len_param = "tail_len"`)
 - response: `ClusterInfo` uses `record_tail` (`tail_len_param = "tail_len"`)
@@ -38,7 +39,8 @@ Evidence / mapping:
   - `artifacts/rac/v16/v16_20260226_053425_cluster_admin_list_server_to_client.decode.txt`
 
 Notes:
-- Schema updated to include `descr` and `os_user` (auth block decoded); `unknown_tag/unknown_tail` removed.
+- Schema updated to include `descr` (now `str_u14`) and `os_user` (auth block decoded); `unknown_tag/unknown_tail` removed.
+- `auth_tag/auth_flags` replaced by `auth_pwd/auth_os` to match captures.
 - Tail usage (`list_u8_tail`, `record_tail`) needs explicit mapping of tail bytes to fields.
 
 ### schemas/rac/process.toml
@@ -112,7 +114,7 @@ Notes:
 - Server list/info: `artifacts/rac/v16/v16_20260226_053425_server_list_after_update_response.hex` + `*_server_to_client.decode.txt`
 
 ## Open items for follow-up
-- Agent/Cluster admin records: map `descr`, `auth_tag`, `auth_flags`, `os_user` into schema; replace `unknown_*` fields.
+- Agent/Cluster admin records: verify `unknown_flags` semantics and confirm `auth_pwd/auth_os` mapping in additional captures.
 - Infobase info: map unknown strings/bytes to RAC output fields; expand 28-byte tail into 7 explicit u32 fields.
 - Server record: map numeric gaps to `rac` output fields (memory-limit, connections-limit, safe-working-processes-memory-limit, etc.).
 - Process record: identify `gap_0` and `_gap_license_0` semantics.

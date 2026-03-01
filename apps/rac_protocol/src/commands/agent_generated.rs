@@ -17,9 +17,9 @@ pub const METHOD_AGENT_VERSION_RESP: u8 = 0x88;
 pub struct AgentAdminRecord {
     pub name: String,
     pub descr: String,
-    pub unknown_flags: u32,
-    pub auth_tag: u8,
-    pub auth_flags: u8,
+    pub record_marker: u32,
+    pub auth_pwd: u8,
+    pub auth_os: u8,
     pub os_user: String,
 }
 
@@ -33,16 +33,16 @@ impl AgentAdminRecord {
             let bytes = cursor.take_bytes(len)?;
             String::from_utf8_lossy(&bytes).to_string()
         };
-        let unknown_flags = cursor.take_u32_be()?;
-        let auth_tag = cursor.take_u8()?;
-        let auth_flags = cursor.take_u8()?;
+        let record_marker = cursor.take_u32_be()?;
+        let auth_pwd = cursor.take_u8()?;
+        let auth_os = cursor.take_u8()?;
         let os_user = cursor.take_str8()?;
         Ok(Self {
             name,
             descr,
-            unknown_flags,
-            auth_tag,
-            auth_flags,
+            record_marker,
+            auth_pwd,
+            auth_os,
             os_user,
         })
     }
@@ -313,17 +313,17 @@ mod tests {
         assert_eq!(items.len(), 3);
         assert_eq!(items[0].name, "admin");
         assert_eq!(items[0].descr, "");
-        assert_eq!(items[0].unknown_flags, 0x3efbfbd);
-        assert_eq!(items[0].auth_tag, 1);
-        assert_eq!(items[0].auth_flags, 0);
+        assert_eq!(items[0].record_marker, 0x3efbfbd);
+        assert_eq!(items[0].auth_pwd, 1);
+        assert_eq!(items[0].auth_os, 0);
         assert_eq!(items[0].os_user, "");
         assert_eq!(items[1].name, "codex_agent_pwd_20260226_053425");
         assert_eq!(items[1].descr, "Codex agent pwd");
-        assert_eq!(items[1].auth_flags, 0);
+        assert_eq!(items[1].auth_os, 0);
         assert_eq!(items[1].os_user, "");
         assert_eq!(items[2].name, "codex_agent_os_20260226_053425");
         assert_eq!(items[2].descr, "Codex agent os");
-        assert_eq!(items[2].auth_flags, 1);
+        assert_eq!(items[2].auth_os, 1);
         assert_eq!(items[2].os_user, "codex_os_user");
     }
 
@@ -337,17 +337,17 @@ mod tests {
         assert_eq!(items.len(), 3);
         assert_eq!(items[0].name, "admin");
         assert_eq!(items[0].descr, "Описание");
-        assert_eq!(items[0].auth_tag, 1);
-        assert_eq!(items[0].auth_flags, 0);
+        assert_eq!(items[0].auth_pwd, 1);
+        assert_eq!(items[0].auth_os, 0);
         assert_eq!(items[1].name, "admin2");
         assert_eq!(items[1].descr, "Описание аутентификация ОС");
-        assert_eq!(items[1].auth_tag, 0);
-        assert_eq!(items[1].auth_flags, 1);
+        assert_eq!(items[1].auth_pwd, 0);
+        assert_eq!(items[1].auth_os, 1);
         assert_eq!(items[1].os_user, "alko");
         assert_eq!(items[2].name, "admin3");
         assert_eq!(items[2].descr, "Описание аутентификация ОС и паролья");
-        assert_eq!(items[2].auth_tag, 1);
-        assert_eq!(items[2].auth_flags, 1);
+        assert_eq!(items[2].auth_pwd, 1);
+        assert_eq!(items[2].auth_os, 1);
         assert_eq!(items[2].os_user, "alko2");
     }
 

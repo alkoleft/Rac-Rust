@@ -584,10 +584,9 @@ pub fn agent_admin_info(item: &AgentAdminRecord) -> AgentAdminInfoDisplay<'_> {
 
 fn render_agent_admin_info(out: &mut String, item: &AgentAdminRecord) {
     outln!(out, "name: {}", display_str(&item.name));
-    outln!(out, "auth: {}", item.auth_flags);
+    outln!(out, "auth: {}", auth_name(item.auth_pwd, item.auth_os));
     outln!(out, "os-user: {}", display_str(&item.os_user));
     outln!(out, "descr: \"{}\"", display_str(&item.descr));
-    outln!(out, "unknown-flags: 0x{:08x}", item.unknown_flags);
 }
 
 impl Display for AgentAdminInfoDisplay<'_> {

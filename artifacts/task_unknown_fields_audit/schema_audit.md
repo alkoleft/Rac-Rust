@@ -1,9 +1,7 @@
 # Schema audit (unknown/gap/tail markers)
 
 ## agent.toml
-- markers:
-  - 6:  { name = "unknown_flags", type = "u32_be", version = "11.0" },
-  - 80:  { index = 0, field = "unknown_flags", value = 0x03efbfbd },
+- markers: none
 
 ## cluster.toml
 - markers:
@@ -19,8 +17,7 @@
 
 ## console_output.toml
 - markers:
-  - 213:  { label = "unknown-flags", value = "unknown_flags", format = "hex_u32" },
-  - 224:  { label = "unknown-flags", value = "unknown_flags", format = "hex_u32" },
+  - 223:  { label = "unknown-flags", value = "unknown_flags", format = "hex_u32" },
 
 ## counter.toml
 - markers: none

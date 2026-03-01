@@ -207,10 +207,9 @@ type = "AgentAdminRecord"
 list_label = "agent-admins"
 lines = [
   { label = "name", value = "name" },
-  { label = "auth", value = "auth_flags" },
+  { label = "auth", value = "auth_name(item.auth_pwd, item.auth_os)" },
   { label = "os-user", value = "os_user" },
   { label = "descr", value = "descr", format = "quoted_display" },
-  { label = "unknown-flags", value = "unknown_flags", format = "hex_u32" },
 ]
 
 [record.cluster_admin]

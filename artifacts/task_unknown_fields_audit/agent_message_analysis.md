@@ -34,9 +34,9 @@ Offsets from record start, derived from server response capture.
 | 0x01 | name_len | name | str8 | UTF-8 |
 | 0x01+name_len | 1-2 | descr_len | u14 | length uses 1 byte for <64, 2 bytes otherwise |
 | 0x02+name_len | descr_len | descr | str_u14 | UTF-8 |
-| 0x02+name_len+descr_len | 4 | unknown_flags | u32_be | observed `03 ef bf bd` |
-| 0x06+name_len+descr_len | 1 | auth_tag | u8 | observed `0x01` |
-| 0x07+name_len+descr_len | 1 | auth_flags | u8 | `0x00` (pwd) / `0x01` (pwd|os) |
+| 0x02+name_len+descr_len | 4 | record_marker | u32_be | observed `03 ef bf bd` |
+| 0x06+name_len+descr_len | 1 | auth_pwd | u8 | `0x01` when `pwd` present, `0x00` for `os`-only |
+| 0x07+name_len+descr_len | 1 | auth_os | u8 | `0x01` when `os` present |
 | 0x08+name_len+descr_len | 1 | os_user_len | u8 | |
 | 0x09+name_len+descr_len | os_user_len | os_user | str8 | UTF-8 |
 
@@ -68,8 +68,7 @@ Offsets from method body start:
 - empty body
 
 ## Hypotheses
-- `unknown_flags` (`0x03efbfbd`) is a fixed marker for admin records in v16.0.
-- `auth_tag` encodes presence of password auth: `0x01` when `pwd` is present, `0x00` for `os`-only (observed in 20260301 capture).
+- `record_marker` (`0x03efbfbd`) is a fixed marker for admin records in v16.0.
 
 ## Open questions
 - Does `unknown_flags` vary across versions or auth types?

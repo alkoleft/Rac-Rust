@@ -411,6 +411,15 @@ fn load_balancing_mode_name(value: u32) -> &'static str {
     }
 }
 
+fn auth_name(auth_pwd: u8, auth_os: u8) -> &'static str {
+    match (auth_pwd != 0, auth_os != 0) {
+        (true, true) => "pwd|os",
+        (true, false) => "pwd",
+        (false, true) => "os",
+        (false, false) => "none",
+    }
+}
+
 fn append_license_prefixed(out: &mut String, license: &SessionLicense, prefix: &str) {
     outln!(
         out,

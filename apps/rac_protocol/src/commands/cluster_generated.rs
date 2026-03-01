@@ -4,6 +4,7 @@ use crate::protocol::ProtocolVersion;
 use crate::codec::RecordCursor;
 use crate::error::Result;
 use serde::Serialize;
+use crate::rac_wire::encode_with_len_u14;
 use crate::rac_wire::encode_with_len_u8;
 
 pub const METHOD_CLUSTER_AUTH_REQ: u8 = 0x09;
@@ -20,7 +21,7 @@ pub const METHOD_CLUSTER_INFO_RESP: u8 = 0x0e;
 pub struct ClusterAdminRecord {
     pub name: String,
     pub descr: String,
-    pub unknown_flags: u32,
+    pub record_marker: u32,
     pub auth_pwd: u8,
     pub auth_os: u8,
     pub os_user: String,
@@ -40,14 +41,14 @@ impl ClusterAdminRecord {
             let bytes = cursor.take_bytes(len)?;
             String::from_utf8_lossy(&bytes).to_string()
         };
-        let unknown_flags = cursor.take_u32_be()?;
+        let record_marker = cursor.take_u32_be()?;
         let auth_pwd = cursor.take_u8()?;
         let auth_os = cursor.take_u8()?;
         let os_user = cursor.take_str8()?;
         Ok(Self {
             name,
             descr,
-            unknown_flags,
+            record_marker,
             auth_pwd,
             auth_os,
             os_user,
@@ -74,6 +75,7 @@ pub struct ClusterRecord {
     pub allow_access_right_audit_events_recording: Option<u8>,
     pub ping_period: Option<u32>,
     pub ping_timeout: Option<u32>,
+    pub restart_schedule_len: Option<u8>,
     pub restart_schedule_cron: Option<String>,
     pub restart_interval: Option<u32>,
 }
@@ -99,18 +101,36 @@ impl ClusterRecord {
         } else {
             None
         };
+        if protocol_version >= ProtocolVersion::V16_0 {
+            let _flags_reserved = cursor.take_u8()?;
+        }
+        if protocol_version >= ProtocolVersion::V16_0 {
+            let _reserved_u32_5 = cursor.take_u32_be()?;
+        }
         let ping_period = if protocol_version >= ProtocolVersion::V16_0 {
-            Some(cursor.take_u32_be()?)
+            Some(cursor.take_u24_be()?)
         } else {
             None
         };
+        if protocol_version >= ProtocolVersion::V16_0 {
+            let _ping_period_reserved = cursor.take_u8()?;
+        }
         let ping_timeout = if protocol_version >= ProtocolVersion::V16_0 {
-            Some(cursor.take_u32_be()?)
+            Some(cursor.take_u24_be()?)
+        } else {
+            None
+        };
+        let restart_schedule_len = if protocol_version >= ProtocolVersion::V16_0 {
+            Some(cursor.take_u8()?)
         } else {
             None
         };
         let restart_schedule_cron = if protocol_version >= ProtocolVersion::V16_0 {
-            Some(cursor.take_str8()?)
+            Some({
+                let len = restart_schedule_len.unwrap_or_default() as usize;
+                let bytes = cursor.take_bytes(len)?;
+                String::from_utf8_lossy(&bytes).to_string()
+            })
         } else {
             None
         };
@@ -137,6 +157,7 @@ impl ClusterRecord {
             allow_access_right_audit_events_recording,
             ping_period,
             ping_timeout,
+            restart_schedule_len,
             restart_schedule_cron,
             restart_interval,
         })
@@ -233,7 +254,7 @@ impl crate::rpc::Request for ClusterAdminRegisterRpc {
         if !(protocol_version >= ProtocolVersion::V11_0) {
             return Err(RacError::Unsupported("rpc ClusterAdminRegister unsupported for protocol"));
         }
-        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.name.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.descr.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.pwd.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.os_user.len() } else { 0 });
+        let mut out = Vec::with_capacity(if protocol_version >= ProtocolVersion::V11_0 { 16 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.name.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { if self.descr.len() < 0x40 { 1 + self.descr.len() } else { 2 + self.descr.len() } } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.pwd.len() } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 } else { 0 } + if protocol_version >= ProtocolVersion::V11_0 { 1 + self.os_user.len() } else { 0 });
         if protocol_version >= ProtocolVersion::V11_0 {
             out.extend_from_slice(&self.cluster);
         }
@@ -241,7 +262,7 @@ impl crate::rpc::Request for ClusterAdminRegisterRpc {
             out.extend_from_slice(&encode_with_len_u8(self.name.as_bytes())?);
         }
         if protocol_version >= ProtocolVersion::V11_0 {
-            out.extend_from_slice(&encode_with_len_u8(self.descr.as_bytes())?);
+            out.extend_from_slice(&encode_with_len_u14(self.descr.as_bytes())?);
         }
         if protocol_version >= ProtocolVersion::V11_0 {
             out.extend_from_slice(&encode_with_len_u8(self.pwd.as_bytes())?);
@@ -357,17 +378,44 @@ impl crate::rpc::Response for ClusterAdminListResp {
     }
 }
 
+#[derive(Debug, Serialize)]
+pub struct ClusterListResp {
+    pub clusters: Vec<ClusterRecord>,
+}
 
-pub fn parse_cluster_info_body(body: &[u8], tail_len: usize, protocol_version: ProtocolVersion) -> Result<ClusterRecord> {
+impl crate::rpc::Response for ClusterListResp {
+    fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
+        let body = crate::rpc::decode_utils::rpc_body(payload)?;
+        let protocol_version = _codec.protocol_version();
+        Ok(Self {
+            clusters: crate::commands::parse_list_u8(body, |cursor| ClusterRecord::decode(cursor, protocol_version))?,
+        })
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct ClusterInfoResp {
+    pub cluster: ClusterRecord,
+}
+
+impl crate::rpc::Response for ClusterInfoResp {
+    fn decode(payload: &[u8], _codec: &dyn crate::protocol::ProtocolCodec) -> Result<Self> {
+        let body = crate::rpc::decode_utils::rpc_body(payload)?;
+        let protocol_version = _codec.protocol_version();
+        let record = parse_cluster_info_body(body, protocol_version)?;
+        Ok(Self {
+            cluster: record,
+        })
+    }
+}
+
+
+pub fn parse_cluster_info_body(body: &[u8], protocol_version: ProtocolVersion) -> Result<ClusterRecord> {
     if body.is_empty() {
         return Err(RacError::Decode("cluster info empty body"));
     }
     let mut cursor = RecordCursor::new(body);
-    let record = ClusterRecord::decode(&mut cursor, protocol_version)?;
-    if tail_len != 0 {
-        let _tail = cursor.take_bytes(tail_len)?;
-    }
-    Ok(record)
+    ClusterRecord::decode(&mut cursor, protocol_version)
 }
 
 
@@ -424,8 +472,8 @@ mod tests {
     }
 
     #[test]
-    fn cluster_admin_list_response_hex() {
-        let hex = include_str!("../../../../artifacts/rac/cluster_admin_list_response.hex");
+    fn cluster_admin_list_response_20260226_hex() {
+        let hex = include_str!("../../../../artifacts/rac/v16/v16_20260226_053425_cluster_admin_list_response_rpc.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
         let protocol_version = ProtocolVersion::V16_0;
@@ -433,7 +481,7 @@ mod tests {
         assert_eq!(items.len(), 3);
         assert_eq!(items[0].name, "cadmin");
         assert_eq!(items[0].descr, "");
-        assert_eq!(items[0].unknown_flags, 0x3efbfbd);
+        assert_eq!(items[0].record_marker, 0x3efbfbd);
         assert_eq!(items[0].auth_pwd, 1);
         assert_eq!(items[0].auth_os, 0);
         assert_eq!(items[0].os_user, "");
@@ -444,38 +492,65 @@ mod tests {
         assert_eq!(items[1].os_user, "");
         assert_eq!(items[2].name, "codex_cadmin_os_20260226_053425");
         assert_eq!(items[2].descr, "Codex cluster admin os");
-        assert_eq!(items[2].auth_pwd, 0);
+        assert_eq!(items[2].auth_pwd, 1);
         assert_eq!(items[2].auth_os, 1);
         assert_eq!(items[2].os_user, "codex_os_user");
     }
 
     #[test]
-    fn cluster_list_response_custom_hex() {
-        let hex = include_str!("../../../../artifacts/rac/cluster_list_response_custom.hex");
+    fn cluster_list_response_ping_hex() {
+        let hex = include_str!("../../../../artifacts/rac/v16/v16_20260226_cluster_list_ping_response.hex");
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
         let protocol_version = ProtocolVersion::V16_0;
-        let items = crate::commands::parse_list_u8_tail(body, 0, |cursor| ClusterRecord::decode(cursor, protocol_version)).expect("parse body");
-        assert_eq!(items.len(), 1);
-        assert_eq!(items[0].lifetime_limit, 0x457);
-        assert_eq!(items[0].security_level, 3);
-        assert_eq!(items[0].session_fault_tolerance_level, 4);
-        assert_eq!(items[0].load_balancing_mode, 1);
-        assert_eq!(items[0].errors_count_threshold, 0);
-        assert_eq!(items[0].kill_problem_processes, 0);
-        assert_eq!(items[0].kill_by_memory_with_dump, 1);
-    }
-
-    #[test]
-    fn cluster_list_response_flags_hex() {
-        let hex = include_str!("../../../../artifacts/rac/cluster_list_response_flags.hex");
-        let payload = decode_hex_str(hex);
-        let body = rpc_body(&payload).expect("rpc body");
-        let protocol_version = ProtocolVersion::V16_0;
-        let items = crate::commands::parse_list_u8_tail(body, 0, |cursor| ClusterRecord::decode(cursor, protocol_version)).expect("parse body");
+        let items = crate::commands::parse_list_u8(body, |cursor| ClusterRecord::decode(cursor, protocol_version)).expect("parse body");
         assert_eq!(items.len(), 1);
         assert_eq!(items[0].kill_problem_processes, 1);
         assert_eq!(items[0].kill_by_memory_with_dump, 0);
+        assert_eq!(items[0].allow_access_right_audit_events_recording.unwrap_or_default(), 0);
+        assert_eq!(items[0].ping_period.unwrap_or_default(), 1);
+        assert_eq!(items[0].ping_timeout.unwrap_or_default(), 2);
+        assert_eq!(items[0].restart_schedule_cron.clone().unwrap_or_default(), "");
+    }
+
+    #[test]
+    fn cluster_list_response_restart_schedule_hex() {
+        let hex = include_str!("../../../../artifacts/rac/v16/v16_20260226_cluster_list_restart_schedule_response.hex");
+        let payload = decode_hex_str(hex);
+        let body = rpc_body(&payload).expect("rpc body");
+        let protocol_version = ProtocolVersion::V16_0;
+        let items = crate::commands::parse_list_u8(body, |cursor| ClusterRecord::decode(cursor, protocol_version)).expect("parse body");
+        assert_eq!(items.len(), 1);
+        assert_eq!(items[0].kill_problem_processes, 0);
+        assert_eq!(items[0].kill_by_memory_with_dump, 1);
+        assert_eq!(items[0].allow_access_right_audit_events_recording.unwrap_or_default(), 0);
+        assert_eq!(items[0].ping_period.unwrap_or_default(), 0xea5f);
+        assert_eq!(items[0].ping_timeout.unwrap_or_default(), 0xff56);
+        assert_eq!(items[0].restart_schedule_cron.clone().unwrap_or_default(), "0 3 * * 6");
+    }
+
+    #[test]
+    fn cluster_info_response_ping_hex() {
+        let hex = include_str!("../../../../artifacts/rac/v16/v16_20260226_cluster_info_ping_response.hex");
+        let payload = decode_hex_str(hex);
+        let body = rpc_body(&payload).expect("rpc body");
+        let protocol_version = ProtocolVersion::V16_0;
+        let record = parse_cluster_info_body(body, protocol_version).expect("parse body");
+        assert_eq!(record.ping_period.unwrap_or_default(), 1);
+        assert_eq!(record.ping_timeout.unwrap_or_default(), 2);
+        assert_eq!(record.restart_schedule_cron.clone().unwrap_or_default(), "");
+    }
+
+    #[test]
+    fn cluster_info_response_restart_schedule_hex() {
+        let hex = include_str!("../../../../artifacts/rac/v16/v16_20260226_cluster_info_restart_schedule_response.hex");
+        let payload = decode_hex_str(hex);
+        let body = rpc_body(&payload).expect("rpc body");
+        let protocol_version = ProtocolVersion::V16_0;
+        let record = parse_cluster_info_body(body, protocol_version).expect("parse body");
+        assert_eq!(record.ping_period.unwrap_or_default(), 0xea5f);
+        assert_eq!(record.ping_timeout.unwrap_or_default(), 0xff56);
+        assert_eq!(record.restart_schedule_cron.clone().unwrap_or_default(), "0 3 * * 6");
     }
 
 }

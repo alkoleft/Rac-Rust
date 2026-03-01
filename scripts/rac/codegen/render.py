@@ -109,7 +109,10 @@ def generate(
             var_name = field.name
             if field.skip:
                 var_name = f"_{field.name}"
-            var_map[field.name] = var_name
+            if field.optional:
+                var_map[field.name] = f"{var_name}.unwrap_or_default()"
+            else:
+                var_map[field.name] = var_name
             expr = decode_expr(field, var_map, "protocol_version")
             guard = render_version_guard(field.version, min_version, "protocol_version")
             if field.skip:

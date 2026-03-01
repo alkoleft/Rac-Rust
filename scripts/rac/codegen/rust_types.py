@@ -37,6 +37,8 @@ def rust_type_inner(field: FieldSpec) -> str:
         return "u16"
     if field.type_name == "u16_be_bool":
         return "bool"
+    if field.type_name == "u24_be":
+        return "u32"
     if field.type_name == "u32_be":
         return "u32"
     if field.type_name == "u32_le":
@@ -218,6 +220,8 @@ def decode_expr(
         return ["cursor.take_u16_be()?;"]
     if t == "u16_le":
         return ["cursor.take_u16_le()?;"]
+    if t == "u24_be":
+        return ["cursor.take_u24_be()?;"]
     if t == "u32_be":
         return ["cursor.take_u32_be()?;"]
     if t == "u32_le":

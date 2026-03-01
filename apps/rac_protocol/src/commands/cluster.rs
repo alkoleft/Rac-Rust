@@ -1,18 +1,9 @@
-use serde::Serialize;
-
 use crate::client::RacClient;
-use crate::codec::RecordCursor;
-use crate::error::RacError;
 use crate::error::Result;
-use crate::protocol::{ProtocolCodec, ProtocolVersion};
-use crate::rpc::Response;
-use crate::rpc::decode_utils::rpc_body;
 use crate::Uuid16;
 
 mod generated {
     include!("cluster_generated.rs");
-    pub type ClusterListResp = super::ClusterListResp;
-    pub type ClusterInfoResp = super::ClusterInfoResp;
 }
 
 pub use generated::{
@@ -22,7 +13,9 @@ pub use generated::{
     ClusterAdminRemoveRpc,
     ClusterAdminRegisterRpc,
     ClusterAuthRpc,
+    ClusterInfoResp,
     ClusterInfoRpc,
+    ClusterListResp,
     ClusterListRpc,
     ClusterRecord,
 };
@@ -82,120 +75,9 @@ pub fn cluster_admin_remove(
     Ok(resp.acknowledged)
 }
 
-fn decode_cluster_record(
-    cursor: &mut RecordCursor<'_>,
-    protocol_version: ProtocolVersion,
-) -> Result<ClusterRecord> {
-    match protocol_version {
-        ProtocolVersion::V11_0 => ClusterRecord::decode(cursor, protocol_version),
-        ProtocolVersion::V16_0 => {
-            let uuid = cursor.take_uuid()?;
-            let expiration_timeout = cursor.take_u32_be()?;
-            let host = cursor.take_str8()?;
-            let lifetime_limit = cursor.take_u32_be()?;
-            let port = cursor.take_u16_be()?;
-            let max_memory_size = cursor.take_u32_be()?;
-            let max_memory_time_limit = cursor.take_u32_be()?;
-            let display_name = cursor.take_str8()?;
-            let security_level = cursor.take_u32_be()?;
-            let session_fault_tolerance_level = cursor.take_u32_be()?;
-            let load_balancing_mode = cursor.take_u32_be()?;
-            let errors_count_threshold = cursor.take_u32_be()?;
-            let flags_raw = cursor.take_u32_be()?;
-            let _tail_u32_5 = cursor.take_u32_be()?;
-            let ping_period_raw = cursor.take_u32_be()?;
-            let ping_timeout_raw = cursor.take_u32_be()?;
-            let restart_schedule_len = (ping_timeout_raw & 0xff) as usize;
-            let restart_schedule_bytes = cursor.take_bytes(restart_schedule_len)?;
-            let flags_bytes = flags_raw.to_be_bytes();
-            Ok(ClusterRecord {
-                uuid,
-                expiration_timeout,
-                host,
-                lifetime_limit,
-                port,
-                max_memory_size,
-                max_memory_time_limit,
-                display_name,
-                security_level,
-                session_fault_tolerance_level,
-                load_balancing_mode,
-                errors_count_threshold,
-                kill_problem_processes: flags_bytes[0],
-                kill_by_memory_with_dump: flags_bytes[1],
-                allow_access_right_audit_events_recording: Some(flags_bytes[2]),
-                ping_period: Some(ping_period_raw >> 8),
-                ping_timeout: Some(ping_timeout_raw >> 8),
-                restart_schedule_cron: Some(
-                    String::from_utf8_lossy(&restart_schedule_bytes).to_string(),
-                ),
-                restart_interval: None,
-            })
-        }
-    }
-}
-
-fn parse_cluster_list_body(
-    body: &[u8],
-    protocol_version: ProtocolVersion,
-) -> Result<Vec<ClusterRecord>> {
-    if body.is_empty() {
-        return Ok(Vec::new());
-    }
-    let mut cursor = RecordCursor::new(body);
-    let count = cursor.take_u8()? as usize;
-    let mut out = Vec::with_capacity(count);
-    for _ in 0..count {
-        out.push(decode_cluster_record(&mut cursor, protocol_version)?);
-    }
-    Ok(out)
-}
-
-fn parse_cluster_info_body(
-    body: &[u8],
-    protocol_version: ProtocolVersion,
-) -> Result<ClusterRecord> {
-    if body.is_empty() {
-        return Err(RacError::Decode("cluster info empty body"));
-    }
-    match protocol_version {
-        ProtocolVersion::V11_0 => generated::parse_cluster_info_body(body, 0, protocol_version),
-        ProtocolVersion::V16_0 => {
-            let mut cursor = RecordCursor::new(body);
-            decode_cluster_record(&mut cursor, protocol_version)
-        }
-    }
-}
-
-#[derive(Debug, Serialize)]
-pub struct ClusterListResp {
-    clusters: Vec<ClusterRecord>,
-}
-
-impl Response for ClusterListResp {
-    fn decode(payload: &[u8], codec: &dyn ProtocolCodec) -> Result<Self> {
-        let body = rpc_body(payload)?;
-        let clusters = parse_cluster_list_body(body, codec.protocol_version())?;
-        Ok(Self { clusters })
-    }
-}
-
 pub fn cluster_list(client: &mut RacClient) -> Result<Vec<ClusterRecord>> {
     let resp = client.call_typed(ClusterListRpc)?;
     Ok(resp.clusters)
-}
-
-#[derive(Debug, Serialize)]
-pub struct ClusterInfoResp {
-    cluster: ClusterRecord,
-}
-
-impl Response for ClusterInfoResp {
-    fn decode(payload: &[u8], codec: &dyn ProtocolCodec) -> Result<Self> {
-        let body = rpc_body(payload)?;
-        let cluster = parse_cluster_info_body(body, codec.protocol_version())?;
-        Ok(Self { cluster })
-    }
 }
 
 pub fn cluster_info(client: &mut RacClient, cluster: Uuid16) -> Result<ClusterRecord> {
@@ -217,7 +99,9 @@ mod tests {
 
     #[test]
     fn parse_cluster_admin_list_from_capture() {
-        let hex = include_str!("../../../../artifacts/rac/cluster_admin_list_response.hex");
+        let hex = include_str!(
+            "../../../../artifacts/rac/v16/v16_20260226_053425_cluster_admin_list_response_rpc.hex"
+        );
         let payload = decode_hex_str(hex);
         let body = rpc_body(&payload).expect("rpc body");
         let admins = parse_list_u8(body, |cursor| {
@@ -225,11 +109,23 @@ mod tests {
         })
         .expect("parse list");
 
-        assert_eq!(admins.len(), 1);
+        assert_eq!(admins.len(), 3);
         assert_eq!(admins[0].name, "cadmin");
-        assert_eq!(admins[0].unknown_tag, 0);
-        assert_eq!(admins[0].unknown_flags, 0x03efbfbd);
-        assert_eq!(admins[0].unknown_tail, [0x01, 0x00, 0x00]);
+        assert_eq!(admins[0].descr, "");
+        assert_eq!(admins[0].record_marker, 0x03efbfbd);
+        assert_eq!(admins[0].auth_pwd, 0x01);
+        assert_eq!(admins[0].auth_os, 0x00);
+        assert_eq!(admins[0].os_user, "");
+        assert_eq!(admins[1].name, "codex_cadmin_pwd_20260226_053425");
+        assert_eq!(admins[1].descr, "Codex cluster admin pwd");
+        assert_eq!(admins[1].auth_pwd, 0x01);
+        assert_eq!(admins[1].auth_os, 0x00);
+        assert_eq!(admins[1].os_user, "");
+        assert_eq!(admins[2].name, "codex_cadmin_os_20260226_053425");
+        assert_eq!(admins[2].descr, "Codex cluster admin os");
+        assert_eq!(admins[2].auth_pwd, 0x01);
+        assert_eq!(admins[2].auth_os, 0x01);
+        assert_eq!(admins[2].os_user, "codex_os_user");
     }
 
     #[test]

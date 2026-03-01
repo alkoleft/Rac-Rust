@@ -627,7 +627,7 @@ fn render_cluster_admin_info(out: &mut String, item: &ClusterAdminRecord) {
     outln!(out, "auth: {}", auth_name(item.auth_pwd, item.auth_os));
     outln!(out, "os-user: {}", display_str(&item.os_user));
     outln!(out, "descr: \"{}\"", display_str(&item.descr));
-    outln!(out, "unknown-flags: 0x{:08x}", item.unknown_flags);
+    outln!(out, "record-marker: 0x{:08x}", item.record_marker);
 }
 
 impl Display for ClusterAdminInfoDisplay<'_> {

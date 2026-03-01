@@ -3,7 +3,7 @@ derive = ["Debug", "Serialize", "Clone"]
 fields = [
   { name = "name", type = "str8", version = "11.0" },
   { name = "descr", type = "str_u14", version = "11.0" },
-  { name = "unknown_flags", type = "u32_be", version = "11.0" },
+  { name = "record_marker", type = "u32_be", version = "11.0" },
   { name = "auth_pwd", type = "u8", version = "11.0" },
   { name = "auth_os", type = "u8", version = "11.0" },
   { name = "os_user", type = "str8", version = "11.0" },
@@ -26,10 +26,14 @@ fields = [
   { name = "errors_count_threshold", type = "u32_be", version = "11.0" },
   { name = "kill_problem_processes", type = "u8", version = "11.0" },
   { name = "kill_by_memory_with_dump", type = "u8", version = "11.0" },
-  { name = "allow_access_right_audit_events_recording", type = "u8", source = "0", version = "16.0" },
-  { name = "ping_period", type = "u32_be", source = "0", version = "16.0" },
-  { name = "ping_timeout", type = "u32_be", source = "0", version = "16.0" },
-  { name = "restart_schedule_cron", type = "str8", source = "String::new()", version = "16.0" },
+  { name = "allow_access_right_audit_events_recording", type = "u8", version = "16.0" },
+  { name = "flags_reserved", type = "u8", skip = true, version = "16.0" },
+  { name = "reserved_u32_5", type = "u32_be", skip = true, version = "16.0" },
+  { name = "ping_period", type = "u24_be", version = "16.0" },
+  { name = "ping_period_reserved", type = "u8", skip = true, version = "16.0" },
+  { name = "ping_timeout", type = "u24_be", version = "16.0" },
+  { name = "restart_schedule_len", type = "u8", version = "16.0" },
+  { name = "restart_schedule_cron", type = "str_len_u8", len_source = "restart_schedule_len", version = "16.0" },
   { name = "restart_interval", type = "u32_be", source = "0", version = "11.0-16.0" },
 ]
 
@@ -64,7 +68,7 @@ derive = ["Debug", "Clone"]
 fields = [
   { name = "cluster", type = "uuid", version = "11.0" },
   { name = "name", type = "str8", version = "11.0" },
-  { name = "descr", type = "str8", version = "11.0" },
+  { name = "descr", type = "str_u14", version = "11.0" },
   { name = "pwd", type = "str8", version = "11.0" },
   { name = "auth_pwd", type = "u8", version = "11.0" },
   { name = "auth_os", type = "u8", version = "11.0" },
@@ -109,10 +113,10 @@ requires_infobase_context = false
 
 [response.ClusterAdminList]
 body = { type = "list_u8", item = "ClusterAdminRecord", field = "admins", struct = true }
-tests = [{ name = "cluster_admin_list_response_hex", hex_path = "../../../../artifacts/rac/cluster_admin_list_response.hex", expect_len = 3, asserts = [
+tests = [{ name = "cluster_admin_list_response_20260226_hex", hex_path = "../../../../artifacts/rac/v16/v16_20260226_053425_cluster_admin_list_response_rpc.hex", expect_len = 3, asserts = [
   { index = 0, field = "name", value = "cadmin" },
   { index = 0, field = "descr", value = "" },
-  { index = 0, field = "unknown_flags", value = 0x03efbfbd },
+  { index = 0, field = "record_marker", value = 0x03efbfbd },
   { index = 0, field = "auth_pwd", value = 0x01 },
   { index = 0, field = "auth_os", value = 0x00 },
   { index = 0, field = "os_user", value = "" },
@@ -123,28 +127,43 @@ tests = [{ name = "cluster_admin_list_response_hex", hex_path = "../../../../art
   { index = 1, field = "os_user", value = "" },
   { index = 2, field = "name", value = "codex_cadmin_os_20260226_053425" },
   { index = 2, field = "descr", value = "Codex cluster admin os" },
-  { index = 2, field = "auth_pwd", value = 0x00 },
+  { index = 2, field = "auth_pwd", value = 0x01 },
   { index = 2, field = "auth_os", value = 0x01 },
   { index = 2, field = "os_user", value = "codex_os_user" },
 ] }]
 
 [response.ClusterList]
-body = { type = "list_u8_tail", item = "ClusterRecord", tail_len_param = "tail_len" }
+body = { type = "list_u8", item = "ClusterRecord", field = "clusters", struct = true }
 tests = [
-  { name = "cluster_list_response_custom_hex", hex_path = "../../../../artifacts/rac/cluster_list_response_custom.hex", tail_len = 0, expect_len = 1, asserts = [
-    { index = 0, field = "lifetime_limit", value = 1111 },
-    { index = 0, field = "security_level", value = 3 },
-    { index = 0, field = "session_fault_tolerance_level", value = 4 },
-    { index = 0, field = "load_balancing_mode", value = 1 },
-    { index = 0, field = "errors_count_threshold", value = 0 },
-    { index = 0, field = "kill_problem_processes", value = 0 },
-    { index = 0, field = "kill_by_memory_with_dump", value = 1 },
-  ] },
-  { name = "cluster_list_response_flags_hex", hex_path = "../../../../artifacts/rac/cluster_list_response_flags.hex", tail_len = 0, expect_len = 1, asserts = [
+  { name = "cluster_list_response_ping_hex", hex_path = "../../../../artifacts/rac/v16/v16_20260226_cluster_list_ping_response.hex", expect_len = 1, asserts = [
     { index = 0, field = "kill_problem_processes", value = 1 },
     { index = 0, field = "kill_by_memory_with_dump", value = 0 },
+    { index = 0, field = "allow_access_right_audit_events_recording.unwrap_or_default()", value = 0 },
+    { index = 0, field = "ping_period.unwrap_or_default()", value = 1 },
+    { index = 0, field = "ping_timeout.unwrap_or_default()", value = 2 },
+    { index = 0, field = "restart_schedule_cron.clone().unwrap_or_default()", value = "" },
+  ] },
+  { name = "cluster_list_response_restart_schedule_hex", hex_path = "../../../../artifacts/rac/v16/v16_20260226_cluster_list_restart_schedule_response.hex", expect_len = 1, asserts = [
+    { index = 0, field = "kill_problem_processes", value = 0 },
+    { index = 0, field = "kill_by_memory_with_dump", value = 1 },
+    { index = 0, field = "allow_access_right_audit_events_recording.unwrap_or_default()", value = 0 },
+    { index = 0, field = "ping_period.unwrap_or_default()", value = 59999 },
+    { index = 0, field = "ping_timeout.unwrap_or_default()", value = 65366 },
+    { index = 0, field = "restart_schedule_cron.clone().unwrap_or_default()", value = "0 3 * * 6" },
   ] },
 ]
 
 [response.ClusterInfo]
-body = { type = "record_tail", item = "ClusterRecord", tail_len_param = "tail_len" }
+body = { type = "record", item = "ClusterRecord", field = "cluster", struct = true }
+tests = [
+  { name = "cluster_info_response_ping_hex", hex_path = "../../../../artifacts/rac/v16/v16_20260226_cluster_info_ping_response.hex", asserts = [
+    { field = "ping_period.unwrap_or_default()", value = 1 },
+    { field = "ping_timeout.unwrap_or_default()", value = 2 },
+    { field = "restart_schedule_cron.clone().unwrap_or_default()", value = "" },
+  ] },
+  { name = "cluster_info_response_restart_schedule_hex", hex_path = "../../../../artifacts/rac/v16/v16_20260226_cluster_info_restart_schedule_response.hex", asserts = [
+    { field = "ping_period.unwrap_or_default()", value = 59999 },
+    { field = "ping_timeout.unwrap_or_default()", value = 65366 },
+    { field = "restart_schedule_cron.clone().unwrap_or_default()", value = "0 3 * * 6" },
+  ] },
+]

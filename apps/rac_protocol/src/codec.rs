@@ -107,6 +107,15 @@ impl<'a> RecordCursor<'a> {
         Ok(u32::from_be_bytes([bytes[0], bytes[1], bytes[2], bytes[3]]))
     }
 
+    pub fn take_u24_be(&mut self) -> Result<u32, WireError> {
+        if self.off + 3 > self.data.len() {
+            return Err(self.truncated("u24"));
+        }
+        let bytes = &self.data[self.off..self.off + 3];
+        self.off += 3;
+        Ok(((bytes[0] as u32) << 16) | ((bytes[1] as u32) << 8) | bytes[2] as u32)
+    }
+
     pub fn take_u16_be(&mut self) -> Result<u16, WireError> {
         if self.off + 2 > self.data.len() {
             return Err(self.truncated("u16"));

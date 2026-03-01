@@ -33,7 +33,32 @@ pub struct SessionLicense {
 impl SessionLicense {
     pub fn decode(cursor: &mut RecordCursor<'_>, _: ProtocolVersion) -> Result<Self> {
         let file_name = cursor.take_str8()?;
-        let full_presentation = cursor.take_str8()?;
+        let full_presentation = {
+            let len = cursor.take_u8()? as usize;
+            if len == 0 {
+                String::new()
+            } else {
+                let first = cursor.take_u8()?;
+                let use_flag = if first == 0x01 && cursor.remaining_len() >= len {
+                    let slice = &cursor.remaining_slice()[..len];
+                    std::str::from_utf8(slice).is_ok()
+                } else {
+                    false
+                };
+                let bytes = if use_flag {
+                    cursor.take_bytes(len)?
+                } else {
+                    let mut out = Vec::with_capacity(len);
+                    out.push(first);
+                    if len > 1 {
+                        out.extend_from_slice(&cursor.take_bytes(len - 1)?);
+                    }
+                    out
+                };
+                String::from_utf8(bytes)
+                    .map_err(|_| RacError::Decode("str8_flagged invalid utf-8"))?
+            }
+        };
         let issued_by_server = cursor.take_u8()? != 0;
         let license_type = cursor.take_u32_be()?;
         let max_users_all = cursor.take_u32_be()?;

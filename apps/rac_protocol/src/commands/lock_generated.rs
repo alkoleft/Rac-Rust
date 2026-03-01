@@ -27,21 +27,9 @@ impl LockRecordRaw {
                 LockDescr { descr: String::new(), descr_flag: None }
             } else {
                 let first = cursor.take_u8()?;
-                let remaining = cursor.remaining_len();
-                let needed_no_flag = descr_len.saturating_sub(1) + 40;
-                let needed_flag = descr_len + 40;
-                let use_flag = if first == 0x01 {
-                    if remaining == needed_flag {
-                        true
-                    } else if remaining == needed_no_flag {
-                        false
-                    } else if remaining >= needed_flag && remaining < needed_no_flag {
-                        true
-                    } else if remaining >= needed_no_flag {
-                        false
-                    } else {
-                        remaining >= needed_flag
-                    }
+                let use_flag = if first == 0x01 && cursor.remaining_len() >= descr_len {
+                    let slice = &cursor.remaining_slice()[..descr_len];
+                    std::str::from_utf8(slice).is_ok()
                 } else {
                     false
                 };

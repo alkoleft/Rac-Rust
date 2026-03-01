@@ -11,3 +11,4 @@
 9. [x] Пройти по всем схемам и собрать перечень `unknown/gap/tail`
 10. [ ] Server: подготовить план захватов для `gap_1..gap_7` и минимальные изменения схемы
 11. [ ] Process: уточнить `gap_0`/`gap_license_0` через контрастные захваты
+12. [x] Agent: выполнен анализ сообщений по захватам (отчёт в `artifacts/task_unknown_fields_audit/agent_message_analysis.md`)

@@ -111,19 +111,19 @@ list_and_pick_uuid() {
   shift
   local tmp
   tmp="$(mktemp)"
-  echo "==> $label"
-  echo "+ $*"
-  "$@" 2>&1 | tee "$tmp"
+  echo "==> $label" >&2
+  echo "+ $*" >&2
+  "$@" 2>&1 | tee "$tmp" >&2
   local status=${PIPESTATUS[0]}
   if [[ $status -ne 0 ]]; then
-    echo "Command failed with exit code $status"
+    echo "Command failed with exit code $status" >&2
     SMOKE_FAILURES=$((SMOKE_FAILURES + 1))
   fi
   local uuid
   uuid="$(first_uuid_from_file "$tmp")"
   rm -f "$tmp"
   echo "$uuid"
-  echo
+  echo >&2
 }
 
 list_and_pick_field() {
@@ -132,19 +132,19 @@ list_and_pick_field() {
   shift 2
   local tmp
   tmp="$(mktemp)"
-  echo "==> $label"
-  echo "+ $*"
-  "$@" 2>&1 | tee "$tmp"
+  echo "==> $label" >&2
+  echo "+ $*" >&2
+  "$@" 2>&1 | tee "$tmp" >&2
   local status=${PIPESTATUS[0]}
   if [[ $status -ne 0 ]]; then
-    echo "Command failed with exit code $status"
+    echo "Command failed with exit code $status" >&2
     SMOKE_FAILURES=$((SMOKE_FAILURES + 1))
   fi
   local value
   value="$(first_field_value "$key" "$tmp")"
   rm -f "$tmp"
   echo "$value"
-  echo
+  echo >&2
 }
 
 ensure_cluster_uuid() {

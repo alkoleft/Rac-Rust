@@ -3,6 +3,7 @@
 ## Scope
 - Schemas: agent, cluster, process, infobase, server
 - Problem markers: `unknown_*`, `tail`, `gap_*`
+ - Full schema scan: `artifacts/task_unknown_fields_audit/schema_audit.md`
 
 ## Matrix (schema -> record -> fields)
 

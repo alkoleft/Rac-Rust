@@ -584,9 +584,10 @@ pub fn agent_admin_info(item: &AgentAdminRecord) -> AgentAdminInfoDisplay<'_> {
 
 fn render_agent_admin_info(out: &mut String, item: &AgentAdminRecord) {
     outln!(out, "name: {}", display_str(&item.name));
-    outln!(out, "unknown-tag: {}", item.unknown_tag);
+    outln!(out, "auth: {}", item.auth_flags);
+    outln!(out, "os-user: {}", display_str(&item.os_user));
+    outln!(out, "descr: \"{}\"", display_str(&item.descr));
     outln!(out, "unknown-flags: 0x{:08x}", item.unknown_flags);
-    outln!(out, "unknown-tail: {:02x} {:02x} {:02x}", item.unknown_tail[0], item.unknown_tail[1], item.unknown_tail[2]);
 }
 
 impl Display for AgentAdminInfoDisplay<'_> {
@@ -624,9 +625,10 @@ pub fn cluster_admin_info(item: &ClusterAdminRecord) -> ClusterAdminInfoDisplay<
 
 fn render_cluster_admin_info(out: &mut String, item: &ClusterAdminRecord) {
     outln!(out, "name: {}", display_str(&item.name));
-    outln!(out, "unknown-tag: {}", item.unknown_tag);
+    outln!(out, "auth: {}", item.auth_flags);
+    outln!(out, "os-user: {}", display_str(&item.os_user));
+    outln!(out, "descr: \"{}\"", display_str(&item.descr));
     outln!(out, "unknown-flags: 0x{:08x}", item.unknown_flags);
-    outln!(out, "unknown-tail: {:02x} {:02x} {:02x}", item.unknown_tail[0], item.unknown_tail[1], item.unknown_tail[2]);
 }
 
 impl Display for ClusterAdminInfoDisplay<'_> {

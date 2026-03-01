@@ -8,9 +8,9 @@
 
 ### schemas/rac/agent.toml
 - record: `AgentAdminRecord`
-  - `unknown_tag` (u8, v11.0)
   - `unknown_flags` (u32_be, v11.0)
-  - `unknown_tail` (bytes_fixed len=3, v11.0)
+  - `auth_tag` (u8, v11.0)
+  - `auth_flags` (u8, v11.0)
 
 Evidence / mapping:
 - `docs/rac/messages/rac_message_formats_agent.md` shows full record layout:
@@ -19,14 +19,13 @@ Evidence / mapping:
   - `artifacts/rac/v16/v16_20260226_053425_agent_admin_list_server_to_client.decode.txt`
 
 Notes:
-- Current schema lacks `descr` and `os_user` fields.
-- `unknown_tag` likely `descr_len` or `auth_tag` depending on layout; `unknown_tail` likely `auth_tag + auth_flags + os_user_len`.
+- Schema updated to include `descr` and `os_user` (auth block decoded); `unknown_tag/unknown_tail` removed.
 
 ### schemas/rac/cluster.toml
 - record: `ClusterAdminRecord`
-  - `unknown_tag` (u8, v11.0)
   - `unknown_flags` (u32_be, v11.0)
-  - `unknown_tail` (bytes_fixed len=3, v11.0)
+  - `auth_tag` (u8, v11.0)
+  - `auth_flags` (u8, v11.0)
 
 - response: `ClusterList` uses `list_u8_tail` (`tail_len_param = "tail_len"`)
 - response: `ClusterInfo` uses `record_tail` (`tail_len_param = "tail_len"`)
@@ -38,7 +37,7 @@ Evidence / mapping:
   - `artifacts/rac/v16/v16_20260226_053425_cluster_admin_list_server_to_client.decode.txt`
 
 Notes:
-- Same gap as agent: missing `descr` and `os_user` fields.
+- Schema updated to include `descr` and `os_user` (auth block decoded); `unknown_tag/unknown_tail` removed.
 - Tail usage (`list_u8_tail`, `record_tail`) needs explicit mapping of tail bytes to fields.
 
 ### schemas/rac/process.toml

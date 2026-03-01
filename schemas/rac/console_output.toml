@@ -207,9 +207,10 @@ type = "AgentAdminRecord"
 list_label = "agent-admins"
 lines = [
   { label = "name", value = "name" },
-  { label = "unknown-tag", value = "unknown_tag" },
+  { label = "auth", value = "auth_flags" },
+  { label = "os-user", value = "os_user" },
+  { label = "descr", value = "descr", format = "quoted_display" },
   { label = "unknown-flags", value = "unknown_flags", format = "hex_u32" },
-  { label = "unknown-tail", value = "unknown_tail", format = "bytes3" },
 ]
 
 [record.cluster_admin]
@@ -217,9 +218,10 @@ type = "ClusterAdminRecord"
 list_label = "cluster-admins"
 lines = [
   { label = "name", value = "name" },
-  { label = "unknown-tag", value = "unknown_tag" },
+  { label = "auth", value = "auth_flags" },
+  { label = "os-user", value = "os_user" },
+  { label = "descr", value = "descr", format = "quoted_display" },
   { label = "unknown-flags", value = "unknown_flags", format = "hex_u32" },
-  { label = "unknown-tail", value = "unknown_tail", format = "bytes3" },
 ]
 
 [record.cluster]

@@ -2,9 +2,11 @@
 derive = ["Debug", "Serialize", "Clone"]
 fields = [
   { name = "name", type = "str8", version = "11.0" },
-  { name = "unknown_tag", type = "u8", version = "11.0" },
+  { name = "descr", type = "str8", version = "11.0" },
   { name = "unknown_flags", type = "u32_be", version = "11.0" },
-  { name = "unknown_tail", type = "bytes_fixed", len = 3, version = "11.0" },
+  { name = "auth_tag", type = "u8", version = "11.0" },
+  { name = "auth_flags", type = "u8", version = "11.0" },
+  { name = "os_user", type = "str8", version = "11.0" },
 ]
 
 [record.ClusterRecord]
@@ -107,7 +109,22 @@ requires_infobase_context = false
 
 [response.ClusterAdminList]
 body = { type = "list_u8", item = "ClusterAdminRecord", field = "admins", struct = true }
-tests = [{ name = "cluster_admin_list_response_hex", hex_path = "../../../../artifacts/rac/cluster_admin_list_response.hex", expect_len = 1, asserts = [{ index = 0, field = "name", value = "cadmin" }, { index = 0, field = "unknown_tag", value = 0 }, { index = 0, field = "unknown_flags", value = 0x03efbfbd }, { index = 0, field = "unknown_tail", value = [0x01, 0x00, 0x00] }] }]
+tests = [{ name = "cluster_admin_list_response_hex", hex_path = "../../../../artifacts/rac/cluster_admin_list_response.hex", expect_len = 3, asserts = [
+  { index = 0, field = "name", value = "cadmin" },
+  { index = 0, field = "descr", value = "" },
+  { index = 0, field = "unknown_flags", value = 0x03efbfbd },
+  { index = 0, field = "auth_tag", value = 0x01 },
+  { index = 0, field = "auth_flags", value = 0x00 },
+  { index = 0, field = "os_user", value = "" },
+  { index = 1, field = "name", value = "codex_cadmin_pwd_20260226_053425" },
+  { index = 1, field = "descr", value = "Codex cluster admin pwd" },
+  { index = 1, field = "auth_flags", value = 0x00 },
+  { index = 1, field = "os_user", value = "" },
+  { index = 2, field = "name", value = "codex_cadmin_os_20260226_053425" },
+  { index = 2, field = "descr", value = "Codex cluster admin os" },
+  { index = 2, field = "auth_flags", value = 0x01 },
+  { index = 2, field = "os_user", value = "codex_os_user" },
+] }]
 
 [response.ClusterList]
 body = { type = "list_u8_tail", item = "ClusterRecord", tail_len_param = "tail_len" }

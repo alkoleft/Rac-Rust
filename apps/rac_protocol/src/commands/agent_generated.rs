@@ -16,26 +16,28 @@ pub const METHOD_AGENT_VERSION_RESP: u8 = 0x88;
 #[derive(Debug, Serialize, Clone)]
 pub struct AgentAdminRecord {
     pub name: String,
-    pub unknown_tag: u8,
+    pub descr: String,
     pub unknown_flags: u32,
-    pub unknown_tail: [u8; 3],
+    pub auth_tag: u8,
+    pub auth_flags: u8,
+    pub os_user: String,
 }
 
 impl AgentAdminRecord {
     pub fn decode(cursor: &mut RecordCursor<'_>, _: ProtocolVersion) -> Result<Self> {
         let name = cursor.take_str8()?;
-        let unknown_tag = cursor.take_u8()?;
+        let descr = cursor.take_str8()?;
         let unknown_flags = cursor.take_u32_be()?;
-        let unknown_tail = {
-            let bytes = cursor.take_bytes(3)?;
-            let value: [u8; 3] = bytes.as_slice().try_into().map_err(|_| RacError::Decode("bytes_fixed"))?;
-            value
-        };
+        let auth_tag = cursor.take_u8()?;
+        let auth_flags = cursor.take_u8()?;
+        let os_user = cursor.take_str8()?;
         Ok(Self {
             name,
-            unknown_tag,
+            descr,
             unknown_flags,
-            unknown_tail,
+            auth_tag,
+            auth_flags,
+            os_user,
         })
     }
 }
@@ -302,11 +304,21 @@ mod tests {
         let body = rpc_body(&payload).expect("rpc body");
         let protocol_version = ProtocolVersion::V16_0;
         let items = crate::commands::parse_list_u8(body, |cursor| AgentAdminRecord::decode(cursor, protocol_version)).expect("parse body");
-        assert_eq!(items.len(), 1);
+        assert_eq!(items.len(), 3);
         assert_eq!(items[0].name, "admin");
-        assert_eq!(items[0].unknown_tag, 0);
+        assert_eq!(items[0].descr, "");
         assert_eq!(items[0].unknown_flags, 0x3efbfbd);
-        assert_eq!(items[0].unknown_tail, [1, 0, 0]);
+        assert_eq!(items[0].auth_tag, 1);
+        assert_eq!(items[0].auth_flags, 0);
+        assert_eq!(items[0].os_user, "");
+        assert_eq!(items[1].name, "codex_agent_pwd_20260226_053425");
+        assert_eq!(items[1].descr, "Codex agent pwd");
+        assert_eq!(items[1].auth_flags, 0);
+        assert_eq!(items[1].os_user, "");
+        assert_eq!(items[2].name, "codex_agent_os_20260226_053425");
+        assert_eq!(items[2].descr, "Codex agent os");
+        assert_eq!(items[2].auth_flags, 1);
+        assert_eq!(items[2].os_user, "codex_os_user");
     }
 
 }

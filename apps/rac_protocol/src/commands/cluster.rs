@@ -55,15 +55,16 @@ pub fn cluster_admin_register(
     name: String,
     descr: String,
     pwd: String,
-    auth_flags: u8,
+    auth_pwd: u8,
+    auth_os: u8,
 ) -> Result<bool> {
     let resp = client.call_typed(ClusterAdminRegisterRpc {
         cluster,
         name,
         descr,
         pwd,
-        auth_tag: 0x01,
-        auth_flags,
+        auth_pwd,
+        auth_os,
         os_user: String::new(),
     })?;
     Ok(resp.acknowledged)
@@ -244,8 +245,8 @@ mod tests {
             name: "test_admin1".to_string(),
             descr: "test admin".to_string(),
             pwd: "test_pass1".to_string(),
-            auth_tag: 0x01,
-            auth_flags: 0x01,
+            auth_pwd: 0x01,
+            auth_os: 0x01,
             os_user: String::new(),
         };
         let protocol = ProtocolVersion::V16_0.boxed();

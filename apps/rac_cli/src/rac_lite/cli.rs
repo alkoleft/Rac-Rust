@@ -98,7 +98,7 @@ pub enum AgentAdminCmd {
         #[arg(long)]
         name: String,
         #[arg(long)]
-        pwd: String,
+        pwd: Option<String>,
         #[arg(long, default_value = "")]
         descr: String,
         #[arg(long, default_value = "pwd")]
@@ -155,7 +155,7 @@ pub enum ClusterAdminCmd {
         #[arg(long)]
         name: String,
         #[arg(long)]
-        pwd: String,
+        pwd: Option<String>,
         #[arg(long, default_value = "")]
         descr: String,
         #[arg(long, default_value = "pwd")]

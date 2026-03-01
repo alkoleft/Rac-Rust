@@ -36,7 +36,8 @@ pub fn agent_admin_register(
     name: String,
     descr: String,
     pwd: String,
-    auth_flags: u8,
+    auth_pwd: u8,
+    auth_os: u8,
     os_user: String,
 ) -> Result<AckResponse> {
     let _ = client.call_typed(AgentAuthRpc {
@@ -47,8 +48,8 @@ pub fn agent_admin_register(
         name,
         descr,
         pwd,
-        auth_tag: 0x01,
-        auth_flags,
+        auth_pwd,
+        auth_os,
         os_user,
     })
 }
@@ -149,8 +150,8 @@ mod tests {
             name: "codex_agent_pwd_20260226_053425".to_string(),
             descr: "Codex agent pwd".to_string(),
             pwd: "pass123".to_string(),
-            auth_tag: 0x01,
-            auth_flags: 0x00,
+            auth_pwd: 0x01,
+            auth_os: 0x00,
             os_user: String::new(),
         };
         let protocol = ProtocolVersion::V16_0.boxed();

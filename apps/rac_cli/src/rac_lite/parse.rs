@@ -6,24 +6,30 @@ pub fn parse_uuid_arg(input: &str) -> Result<Uuid16> {
     Ok(parse_uuid(input)?)
 }
 
-pub fn parse_auth_flags(input: &str) -> Result<u8> {
-    let mut flags = 0u8;
+pub fn parse_auth_flags(input: &str) -> Result<(u8, u8)> {
     let trimmed = input.trim();
     if trimmed.is_empty() {
         return Err(RacError::Unsupported("auth flags are empty"));
     }
+    let mut has_pwd = false;
+    let mut has_os = false;
     for item in trimmed.split(',') {
         let token = item.trim();
         if token.is_empty() {
             continue;
         }
         match token {
-            "pwd" => flags |= 0x01,
-            "os" => flags |= 0x02,
+            "pwd" => has_pwd = true,
+            "os" => has_os = true,
             _ => return Err(RacError::Unsupported("unknown auth flag")),
         }
     }
-    Ok(flags)
+    if !has_pwd && !has_os {
+        return Err(RacError::Unsupported("auth flags are empty"));
+    }
+    let auth_pwd = if has_pwd { 0x01 } else { 0x00 };
+    let auth_os = if has_os { 0x01 } else { 0x00 };
+    Ok((auth_pwd, auth_os))
 }
 
 pub fn parse_rule_apply_mode(input: &str) -> Result<u32> {

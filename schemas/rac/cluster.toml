@@ -66,8 +66,8 @@ fields = [
   { name = "name", type = "str8", version = "11.0" },
   { name = "descr", type = "str8", version = "11.0" },
   { name = "pwd", type = "str8", version = "11.0" },
-  { name = "auth_tag", type = "u8", version = "11.0" },
-  { name = "auth_flags", type = "u8", version = "11.0" },
+  { name = "auth_pwd", type = "u8", version = "11.0" },
+  { name = "auth_os", type = "u8", version = "11.0" },
   { name = "os_user", type = "str8", version = "11.0" },
 ]
 version = "11.0"

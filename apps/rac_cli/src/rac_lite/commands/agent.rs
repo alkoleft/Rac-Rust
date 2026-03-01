@@ -46,7 +46,8 @@ pub fn run(json: bool, cfg: &ClientConfig, command: AgentCmd) -> Result<()> {
                 auth,
                 os_user,
             } => {
-                let auth_flags = parse_auth_flags(&auth)?;
+                let (auth_pwd, auth_os) = parse_auth_flags(&auth)?;
+                let pwd = pwd.unwrap_or_default();
                 let mut client = RacClient::connect(&addr, cfg.clone())?;
                 let creds = agent_auth_optional(
                     &mut client,
@@ -60,7 +61,8 @@ pub fn run(json: bool, cfg: &ClientConfig, command: AgentCmd) -> Result<()> {
                     name,
                     descr,
                     pwd,
-                    auth_flags,
+                    auth_pwd,
+                    auth_os,
                     os_user,
                 )?;
                 console::output(json, &resp, console::agent_admin_register(&resp));

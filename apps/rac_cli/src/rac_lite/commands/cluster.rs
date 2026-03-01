@@ -53,7 +53,8 @@ pub fn run(json: bool, cfg: &ClientConfig, command: ClusterCmd) -> Result<()> {
                 auth,
             } => {
                 let cluster = parse_uuid_arg(&cluster)?;
-                let auth_flags = parse_auth_flags(&auth)?;
+                let (auth_pwd, auth_os) = parse_auth_flags(&auth)?;
+                let pwd = pwd.unwrap_or_default();
                 let mut client = RacClient::connect(&addr, cfg.clone())?;
                 let _creds = cluster_auth_optional(
                     &mut client,
@@ -61,8 +62,15 @@ pub fn run(json: bool, cfg: &ClientConfig, command: ClusterCmd) -> Result<()> {
                     cluster_user.as_deref(),
                     cluster_pwd.as_deref(),
                 )?;
-                let resp =
-                    cluster_admin_register(&mut client, cluster, name, descr, pwd, auth_flags)?;
+                let resp = cluster_admin_register(
+                    &mut client,
+                    cluster,
+                    name,
+                    descr,
+                    pwd,
+                    auth_pwd,
+                    auth_os,
+                )?;
                 console::output(json, &resp, console::cluster_admin_register(resp));
                 client.close()?;
             }

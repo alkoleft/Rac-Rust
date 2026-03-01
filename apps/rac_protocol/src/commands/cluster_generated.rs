@@ -202,8 +202,8 @@ pub struct ClusterAdminRegisterRpc {
     pub name: String,
     pub descr: String,
     pub pwd: String,
-    pub auth_tag: u8,
-    pub auth_flags: u8,
+    pub auth_pwd: u8,
+    pub auth_os: u8,
     pub os_user: String,
 }
 
@@ -237,10 +237,10 @@ impl crate::rpc::Request for ClusterAdminRegisterRpc {
             out.extend_from_slice(&encode_with_len_u8(self.pwd.as_bytes())?);
         }
         if protocol_version >= ProtocolVersion::V11_0 {
-            out.push(self.auth_tag);
+            out.push(self.auth_pwd);
         }
         if protocol_version >= ProtocolVersion::V11_0 {
-            out.push(self.auth_flags);
+            out.push(self.auth_os);
         }
         if protocol_version >= ProtocolVersion::V11_0 {
             out.extend_from_slice(&encode_with_len_u8(self.os_user.as_bytes())?);

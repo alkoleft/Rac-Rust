@@ -76,6 +76,7 @@ Evidence / mapping:
 Notes:
 - Many fields correspond to RAC output but remain unmapped in schema.
 - Tail is 7 x u32 (28 bytes) per doc; each likely maps to explicit fields.
+- `artifacts/rac/v16/v16_20260226_053425_infobase_info_rac.out` is empty; need a successful `rac infobase info` output to map names/values.
 
 ### schemas/rac/server.toml
 - record: `ServerRecord`

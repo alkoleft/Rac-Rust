@@ -102,21 +102,15 @@ impl ClusterRecord {
             None
         };
         if protocol_version >= ProtocolVersion::V16_0 {
-            let _flags_reserved = cursor.take_u8()?;
-        }
-        if protocol_version >= ProtocolVersion::V16_0 {
             let _reserved_u32_5 = cursor.take_u32_be()?;
         }
         let ping_period = if protocol_version >= ProtocolVersion::V16_0 {
-            Some(cursor.take_u24_be()?)
+            Some(cursor.take_u32_be()?)
         } else {
             None
         };
-        if protocol_version >= ProtocolVersion::V16_0 {
-            let _ping_period_reserved = cursor.take_u8()?;
-        }
         let ping_timeout = if protocol_version >= ProtocolVersion::V16_0 {
-            Some(cursor.take_u24_be()?)
+            Some(cursor.take_u32_be()?)
         } else {
             None
         };

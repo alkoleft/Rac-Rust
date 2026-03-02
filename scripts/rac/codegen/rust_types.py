@@ -31,6 +31,8 @@ def rust_type_inner(field: FieldSpec) -> str:
         return "LockDescr"
     if field.type_name == "u8":
         return "u8"
+    if field.type_name == "bool":
+        return "bool"
     if field.type_name == "u16_be":
         return "u16"
     if field.type_name == "u16_le":
@@ -214,6 +216,8 @@ def decode_expr(
         ]
     if t == "u8":
         return ["cursor.take_u8()?;"]
+    if t == "bool":
+        return ["cursor.take_bool()?;"]
     if t == "u8_opt":
         return ["cursor.take_u8_opt()?.unwrap_or_default();"]
     if t == "u16_be":
@@ -355,6 +359,8 @@ def request_encoded_len(field: FieldSpec) -> int:
         return 16
     if t == "u8":
         return 1
+    if t == "bool":
+        return 1
     if t == "u16_be":
         return 2
     if t == "u32_be":
@@ -418,6 +424,8 @@ def request_encode_expr(field: FieldSpec) -> List[str]:
         return [f"out.extend_from_slice(&encode_with_len_u14(self.{field.name}.as_bytes())?);"]
     if t == "u8":
         return [f"out.push(self.{field.name});"]
+    if t == "bool":
+        return [f"out.push(if self.{field.name} {{ 1 }} else {{ 0 }});"]
     if t == "u16_be":
         return [f"out.extend_from_slice(&self.{field.name}.to_be_bytes());"]
     if t == "u32_be":

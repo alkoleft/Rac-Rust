@@ -70,9 +70,9 @@ pub struct ClusterRecord {
     pub session_fault_tolerance_level: u32,
     pub load_balancing_mode: u32,
     pub errors_count_threshold: u32,
-    pub kill_problem_processes: u8,
-    pub kill_by_memory_with_dump: u8,
-    pub allow_access_right_audit_events_recording: Option<u8>,
+    pub kill_problem_processes: bool,
+    pub kill_by_memory_with_dump: bool,
+    pub allow_access_right_audit_events_recording: Option<bool>,
     pub ping_period: Option<u32>,
     pub ping_timeout: Option<u32>,
     pub restart_schedule_len: Option<u8>,
@@ -94,10 +94,10 @@ impl ClusterRecord {
         let session_fault_tolerance_level = cursor.take_u32_be()?;
         let load_balancing_mode = cursor.take_u32_be()?;
         let errors_count_threshold = cursor.take_u32_be()?;
-        let kill_problem_processes = cursor.take_u8()?;
-        let kill_by_memory_with_dump = cursor.take_u8()?;
+        let kill_problem_processes = cursor.take_bool()?;
+        let kill_by_memory_with_dump = cursor.take_bool()?;
         let allow_access_right_audit_events_recording = if protocol_version >= ProtocolVersion::V16_0 {
-            Some(cursor.take_u8()?)
+            Some(cursor.take_bool()?)
         } else {
             None
         };
@@ -499,9 +499,9 @@ mod tests {
         let protocol_version = ProtocolVersion::V16_0;
         let items = crate::commands::parse_list_u8(body, |cursor| ClusterRecord::decode(cursor, protocol_version)).expect("parse body");
         assert_eq!(items.len(), 1);
-        assert_eq!(items[0].kill_problem_processes, 1);
-        assert_eq!(items[0].kill_by_memory_with_dump, 0);
-        assert_eq!(items[0].allow_access_right_audit_events_recording.unwrap_or_default(), 0);
+        assert_eq!(items[0].kill_problem_processes, true);
+        assert_eq!(items[0].kill_by_memory_with_dump, false);
+        assert_eq!(items[0].allow_access_right_audit_events_recording.unwrap_or_default(), false);
         assert_eq!(items[0].ping_period.unwrap_or_default(), 1);
         assert_eq!(items[0].ping_timeout.unwrap_or_default(), 2);
         assert_eq!(items[0].restart_schedule_cron.clone().unwrap_or_default(), "");
@@ -515,9 +515,9 @@ mod tests {
         let protocol_version = ProtocolVersion::V16_0;
         let items = crate::commands::parse_list_u8(body, |cursor| ClusterRecord::decode(cursor, protocol_version)).expect("parse body");
         assert_eq!(items.len(), 1);
-        assert_eq!(items[0].kill_problem_processes, 0);
-        assert_eq!(items[0].kill_by_memory_with_dump, 1);
-        assert_eq!(items[0].allow_access_right_audit_events_recording.unwrap_or_default(), 0);
+        assert_eq!(items[0].kill_problem_processes, false);
+        assert_eq!(items[0].kill_by_memory_with_dump, true);
+        assert_eq!(items[0].allow_access_right_audit_events_recording.unwrap_or_default(), false);
         assert_eq!(items[0].ping_period.unwrap_or_default(), 0xea5f);
         assert_eq!(items[0].ping_timeout.unwrap_or_default(), 0xff56);
         assert_eq!(items[0].restart_schedule_cron.clone().unwrap_or_default(), "0 3 * * 6");

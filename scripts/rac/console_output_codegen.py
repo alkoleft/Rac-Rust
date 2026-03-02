@@ -38,7 +38,7 @@ STRING_TYPES = {
     "datetime_u64_be_default",
 }
 UUID_TYPES = {"uuid", "uuid_opt", "uuid_default"}
-BOOL_TYPES = {"u8_bool", "u16_be_bool", "u32_be_bool", "bool", "bool_default", "bool_opt"}
+BOOL_TYPES = {"u16_be_bool", "u32_be_bool", "bool", "bool_default", "bool_opt"}
 
 
 @dataclass

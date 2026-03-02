@@ -42,11 +42,11 @@ impl ProcessLicense {
             let bytes = cursor.take_bytes(len)?;
             String::from_utf8_lossy(&bytes).to_string()
         };
-        let issued_by_server = cursor.take_u8()? != 0;
+        let issued_by_server = cursor.take_bool()?;
         let license_type = cursor.take_u32_be()?;
         let max_users_all = cursor.take_u32_be()?;
         let max_users_current = cursor.take_u32_be()?;
-        let network_key = cursor.take_u8()? != 0;
+        let network_key = cursor.take_bool()?;
         let server_address = cursor.take_str8()?;
         let process_id = cursor.take_str8()?;
         let server_port = cursor.take_u32_be()?;
@@ -123,7 +123,7 @@ impl ProcessRecord {
         let started_at = v8_datetime_to_iso(cursor.take_u64_be()?).unwrap_or_default();
         let running = cursor.take_u32_be()? != 0;
         let available_performance = cursor.take_u32_be()?;
-        let reserve = cursor.take_u8()? != 0;
+        let reserve = cursor.take_bool()?;
 
         let turned_on = use_status != 0;
         Ok(Self {

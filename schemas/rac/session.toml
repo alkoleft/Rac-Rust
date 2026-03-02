@@ -3,11 +3,11 @@ derive = ["Debug", "Serialize", "Default", "Clone"]
 fields = [
   { name = "file_name", type = "str8", version = "11.0"},
   { name = "full_presentation", type = "str8_flagged", version = "11.0"},
-  { name = "issued_by_server", type = "u8_bool", version = "11.0"},
+  { name = "issued_by_server", type = "bool", version = "11.0"},
   { name = "license_type", type = "u32_be", version = "11.0"},
   { name = "max_users_all", type = "u32_be", version = "11.0"},
   { name = "max_users_current", type = "u32_be", version = "11.0"},
-  { name = "network_key", type = "u8_bool", version = "11.0"},
+  { name = "network_key", type = "bool", version = "11.0"},
   { name = "server_address", type = "str8", version = "11.0"},
   { name = "process_id", type = "str8", version = "11.0"},
   { name = "server_port", type = "u32_be", version = "11.0"},

@@ -676,8 +676,8 @@ fn render_cluster_info(out: &mut String, item: &ClusterRecord) {
     outln!(out, "session-fault-tolerance-level            : {}", item.session_fault_tolerance_level);
     outln!(out, "load-balancing-mode                      : {}", load_balancing_mode_name(item.load_balancing_mode));
     outln!(out, "errors-count-threshold                   : {}", item.errors_count_threshold);
-    outln!(out, "kill-problem-processes                   : {}", item.kill_problem_processes);
-    outln!(out, "kill-by-memory-with-dump                 : {}", item.kill_by_memory_with_dump);
+    outln!(out, "kill-problem-processes                   : {}", yes_no(item.kill_problem_processes));
+    outln!(out, "kill-by-memory-with-dump                 : {}", yes_no(item.kill_by_memory_with_dump));
     if let Some(value) = item.allow_access_right_audit_events_recording {
         outln!(out, "allow-access-right-audit-events-recording: {}", value);
     }

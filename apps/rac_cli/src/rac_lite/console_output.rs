@@ -394,10 +394,10 @@ impl Display for ProfileListDisplay<'_> {
                 "- {} ({}), config: {}, priv: {}, crypto: {}, right-extension: {}",
                 display_str(&item.name),
                 display_str(&item.descr),
-                yes_no_u8(item.config),
-                yes_no_u8(item.privileged_mode),
-                yes_no_u8(item.crypto),
-                yes_no_u8(item.right_extension),
+                yes_no(item.config),
+                yes_no(item.privileged_mode),
+                yes_no(item.crypto),
+                yes_no(item.right_extension),
             );
         });
         write_trimmed(f, &out)
@@ -483,10 +483,6 @@ fn append_license_prefixed(out: &mut String, license: &SessionLicense, prefix: &
 
 fn yes_no(value: bool) -> &'static str {
     if value { "yes" } else { "no" }
-}
-
-fn yes_no_u8(value: u8) -> &'static str {
-    if value == 0 { "no" } else { "yes" }
 }
 
 fn using_label(value: u32) -> String {

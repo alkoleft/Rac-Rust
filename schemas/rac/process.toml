@@ -4,11 +4,11 @@ fields = [
   { name = "_gap_license_0", type = "u8", skip = true, version = "11.0" },
   { name = "file_name", type = "str8", version = "11.0" },
   { name = "full_presentation", type = "str_u14", version = "11.0" },
-  { name = "issued_by_server", type = "u8_bool", version = "11.0" },
+  { name = "issued_by_server", type = "bool", version = "11.0" },
   { name = "license_type", type = "u32_be", version = "11.0" },
   { name = "max_users_all", type = "u32_be", version = "11.0" },
   { name = "max_users_current", type = "u32_be", version = "11.0" },
-  { name = "network_key", type = "u8_bool", version = "11.0" },
+  { name = "network_key", type = "bool", version = "11.0" },
   { name = "server_address", type = "str8", version = "11.0" },
   { name = "process_id", type = "str8", version = "11.0" },
   { name = "server_port", type = "u32_be", version = "11.0" },
@@ -39,7 +39,7 @@ fields = [
   { name = "started_at", type = "datetime_u64_be", version = "11.0" },
   { name = "running", type = "u32_be_bool", version = "11.0" },
   { name = "available_performance", type = "u32_be", version = "11.0" },
-  { name = "reserve", type = "u8_bool", version = "11.0" },
+  { name = "reserve", type = "bool", version = "11.0" },
   { name = "turned_on", type = "computed", computed = "ne_zero", source = "use_status", rust_type = "bool", version = "11.0" },
 ]
 

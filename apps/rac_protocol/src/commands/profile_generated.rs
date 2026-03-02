@@ -19,13 +19,13 @@ pub struct ProfileRecord {
     pub addin_access: u8,
     pub module_access: u8,
     pub app_access: u8,
-    pub config: u8,
-    pub privileged_mode: u8,
+    pub config: bool,
+    pub privileged_mode: bool,
     pub inet_access: u8,
-    pub crypto: u8,
-    pub right_extension: u8,
+    pub crypto: bool,
+    pub right_extension: bool,
     pub right_extension_definition_roles: String,
-    pub all_modules_extension: u8,
+    pub all_modules_extension: bool,
     pub modules_available_for_extension: String,
     pub modules_not_available_for_extension: String,
     pub privileged_mode_roles: String,
@@ -40,13 +40,13 @@ impl ProfileRecord {
         let addin_access = cursor.take_u8()?;
         let module_access = cursor.take_u8()?;
         let app_access = cursor.take_u8()?;
-        let config = cursor.take_u8()?;
-        let privileged_mode = cursor.take_u8()?;
+        let config = cursor.take_bool()?;
+        let privileged_mode = cursor.take_bool()?;
         let inet_access = cursor.take_u8()?;
-        let crypto = cursor.take_u8()?;
-        let right_extension = cursor.take_u8()?;
+        let crypto = cursor.take_bool()?;
+        let right_extension = cursor.take_bool()?;
         let right_extension_definition_roles = cursor.take_str8()?;
-        let all_modules_extension = cursor.take_u8()?;
+        let all_modules_extension = cursor.take_bool()?;
         let modules_available_for_extension = cursor.take_str8()?;
         let modules_not_available_for_extension = cursor.take_str8()?;
         let privileged_mode_roles = cursor.take_str8()?;
@@ -109,13 +109,13 @@ pub struct ProfileUpdateRpc {
     pub addin_access: u8,
     pub module_access: u8,
     pub app_access: u8,
-    pub config: u8,
-    pub privileged_mode: u8,
+    pub config: bool,
+    pub privileged_mode: bool,
     pub inet_access: u8,
-    pub crypto: u8,
-    pub right_extension: u8,
+    pub crypto: bool,
+    pub right_extension: bool,
     pub right_extension_definition_roles: String,
-    pub all_modules_extension: u8,
+    pub all_modules_extension: bool,
     pub modules_available_for_extension: String,
     pub modules_not_available_for_extension: String,
     pub privileged_mode_roles: String,
@@ -163,25 +163,25 @@ impl crate::rpc::Request for ProfileUpdateRpc {
             out.push(self.app_access);
         }
         if protocol_version >= ProtocolVersion::V11_0 {
-            out.push(self.config);
+            out.push(if self.config { 1 } else { 0 });
         }
         if protocol_version >= ProtocolVersion::V11_0 {
-            out.push(self.privileged_mode);
+            out.push(if self.privileged_mode { 1 } else { 0 });
         }
         if protocol_version >= ProtocolVersion::V11_0 {
             out.push(self.inet_access);
         }
         if protocol_version >= ProtocolVersion::V11_0 {
-            out.push(self.crypto);
+            out.push(if self.crypto { 1 } else { 0 });
         }
         if protocol_version >= ProtocolVersion::V11_0 {
-            out.push(self.right_extension);
+            out.push(if self.right_extension { 1 } else { 0 });
         }
         if protocol_version >= ProtocolVersion::V11_0 {
             out.extend_from_slice(&encode_with_len_u8(self.right_extension_definition_roles.as_bytes())?);
         }
         if protocol_version >= ProtocolVersion::V11_0 {
-            out.push(self.all_modules_extension);
+            out.push(if self.all_modules_extension { 1 } else { 0 });
         }
         if protocol_version >= ProtocolVersion::V11_0 {
             out.extend_from_slice(&encode_with_len_u8(self.modules_available_for_extension.as_bytes())?);
@@ -257,20 +257,20 @@ mod tests {
         let items = crate::commands::parse_list_u8(body, |cursor| ProfileRecord::decode(cursor, protocol_version)).expect("parse body");
         assert_eq!(items.len(), 4);
         assert_eq!(items[0].name, "codex_prof_all_yes");
-        assert_eq!(items[0].config, 1);
-        assert_eq!(items[0].privileged_mode, 1);
-        assert_eq!(items[0].crypto, 1);
-        assert_eq!(items[0].right_extension, 1);
+        assert_eq!(items[0].config, true);
+        assert_eq!(items[0].privileged_mode, true);
+        assert_eq!(items[0].crypto, true);
+        assert_eq!(items[0].right_extension, true);
         assert_eq!(items[0].right_extension_definition_roles, "role3;role4");
-        assert_eq!(items[0].all_modules_extension, 1);
+        assert_eq!(items[0].all_modules_extension, true);
         assert_eq!(items[0].modules_available_for_extension, "mod1;mod2");
         assert_eq!(items[0].modules_not_available_for_extension, "mod3;mod4");
         assert_eq!(items[0].privileged_mode_roles, "role1;role2");
         assert_eq!(items[3].name, "codex_prof_cfg_no");
-        assert_eq!(items[3].config, 0);
-        assert_eq!(items[3].privileged_mode, 1);
-        assert_eq!(items[3].crypto, 1);
-        assert_eq!(items[3].right_extension, 0);
+        assert_eq!(items[3].config, false);
+        assert_eq!(items[3].privileged_mode, true);
+        assert_eq!(items[3].crypto, true);
+        assert_eq!(items[3].right_extension, false);
     }
 
 }

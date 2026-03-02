@@ -59,11 +59,11 @@ impl SessionLicense {
                     .map_err(|_| RacError::Decode("str8_flagged invalid utf-8"))?
             }
         };
-        let issued_by_server = cursor.take_u8()? != 0;
+        let issued_by_server = cursor.take_bool()?;
         let license_type = cursor.take_u32_be()?;
         let max_users_all = cursor.take_u32_be()?;
         let max_users_current = cursor.take_u32_be()?;
-        let network_key = cursor.take_u8()? != 0;
+        let network_key = cursor.take_bool()?;
         let server_address = cursor.take_str8()?;
         let process_id = cursor.take_str8()?;
         let server_port = cursor.take_u32_be()?;
